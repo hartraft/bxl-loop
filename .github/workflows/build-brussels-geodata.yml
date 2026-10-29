@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
   push:
     branches: ["feat/brussels-world-port"]
-    paths: ["tools/validate-brussels-geodata.mjs", "tools/geo-london-areas.mjs", "tools/build-brussels-geodata.mjs", "tools/build-london-geodata.mjs", "tools/geo-london-lines.mjs"]
+    paths: ["tools/validate-brussels-geodata.mjs", "tools/geo-london-areas.mjs", "tools/build-brussels-geodata.mjs", "tools/build-london-geodata.mjs", "tools/geo-london-lines.mjs", "tests/brussels-runtime-smoke.mjs"]
 
 permissions:
   contents: read
@@ -29,6 +29,8 @@ jobs:
         run: node --max-old-space-size=6144 tools/build-brussels-geodata.mjs
       - name: Validate generated assets
         run: node tools/validate-brussels-geodata.mjs data/brussels-build
+      - name: Smoke-test Brussels runtime and route graph
+        run: node tests/brussels-runtime-smoke.mjs
       - name: Upload generated Brussels data for review
         uses: actions/upload-artifact@v4
         with:
