@@ -260,6 +260,7 @@ async function initApp() {
   }
 
   function selectMode(mode) {
+    if (CITY_NAME === 'Brussels' && mode === 'boat') return;
     controllerManager.setMode(mode);
     touchControls.setMode(controllerManager.activeMode);
     gamepadControls.reset();
@@ -494,7 +495,7 @@ async function initApp() {
         selectCamera('pov', true);
         break;
       case 'Digit0':
-        selectCamera('westminster', true);
+        selectCamera(CITY_NAME === 'Brussels' ? 'chase' : 'westminster', true);
         break;
       case 'KeyV':
         cycleCamera(e.shiftKey ? -1 : 1);
