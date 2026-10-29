@@ -4,13 +4,16 @@ This repository is being adapted from the London Loop codebase into a playable, 
 
 ## Current state
 
-The current game code and baked geodata are still London-specific. Do not treat the app as a Brussels build until new Brussels OSM data has been generated and the world frame, map, landmarks and traffic have been switched together.
+The current game runtime and baked data remain London-specific. The build pipeline can now select the Brussels coordinate frame without changing the default runtime frame. Do not treat the app as a playable Brussels build until fresh data is generated and the runtime, map, landmarks and traffic are switched together.
 
 ## Work plan
 
 ### 1. Brussels world and data pipeline
 - Set the world origin near Grand-Place and define a bounded play area covering central Brussels first.
-- Create a Brussels OSM extraction and bake pipeline based on the existing dependency-free London pipeline.
+- Added `tools/build-brussels-geodata.mjs`: extracts a central Brussels bbox from a local Belgium OSM PBF and bakes `brx-geo.json` + `brx-buildings.bin` using the Brussels frame.
+- The existing `js/geo-frame.js` keeps London as the default; `CITY=brussels` selects Brussels only for the Node-side bake process.
+- Local build: `mkdir -p tools/data && curl -L https://download.geofabrik.de/europe/belgium-latest.osm.pbf -o tools/data/belgium-latest.osm.pbf && node --max-old-space-size=12000 tools/build-brussels-geodata.mjs`.
+- The Belgium PBF is large; the extraction reads the PBF and can require substantial memory. Pass an existing PBF and output directory as arguments to the build script if needed.
 - Generate fresh road, building, water, park, rail/tram and landmark-zone data. Never ship the London baked files under a Brussels label.
 - Preserve OSM attribution and ODbL requirements.
 
@@ -36,4 +39,5 @@ The current game code and baked geodata are still London-specific. Do not treat 
 
 ## Repository notes
 - Feature branch: `feat/brussels-world-port`
-- GitHub Issues are disabled for this repository, so this file is the living implementation checklist until issue tracking is enabled.
+- Tracking issue: [#3 — Port London Loop into a playable Brussels city](https://github.com/hartraft/bxl-loop/issues/3)
+- Current CI checks validate the frame and build-script syntax; they do not yet download OSM data, generate the full map, or test the browser runtime.
