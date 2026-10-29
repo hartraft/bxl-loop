@@ -971,9 +971,9 @@ export function buildLondonRoadNetwork(geo, world = null, opts = {}) {
    * Returns null or { points: Float32Array [x,z,...] along the kerb lanes, length (m), duration (s at the limits),
    *   links: [link], steps: [{ name, turn: 'L'|'R'|'S'|'U'|'start'|'arrive', x, z, dist }] }.
    */
-  function route(from, to, { heading = null } = {}) {
+  function route(from, to, { heading = null, targetHeading = null } = {}) {
     const a = nearestLane(from.x, from.z, { heading, maxDist: 150 });
-    const b = nearestLane(to.x, to.z, { maxDist: 150 });
+    const b = nearestLane(to.x, to.z, { heading: targetHeading, maxDist: 150 });
     if (!a || !b) return null;
     const startL = a.lane.link, goalL = b.lane.link;
     const hx = (l) => Math.hypot(l.to.x - to.x, l.to.z - to.z) / maxSpeed;
