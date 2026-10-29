@@ -58,7 +58,10 @@ export class BrusselsAudio {
     this._lastHit = -1;
     this.parks = prepParks(opts.geo);
     this.landmarks = (opts.landmarks || []).map((l) => ({ x: l.x, z: l.z, r: l.r || 80, id: l.id }));
-    this.bigBen = opts.bigBen || toWorld(LANDMARK_ANCHORS.bigBen.lat, LANDMARK_ANCHORS.bigBen.lon); // Elizabeth Tower
+    // Brussels has no Big Ben anchor. Prefer the cathedral as the local chime source,
+    // while retaining the historic anchor for compatibility with the original London build.
+    const chimeAnchor = LANDMARK_ANCHORS.bigBen || LANDMARK_ANCHORS.cathedral || LANDMARK_ANCHORS.grandPlace;
+    this.bigBen = opts.bigBen || (chimeAnchor ? toWorld(chimeAnchor.lat, chimeAnchor.lon) : { x: 0, z: 0 });
     this.weather = 'clear';
     if (opts.lighting) {
       this.weather = opts.lighting.weather || 'clear';
