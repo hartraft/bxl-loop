@@ -32,3 +32,13 @@ testCase('initial play-area bounds are ordered and central anchors are inside', 
     assert.ok(p.z >= BRUSSELS_WORLD_BOUNDS.minZ && p.z <= BRUSSELS_WORLD_BOUNDS.maxZ, id + ' latitude');
   }
 });
+
+
+testCase('Koekelberg Basilica is inside the initial play area while the Atomium is outside', () => {
+  const basilica = brusselsToWorld(BRUSSELS_LANDMARK_ANCHORS.koekelbergBasilica.lat, BRUSSELS_LANDMARK_ANCHORS.koekelbergBasilica.lon);
+  const atomium = brusselsToWorld(BRUSSELS_LANDMARK_ANCHORS.atomium.lat, BRUSSELS_LANDMARK_ANCHORS.atomium.lon);
+  assert.ok(basilica.x >= BRUSSELS_WORLD_BOUNDS.minX && basilica.x <= BRUSSELS_WORLD_BOUNDS.maxX);
+  assert.ok(basilica.z >= BRUSSELS_WORLD_BOUNDS.minZ && basilica.z <= BRUSSELS_WORLD_BOUNDS.maxZ);
+  assert.ok(atomium.x < BRUSSELS_WORLD_BOUNDS.minX || atomium.x > BRUSSELS_WORLD_BOUNDS.maxX ||
+    atomium.z < BRUSSELS_WORLD_BOUNDS.minZ || atomium.z > BRUSSELS_WORLD_BOUNDS.maxZ);
+});
