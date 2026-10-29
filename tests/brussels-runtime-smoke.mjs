@@ -47,6 +47,16 @@ assert.ok(startLane && finishLane, 'GPS should find drivable lanes near Grand-Pl
 assert.ok(route && route.length > 100, 'GPS routing should connect Grand-Place to a reachable surface street near Cinquantenaire');
 const snapDistance = Math.hypot(route.points[route.points.length - 2] - finish.x, route.points[route.points.length - 1] - finish.z);
 assert.ok(snapDistance <= 150, `GPS route endpoint should stay near Cinquantenaire (snapped ${snapDistance.toFixed(1)} m)`);
+const landmarkRoutes = [];
+for (const [id, target] of Object.entries(city.TELEPORT_LOCATIONS)) {
+  if (id === 'grandPlace') continue;
+  const candidateRoute = network.route(start, target, {
+    heading: start.heading,
+    targetHeading: Math.atan2(target.x - start.x, target.z - start.z)
+  });
+  assert.ok(candidateRoute && candidateRoute.length > 30, `GPS should route from Grand-Place to ${id}`);
+  landmarkRoutes.push({ id, metres: Math.round(candidateRoute.length) });
+}
 console.log(JSON.stringify({
   status: 'ok',
   trafficSide: roads.TRAFFIC_SIDE,
@@ -56,5 +66,6 @@ console.log(JSON.stringify({
   links: network.stats.links,
   routeMetres: Math.round(route.length),
   routeSteps: route.steps.length,
-  destinationSnapMetres: Math.round(snapDistance)
+  destinationSnapMetres: Math.round(snapDistance),
+  landmarkRoutes
 }, null, 2));
