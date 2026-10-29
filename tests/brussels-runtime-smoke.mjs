@@ -26,7 +26,23 @@ const start = city.TELEPORT_LOCATIONS.grandPlace, finish = city.TELEPORT_LOCATIO
 const startLane = network.nearestLane(start.x, start.z, { maxDist: 150 });
 const finishLane = network.nearestLane(finish.x, finish.z, { maxDist: 150 });
 const route = network.route(start, finish, { heading: start.heading });
-if (!route) console.error(JSON.stringify({ stats: network.stats, start, finish, startLane: startLane && { x: startLane.x, z: startLane.z, road: startLane.lane.link.name }, finishLane: finishLane && { x: finishLane.x, z: finishLane.z, road: finishLane.lane.link.name } }, null, 2));
+let reachableLinks = 0, goalReachable = false, reverseGoalReachable = false;
+if (startLane) {
+  const seen = new Set([startLane.lane.link]), stack = [startLane.lane.link];
+  while (stack.length) {
+    const link = stack.pop();
+    reachableLinks++;
+    if (link === finishLane?.lane.link) goalReachable = true;
+    if (link === finishLane?.lane.link?.reverse) reverseGoalReachable = true;
+    for (const next of link.succ || []) if (!seen.has(next)) { seen.add(next); stack.push(next); }
+  }
+}
+if (!route) console.error(JSON.stringify({
+  stats: network.stats, start, finish,
+  startLane: startLane && { x: startLane.x, z: startLane.z, road: startLane.lane.link.name, succ: startLane.lane.link.succ.length },
+  finishLane: finishLane && { x: finishLane.x, z: finishLane.z, road: finishLane.lane.link.name, reverse: !!finishLane.lane.link.reverse },
+  reachableLinks, goalReachable, reverseGoalReachable
+}, null, 2));
 assert.ok(startLane && finishLane, 'GPS should find drivable lanes near Grand-Place and Cinquantenaire');
 assert.ok(route && route.length > 100, 'GPS routing should connect Grand-Place to Cinquantenaire');
 console.log(JSON.stringify({
