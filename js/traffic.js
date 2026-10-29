@@ -3,7 +3,7 @@ import { texture, uv, attribute, float, uniform } from 'three/tsl';
 import { GEO, WORLD, LONDON_LANDMARKS } from './city-config.js';
 import { buildLondonRoadNetwork, ASPECT_NAMES } from './road-network.js';
 import { createTrafficSim, VEHICLE_TYPES } from './traffic-sim.js';
-import { VEHICLE_FACTORIES, VEHICLE_UNIFORMS, CAR_COLOURS, getInstanceParts, createVehicleUniforms } from './london-vehicles.js';
+import { VEHICLE_FACTORIES, VEHICLE_UNIFORMS, CAR_COLOURS, getInstanceParts, createVehicleUniforms } from './brussels-base-vehicles.js';
 import { createBusPlanner, loadBusRoutes } from './life/bus-routes.js';
 const IS_BRUSSELS = typeof location !== 'undefined' && new URLSearchParams(location.search).get('city') === 'brussels';
 import { toWorld } from './geo-frame.js';
