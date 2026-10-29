@@ -25,7 +25,7 @@ assert.ok(network.stats.links > 10000, `expected connected road graph, got ${net
 const start = city.TELEPORT_LOCATIONS.grandPlace, finish = city.TELEPORT_LOCATIONS.cinquantenaire;
 const startLane = network.nearestLane(start.x, start.z, { maxDist: 150 });
 const finishLane = network.nearestLane(finish.x, finish.z, { maxDist: 150 });
-const route = network.route(start, finish, { heading: start.heading });
+const route = network.route(start, finish, { heading: start.heading, targetHeading: Math.atan2(finish.x - start.x, finish.z - start.z) });
 let reachableLinks = 0, goalReachable = false, reverseGoalReachable = false;
 if (startLane) {
   const seen = new Set([startLane.lane.link]), stack = [startLane.lane.link];
