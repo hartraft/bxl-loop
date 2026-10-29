@@ -82,7 +82,7 @@ function collectJavaScriptFiles(directory) {
   for (const item of fs.readdirSync(directory, { withFileTypes: true })) {
     const full = path.join(directory, item.name);
     if (item.isDirectory()) files.push(...collectJavaScriptFiles(full));
-    else if (item.isFile() && /\\.m?js$/.test(item.name)) files.push(full);
+    else if (item.isFile() && /\.m?js$/.test(item.name)) files.push(full);
   }
   return files;
 }
