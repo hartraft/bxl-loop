@@ -23,6 +23,7 @@ import { WORLD, LONDON_LANDMARKS, getLocationLabel, isTypingInField, WORLD_BOUND
 import { toWorld } from './geo-frame.js';
 
 const FONT = 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, sans-serif';
+const IS_BRUSSELS = typeof location !== 'undefined' && new URLSearchParams(location.search).get('city') === 'brussels';
 const MIN_ZOOM = 0.06; // full map, CSS px per metre (all of Zone 1)
 const MAX_ZOOM = 6.0;
 const RADAR_SCALE = 0.62; // radar CSS px per metre at street level (~460 m across)
@@ -806,7 +807,10 @@ class LondonMapSystem {
     const compass = document.querySelector('.map-compass');
     if (compass) compass.title = 'North is up';
     const fit = document.getElementById('map-view-all');
-    if (fit) { fit.title = 'All of Zone 1 (Paddington to Tower Bridge)'; fit.setAttribute('aria-label', 'Fit all of central London'); }
+    if (fit) {
+      fit.title = IS_BRUSSELS ? 'All of central Brussels' : 'All of Zone 1 (Paddington to Tower Bridge)';
+      fit.setAttribute('aria-label', IS_BRUSSELS ? 'Fit all of central Brussels' : 'Fit all of central London');
+    }
     const legend = document.querySelector('.fullmap-legend');
     if (legend) {
       const item = (cls, label, style) => {
