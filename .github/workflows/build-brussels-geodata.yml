@@ -1,0 +1,38 @@
+name: Build Brussels geodata
+
+on:
+  workflow_dispatch:
+  workflow_call:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feat/brussels-world-port
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Download Belgium OpenStreetMap extract
+        run: |
+          mkdir -p tools/data
+          curl --fail --location --retry 3 --retry-delay 2             https://download.geofabrik.de/europe/belgium-latest.osm.pbf             --output tools/data/belgium-latest.osm.pbf
+          ls -lh tools/data/belgium-latest.osm.pbf
+      - name: Extract and bake central Brussels
+        run: node --max-old-space-size=6144 tools/build-brussels-geodata.mjs
+      - name: Validate generated assets
+        run: node tools/validate-brussels-geodata.mjs data/brussels-build
+      - name: Upload generated Brussels data for review
+        uses: actions/upload-artifact@v4
+        with:
+          name: brussels-geodata-${{ github.run_number }}
+          path: |
+            data/brussels-build/brx-geo.json
+            data/brussels-build/brx-buildings.bin
+          if-no-files-found: error
+          retention-days: 7
