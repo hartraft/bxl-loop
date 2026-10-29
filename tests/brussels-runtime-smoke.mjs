@@ -5,7 +5,7 @@ process.env.CITY = 'brussels';
 globalThis.location = { search: '?city=brussels' };
 
 const [{ GEO }, city, frame, roads] = await Promise.all([
-  import('../js/ldn-geodata.js'),
+  import('../js/brx-geodata.js'),
   import('../js/city-config.js'),
   import('../js/geo-frame.js'),
   import('../js/road-network.js')

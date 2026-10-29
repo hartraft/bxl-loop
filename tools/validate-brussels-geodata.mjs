@@ -30,7 +30,7 @@ const zoneIds = new Set(geo.landmarkZones.map((z) => z[0]));
 for (const id of ['grandPlace', 'mannekenPis', 'montDesArts', 'royalPalace', 'cathedral', 'palaisDeJustice', 'cinquantenaire', 'europeanParliament', 'koekelbergBasilica']) {
   if (!zoneIds.has(id)) fail(`missing landmark zone ${id}`);
 }
-if (bin.toString('ascii', 0, 4) !== 'LDNB') fail('building binary has unexpected magic');
+if (bin.toString('ascii', 0, 4) !== 'BRXB') fail('building binary has unexpected magic');
 const count = bin.readUInt32LE(8), nPts = bin.readUInt32LE(12), nSections = bin.readUInt32LE(16);
 if (count < 100 || nPts < count * 3) fail(`suspicious building counts: ${count} buildings / ${nPts} points`);
 if (nSections !== 11) fail(`unexpected binary section count ${nSections}`);
