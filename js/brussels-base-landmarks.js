@@ -1,16 +1,16 @@
-// js/london-landmarks.js — London Loop landmark models (Workstream B)
+// js/brussels-base-landmarks.js — Brussels Loop landmark models (Workstream B)
 //
-//   import { buildLondonLandmarks } from './london-landmarks.js';
-//   const lm = buildLondonLandmarks(scene, { world, uniforms: cityUniforms });
+//   import { buildBrusselsLandmarks } from './brussels-base-landmarks.js';
+//   const lm = buildBrusselsLandmarks(scene, { world, uniforms: cityUniforms });
 //   // each frame: lm.update(dt, timeOfDayHours)
 //
 // Returns { group, colliders, update(dt, timeOfDay), zones, landmarks, towerBridge, setNight(v) }.
-// Every landmark is one child group of `group` (name 'LondonLandmarks'), placed at its real position & orientation
+// Every landmark is one child group of `group` (name 'BrusselsLandmarks'), placed at its real position & orientation
 // in the geo-frame (1 unit = 1 m, +x east, +z south). Static parts are merged per material (a handful of draw calls
 // per landmark); animated parts (Eye wheel + capsules, bascules, fountains, flags, LED screens) are separate meshes.
-import { LM, linkCityUniforms, hasCityUniforms, londonTime } from './landmarks/common.js';
+import { LM, linkCityUniforms, hasCityUniforms, brusselsTime } from './landmarks/common.js';
 import { buildWestminster } from './landmarks/westminster.js';
-import { buildLondonEye } from './landmarks/london-eye.js';
+import { buildBrusselsEye } from './landmarks/brussels-eye.js';
 import { buildTowerBridge } from './landmarks/tower-bridge.js';
 import { buildShard } from './landmarks/shard.js';
 import { buildStPauls } from './landmarks/st-pauls.js';
@@ -24,7 +24,7 @@ import { buildBrusselsLandmarks } from './brussels-landmarks.js';
 
 export const LANDMARK_BUILDERS = {
   westminster: buildWestminster, // Elizabeth Tower (Big Ben) + Palace of Westminster
-  londonEye: buildLondonEye,
+  brusselsEye: buildBrusselsEye,
   towerBridge: buildTowerBridge,
   shard: buildShard,
   stPauls: buildStPauls,
@@ -35,7 +35,7 @@ export const LANDMARK_BUILDERS = {
   battersea: buildBattersea
 };
 /** aliases accepted by `only` / the sandbox */
-export const LANDMARK_ALIASES = { bigBen: 'westminster', parliament: 'westminster', eye: 'londonEye', stPaul: 'stPauls', buckingham: 'buckinghamPalace', trafalgar: 'trafalgarSquare', nelson: 'trafalgarSquare', piccadilly: 'piccadillyCircus', eros: 'piccadillyCircus', batterseaPowerStation: 'battersea' };
+export const LANDMARK_ALIASES = { bigBen: 'westminster', parliament: 'westminster', eye: 'brusselsEye', stPaul: 'stPauls', buckingham: 'buckinghamPalace', trafalgar: 'trafalgarSquare', nelson: 'trafalgarSquare', piccadilly: 'piccadillyCircus', eros: 'piccadillyCircus', batterseaPowerStation: 'battersea' };
 
 /**
  * @param {THREE.Scene} scene
@@ -45,14 +45,14 @@ export const LANDMARK_ALIASES = { bigBen: 'westminster', parliament: 'westminste
  *              reflections follow the lighting presets automatically
  *   only     — subset of landmark ids to build (sandbox)
  */
-export function buildLondonLandmarks(scene, opts = {}) {
+export function buildBrusselsLandmarks(scene, opts = {}) {
   if (typeof location !== 'undefined' && new URLSearchParams(location.search).get('city') === 'brussels') {
     return buildBrusselsLandmarks(scene, opts);
   }
   const { world = null, uniforms = null, only = null } = opts;
   linkCityUniforms(uniforms);
   const group = new THREE.Group();
-  group.name = 'LondonLandmarks';
+  group.name = 'BrusselsLandmarks';
   const colliders = [];
   const zones = [];
   const landmarks = {};
@@ -81,7 +81,7 @@ export function buildLondonLandmarks(scene, opts = {}) {
     clockTimer += dt;
     if (clockTimer > 1) {
       clockTimer = 0;
-      const { h, m, s } = londonTime();
+      const { h, m, s } = brusselsTime();
       LM.uClockM.value = ((m + s / 60) / 60) * Math.PI * 2;
       LM.uClockH.value = (((h % 12) + m / 60) / 12) * Math.PI * 2;
     }

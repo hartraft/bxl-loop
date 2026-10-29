@@ -1,7 +1,7 @@
-// js/london-config.js — London replacement of the NY js/city-config.js for the game shell (main.js, map, HUD).
-// Everything here is derived from the baked geodata (js/ldn-geodata.js) and the world frame (js/geo-frame.js).
-import { GEO } from './ldn-geodata.js';
-import { createWorldQueries } from './london-world.js';
+// js/brussels-base-config.js — Brussels replacement of the NY js/city-config.js for the game shell (main.js, map, HUD).
+// Everything here is derived from the baked geodata (js/bxl-geodata.js) and the world frame (js/geo-frame.js).
+import { GEO } from './bxl-geodata.js';
+import { createWorldQueries } from './brussels-base-world.js';
 import { WORLD_BOUNDS, LANDMARK_ANCHORS, toWorld } from './geo-frame.js';
 
 export { WORLD_BOUNDS, GEO };
@@ -18,16 +18,16 @@ const at = (lat, lon) => toWorld(lat, lon);
 // id, name, short, lat, lon, district, radius (m) within which the HUD says you're "at" it
 const LM = [
   ['bigBen', 'Big Ben & Houses of Parliament', 'Big Ben', LANDMARK_ANCHORS.bigBen, 'Westminster', 90],
-  ['londonEye', 'London Eye', 'London Eye', LANDMARK_ANCHORS.londonEye, 'South Bank', 90],
-  ['towerBridge', 'Tower Bridge', 'Tower Bridge', LANDMARK_ANCHORS.towerBridge, 'Pool of London', 130],
-  ['shard', 'The Shard', 'The Shard', LANDMARK_ANCHORS.shard, 'London Bridge', 70],
+  ['brusselsEye', 'Brussels Eye', 'Brussels Eye', LANDMARK_ANCHORS.brusselsEye, 'South Bank', 90],
+  ['towerBridge', 'Tower Bridge', 'Tower Bridge', LANDMARK_ANCHORS.towerBridge, 'Pool of Brussels', 130],
+  ['shard', 'The Shard', 'The Shard', LANDMARK_ANCHORS.shard, 'Brussels Bridge', 70],
   ['stPauls', "St Paul's Cathedral", "St Paul's", LANDMARK_ANCHORS.stPauls, 'The City', 110],
   ['gherkin', 'The Gherkin (30 St Mary Axe)', 'The Gherkin', LANDMARK_ANCHORS.gherkin, 'The City', 60],
   ['buckinghamPalace', 'Buckingham Palace', 'Buckingham Pal.', LANDMARK_ANCHORS.buckinghamPalace, 'St James\'s', 140],
   ['trafalgarSquare', "Trafalgar Square & Nelson's Column", 'Trafalgar Sq', LANDMARK_ANCHORS.trafalgarSquare, 'Charing Cross', 90],
   ['piccadillyCircus', 'Piccadilly Circus', 'Piccadilly Circus', LANDMARK_ANCHORS.piccadillyCircus, 'West End', 70],
   ['batterseaPowerStation', 'Battersea Power Station', 'Battersea PS', LANDMARK_ANCHORS.batterseaPowerStation, 'Nine Elms', 150],
-  ['towerOfLondon', 'Tower of London', 'Tower of London', { lat: 51.50810, lon: -0.07594 }, 'Tower Hill', 140],
+  ['towerOfBrussels', 'Tower of Brussels', 'Tower of Brussels', { lat: 51.50810, lon: -0.07594 }, 'Tower Hill', 140],
   ['westminsterAbbey', 'Westminster Abbey', 'Westminster Abbey', { lat: 51.49929, lon: -0.12731 }, 'Westminster', 80],
   ['britishMuseum', 'British Museum', 'British Museum', { lat: 51.51943, lon: -0.12698 }, 'Bloomsbury', 110],
   ['coventGarden', 'Covent Garden Market', 'Covent Garden', { lat: 51.51197, lon: -0.12276 }, 'Covent Garden', 80],
@@ -48,9 +48,9 @@ export const LONDON_LANDMARKS = LM.map(([id, name, short, a, district, r]) => {
 // [id, name, sub, lat, lon of the street spot, street to stand on (OSM name), lat/lon to face (or null: along the road)]
 const TP = [
   ['bigBen', 'Big Ben', 'Bridge Street, Westminster', 51.50110, -0.12490, 'Bridge Street', LANDMARK_ANCHORS.bigBen],
-  ['londonEye', 'London Eye', 'Belvedere Road, South Bank', 51.50290, -0.11740, 'Belvedere Road', LANDMARK_ANCHORS.londonEye],
+  ['brusselsEye', 'Brussels Eye', 'Belvedere Road, South Bank', 51.50290, -0.11740, 'Belvedere Road', LANDMARK_ANCHORS.brusselsEye],
   ['towerBridge', 'Tower Bridge', 'Tower Bridge Approach', 51.50800, -0.07400, 'Tower Bridge Approach', LANDMARK_ANCHORS.towerBridge],
-  ['shard', 'The Shard', 'St Thomas Street, London Bridge', 51.50440, -0.08720, 'St Thomas Street', LANDMARK_ANCHORS.shard],
+  ['shard', 'The Shard', 'St Thomas Street, Brussels Bridge', 51.50440, -0.08720, 'St Thomas Street', LANDMARK_ANCHORS.shard],
   ['stPauls', "St Paul's Cathedral", 'Ludgate Hill', 51.51380, -0.10200, 'Ludgate Hill', LANDMARK_ANCHORS.stPauls],
   ['gherkin', 'The Gherkin', 'St Mary Axe, The City', 51.51530, -0.07990, 'St Mary Axe', LANDMARK_ANCHORS.gherkin],
   ['buckinghamPalace', 'Buckingham Palace', 'The Mall', 51.50300, -0.13800, 'The Mall', LANDMARK_ANCHORS.buckinghamPalace],
@@ -126,7 +126,7 @@ export function getLocationLabel(x, z) {
     const p = inside(NAMED_PARKS, x, z);
     const street = WORLD.streetName(x, z);
     if (p && !(street && WORLD.nearestRoad(x, z, { kinds: 'drive', maxDist: 12 }))) primary = p.name;
-    else primary = street || district || 'London';
+    else primary = street || district || 'Brussels';
   }
   if (secondary === primary) secondary = '';
   return { primary, secondary, text: secondary ? `${primary} · ${secondary}` : primary };

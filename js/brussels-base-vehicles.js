@@ -2,7 +2,7 @@ import * as THREE from 'three/webgpu';
 import { attribute, uniform, float, vec3, clamp, abs, mix, texture } from 'three/tsl';
 import { mergeGeometries, toCreasedNormals } from 'three/addons/utils/BufferGeometryUtils.js';
 
-// js/london-vehicles.js — procedural London vehicle models (Workstream C).
+// js/brussels-base-vehicles.js — procedural Brussels vehicle models (Workstream C).
 //
 // Every factory returns a THREE.Group in real metres: front = +z, up = +y, ground at y = 0, origin midway between the
 // axles (boat: origin at the waterline, midships). Right-hand drive: the driver sits on the right, i.e. at -x
@@ -385,7 +385,7 @@ function loft(sections, segs = 32, { eTop = 2.5, eBot = 2.5, capStart = true, ca
 }
 
 // ---------------------------------------------------------------------------------------------------------------
-// Decal atlas (one shared canvas texture: number plates, TAXI, RideLDN sticker, POLICE, Battenburg, RIVER BUS)
+// Decal atlas (one shared canvas texture: number plates, TAXI, RideBXL sticker, POLICE, Battenburg, RIVER BUS)
 // ---------------------------------------------------------------------------------------------------------------
 const ATLAS_W = 2048, ATLAS_H = 1024;
 const ATLAS = {
@@ -450,7 +450,7 @@ function getAtlasTexture() {
     ctx.fillStyle = '#111';
     drawFit(ctx, 'TAXI', x + 8, y + 4, w - 16, h - 8);
   }
-  // RideLDN windscreen sticker (our fictional app)
+  // RideBXL windscreen sticker (our fictional app)
   {
     const [x, y, w, h] = ATLAS.ride;
     ctx.fillStyle = '#0d0f12';
@@ -465,12 +465,12 @@ function getAtlasTexture() {
     ctx.arc(x + 42, y + h / 2, 8, 0, Math.PI * 2);
     ctx.fill();
     ctx.fillStyle = '#ffffff';
-    drawFit(ctx, 'RideLDN', x + 70, y + 30, w - 84, h - 60);
+    drawFit(ctx, 'RideBXL', x + 70, y + 30, w - 84, h - 60);
   }
   {
     const [x, y, w, h] = ATLAS.rideDoor;
     ctx.fillStyle = '#e9eef2';
-    drawFit(ctx, 'RideLDN · private hire', x + 8, y + 30, w - 16, h - 60, null, '700');
+    drawFit(ctx, 'RideBXL · private hire', x + 8, y + 30, w - 16, h - 60, null, '700');
   }
   {
     const [x, y, w, h] = ATLAS.policeNavy;
@@ -502,7 +502,7 @@ function getAtlasTexture() {
   {
     const [x, y, w, h] = ATLAS.heliReg;
     ctx.fillStyle = '#15255a';
-    drawFit(ctx, 'G-LDNP', x + 10, y + 4, w - 20, h - 8);
+    drawFit(ctx, 'G-BXLP', x + 10, y + 4, w - 20, h - 8);
   }
   {
     const [x, y, w, h] = ATLAS.cabPlate;
@@ -654,7 +654,7 @@ function finish(group, P, D, spec, uniforms, extraDecalTex = null, X = null) {
 }
 
 // ---------------------------------------------------------------------------------------------------------------
-// Car shells (shared by the cab, the RideLDN car and the generic traffic cars)
+// Car shells (shared by the cab, the RideBXL car and the generic traffic cars)
 // ---------------------------------------------------------------------------------------------------------------
 /**
  * cfg: { L, W, lowerTop:[[z,y]] (rear bottom → tail → belt/bonnet → nose → front bottom), sill, arches:[{z,r,cy}],
@@ -843,11 +843,11 @@ export function blackCab({ colour = 0x0b0c0e, uniforms = VEHICLE_UNIFORMS, plate
 }
 
 // ---------------------------------------------------------------------------------------------------------------
-// 2. RideLDN car (generic hybrid liftback, Prius-ish wedge with a Kamm tail; "RideLDN" sticker in the windscreen)
+// 2. RideBXL car (generic hybrid liftback, Prius-ish wedge with a Kamm tail; "RideBXL" sticker in the windscreen)
 // ---------------------------------------------------------------------------------------------------------------
 export function rideCar({ colour = 0x1d1f23, uniforms = VEHICLE_UNIFORMS, plateIndex = 5 } = {}) {
   const group = new THREE.Group();
-  group.name = 'RideLDNCar';
+  group.name = 'RideBXLCar';
   const P = new Parts(), D = new Parts();
   const L = 4.54, W = 1.78, zf = 2.27, zr = -2.27, R = 0.31, axF = 1.42, axR = -1.28;
   const cfg = {
@@ -884,7 +884,7 @@ export function rideCar({ colour = 0x1d1f23, uniforms = VEHICLE_UNIFORMS, plateI
     belt: 0.92, seams: [0.85, -0.2, -1.22], handles: [0.15, -1.0], mirror: [0.75, 0.97],
     frontBumper: null, rearBumper: [0.3, 0.45, -2.24, 1.6], frontPlate: [0, 0.52, 2.27], rearPlate: [0, 0.66, -2.25], plateIndex
   });
-  // RideLDN sticker on the windscreen, lower nearside corner (+x), and a small one on the rear glass
+  // RideBXL sticker on the windscreen, lower nearside corner (+x), and a small one on the rear glass
   const wsN = [0.5, 1.0];
   const nl = Math.hypot(...wsN);
   const ny = wsN[1] / nl, nz = wsN[0] / nl;

@@ -19,22 +19,22 @@
     }
   </script>
   <!-- Fetch the city modules in parallel before stylesheets; the module graph controls evaluation order. -->
-  <link rel="modulepreload" href="./js/ldn-geodata.js" />
+  <link rel="modulepreload" href="./js/bxl-geodata.js" />
   <link rel="modulepreload" href="./js/city-config.js" />
   <link rel="modulepreload" href="./js/brussels-config.js" />
   <link rel="modulepreload" href="./js/brussels-frame.js" />
   <link rel="modulepreload" href="./js/brussels-landmarks.js" />
   <link rel="modulepreload" href="./js/geo-frame.js" />
-  <link rel="modulepreload" href="./js/london-world.js" />
-  <link rel="modulepreload" href="./js/london-config.js" />
+  <link rel="modulepreload" href="./js/brussels-base-world.js" />
+  <link rel="modulepreload" href="./js/brussels-base-config.js" />
   <link rel="modulepreload" href="./js/tsl-materials.js" />
   <link rel="modulepreload" href="./js/trees.js" />
-  <link rel="modulepreload" href="./js/london-vehicles.js" />
+  <link rel="modulepreload" href="./js/brussels-base-vehicles.js" />
   <link rel="modulepreload" href="./js/vehicle-lights.js" />
   <link rel="modulepreload" href="./js/pedestrians.js" />
   <link rel="modulepreload" href="./js/lighting.js" />
-  <link rel="modulepreload" href="./js/london-city.js" />
-  <link rel="modulepreload" href="./js/london-landmarks.js" />
+  <link rel="modulepreload" href="./js/brussels-base-city.js" />
+  <link rel="modulepreload" href="./js/brussels-base-landmarks.js" />
   <link rel="modulepreload" href="./js/street-details.js" />
   <link rel="modulepreload" href="./js/road-network.js" />
   <link rel="modulepreload" href="./js/road-paint.js" />
@@ -43,10 +43,10 @@
   <link rel="modulepreload" href="./js/touch-controls.js" />
   <link rel="modulepreload" href="./js/gamepad-controls.js" />
   <link rel="modulepreload" href="./js/cameras.js" />
-  <link rel="modulepreload" href="./js/london-map.js" />
-  <link rel="modulepreload" href="./js/london-ui.js" />
+  <link rel="modulepreload" href="./js/brussels-base-map.js" />
+  <link rel="modulepreload" href="./js/brussels-base-ui.js" />
   <link rel="modulepreload" href="./js/backend.js" />
-  <link rel="modulepreload" href="./js/rideldn.js" />
+  <link rel="modulepreload" href="./js/ridebxl.js" />
   <link rel="modulepreload" href="./js/scene-culling.js" />
   <link rel="modulepreload" href="./js/post-processing.js" />
   <link rel="modulepreload" href="./js/main.js" />
@@ -99,23 +99,23 @@
   <!-- Loading Screen -->
   <div id="loading-overlay" role="status" aria-live="polite">
     <div class="loader">
-      <span class="ldn-badge loader-bullet" aria-hidden="true">LDN</span>
-      <div class="loader-title">London Loop</div>
+      <span class="bxl-badge loader-bullet" aria-hidden="true">BXL</span>
+      <div class="loader-title">Brussels Loop</div>
       <div class="loader-track is-indeterminate" aria-hidden="true"><span id="loading-progress" class="loader-fill"></span></div>
       <div id="loading-status">Initializing WebGPURenderer &amp; TSL Shaders...</div>
     </div>
   </div>
 
   <!-- 3D WebGPU Viewport Container -->
-  <main id="canvas-container" aria-label="3D Interactive London Loop Viewport"></main>
+  <main id="canvas-container" aria-label="3D Interactive Brussels Loop Viewport"></main>
 
   <!-- Top-Left: Brand & Renderer Telemetry -->
   <header class="hud hud-top-left">
     <div class="panel brand">
-      <span class="ldn-badge" aria-hidden="true">LDN</span>
+      <span class="bxl-badge" aria-hidden="true">BXL</span>
       <div class="brand-titles">
         <div class="brand-heading">
-          <h1>London Loop</h1>
+          <h1>Brussels Loop</h1>
           <a class="repo-link" href="https://github.com/mrdoob/slop-newyork/" target="_blank" rel="noopener noreferrer" aria-label="Based on Slop New York by mrdoob (opens in a new tab)">after mrdoob <span aria-hidden="true">↗</span></a>
         </div>
         <div class="brand-subtitle">three.js · WebGPU · TSL · <span id="hud-fps" class="fps-ok">60</span> fps</div>
@@ -144,8 +144,8 @@
       <button id="btn-teleport" class="tool-btn" type="button" popovertarget="teleport-popover" title="Teleport the active player">
         <svg class="icon" aria-hidden="true"><use href="#i-pin"/></svg><span class="tool-label">Teleport</span><svg class="icon icon-sm" aria-hidden="true"><use href="#i-chevron-down"/></svg>
       </button>
-      <button id="btn-bus-driver" class="tool-btn" type="button" title="Bus driver: pick a London route [J]"><svg class="icon" aria-hidden="true"><use href="#i-bus"/></svg><span class="tool-label">Bus driver</span><kbd>J</kbd></button>
-      <button id="btn-open-map" class="tool-btn" type="button" title="London Street Atlas [M]">
+      <button id="btn-bus-driver" class="tool-btn" type="button" title="Bus driver: pick a Brussels route [J]"><svg class="icon" aria-hidden="true"><use href="#i-bus"/></svg><span class="tool-label">Bus driver</span><kbd>J</kbd></button>
+      <button id="btn-open-map" class="tool-btn" type="button" title="Brussels Street Atlas [M]">
         <svg class="icon" aria-hidden="true"><use href="#i-map"/></svg><span class="tool-label">Map</span><kbd>M</kbd>
       </button>
       <span class="toolbar-divider" aria-hidden="true"></span>
@@ -159,9 +159,9 @@
   <div id="teleport-popover" class="popover" popover data-side="below" data-anchor="hud-toolbar" aria-label="Teleport the active player">
     <div class="pop-title">Teleport to</div>
     <button id="tp-bigBen" class="pop-item tp-btn" data-teleport="bigBen" type="button"><span class="pop-name">Big Ben</span><span class="pop-sub">Bridge Street, Westminster</span></button>
-    <button id="tp-londonEye" class="pop-item tp-btn" data-teleport="londonEye" type="button"><span class="pop-name">London Eye</span><span class="pop-sub">Belvedere Road, South Bank</span></button>
+    <button id="tp-brusselsEye" class="pop-item tp-btn" data-teleport="brusselsEye" type="button"><span class="pop-name">Brussels Eye</span><span class="pop-sub">Belvedere Road, South Bank</span></button>
     <button id="tp-towerBridge" class="pop-item tp-btn" data-teleport="towerBridge" type="button"><span class="pop-name">Tower Bridge</span><span class="pop-sub">Tower Bridge Approach</span></button>
-    <button id="tp-shard" class="pop-item tp-btn" data-teleport="shard" type="button"><span class="pop-name">The Shard</span><span class="pop-sub">St Thomas Street, London Bridge</span></button>
+    <button id="tp-shard" class="pop-item tp-btn" data-teleport="shard" type="button"><span class="pop-name">The Shard</span><span class="pop-sub">St Thomas Street, Brussels Bridge</span></button>
     <button id="tp-stPauls" class="pop-item tp-btn" data-teleport="stPauls" type="button"><span class="pop-name">St Paul&#x27;s Cathedral</span><span class="pop-sub">Ludgate Hill</span></button>
     <button id="tp-gherkin" class="pop-item tp-btn" data-teleport="gherkin" type="button"><span class="pop-name">The Gherkin</span><span class="pop-sub">St Mary Axe, The City</span></button>
     <button id="tp-buckinghamPalace" class="pop-item tp-btn" data-teleport="buckinghamPalace" type="button"><span class="pop-name">Buckingham Palace</span><span class="pop-sub">The Mall</span></button>
@@ -180,7 +180,7 @@
   <!-- Bottom-Left: Street-Name Signs & Live GPS Radar Minimap -->
   <div class="hud hud-bottom-left">
     <div id="hud-location" class="location" aria-live="off"></div>
-    <aside id="minimap-card" class="panel radar" aria-label="Live London street radar" title="Open the London Street Atlas [M]">
+    <aside id="minimap-card" class="panel radar" aria-label="Live Brussels street radar" title="Open the Brussels Street Atlas [M]">
       <canvas id="minimap-canvas"></canvas>
       <span class="radar-north" aria-hidden="true">N</span>
       <kbd class="radar-key">M</kbd>
@@ -198,8 +198,8 @@
       <button id="mode-car" class="mode-btn active" data-mode="car" type="button" title="Black cab [2]">
         <svg class="icon" aria-hidden="true"><use href="#i-car"/></svg><span class="mode-label">Black cab</span><kbd>2</kbd>
       </button>
-      <button id="mode-ride" class="mode-btn" data-mode="ride" type="button" title="RideLDN car (ride-hail) [3]">
-        <svg class="icon" aria-hidden="true"><use href="#i-ride"/></svg><span class="mode-label">RideLDN</span><kbd>3</kbd>
+      <button id="mode-ride" class="mode-btn" data-mode="ride" type="button" title="RideBXL car (ride-hail) [3]">
+        <svg class="icon" aria-hidden="true"><use href="#i-ride"/></svg><span class="mode-label">RideBXL</span><kbd>3</kbd>
       </button>
       <button id="mode-cyclist" class="mode-btn" data-mode="cyclist" type="button" title="Hire bike [4]">
         <svg class="icon" aria-hidden="true"><use href="#i-bike"/></svg><span class="mode-label">Cycle</span><kbd>4</kbd>
@@ -210,7 +210,7 @@
       <button id="mode-boat" class="mode-btn" data-mode="boat" type="button" title="Thames river bus [6]">
         <svg class="icon" aria-hidden="true"><use href="#i-boat"/></svg><span class="mode-label">Boat</span><kbd>6</kbd>
       </button>
-      <button id="mode-bus" class="mode-btn" data-mode="bus" type="button" title="London bus [N]">
+      <button id="mode-bus" class="mode-btn" data-mode="bus" type="button" title="Brussels bus [N]">
         <svg class="icon" aria-hidden="true"><use href="#i-bus"/></svg><span class="mode-label">Bus</span><kbd>N</kbd>
       </button>
     </nav>
@@ -264,34 +264,34 @@
     </div>
   </section>
 
-  <!-- All Cameras: 3 Follow Cameras + 8 London Vantage Cameras + Auto-Director Drone -->
+  <!-- All Cameras: 3 Follow Cameras + 8 Brussels Vantage Cameras + Auto-Director Drone -->
   <div id="camera-popover" class="popover" popover data-side="above" data-anchor="hud-cluster" data-align="hud-cluster" aria-label="Multiple Camera Angles">
     <div class="pop-title">Follow</div>
     <button id="cam-chase" class="pop-item cam-btn active" data-camera="chase" type="button"><span class="pop-name">3rd-Person Chase</span><kbd>7</kbd></button>
     <button id="cam-action" class="pop-item cam-btn" data-camera="action" type="button"><span class="pop-name">Low-Angle Action</span><kbd>8</kbd></button>
     <button id="cam-pov" class="pop-item cam-btn" data-camera="pov" type="button"><span class="pop-name">First-Person / Cockpit</span><kbd>9</kbd></button>
     <button id="cam-westminster" class="pop-item cam-btn" data-camera="westminster" type="button"><span class="pop-name">Westminster Bridge &amp; Big Ben</span><kbd>0</kbd></button>
-    <button id="cam-southBank" class="pop-item cam-btn" data-camera="southBank" type="button"><span class="pop-name">South Bank &amp; London Eye</span></button>
+    <button id="cam-southBank" class="pop-item cam-btn" data-camera="southBank" type="button"><span class="pop-name">South Bank &amp; Brussels Eye</span></button>
     <button id="cam-trafalgar" class="pop-item cam-btn" data-camera="trafalgar" type="button"><span class="pop-name">Trafalgar Square &amp; Nelson</span></button>
     <button id="cam-piccadilly" class="pop-item cam-btn" data-camera="piccadilly" type="button"><span class="pop-name">Piccadilly Circus Lights</span></button>
     <button id="cam-stPauls" class="pop-item cam-btn" data-camera="stPauls" type="button"><span class="pop-name">Millennium Bridge to St Paul&#39;s</span></button>
-    <button id="cam-shard" class="pop-item cam-btn" data-camera="shard" type="button"><span class="pop-name">The Shard from London Bridge</span></button>
+    <button id="cam-shard" class="pop-item cam-btn" data-camera="shard" type="button"><span class="pop-name">The Shard from Brussels Bridge</span></button>
     <button id="cam-towerBridge" class="pop-item cam-btn" data-camera="towerBridge" type="button"><span class="pop-name">Tower Bridge on the Thames</span></button>
     <button id="cam-waterfront" class="pop-item cam-btn" data-camera="waterfront" type="button"><span class="pop-name">Thames &amp; City Skyline</span></button>
     <button id="cam-drone" class="pop-item cam-btn" data-camera="drone" type="button"><span class="pop-name">Auto-Director Aerial</span></button>
   </div>
 
-  <!-- Full-Screen London Street Atlas ([M]) -->
-  <section id="fullmap-modal" class="fullmap-modal hidden" role="dialog" aria-modal="true" aria-label="London Street Atlas">
+  <!-- Full-Screen Brussels Street Atlas ([M]) -->
+  <section id="fullmap-modal" class="fullmap-modal hidden" role="dialog" aria-modal="true" aria-label="Brussels Street Atlas">
     <div id="fullmap-canvas-wrap" class="fullmap-canvas-wrap">
       <canvas id="fullmap-canvas"></canvas>
     </div>
 
     <div class="fullmap-header">
       <div class="panel fullmap-title">
-        <span class="ldn-badge" aria-hidden="true">LDN</span>
+        <span class="bxl-badge" aria-hidden="true">BXL</span>
         <div>
-          <h2>London Street Atlas</h2>
+          <h2>Brussels Street Atlas</h2>
           <p id="fullmap-player-info" class="fullmap-subtitle">You are at 5th Ave &amp; 35th St</p>
         </div>
       </div>

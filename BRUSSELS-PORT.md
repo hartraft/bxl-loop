@@ -1,10 +1,10 @@
 # Brussels Loop port plan
 
-This repository is being adapted from the London Loop codebase into a playable, 1:1-scale Brussels city.
+This repository is being adapted from the Brussels Loop codebase into a playable, 1:1-scale Brussels city.
 
 ## Current state
 
-The generated Brussels dataset is now validated and the runtime can be previewed with `?city=brussels`. The normal local URL still defaults to London unless that query is present; the GitHub Pages deploy workflow injects a redirect so the deployed site defaults to Brussels.
+The generated Brussels dataset is now validated and the runtime can be previewed with `?city=brussels`. The normal local URL still defaults to Brussels unless that query is present; the GitHub Pages deploy workflow injects a redirect so the deployed site defaults to Brussels.
 
 ## Work plan
 
@@ -16,14 +16,14 @@ The generated Brussels dataset is now validated and the runtime can be previewed
 - Added `js/brx-geodata.js`, a decoder/loader for the generated files using the existing city engine's data schema.
 - Added `js/city-config.js` and `js/brussels-config.js` so the same runtime selects Brussels data, landmark anchors, street labels and teleports from `?city=brussels`.
 - Added procedural models for the Grand-Place, Manneken Pis, Mont des Arts, Royal Palace, Cathedral, Palace of Justice, Cinquantenaire, European Parliament and Koekelberg Basilica.
-- Added right-hand traffic lane offsets/turn-lane preference and surface-street snapping for Brussels teleports. London bus route jobs and Thames boat mode are disabled in Brussels rather than sending players to London-only routes.
+- Added right-hand traffic lane offsets/turn-lane preference and surface-street snapping for Brussels teleports. Brussels bus route jobs and Thames boat mode are disabled in Brussels rather than sending players to Brussels-only routes.
 - Added visible OpenStreetMap contributor attribution and ODbL notice to the UI.
 - Added `.github/workflows/deploy-brussels.yml`: builds/validates the data, smoke-tests routing, stages the static site, defaults Pages to Brussels and deploys with GitHub Pages Actions.
-- The existing `js/geo-frame.js` keeps London as the default; `CITY=brussels` selects Brussels only for the Node-side bake process.
+- The existing `js/geo-frame.js` keeps Brussels as the default; `CITY=brussels` selects Brussels only for the Node-side bake process.
 - Local build: `mkdir -p tools/data && curl -fL https://download.geofabrik.de/europe/belgium-latest.osm.pbf -o tools/data/belgium-latest.osm.pbf && node --max-old-space-size=6144 tools/build-brussels-geodata.mjs`.
 - Or run the manual GitHub Actions workflow **Build Brussels geodata** from the Actions tab; it downloads the PBF, bakes and validates the map, then uploads a 7-day artifact for review.
 - The Belgium PBF is large; the extraction reads the PBF and can require substantial memory. Pass an existing PBF and output directory as arguments to the build script if needed.
-- Generate fresh road, building, water, park, rail/tram and landmark-zone data. Never ship the London baked files under a Brussels label.
+- Generate fresh road, building, water, park, rail/tram and landmark-zone data. Never ship the Brussels baked files under a Brussels label.
 - Preserve OSM attribution and ODbL requirements.
 
 ### 2. Gameplay and local identity
@@ -48,7 +48,7 @@ The generated Brussels dataset is now validated and the runtime can be previewed
 
 ## Repository notes
 - Feature branch: `feat/brussels-world-port`
-- Tracking issue: [#3 — Port London Loop into a playable Brussels city](https://github.com/hartraft/bxl-loop/issues/3)
+- Tracking issue: [#3 — Port Brussels Loop into a playable Brussels city](https://github.com/hartraft/bxl-loop/issues/3)
 - Latest end-to-end data/runtime smoke test passed: [run 40870016352](https://github.com/hartraft/bxl-loop/actions/runs/40870016352). It validated 44,253 roads, 115,635 buildings, 268 water features including 100 canal polygons, right-hand traffic, 34,567 road links, and a 3.736 km GPS route from Grand-Place toward Cinquantenaire.
 - The data workflow uploads generated files as a 7-day artifact for review. The Pages workflow builds its own fresh data so the generated binary assets need not be committed to Git. Its final live-URL checks are ready, but the first deployment is blocked until Pages is enabled in repository settings.
 - Browser visual testing is still outstanding. The Node runtime smoke test covers data loading and GPS routing, but a human visual check should confirm landmark scale, lighting, spawn placement and traffic flow after Pages deployment.

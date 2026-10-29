@@ -1,9 +1,9 @@
-// js/london-world.js — fast world queries over the decoded London geodata (js/ldn-geodata.js GEO).
+// js/brussels-base-world.js — fast world queries over the decoded Brussels geodata (js/bxl-geodata.js GEO).
 //
-//   import { GEO } from './ldn-geodata.js';
-//   import { createWorldQueries } from './london-world.js';
-//   const world = createWorldQueries(GEO);   // ~100-200 ms (spatial hashes + 4 m water raster). js/london-config.js
-//                                            // already makes one: `import { WORLD } from './london-config.js'`.
+//   import { GEO } from './bxl-geodata.js';
+//   import { createWorldQueries } from './brussels-base-world.js';
+//   const world = createWorldQueries(GEO);   // ~100-200 ms (spatial hashes + 4 m water raster). js/brussels-base-config.js
+//                                            // already makes one: `import { WORLD } from './brussels-base-config.js'`.
 //
 // Headings follow the NY convention: heading 0 faces +z (south), PI/2 faces +x (east), PI faces north;
 // the unit direction of heading h is (sin h, cos h) in (x, z).
