@@ -178,7 +178,7 @@ export function buildBridgeOutlines(ctx) {
 
 // ---- landmark zones ---------------------------------------------------------------------------------------------
 // [zone id, anchor key, [[type, osm id, buffer m], ...], 'hull'?] — ids found in the 2026-10-20 extract; name fallback
-const ZONES = [
+const LONDON_ZONES = [
   ['bigBen', 'bigBen', [['way', 123557148, 2]], null, /^Elizabeth Tower$/],
   ['parliament', 'parliament', [['relation', 1567699, 1.5], ['way', 367642704, 1.5], ['way', 367642689, 1.5]], null, /^Palace of Westminster$/],
   ['londonEye', 'londonEye', [['way', 204068874, 4]], null, /London Eye$/],
@@ -191,6 +191,19 @@ const ZONES = [
   ['trafalgarSquare', 'trafalgarSquare', [['way', 150920358, 1], ['way', 153342445, 1], ['way', 969826222, 1]], 'hull', null],
   ['batterseaPowerStation', 'batterseaPowerStation', [['way', 4965216, 2]], null, /^Battersea Power Station$/]
 ];
+
+const BRUSSELS_ZONES = [
+  ['grandPlace', 'grandPlace', [], null, /Grand[- ]Place|Grote Markt/i],
+  ['mannekenPis', 'mannekenPis', [], null, /Manneken Pis/i],
+  ['montDesArts', 'montDesArts', [], null, /Mont des Arts|Kunstberg/i],
+  ['royalPalace', 'royalPalace', [], null, /Royal Palace|Koninklijk Paleis|Palais Royal/i],
+  ['cathedral', 'cathedral', [], null, /Cathedral of St Michael|Sint-Michiels|Saint-Michel/i],
+  ['palaisDeJustice', 'palaisDeJustice', [], null, /Palace of Justice|Justitiepaleis|Palais de Justice/i],
+  ['cinquantenaire', 'cinquantenaire', [], null, /Cinquantenaire|Jubelpark/i],
+  ['europeanParliament', 'europeanParliament', [], null, /European Parliament|Europees Parlement|Parlement européen/i],
+  ['koekelbergBasilica', 'koekelbergBasilica', [], null, /Basilica of the Sacred Heart|Koekelberg/i]
+];
+const ZONES = process.env.CITY === 'brussels' ? BRUSSELS_ZONES : LONDON_ZONES;
 
 export function buildLandmarkZones(ctx) {
   const { ways, relations, byName } = ctx;
