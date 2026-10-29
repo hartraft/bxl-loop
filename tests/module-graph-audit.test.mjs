@@ -13,11 +13,11 @@ const sourceFiles = new Set();
 
 function relativeImports(source) {
   const found = [];
-  const staticImport = /\\bimport\\s+(?:([\\s\\S]*?)\\s+from\\s*)?['"]([^'"]+)['"]\\s*;?/g;
+  const staticImport = /^[ \t]*import[ \t]+([\s\S]*?)\s+from\s*['"]([^'"]+)['"]\s*;?/gm;
   for (const match of source.matchAll(staticImport)) {
     if (match[2].startsWith('.')) found.push({ specifier: match[2], clause: match[1] || '' });
   }
-  const dynamicImport = /\\bimport\\s*\\(\\s*['"]([^'"]+)['"]\\s*\\)/g;
+  const dynamicImport = /\bimport\s*\(\s*['"]([^'"]+)['"]\s*\)/g;
   for (const match of source.matchAll(dynamicImport)) {
     if (match[1].startsWith('.')) found.push({ specifier: match[1], clause: '' });
   }
@@ -27,8 +27,8 @@ function relativeImports(source) {
 function parseNames(clause) {
   const open = clause.indexOf('{'), close = clause.indexOf('}');
   if (open < 0 || close < open) return [];
-  return clause.slice(open + 1, close).split(',').map((part) => part.trim().replace(/^type\\s+/, ''))
-    .filter(Boolean).map((part) => part.split(/\\s+as\\s+/)[0].trim()).filter((name) => name !== 'type');
+  return clause.slice(open + 1, close).split(',').map((part) => part.trim().replace(/^type\s+/, ''))
+    .filter(Boolean).map((part) => part.split(/\s+as\s+/)[0].trim()).filter((name) => name !== 'type');
 }
 
 const exportCache = new Map();
@@ -38,20 +38,20 @@ function exportedNames(file, stack = new Set()) {
   stack.add(file);
   const source = read(file);
   const names = new Set();
-  for (const m of source.matchAll(/\\bexport\\s+(?:async\\s+)?(?:function|class|const|let|var)\\s+([A-Za-z_$][\\w$]*)/g)) names.add(m[1]);
-  for (const m of source.matchAll(/\\bexport\\s*\\{([^}]+)\\}(?:\\s*from\\s*['"]([^'"]+)['"])?/g)) {
+  for (const m of source.matchAll(/^[ \t]*export\s+(?:async\s+)?(?:function|class|const|let|var)\s+([A-Za-z_$][\w$]*)/gm)) names.add(m[1]);
+  for (const m of source.matchAll(/^[ \t]*export\s*\{([^}]+)\}(?:\s*from\s*['"]([^'"]+)['"])?/gm)) {
     const target = m[2] && m[2].startsWith('.') ? relativeTarget(file, m[2]) : null;
     for (const item of m[1].split(',')) {
-      const bits = item.trim().split(/\\s+as\\s+/);
+      const bits = item.trim().split(/\s+as\s+/);
       if (!bits[0]) continue;
       if (target) {
-        const sourceName = bits[0].replace(/^type\\s+/, '');
-        assert.ok(exportedNames(target, new Set(stack)).has(sourceName), file + ' re-exports missing ' + sourceName + ' from ' + m[2]);
+        const sourceName = bits[0].replace(/^type\s+/, '');
+        assert.ok(exportedNames(target, new Set(stack)).has(sourceName), path.relative(root, file) + ' re-exports missing ' + sourceName + ' from ' + m[2]);
       }
       names.add((bits[1] || bits[0]).trim());
     }
   }
-  for (const m of source.matchAll(/\\bexport\\s+\\*\\s+from\\s*['"]([^'"]+)['"]/g)) {
+  for (const m of source.matchAll(/^[ \t]*export\s+\*\s+from\s*['"]([^'"]+)['"]/gm)) {
     if (m[1].startsWith('.')) for (const name of exportedNames(relativeTarget(file, m[1]), new Set(stack))) names.add(name);
   }
   stack.delete(file);
