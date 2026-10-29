@@ -1,0 +1,88 @@
+name: Deploy Brussels Loop to GitHub Pages
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - "index.html"
+      - "css/**"
+      - "js/**"
+      - "data/**"
+      - "vendor/**"
+      - ".github/workflows/deploy-brussels.yml"
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: github-pages
+  cancel-in-progress: true
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Checkout selected branch
+        uses: actions/checkout@v4
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Download Belgium OpenStreetMap extract
+        run: |
+          mkdir -p tools/data
+          curl --fail --location --retry 3 --retry-delay 2 \
+            https://download.geofabrik.de/europe/belgium-latest.osm.pbf \
+            --output tools/data/belgium-latest.osm.pbf
+      - name: Build Brussels geodata
+        run: node --max-old-space-size=6144 tools/build-brussels-geodata.mjs
+      - name: Validate generated map
+        run: node tools/validate-brussels-geodata.mjs data/brussels-build
+      - name: Smoke-test city config and GPS routing
+        run: node tests/brussels-runtime-smoke.mjs
+      - name: Configure Pages
+        uses: actions/configure-pages@v5
+      - name: Stage static site and set Brussels as the Pages default
+        run: |
+          mkdir -p _site
+          rsync -a \
+            --exclude='.git/' \
+            --exclude='.github/' \
+            --exclude='tools/' \
+            --exclude='tests/' \
+            --exclude='data/brussels-build/' \
+            --exclude='BRUSSELS-PORT.md' \
+            --exclude='*.md' \
+            ./ _site/
+          mkdir -p _site/data/brussels-build
+          cp data/brussels-build/brx-geo.json data/brussels-build/brx-buildings.bin _site/data/brussels-build/
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const file = '_site/index.html';
+          let html = fs.readFileSync(file, 'utf8');
+          const redirect = `<script>
+          if (!new URLSearchParams(location.search).has('city')) {
+            const url = new URL(location.href);
+            url.searchParams.set('city', 'brussels');
+            location.replace(url.href);
+          }
+          </script>`;
+          if (!html.includes('url.searchParams.set(\'city\', \'brussels\')')) {
+            html = html.replace('<head>', '<head>\\n  ' + redirect);
+            fs.writeFileSync(file, html);
+          }
+          NODE
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
