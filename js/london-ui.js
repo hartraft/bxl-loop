@@ -13,7 +13,7 @@
 //   - street plates: white enamel plate, black sans capitals, thin black inset border, the postcode district in red
 //     ("WHITEHALL SW1") and the borough under a rule ("CITY OF WESTMINSTER"), as on real London corners (no Johnston).
 
-import { LONDON_LANDMARKS } from './london-config.js';
+import { LONDON_LANDMARKS } from './city-config.js';
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Postcode districts & boroughs (rough, by OSM place name; centre of the district wins)
