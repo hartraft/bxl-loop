@@ -13,7 +13,7 @@
 //   - street plates: white enamel plate, black sans capitals, thin black inset border, the postcode district in red
 //     ("WHITEHALL SW1") and the borough under a rule ("CITY OF WESTMINSTER"), as on real Brussels corners (no Johnston).
 
-import { LONDON_LANDMARKS } from './city-config.js';
+import { BRUSSELS_LANDMARKS } from './city-config.js';
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Postcode districts & boroughs (rough, by OSM place name; centre of the district wins)
@@ -152,7 +152,7 @@ const safeSet = (k, v) => { try { localStorage.setItem(k, v); } catch { /* priva
 // ---------------------------------------------------------------------------------------------------------------------
 // Street plates
 // ---------------------------------------------------------------------------------------------------------------------
-const LANDMARK_NAMES = new Map(LONDON_LANDMARKS.map((l) => [l.name, l]));
+const LANDMARK_NAMES = new Map(BRUSSELS_LANDMARKS.map((l) => [l.name, l]));
 
 /** one plate element: name + red postcode, borough under a rule */
 export function makeStreetPlate(name, postcode = '', borough = '') {
