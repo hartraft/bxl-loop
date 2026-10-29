@@ -13,6 +13,9 @@
 // height u16[count] (dm), minHeight u16[count] (dm), kind u8, material u8, roof u8, landmark u8.
 import { FRAME, WORLD_BOUNDS } from './geo-frame.js';
 
+const BRUSSELS_SELECTED = (typeof process !== 'undefined' && process.env?.CITY === 'brussels') ||
+  (typeof location !== 'undefined' && new URLSearchParams(location.search).get('city') === 'brussels');
+
 export const BUILDING_KINDS = ['house', 'terrace', 'flats', 'office', 'retail', 'civic', 'church', 'station', 'industrial', 'glass_tower', 'other'];
 export const MATERIALS = ['london_stock_brick', 'red_brick', 'portland_stone', 'stucco_white', 'glass', 'concrete', 'sandstone'];
 export const ROOFS = ['flat', 'gabled', 'hipped', 'mansard', 'dome', 'spire'];
@@ -110,16 +113,18 @@ export function decodeGeo(j, buildingsBuffer) {
 }
 
 /** fetch (browser) or read (Node) the baked files and decode them */
-export async function loadGeo(base = new URL('../data/', import.meta.url)) {
-  const jsonUrl = new URL('ldn-geo.json', base), binUrl = new URL('ldn-buildings.bin', base);
+export async function loadGeo(base = new URL(BRUSSELS_SELECTED ? '../data/brussels-build/' : '../data/', import.meta.url)) {
+  const jsonName = BRUSSELS_SELECTED ? 'brx-geo.json' : 'ldn-geo.json';
+  const binName = BRUSSELS_SELECTED ? 'brx-buildings.bin' : 'ldn-buildings.bin';
+  const jsonUrl = new URL(jsonName, base), binUrl = new URL(binName, base);
   if (base.protocol === 'file:') {
     const fs = await import('node:fs');
     const b = fs.readFileSync(binUrl);
     return decodeGeo(JSON.parse(fs.readFileSync(jsonUrl, 'utf8')), b.buffer.slice(b.byteOffset, b.byteOffset + b.byteLength));
   }
   const [j, bin] = await Promise.all([
-    fetch(jsonUrl).then((r) => { if (!r.ok) throw new Error('ldn-geo.json ' + r.status); return r.json(); }),
-    fetch(binUrl).then((r) => { if (!r.ok) throw new Error('ldn-buildings.bin ' + r.status); return r.arrayBuffer(); })
+    fetch(jsonUrl).then((r) => { if (!r.ok) throw new Error(jsonName + ' ' + r.status); return r.json(); }),
+    fetch(binUrl).then((r) => { if (!r.ok) throw new Error(binName + ' ' + r.status); return r.arrayBuffer(); })
   ]);
   return decodeGeo(j, bin);
 }
