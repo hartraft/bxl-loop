@@ -18,7 +18,7 @@
 // frame, nearest first, with a whole-city overview canvas as a stand-in until they arrive). The radar blits from a
 // cached composite around the player and only rotates it; the full map re-composites tiles + labels when the view moves.
 
-import { GEO } from './bxl-geodata.js';
+import { GEO } from './brx-geodata.js';
 import { WORLD, BRUSSELS_LANDMARKS, getLocationLabel, isTypingInField, WORLD_BOUNDS } from './city-config.js';
 import { toWorld } from './geo-frame.js';
 
