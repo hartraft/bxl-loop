@@ -75,7 +75,7 @@ jobs:
           }
           </script>`;
           if (!html.includes('url.searchParams.set(\'city\', \'brussels\')')) {
-            html = html.replace('<head>', '<head>\\n  ' + redirect);
+            html = html.replace('<head>', '<head>\n  ' + redirect);
             fs.writeFileSync(file, html);
           }
           NODE
