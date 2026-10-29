@@ -207,6 +207,8 @@ export function renderLocationPlates(container, label, pos = null) {
  * @returns {{ renderLocation(label, pos?), setActiveWeather(id), weatherButtons: HTMLElement[] }}
  */
 export function applyLondonHud({ mainHooks = {} } = {}) {
+  const isBrussels = typeof location !== 'undefined' && new URLSearchParams(location.search).get('city') === 'brussels';
+  const weatherStorageKey = isBrussels ? 'brusselsloop_weather' : 'londonloop_weather';
   if (!document.getElementById('ldn-ui-style')) {
     const st = document.createElement('style');
     st.id = 'ldn-ui-style';
@@ -214,19 +216,30 @@ export function applyLondonHud({ mainHooks = {} } = {}) {
     document.head.appendChild(st);
   }
 
-  // NY text -> London
+  // NY text -> selected city
+  const brusselsText = {
+    title: 'Brussels Loop',
+    '.loader-title': 'Brussels Loop',
+    '.brand-titles h1': 'Brussels Loop',
+    '#canvas-container': '3D Brussels Loop viewport',
+    '#btn-open-map': 'Brussels Street Atlas [M]',
+    '#minimap-card': 'Live Brussels street radar',
+    '#fullmap-modal': 'Brussels Street Atlas',
+    '.fullmap-title h2': 'Brussels Street Atlas'
+  };
   for (const [sel, attr, value] of NY_TEXT) {
+    const selectedValue = isBrussels ? (brusselsText[sel] || value) : value;
     for (const node of document.querySelectorAll(sel)) {
-      if (attr === 'text') node.textContent = value;
-      else node.setAttribute(attr, value);
+      if (attr === 'text') node.textContent = selectedValue;
+      else node.setAttribute(attr, selectedValue);
     }
   }
   for (const b of document.querySelectorAll('.mta-bullet')) {
-    b.textContent = 'LDN';
+    b.textContent = isBrussels ? 'BRU' : 'LDN';
     b.classList.add('ldn-badge');
   }
   const desc = document.querySelector('meta[name="description"]');
-  if (desc) desc.setAttribute('content', 'London Loop: a GTA-style 1:1 Zone 1 London built from OpenStreetMap with three.js WebGPU & TSL.');
+  if (desc) desc.setAttribute('content', isBrussels ? 'Brussels Loop: a playable 1:1-scale Brussels city built from OpenStreetMap with three.js WebGPU & TSL.' : 'London Loop: a GTA-style 1:1 Zone 1 London built from OpenStreetMap with three.js WebGPU & TSL.');
 
   // weather buttons
   const buttons = [];
@@ -240,7 +253,7 @@ export function applyLondonHud({ mainHooks = {} } = {}) {
       if (mainHooks.colorGrade && mainHooks.colorGrade.applyWeather) mainHooks.colorGrade.applyWeather(id);
     }
     setActiveWeather(id);
-    safeSet('londonloop_weather', id);
+    safeSet(weatherStorageKey, id);
     if (mainHooks.onWeather) mainHooks.onWeather(id);
   };
   const timeSwitch = document.querySelector('.time-switch');
@@ -265,7 +278,7 @@ export function applyLondonHud({ mainHooks = {} } = {}) {
   }
   const lighting = mainHooks.lighting;
   if (lighting && lighting.onWeatherChange) lighting.onWeatherChange((id) => setActiveWeather(id));
-  const initial = mainHooks.initialWeather || (mainHooks.restoreWeather !== false && safeGet('londonloop_weather')) || (lighting && lighting.weather) || '';
+  const initial = mainHooks.initialWeather || (mainHooks.restoreWeather !== false && safeGet(weatherStorageKey)) || (lighting && lighting.weather) || '';
   if (initial && WEATHER_NAMES[initial]) {
     if (mainHooks.initialWeather || safeGet('londonloop_weather')) applyWeather(initial);
     else setActiveWeather(initial);
