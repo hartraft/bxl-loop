@@ -25,7 +25,7 @@ assert.ok(network.stats.links > 10000, `expected connected road graph, got ${net
 const start = city.TELEPORT_LOCATIONS.grandPlace, finish = city.TELEPORT_LOCATIONS.cinquantenaire;
 const startLane = network.nearestLane(start.x, start.z, { maxDist: 150 });
 const finishLane = network.nearestLane(finish.x, finish.z, { maxDist: 150 });
-const route = network.route(start, finish);
+const route = network.route(start, finish, { heading: start.heading });
 if (!route) console.error(JSON.stringify({ stats: network.stats, start, finish, startLane: startLane && { x: startLane.x, z: startLane.z, road: startLane.lane.link.name }, finishLane: finishLane && { x: finishLane.x, z: finishLane.z, road: finishLane.lane.link.name } }, null, 2));
 assert.ok(startLane && finishLane, 'GPS should find drivable lanes near Grand-Place and Cinquantenaire');
 assert.ok(route && route.length > 100, 'GPS routing should connect Grand-Place to Cinquantenaire');
