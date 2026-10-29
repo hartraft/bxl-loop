@@ -14,7 +14,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-      - name: Check frame module syntax
-        run: node --check js/brussels-frame.js
+      - name: Check Brussels build pipeline syntax
+        run: node --check tools/build-brussels-geodata.mjs && node --check tools/build-london-geodata.mjs && node --check js/geo-frame.js
       - name: Test Brussels frame and anchors
-        run: node --test tests/brussels-frame.test.mjs
+        run: node --test tests/brussels-frame.test.mjs tests/brussels-build-frame.test.mjs
