@@ -3,3 +3,8 @@ tools/data/osm_central.json
 tools/out/
 dist/
 _to_delete/
+
+# Local OpenStreetMap extracts and generated Brussels build artifacts
+tools/data/*.osm.pbf
+tools/data/brussels-central.osm.json
+data/brussels-build/
