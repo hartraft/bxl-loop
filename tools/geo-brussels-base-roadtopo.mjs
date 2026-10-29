@@ -1,5 +1,5 @@
-// tools/geo-london-roadtopo.mjs — road topology helpers shared by the bake (tools/build-london-geodata.mjs, clean-up
-// pass) and the checker (tools/geo-london-roadcheck.mjs): building footprint index, junction/vertex hashing, dead-end
+// tools/geo-brussels-base-roadtopo.mjs — road topology helpers shared by the bake (tools/build-brussels-base-geodata.mjs, clean-up
+// pass) and the checker (tools/geo-brussels-base-roadcheck.mjs): building footprint index, junction/vertex hashing, dead-end
 // classification. Roads here are {pts: flat [x0,z0,x1,z1,…], kind, sub, tunnel, …}; buildings are the struct-of-arrays
 // form of GEO.buildings ({count, ringStart, xz, minHeight}).
 

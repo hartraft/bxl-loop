@@ -1,7 +1,7 @@
 // tools/osm-pbf-extract.mjs — minimal dependency-free OSM PBF reader.
 // usage: node tools/osm-pbf-extract.mjs <in.osm.pbf> <out.json> [south,west,north,east]
 // Writes an Overpass-like JSON: { bbox, elements: [ {type:'node',id,lat,lon,tags}, {type:'way',id,tags,geometry:[{lat,lon}]}, {type:'relation',id,tags,members:[{type,ref,role}]} ] }
-// Keeps: tagged nodes in the bbox, every way touching the bbox (with geometry), relations whose members touch the bbox.
+// Keeps tagged nodes in the requested bbox and a 1 km geometry margin so ways crossing the edge remain complete.
 import fs from 'node:fs';
 import zlib from 'node:zlib';
 
@@ -50,6 +50,8 @@ const ways = [];
 const relations = [];
 let pos = 0, blocks = 0;
 const inBox = (lat, lon) => lat >= S && lat <= N && lon >= W && lon <= E;
+// Keep a ~1 km margin of untagged geometry around the requested bbox. The bake stage clips to the exact play area.
+const inMargin = (lat, lon) => lat >= S - 0.009 && lat <= N + 0.009 && lon >= W - 0.015 && lon <= E + 0.015;
 
 while (pos < buf.length) {
   const hlen = buf.readUInt32BE(pos); pos += 4;
@@ -94,9 +96,9 @@ while (pos < buf.length) {
           const lat = toDeg(la, latOff), lon = toDeg(lo, lonOff);
           let tags = null;
           if (kv.length) { while (kv[k] !== 0) { (tags ||= {})[st[kv[k]]] = st[kv[k + 1]]; k += 2; } k++; }
-          if (inBox(lat, lon)) {
+          if (inMargin(lat, lon)) {
             nodeLat.set(id, [lat, lon]);
-            if (tags) elements.push({ type: 'node', id, lat: +lat.toFixed(7), lon: +lon.toFixed(7), tags });
+            if (tags && inBox(lat, lon)) elements.push({ type: 'node', id, lat: +lat.toFixed(7), lon: +lon.toFixed(7), tags });
           }
         }
       } else if (f === 3) { // Way

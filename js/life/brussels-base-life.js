@@ -1,8 +1,8 @@
-// js/life/london-life.js — Workstream L: the living city beyond the roads — boats on the Thames, airliners and the
+// js/life/brussels-base-life.js — Workstream L: the living city beyond the roads — boats on the Thames, airliners and the
 // odd helicopter overhead, pigeons on the squares.
 //
-//   import { createLondonLife } from './life/london-life.js';
-//   const life = createLondonLife(scene, { world: WORLD, surfaceHeight: city.surfaceHeight });
+//   import { createBrusselsLife } from './life/brussels-base-life.js';
+//   const life = createBrusselsLife(scene, { world: WORLD, surfaceHeight: city.surfaceHeight });
 //   life.update(dt, { camera, entity: controllerManager.getActiveEntity(), mode: controllerManager.activeMode,
 //                     peds: trafficSystem.peds, night: VEHICLE_UNIFORMS.night.value });
 //   // audio reads life.boats / life.aircraft / life.helicopters / life.events / life.nearestFlock()
@@ -11,13 +11,13 @@ import { createRiverTraffic } from './river-traffic.js';
 import { createSky } from './sky.js';
 import { createPigeons } from './pigeons.js';
 
-export function createLondonLife(scene, opts = {}) {
+export function createBrusselsLife(scene, opts = {}) {
   const group = new THREE.Group();
-  group.name = 'LondonLife';
+  group.name = 'BrusselsLife';
   scene.add(group);
   const ground = opts.surfaceHeight ? (x, z) => opts.surfaceHeight(x, z) + 0.005 : opts.world && opts.world.groundHeight ? (x, z) => opts.world.groundHeight(x, z, 'walk') + 0.02 : null;
   const river = opts.river === false ? null : createRiverTraffic(scene, { world: opts.world, group: addSub(group, 'ThamesTraffic') });
-  const sky = opts.sky === false ? null : createSky(scene, { group: addSub(group, 'LondonSky'), interval: opts.planeInterval ?? 90 });
+  const sky = opts.sky === false ? null : createSky(scene, { group: addSub(group, 'BrusselsSky'), interval: opts.planeInterval ?? 90 });
   const pigeons = opts.pigeons === false ? null : createPigeons(scene, { group: addSub(group, 'Pigeons'), ground });
   const events = [];
   const stats = { ms: 0, boatsDrawn: 0, pigeonsDrawn: 0, aircraft: 0 };

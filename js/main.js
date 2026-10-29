@@ -3,14 +3,14 @@ import { pass, mrt, output, normalView, positionView, metalness, roughness, vec2
 import { ssr } from 'three/addons/tsl/display/SSRNode.js';
 import { createPostProcessing } from './post-processing.js';
 import { ClusteredLighting } from 'three/addons/lighting/ClusteredLighting.js';
-import { GEO } from './ldn-geodata.js';
-import { WORLD, getLocationLabel, isTypingInField, TELEPORT_LOCATIONS } from './london-config.js';
+import { GEO } from './brx-geodata.js';
+import { WORLD, getLocationLabel, isTypingInField, TELEPORT_LOCATIONS } from './city-config.js';
 import { cityUniforms } from './tsl-materials.js';
-import { buildLondonCity } from './london-city.js';
+import { buildBrusselsCity } from './brussels-base-city.js';
 import { buildEdgeBarriers } from './city/edge-barriers.js';
 import { WORLD_BOUNDS } from './geo-frame.js';
-import { buildLondonLandmarks } from './london-landmarks.js';
-import { buildLondonRoadNetwork } from './road-network.js';
+import { buildBrusselsLandmarks } from './brussels-landmarks.js';
+import { buildBrusselsRoadNetwork } from './road-network.js';
 import { createTrafficSystem } from './traffic.js';
 import { buildRoadPaint } from './road-paint.js';
 import { ThirdPersonControllerManager, PLAYER_MODES, MODE_INFO } from './controllers.js';
@@ -18,22 +18,25 @@ import { TouchControls } from './touch-controls.js';
 import { GamepadControls } from './gamepad-controls.js';
 import { CameraSystem, CAMERA_PRESETS } from './cameras.js';
 import { LightingSystem } from './lighting.js';
-import { LondonMapSystem } from './london-map.js';
-import { applyLondonHud } from './london-ui.js';
+import { BrusselsMapSystem } from './brussels-base-map.js';
+import { applyBrusselsHud } from './brussels-base-ui.js';
 import { createBackend } from './backend.js';
-import { RideLDN } from './rideldn.js';
+import { RideBXL } from './ridebxl.js';
 import { BusDriver } from './bus-driver.js';
 import { setupSceneCulling, updateSceneCulling } from './scene-culling.js';
-import { createLondonLife } from './life/london-life.js';
-import { createLondonAudio } from './audio/london-audio.js';
-import { VEHICLE_UNIFORMS } from './london-vehicles.js';
-import { LONDON_LANDMARKS } from './london-config.js';
+import { createBrusselsLife } from './life/brussels-base-life.js';
+import { createBrusselsAudio } from './audio/brussels-base-audio.js';
+import { VEHICLE_UNIFORMS } from './brussels-base-vehicles.js';
+import { BRUSSELS_LANDMARKS } from './city-config.js';
 
 // js/main.js
-// Main entry point for London Loop (Zone 1 at 1:1 from OpenStreetMap) in three.js WebGPURenderer & TSL (vendored r186)
+// Main entry point for Brussels Loop (Zone 1 at 1:1 from OpenStreetMap) in three.js WebGPURenderer & TSL (vendored r186)
 
 const URL_PARAMS = new URLSearchParams(location.search);
 const LITE = URL_PARAMS.has('lite'); // ?lite: no SSR / smaller shadow work for slower machines
+const CITY_NAME = 'Brussels';
+const CITY_WATER = 'the canal and ponds';
+if (CITY_NAME === 'Brussels') document.title = 'Brussels Loop';
 
 async function initApp() {
   const container = document.getElementById('canvas-container');
@@ -86,22 +89,22 @@ async function initApp() {
   // yield so the loading text paints between the long synchronous build steps
   const paint = () => new Promise((r) => requestAnimationFrame(() => setTimeout(r, 0)));
 
-  status('Raising Big Ben, the Eye, Tower Bridge & friends...');
+  status(CITY_NAME === 'Brussels' ? 'Raising Brussels landmarks...' : 'Raising Big Ben, the Eye, Tower Bridge & friends...');
   await paint();
-  const landmarks = buildLondonLandmarks(scene, { world: WORLD, uniforms: cityUniforms });
+  const landmarks = buildBrusselsLandmarks(scene, { world: WORLD, uniforms: cityUniforms });
   markInit('landmarks');
 
-  status(`Building London: ${GEO.buildings.count.toLocaleString('en-GB')} buildings, ${GEO.roads.length.toLocaleString('en-GB')} streets & the Thames...`);
+  status(`Building ${CITY_NAME}: ${GEO.buildings.count.toLocaleString('en-GB')} buildings, ${GEO.roads.length.toLocaleString('en-GB')} streets & ${CITY_WATER}...`);
   await paint();
-  const city = buildLondonCity(scene, { geo: GEO, world: WORLD, landmarkZones: landmarks.zones, onProgress: (label) => status(`Building London: ${label}...`) });
+  const city = buildBrusselsCity(scene, { geo: GEO, world: WORLD, landmarkZones: landmarks.zones, onProgress: (label) => status(`Building ${CITY_NAME}: ${label}...`) });
   markInit('city');
   const allColliders = [...landmarks.colliders, ...city.colliders];
   const edgeBarriers = buildEdgeBarriers(scene, { geo: GEO, world: WORLD, bounds: WORLD_BOUNDS });
 
   status('Timing the traffic lights & routing the 24 to Pimlico...');
   await paint();
-  const network = buildLondonRoadNetwork(GEO, WORLD);
-  let onTrafficHit = null; // bound once the controllers exist (traffic knocks count as collisions for RideLDN)
+  const network = buildBrusselsRoadNetwork(GEO, WORLD);
+  let onTrafficHit = null; // bound once the controllers exist (traffic knocks count as collisions for RideBXL)
   const trafficSystem = createTrafficSystem(scene, {
     network, geo: GEO, world: WORLD, sidewalks: city.sidewalks, towerBridge: landmarks.towerBridge,
     onPlayerHit: (e) => onTrafficHit && onTrafficHit(e)
@@ -115,7 +118,7 @@ async function initApp() {
   // edge of the map: the controller brakes the car smoothly; say why
   const edgeToast = document.createElement('div');
   edgeToast.className = 'edge-toast';
-  edgeToast.innerHTML = '<b>Edge of the map</b><span>London Loop ends here. Turn around, or press M to jump somewhere else.</span>';
+  edgeToast.innerHTML = `<b>Edge of the map</b><span>${CITY_NAME} Loop ends here. Turn around, or press M to jump somewhere else.</span>`;
   document.body.appendChild(edgeToast);
   const edgeStyle = document.createElement('style');
   edgeStyle.textContent = `.edge-toast{position:fixed;left:50%;top:96px;transform:translate(-50%,-8px);z-index:45;display:flex;flex-direction:column;gap:2px;align-items:center;
@@ -134,10 +137,10 @@ async function initApp() {
   const cameraSystem = new CameraSystem(renderer.domElement, controllerManager);
   const touchControls = new TouchControls(controllerManager);
   // river traffic, aircraft, pigeons + synthesised sound (js/life, js/audio)
-  const life = createLondonLife(scene, { world: WORLD, surfaceHeight: city.surfaceHeight });
+  const life = createBrusselsLife(scene, { world: WORLD, surfaceHeight: city.surfaceHeight });
   life.onBoatHit = (e) => controllerManager._emitCollision && controllerManager._emitCollision(controllerManager.getActiveEntity(), e.impulse, 'boat');
-  const audio = createLondonAudio({ controllers: controllerManager, traffic: trafficSystem, life, lighting: lightingSystem, world: WORLD, geo: GEO,
-    landmarks: LONDON_LANDMARKS, cameraSystem, night: () => VEHICLE_UNIFORMS.night.value });
+  const audio = createBrusselsAudio({ controllers: controllerManager, traffic: trafficSystem, life, lighting: lightingSystem, world: WORLD, geo: GEO,
+    landmarks: BRUSSELS_LANDMARKS, cameraSystem, night: () => VEHICLE_UNIFORMS.night.value });
   markInit('controllers');
 
   // Island-wide static geometry: chunk & distance-cull the small props, shadow stand-ins for the big casters
@@ -226,7 +229,7 @@ async function initApp() {
 
   // Keyboard guide for each mode: [keys, action]
   const controlHints = Object.fromEntries(PLAYER_MODES.map((m) => [m, MODE_INFO[m]?.hints || []]));
-  controlHints.ride = [...(controlHints.ride || []), [['R'], 'RideLDN app'], [['Enter'], 'Accept job']];
+  controlHints.ride = [...(controlHints.ride || []), [['R'], 'RideBXL app'], [['Enter'], 'Accept job']];
   const topSpeedMph = Object.fromEntries(PLAYER_MODES.map((m) => [m, MODE_INFO[m]?.topSpeedMph || 60]));
 
   function renderControlHints(mode) {
@@ -257,6 +260,7 @@ async function initApp() {
   }
 
   function selectMode(mode) {
+    if (CITY_NAME === 'Brussels' && mode === 'boat') return;
     controllerManager.setMode(mode);
     touchControls.setMode(controllerManager.activeMode);
     gamepadControls.reset();
@@ -368,9 +372,9 @@ async function initApp() {
     if (btn && e.detail > 0) btn.blur();
   });
 
-  // Where you are: London street-name plates (js/london-ui.js)
+  // Where you are: Brussels street-name plates (js/brussels-base-ui.js)
   let currentWeather = 'clear';
-  const hud = applyLondonHud({
+  const hud = applyBrusselsHud({
     mainHooks: {
       lighting: lightingSystem,
       colorGrade,
@@ -406,7 +410,7 @@ async function initApp() {
     return destination;
   }
 
-  const mapSystem = new LondonMapSystem({
+  const mapSystem = new BrusselsMapSystem({
     controllerManager,
     cameraSystem,
     trafficSystem,
@@ -422,9 +426,9 @@ async function initApp() {
     onTeleport: teleportTo
   });
 
-  // RideLDN ride-hail (our Uber-style app) + Supabase save / leaderboard
+  // RideBXL ride-hail (our Uber-style app) + Supabase save / leaderboard
   const backend = createBackend();
-  const rideldn = new RideLDN({
+  const ridebxl = new RideBXL({
     scene,
     camera: () => cameraSystem.camera,
     controllers: controllerManager,
@@ -437,8 +441,8 @@ async function initApp() {
     }
   });
 
-  // Bus driver job: real London routes (js/bus-driver.js, J = route picker, F = doors on shift)
-  const busDriver = new BusDriver({
+  // Brussels route data is not valid in Brussels; keep the generic bus vehicle mode but disable the Brussels route job.
+  const busDriver = CITY_NAME === 'Brussels' ? { openPicker() {}, update() {} } : new BusDriver({
     scene, camera: () => cameraSystem.camera, controllers: controllerManager, world: WORLD, geo: GEO, backend,
     ui: {
       setMode: (m) => selectMode(m), teleport: (x, z, h) => teleportTo(x, z, h),
@@ -448,7 +452,7 @@ async function initApp() {
     }
   });
   const busBtn = document.getElementById('btn-bus-driver');
-  if (busBtn) busBtn.addEventListener('click', () => busDriver.openPicker());
+  if (busBtn && CITY_NAME !== 'Brussels') busBtn.addEventListener('click', () => busDriver.openPicker());
 
   teleportButtons.forEach((btn) => {
     btn.addEventListener('click', () => {
@@ -491,18 +495,18 @@ async function initApp() {
         selectCamera('pov', true);
         break;
       case 'Digit0':
-        selectCamera('westminster', true);
+        selectCamera(CITY_NAME === 'Brussels' ? 'chase' : 'westminster', true);
         break;
       case 'KeyV':
         cycleCamera(e.shiftKey ? -1 : 1);
         break;
-      case 'KeyN': // drive a London bus
+      case 'KeyN': // drive a Brussels bus
         selectMode('bus');
         break;
       case 'KeyO': // bus doors
         if (controllerManager.activeMode === 'bus' && controllerManager.setBusDoors) controllerManager.setBusDoors(!controllerManager.entities.bus.doorsOpen);
         break;
-      case 'KeyU': // H is the cab's TAXI sign in London
+      case 'KeyU': // H is the cab's TAXI sign in Brussels
         if (hudToggleBtn) hudToggleBtn.click();
         break;
       case 'KeyB': // open / close Tower Bridge
@@ -645,7 +649,7 @@ async function initApp() {
   }
 
   // debug / test handle
-  window.__ldn = { busDriver, life, audio, scene, renderer, controllerManager, cameraSystem, city, landmarks, trafficSystem, mapSystem, rideldn, backend, selectMode, selectCamera, selectTime, setWeather, teleportTo };
+  window.__bxl = { busDriver, life, audio, scene, renderer, controllerManager, cameraSystem, city, landmarks, trafficSystem, mapSystem, ridebxl, backend, selectMode, selectCamera, selectTime, setWeather, teleportTo };
 
   // 6. Animation Loop
   let lastTime = performance.now();
@@ -667,7 +671,7 @@ async function initApp() {
     gamepadControls.update(dt);
     controllerManager.update(dt, elapsed);
     cameraSystem.update(dt, elapsed);
-    rideldn.update(dt);
+    ridebxl.update(dt);
     busDriver.update(dt);
     trafficSystem.update(
       dt,
@@ -750,10 +754,10 @@ async function initApp() {
     // ?capture: frame-by-frame recording with a fixed time step (tools/capture)
     let fakeNow = performance.now();
     lastTime = fakeNow;
-    // __ldnTick(dt) renders one frame synchronously, so the caller can read the canvas in the same task;
-    // await __ldnGpuIdle() before the next one
-    window.__ldnTick = (dt = 1 / 30) => { fakeNow += dt * 1000; tick(fakeNow); };
-    window.__ldnGpuIdle = () => (renderer.backend.device ? renderer.backend.device.queue.onSubmittedWorkDone() : Promise.resolve());
+    // __bxlTick(dt) renders one frame synchronously, so the caller can read the canvas in the same task;
+    // await __bxlGpuIdle() before the next one
+    window.__bxlTick = (dt = 1 / 30) => { fakeNow += dt * 1000; tick(fakeNow); };
+    window.__bxlGpuIdle = () => (renderer.backend.device ? renderer.backend.device.queue.onSubmittedWorkDone() : Promise.resolve());
   } else renderer.setAnimationLoop(tick);
 }
 

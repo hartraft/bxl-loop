@@ -1,26 +1,26 @@
-// js/london-ui.js — Workstream E: the London look of the HUD.
+// js/brussels-base-ui.js — Workstream E: the Brussels look of the HUD.
 //
-//   import { applyLondonHud } from './london-ui.js';
-//   const hud = applyLondonHud({ mainHooks: { lighting: lightingSystem, colorGrade } });   // once, after the DOM exists
-//   hud.renderLocation(getLocationLabel(x, z));   // instead of main.js's NY renderLocation(): London street-name plates
+//   import { applyBrusselsHud } from './brussels-base-ui.js';
+//   const hud = applyBrusselsHud({ mainHooks: { lighting: lightingSystem, colorGrade } });   // once, after the DOM exists
+//   hud.renderLocation(getLocationLabel(x, z));   // instead of main.js's NY renderLocation(): Brussels street-name plates
 //   hud.setActiveWeather('drizzle');              // keeps the weather buttons in step if weather changes elsewhere
 //
 // What it does (all at runtime, no index.html edits needed — but see INTEGRATION.md for the preferred static edits):
-//   - injects <style id="ldn-ui-style">: London street-name plates, the "LDN" brand badge, weather buttons, paper map frame
-//   - brand: "NY" bullets -> "LDN" badge, "Slop New York" -> "London Loop" (and other NY strings, see NY_TEXT below)
+//   - injects <style id="bxl-ui-style">: Brussels street-name plates, the "BXL" brand badge, weather buttons, paper map frame
+//   - brand: "NY" bullets -> "BXL" badge, "Slop New York" -> "Brussels Loop" (and other NY strings, see NY_TEXT below)
 //   - weather buttons (Clear / Overcast / Drizzle / Fog) injected next to the time-of-day buttons; a click calls
 //     mainHooks.setWeather(id) if given, else mainHooks.lighting.setWeather(id) + mainHooks.colorGrade.applyWeather(id)
 //   - street plates: white enamel plate, black sans capitals, thin black inset border, the postcode district in red
-//     ("WHITEHALL SW1") and the borough under a rule ("CITY OF WESTMINSTER"), as on real London corners (no Johnston).
+//     ("WHITEHALL SW1") and the borough under a rule ("CITY OF WESTMINSTER"), as on real Brussels corners (no Johnston).
 
-import { LONDON_LANDMARKS } from './london-config.js';
+import { BRUSSELS_LANDMARKS } from './city-config.js';
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Postcode districts & boroughs (rough, by OSM place name; centre of the district wins)
 // ---------------------------------------------------------------------------------------------------------------------
-const WM = 'City of Westminster', CL = 'City of London', CA = 'London Borough of Camden', SO = 'London Borough of Southwark';
-const LA = 'London Borough of Lambeth', KC = 'Royal Borough of Kensington and Chelsea', IS = 'London Borough of Islington';
-const HA = 'London Borough of Hackney', TH = 'London Borough of Tower Hamlets', WA = 'London Borough of Wandsworth';
+const WM = 'City of Westminster', CL = 'City of Brussels', CA = 'Brussels Borough of Camden', SO = 'Brussels Borough of Southwark';
+const LA = 'Brussels Borough of Lambeth', KC = 'Royal Borough of Kensington and Chelsea', IS = 'Brussels Borough of Islington';
+const HA = 'Brussels Borough of Hackney', TH = 'Brussels Borough of Tower Hamlets', WA = 'Brussels Borough of Wandsworth';
 const DISTRICT_INFO = {
   'Mayfair': ['W1', WM], 'Soho': ['W1', WM], 'Fitzrovia': ['W1', WM], 'Marylebone': ['W1', WM], 'East Marylebone': ['W1', WM],
   'West End': ['W1', WM], 'Covent Garden': ['WC2', WM], 'St Giles': ['WC2', CA], 'Seven Dials': ['WC2', CA], 'Strand': ['WC2', WM],
@@ -28,7 +28,7 @@ const DISTRICT_INFO = {
   'St Clement Danes': ['WC2', WM], 'Temple': ['EC4', CL], 'Whitehall': ['SW1', WM], 'Westminster': ['SW1', WM], "St. James's": ['SW1', WM],
   "St James's": ['SW1', WM], 'Pimlico': ['SW1', WM], 'Victoria': ['SW1', WM], 'Belgravia': ['SW1', WM], 'Millbank': ['SW1', WM],
   'Knightsbridge': ['SW1', KC], 'Hans Town': ['SW3', KC], 'Chelsea': ['SW3', KC], "World's End": ['SW10', KC], 'Brompton': ['SW3', KC],
-  'South Kensington': ['SW7', KC], 'Kensington': ['W8', KC], "Earl's Court": ['SW5', KC], 'Walham Green': ['SW6', 'London Borough of Hammersmith and Fulham'],
+  'South Kensington': ['SW7', KC], 'Kensington': ['W8', KC], "Earl's Court": ['SW5', KC], 'Walham Green': ['SW6', 'Brussels Borough of Hammersmith and Fulham'],
   'Bayswater': ['W2', WM], 'Paddington': ['W2', WM], 'Westbourne': ['W2', WM], 'Westbourne Green': ['W2', WM], 'Maida Vale': ['W9', WM],
   'Little Venice': ['W9', WM], "St. John's Wood": ['NW8', WM], "St John's Wood": ['NW8', WM], "Lot's Village": ['SW10', KC],
   'Somers Town': ['NW1', CA], "King's Cross": ['N1', CA], 'St Pancras': ['NW1', CA], 'Camden': ['NW1', CA], 'Pentonville': ['N1', IS],
@@ -41,8 +41,8 @@ const DISTRICT_INFO = {
   'Southwark': ['SE1', SO], 'The Borough': ['SE1', SO], 'Borough Market': ['SE1', SO], "Butler's Wharf": ['SE1', SO], 'Lambeth': ['SE1', LA],
   'Kennington': ['SE11', LA], 'Kennington Cross': ['SE11', LA], 'Vauxhall': ['SE11', LA], 'Oval': ['SE11', LA],
   'Elephant and Castle': ['SE1', SO], 'Walworth': ['SE17', SO], 'Old Kent Road': ['SE1', SO], 'Bermondsey Village': ['SE1', SO],
-  'Bermondsey Spa': ['SE16', SO], 'Nine Elms': ['SW8', WA], 'Battersea': ['SW11', WA], 'Pool of London': ['EC3', CL],
-  'London Bridge': ['SE1', SO], 'Bermondsey': ['SE1', SO], 'Tower of London': ['EC3', TH]
+  'Bermondsey Spa': ['SE16', SO], 'Nine Elms': ['SW8', WA], 'Battersea': ['SW11', WA], 'Pool of Brussels': ['EC3', CL],
+  'Brussels Bridge': ['SE1', SO], 'Bermondsey': ['SE1', SO], 'Tower of Brussels': ['EC3', TH]
 };
 
 /** rough postcode district by position (frame origin = Nelson's Column), for places without a known district */
@@ -66,28 +66,28 @@ export function postcodeFor(district, x = 0, z = 0) {
 // Styles
 // ---------------------------------------------------------------------------------------------------------------------
 const CSS = `
-:root { --ldn-red: #c8102e; --ldn-plate: #fbfbf7; --ldn-ink: #141414; --taxi: #e3283e; --taxi-ink: #ffffff; }
+:root { --bxl-red: #c8102e; --bxl-plate: #fbfbf7; --bxl-ink: #141414; --taxi: #e3283e; --taxi-ink: #ffffff; }
 /* brand badge (replaces the NY subway bullet) */
-.ldn-badge { width: 34px; height: 30px; border-radius: 7px; background: var(--ldn-red); color: #fff; font: 800 11px/1 Inter, -apple-system, sans-serif;
+.bxl-badge { width: 34px; height: 30px; border-radius: 7px; background: var(--bxl-red); color: #fff; font: 800 11px/1 Inter, -apple-system, sans-serif;
   letter-spacing: .04em; display: inline-flex; align-items: center; justify-content: center; flex: none;
   box-shadow: inset 0 -1px 0 rgba(0,0,0,.25), inset 0 0 0 1.5px rgba(255,255,255,.18); }
-.loader .ldn-badge { width: 52px; height: 44px; font-size: 16px; border-radius: 10px; margin-bottom: 4px; }
-.mta-bullet.ldn-badge { background: var(--ldn-red); color: #fff; border-radius: 7px; width: 34px; }
+.loader .bxl-badge { width: 52px; height: 44px; font-size: 16px; border-radius: 10px; margin-bottom: 4px; }
+.mta-bullet.bxl-badge { background: var(--bxl-red); color: #fff; border-radius: 7px; width: 34px; }
 
-/* London street-name plate */
-.location .ldn-plates { display: flex; flex-direction: column; align-items: flex-start; gap: 7px; animation: rise-in .4s cubic-bezier(.22,1,.36,1) both; }
-.ldn-plate { display: inline-block; max-width: 330px; padding: 3px; background: var(--ldn-plate); border-radius: 3px;
+/* Brussels street-name plate */
+.location .bxl-plates { display: flex; flex-direction: column; align-items: flex-start; gap: 7px; animation: rise-in .4s cubic-bezier(.22,1,.36,1) both; }
+.bxl-plate { display: inline-block; max-width: 330px; padding: 3px; background: var(--bxl-plate); border-radius: 3px;
   box-shadow: 0 1px 0 rgba(0,0,0,.35), 0 10px 22px -10px rgba(0,0,0,.75); }
-.ldn-plate-inner { border: 1.6px solid var(--ldn-ink); border-radius: 2px; padding: 6px 12px 5px; display: flex; flex-direction: column; align-items: center; min-width: 120px; }
-.ldn-plate-row { display: flex; align-items: baseline; gap: 7px; max-width: 100%; }
-.ldn-plate-name { font: 700 15px/1.05 Inter, "Helvetica Neue", Arial, sans-serif; letter-spacing: .035em; text-transform: uppercase; color: var(--ldn-ink);
+.bxl-plate-inner { border: 1.6px solid var(--bxl-ink); border-radius: 2px; padding: 6px 12px 5px; display: flex; flex-direction: column; align-items: center; min-width: 120px; }
+.bxl-plate-row { display: flex; align-items: baseline; gap: 7px; max-width: 100%; }
+.bxl-plate-name { font: 700 15px/1.05 Inter, "Helvetica Neue", Arial, sans-serif; letter-spacing: .035em; text-transform: uppercase; color: var(--bxl-ink);
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.ldn-plate-pc { font: 800 14px/1.05 Inter, "Helvetica Neue", Arial, sans-serif; color: var(--ldn-red); letter-spacing: .02em; flex: none; }
-.ldn-plate-borough { align-self: stretch; margin-top: 4px; padding-top: 3px; border-top: 1px solid var(--ldn-ink); text-align: center;
-  font: 650 7.5px/1.1 Inter, Arial, sans-serif; letter-spacing: .14em; text-transform: uppercase; color: var(--ldn-ink); white-space: nowrap; }
-.ldn-place { max-width: 330px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 11px; font-weight: 700; letter-spacing: .1em;
+.bxl-plate-pc { font: 800 14px/1.05 Inter, "Helvetica Neue", Arial, sans-serif; color: var(--bxl-red); letter-spacing: .02em; flex: none; }
+.bxl-plate-borough { align-self: stretch; margin-top: 4px; padding-top: 3px; border-top: 1px solid var(--bxl-ink); text-align: center;
+  font: 650 7.5px/1.1 Inter, Arial, sans-serif; letter-spacing: .14em; text-transform: uppercase; color: var(--bxl-ink); white-space: nowrap; }
+.bxl-place { max-width: 330px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 11px; font-weight: 700; letter-spacing: .1em;
   text-transform: uppercase; color: rgba(255,255,255,.94); text-shadow: 0 1px 2px rgba(0,0,0,.7), 0 0 14px rgba(0,0,0,.4); }
-.ldn-district { font-size: 10.5px; font-weight: 650; letter-spacing: .12em; text-transform: uppercase; color: rgba(255,255,255,.82);
+.bxl-district { font-size: 10.5px; font-weight: 650; letter-spacing: .12em; text-transform: uppercase; color: rgba(255,255,255,.82);
   text-shadow: 0 1px 2px rgba(0,0,0,.7); }
 
 /* weather buttons share the time-of-day button look */
@@ -97,7 +97,7 @@ const CSS = `
 /* the radar sits on map paper */
 .radar { background: #f4f0e5; }
 .radar-north { background: #141414; box-shadow: 0 0 0 1.5px #fff; }
-.radar:hover .radar-key { color: #fff; background: var(--ldn-red); }
+.radar:hover .radar-key { color: #fff; background: var(--bxl-red); }
 @media (max-width: 1240px) { .weather-btn.active .seg-label { display: none; } .weather-btn.active { padding: 0 9px; gap: 0; } }
 @media (max-width: 820px) { .weather-switch { display: none; } }
 `;
@@ -110,17 +110,17 @@ const WEATHER_ICONS = {
 };
 const WEATHER_NAMES = { clear: 'Clear', overcast: 'Overcast', drizzle: 'Drizzle', fog: 'Fog' };
 
-// NY strings in index.html replaced at runtime ([selector, attribute | 'text', London value])
+// NY strings in index.html replaced at runtime ([selector, attribute | 'text', Brussels value])
 const NY_TEXT = [
-  ['title', 'text', 'London Loop'],
-  ['.loader-title', 'text', 'London Loop'],
-  ['.brand-titles h1', 'text', 'London Loop'],
-  ['#canvas-container', 'aria-label', '3D London Loop viewport'],
-  ['#btn-open-map', 'title', 'London Street Atlas [M]'],
-  ['#minimap-card', 'aria-label', 'Live London street radar'],
-  ['#minimap-card', 'title', 'Open the London Street Atlas [M]'],
-  ['#fullmap-modal', 'aria-label', 'London Street Atlas'],
-  ['.fullmap-title h2', 'text', 'London Street Atlas']
+  ['title', 'text', 'Brussels Loop'],
+  ['.loader-title', 'text', 'Brussels Loop'],
+  ['.brand-titles h1', 'text', 'Brussels Loop'],
+  ['#canvas-container', 'aria-label', '3D Brussels Loop viewport'],
+  ['#btn-open-map', 'title', 'Brussels Street Atlas [M]'],
+  ['#minimap-card', 'aria-label', 'Live Brussels street radar'],
+  ['#minimap-card', 'title', 'Open the Brussels Street Atlas [M]'],
+  ['#fullmap-modal', 'aria-label', 'Brussels Street Atlas'],
+  ['.fullmap-title h2', 'text', 'Brussels Street Atlas']
 ];
 
 function svgIcon(inner) {
@@ -152,32 +152,42 @@ const safeSet = (k, v) => { try { localStorage.setItem(k, v); } catch { /* priva
 // ---------------------------------------------------------------------------------------------------------------------
 // Street plates
 // ---------------------------------------------------------------------------------------------------------------------
-const LANDMARK_NAMES = new Map(LONDON_LANDMARKS.map((l) => [l.name, l]));
+const LANDMARK_NAMES = new Map(BRUSSELS_LANDMARKS.map((l) => [l.name, l]));
 
 /** one plate element: name + red postcode, borough under a rule */
 export function makeStreetPlate(name, postcode = '', borough = '') {
-  const plate = el('div', 'ldn-plate');
-  const inner = el('div', 'ldn-plate-inner');
-  const row = el('div', 'ldn-plate-row');
-  row.appendChild(el('span', 'ldn-plate-name', name));
-  if (postcode) row.appendChild(el('span', 'ldn-plate-pc', postcode));
+  const plate = el('div', 'bxl-plate');
+  const inner = el('div', 'bxl-plate-inner');
+  const row = el('div', 'bxl-plate-row');
+  row.appendChild(el('span', 'bxl-plate-name', name));
+  if (postcode) row.appendChild(el('span', 'bxl-plate-pc', postcode));
   inner.appendChild(row);
-  if (borough) inner.appendChild(el('div', 'ldn-plate-borough', borough));
+  if (borough) inner.appendChild(el('div', 'bxl-plate-borough', borough));
   plate.appendChild(inner);
   return plate;
 }
 
 /**
  * Renders getLocationLabel()'s {primary, secondary} (or its "primary · secondary" text) into the #hud-location element
- * as London plates. Landmarks get a caption over the plate of the street they're on.
+ * as Brussels plates. Landmarks get a caption over the plate of the street they're on.
  */
 export function renderLocationPlates(container, label, pos = null) {
   if (!container || !label) return;
   const lab = typeof label === 'string' ? (() => { const i = label.indexOf(' · '); return i < 0 ? { primary: label, secondary: '' } : { primary: label.slice(0, i), secondary: label.slice(i + 3) }; })() : label;
   const key = `${lab.primary}|${lab.secondary}`;
-  if (container.dataset.ldnKey === key) return;
-  container.dataset.ldnKey = key;
+  if (container.dataset.bxlKey === key) return;
+  container.dataset.bxlKey = key;
   const lm = LANDMARK_NAMES.get(lab.primary);
+  if (typeof location !== 'undefined' && new URLSearchParams(location.search).get('city') === 'brussels') {
+    const wrap = el('div', 'bxl-plates');
+    const street = lm ? lab.secondary : lab.primary;
+    const district = lm ? lm.district : lab.secondary;
+    if (lm) wrap.appendChild(el('div', 'bxl-place', lm.name));
+    if (street) wrap.appendChild(makeStreetPlate(street, '', district || 'Brussels'));
+    if (!lm && district && district !== street) wrap.appendChild(el('div', 'bxl-district', district));
+    container.replaceChildren(wrap);
+    return;
+  }
   let street = lab.primary, district = lab.secondary, place = '';
   if (lm) {
     place = lm.name;
@@ -186,15 +196,15 @@ export function renderLocationPlates(container, label, pos = null) {
   }
   const x = pos ? pos.x : lm ? lm.x : 0, z = pos ? pos.z : lm ? lm.z : 0;
   const { postcode, borough } = postcodeFor(district, x, z);
-  const wrap = el('div', 'ldn-plates');
-  if (place) wrap.appendChild(el('div', 'ldn-place', place));
+  const wrap = el('div', 'bxl-plates');
+  if (place) wrap.appendChild(el('div', 'bxl-place', place));
   if (street) wrap.appendChild(makeStreetPlate(street, /river|thames/i.test(street) ? '' : postcode, borough));
-  if (!lm && district && district !== street) wrap.appendChild(el('div', 'ldn-district', district));
+  if (!lm && district && district !== street) wrap.appendChild(el('div', 'bxl-district', district));
   container.replaceChildren(wrap);
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
-// applyLondonHud
+// applyBrusselsHud
 // ---------------------------------------------------------------------------------------------------------------------
 /**
  * @param {object} [o]
@@ -206,27 +216,69 @@ export function renderLocationPlates(container, label, pos = null) {
  * @param {string} [o.mainHooks.initialWeather]  apply this weather now (default: the last one picked, else none)
  * @returns {{ renderLocation(label, pos?), setActiveWeather(id), weatherButtons: HTMLElement[] }}
  */
-export function applyLondonHud({ mainHooks = {} } = {}) {
-  if (!document.getElementById('ldn-ui-style')) {
+export function applyBrusselsHud({ mainHooks = {} } = {}) {
+  const isBrussels = typeof location !== 'undefined' && new URLSearchParams(location.search).get('city') === 'brussels';
+  const weatherStorageKey = isBrussels ? 'brusselsloop_weather' : 'brusselsloop_weather';
+  if (!document.getElementById('bxl-ui-style')) {
     const st = document.createElement('style');
-    st.id = 'ldn-ui-style';
+    st.id = 'bxl-ui-style';
     st.textContent = CSS;
     document.head.appendChild(st);
   }
 
-  // NY text -> London
+  // NY text -> selected city
+  const brusselsText = {
+    title: 'Brussels Loop',
+    '.loader-title': 'Brussels Loop',
+    '.brand-titles h1': 'Brussels Loop',
+    '#canvas-container': '3D Brussels Loop viewport',
+    '#btn-open-map': 'Brussels Street Atlas [M]',
+    '#minimap-card': 'Live Brussels street radar',
+    '#fullmap-modal': 'Brussels Street Atlas',
+    '.fullmap-title h2': 'Brussels Street Atlas'
+  };
   for (const [sel, attr, value] of NY_TEXT) {
+    const selectedValue = isBrussels ? (brusselsText[sel] || value) : value;
     for (const node of document.querySelectorAll(sel)) {
-      if (attr === 'text') node.textContent = value;
-      else node.setAttribute(attr, value);
+      if (attr === 'text') node.textContent = selectedValue;
+      else node.setAttribute(attr, selectedValue);
     }
   }
   for (const b of document.querySelectorAll('.mta-bullet')) {
-    b.textContent = 'LDN';
-    b.classList.add('ldn-badge');
+    b.textContent = isBrussels ? 'BRU' : 'BXL';
+    b.classList.add('bxl-badge');
   }
   const desc = document.querySelector('meta[name="description"]');
-  if (desc) desc.setAttribute('content', 'London Loop: a GTA-style 1:1 Zone 1 London built from OpenStreetMap with three.js WebGPU & TSL.');
+  if (desc) desc.setAttribute('content', isBrussels ? 'Brussels Loop: a playable 1:1-scale Brussels city built from OpenStreetMap with three.js WebGPU & TSL.' : 'Brussels Loop: a GTA-style 1:1 Zone 1 Brussels built from OpenStreetMap with three.js WebGPU & TSL.');
+
+  if (isBrussels) {
+    const carLabel = document.querySelector('#mode-car .mode-label');
+    if (carLabel) carLabel.textContent = 'Car';
+    const carButton = document.getElementById('mode-car');
+    if (carButton) carButton.title = 'Drive a car [2]';
+    const rideLabel = document.querySelector('#mode-ride .mode-label');
+    if (rideLabel) rideLabel.textContent = 'Ride-hail';
+    const rideButton = document.getElementById('mode-ride');
+    if (rideButton) rideButton.title = 'Ride-hail car [3]';
+    const boatButton = document.getElementById('mode-boat');
+    if (boatButton) {
+      boatButton.disabled = true;
+      boatButton.title = 'Canal boat mode is not available yet';
+      boatButton.setAttribute('aria-label', 'Canal boat mode not available yet');
+    }
+    const busJobButton = document.getElementById('btn-bus-driver');
+    if (busJobButton) {
+      busJobButton.disabled = true;
+      busJobButton.title = 'Brussels bus routes are not wired up yet';
+      const label = busJobButton.querySelector('.tool-label');
+      if (label) label.textContent = 'Bus routes soon';
+      busJobButton.setAttribute('aria-label', 'Brussels bus route job not available yet');
+    }
+    const busButton = document.getElementById('mode-bus');
+    if (busButton) busButton.title = 'Drive a bus [N]';
+    const helicopterButton = document.getElementById('mode-helicopter');
+    if (helicopterButton) helicopterButton.title = 'Helicopter [5]';
+  }
 
   // weather buttons
   const buttons = [];
@@ -240,7 +292,7 @@ export function applyLondonHud({ mainHooks = {} } = {}) {
       if (mainHooks.colorGrade && mainHooks.colorGrade.applyWeather) mainHooks.colorGrade.applyWeather(id);
     }
     setActiveWeather(id);
-    safeSet('londonloop_weather', id);
+    safeSet(weatherStorageKey, id);
     if (mainHooks.onWeather) mainHooks.onWeather(id);
   };
   const timeSwitch = document.querySelector('.time-switch');
@@ -265,9 +317,9 @@ export function applyLondonHud({ mainHooks = {} } = {}) {
   }
   const lighting = mainHooks.lighting;
   if (lighting && lighting.onWeatherChange) lighting.onWeatherChange((id) => setActiveWeather(id));
-  const initial = mainHooks.initialWeather || (mainHooks.restoreWeather !== false && safeGet('londonloop_weather')) || (lighting && lighting.weather) || '';
+  const initial = mainHooks.initialWeather || (mainHooks.restoreWeather !== false && safeGet(weatherStorageKey)) || (lighting && lighting.weather) || '';
   if (initial && WEATHER_NAMES[initial]) {
-    if (mainHooks.initialWeather || safeGet('londonloop_weather')) applyWeather(initial);
+    if (mainHooks.initialWeather || safeGet('brusselsloop_weather')) applyWeather(initial);
     else setActiveWeather(initial);
   }
 

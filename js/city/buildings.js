@@ -3,7 +3,7 @@
 // chimney stacks, party walls dropped, street-facing shop fronts; merged into TILE x TILE m tiles (one masonry +
 // roofs geometry and one glass curtain-wall geometry per tile) and one OBB collider per building (split for big
 // concave footprints). Pure geometry: materials are attached by js/london-city.js.
-import { BUILDING_KINDS, MATERIALS, ROOFS } from '../ldn-geodata.js';
+import { BUILDING_KINDS, MATERIALS, ROOFS } from '../brx-geodata.js';
 import { SURF, STYLE } from './materials-shared.js';
 import {
   GeoBuilder, TileBuckets, EdgeHash, hash01, ringArea, ringBox, pointInRing, minAreaRect, obbCollider, clipHalfPlane, triangulate

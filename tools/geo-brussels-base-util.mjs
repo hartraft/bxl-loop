@@ -1,8 +1,8 @@
-// tools/geo-london-util.mjs — dependency-free geometry helpers for the London geodata build.
+// tools/geo-brussels-base-util.mjs — dependency-free geometry helpers for the Brussels geodata build.
 // World frame = js/geo-frame.js (x east, z south, metres). Rings are arrays of [x, z]; flat arrays are [x0,z0,x1,z1,...].
 import { toWorld, WORLD_BOUNDS } from '../js/geo-frame.js';
 
-export const log = (...a) => console.log('[ldn-geo]', ...a);
+export const log = (...a) => console.log('[bxl-geo]', ...a);
 export const q1 = (v) => Math.round(v * 10) / 10; // 0.1 m quantisation
 
 /** deterministic hash of an integer id (+ salt) -> [0, 1) */

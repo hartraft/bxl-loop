@@ -1,16 +1,16 @@
-// tools/geo-london-topdown.mjs — dependency-free top-down PNG of the baked geodata (visual sanity check).
-// usage: node tools/geo-london-topdown.mjs [out.png] [metresPerPixel=4] [centreX centreZ widthM heightM]
-// env MARKS=file.json: [[x, z, 0xRRGGBB, radiusM], …] rings drawn on top (tools/geo-london-roadcheck.mjs uses it);
+// tools/geo-brussels-base-topdown.mjs — dependency-free top-down PNG of the baked geodata (visual sanity check).
+// usage: node tools/geo-brussels-base-topdown.mjs [out.png] [metresPerPixel=4] [centreX centreZ widthM heightM]
+// env MARKS=file.json: [[x, z, 0xRRGGBB, radiusM], …] rings drawn on top (tools/geo-brussels-base-roadcheck.mjs uses it);
 // tunnels are drawn as dashed dark lines, GEO.passages (if any) in orange.
 import fs from 'node:fs';
 import path from 'node:path';
 import zlib from 'node:zlib';
 import { fileURLToPath } from 'node:url';
-import { GEO } from '../js/ldn-geodata.js';
+import { GEO } from '../js/bxl-geodata.js';
 
 const ROOT = fileURLToPath(new URL('../', import.meta.url));
 const [outArg, mppArg, cx, cz, wm, hm] = process.argv.slice(2);
-const OUT = outArg || path.join(ROOT, 'tools/out/ldn-topdown.png');
+const OUT = outArg || path.join(ROOT, 'tools/out/bxl-topdown.png');
 const MPP = Number(mppArg) || 4;
 const B = GEO.bounds;
 const view = cx !== undefined

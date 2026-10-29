@@ -1,9 +1,9 @@
-// tools/geo-london-lines.mjs — roads, rail, bridge decks and the point layers (stations, POIs, signals, …).
+// tools/geo-brussels-base-lines.mjs — roads, rail, bridge decks and the point layers (stations, POIs, signals, …).
 import {
   ll, rdp, quantise, clipPolyline, polyLength, expandBounds, inBounds, centroid, pointInRing, bboxOf, convexHull,
   bufferRing, ccw, WORLD_BOUNDS, log
-} from './geo-london-util.mjs';
-import { parseLength } from './geo-london-buildings.mjs';
+} from './geo-brussels-base-util.mjs';
+import { parseLength } from './geo-brussels-base-buildings.mjs';
 
 export const ROAD_KINDS = ['motorway', 'trunk', 'primary', 'secondary', 'tertiary', 'unclassified', 'residential', 'living_street',
   'service', 'pedestrian', 'footway', 'cycleway', 'steps'];
@@ -93,7 +93,7 @@ export function buildRoads(ctx) {
     }
     const lanes = VEHICLE.has(kind) ? (lanesTag > 0 ? Math.round(lanesTag) : Math.max(1, Math.round(width / (oneway ? 3.3 : 3.5)))) : 0;
     let maxspeed = num(t.maxspeed);
-    if (/km\/?h/i.test(t.maxspeed || '')) maxspeed = Math.round(maxspeed / 1.609);
+    if (/km\/?h/i.test(t.maxspeed || '') || (process.env.CITY === 'brussels' && t.maxspeed && !/mph|mi\/?h/i.test(t.maxspeed))) maxspeed = Math.round(maxspeed / 1.609);
     if (!(maxspeed > 0)) maxspeed = VEHICLE.has(kind) ? (kind === 'motorway' ? 50 : kind === 'trunk' ? 30 : kind === 'service' ? 10 : 20) : 0;
     const bridge = t.bridge && t.bridge !== 'no' ? 1 : 0;
     const tunnel = t.tunnel === 'yes' || t.tunnel === 'culvert' ? 1 : 0;
@@ -101,7 +101,7 @@ export function buildRoads(ctx) {
     const junction = t.junction === 'roundabout' || t.junction === 'circular' ? 'roundabout' : '';
     const sub = /_link$/.test(t.highway) ? 'link' : t.footway === 'sidewalk' ? 'sidewalk' : t.footway === 'crossing' || t.cycleway === 'crossing' ? 'crossing'
       : t.service || '';
-    // building passages / covered ways (drawn at grade; tools/geo-london-roadfix.mjs exports them as GEO.passages)
+    // building passages / covered ways (drawn at grade; tools/geo-brussels-base-roadfix.mjs exports them as GEO.passages)
     const cover = t.tunnel === 'building_passage' ? 'passage' : t.covered === 'yes' || t.covered === 'arcade' ? 'covered' : '';
     const maxheight = parseLength(t.maxheight);
     for (const part of lockedParts(w, use)) {
@@ -319,10 +319,10 @@ export function buildPoints(ctx) {
       else if (c === 'zebra' || c === 'marked' || c === 'uncontrolled' || ref === 'zebra') crossings.push({ x: X, z: Z, kind: 'zebra' });
     }
     if (t.natural === 'tree') trees.push(X, Z);
-    if (t.place && t.name && ['suburb', 'quarter', 'neighbourhood', 'locality', 'city'].includes(t.place) && t.name !== 'London' &&
-      (t.place !== 'city' || t.name === 'City of London') && !(t.place === 'locality' && /\b(Gate|Corner|Steps)$/.test(t.name))) {
+    if (t.place && t.name && ['suburb', 'quarter', 'neighbourhood', 'locality', 'city'].includes(t.place) && t.name !== 'Brussels' &&
+      (t.place !== 'city' || t.name === 'City of Brussels') && !(t.place === 'locality' && /\b(Gate|Corner|Steps)$/.test(t.name))) {
       const rank = { city: 4, suburb: 3, quarter: 2, neighbourhood: 1, locality: 0 }[t.place];
-      districts.push({ name: t.name === 'City of London' ? 'The City' : t.name, x: X, z: Z, rank });
+      districts.push({ name: t.name === 'City of Brussels' ? 'The City' : t.name, x: X, z: Z, rank });
     }
     const sk = stationOf(t);
     if (sk) stationsRaw.push({ name: t.name, x: X, z: Z, kind: sk });

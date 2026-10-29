@@ -1,20 +1,23 @@
-// js/ldn-geodata.js — loads the baked London geodata (data/ldn-geo.json + data/ldn-buildings.bin, written by
-// tools/build-london-geodata.mjs) and decodes it into the GEO shape of SPEC.md ("Contract: the baked geodata").
+// js/bxl-geodata.js — loads the baked Brussels geodata (data/bxl-geo.json + data/bxl-buildings.bin, written by
+// tools/build-brussels-geodata.mjs) and decodes it into the GEO shape of SPEC.md ("Contract: the baked geodata").
 //
-//   import { GEO } from './ldn-geodata.js';      // top-level await: the module resolves once the data is decoded
+//   import { GEO } from './bxl-geodata.js';      // top-level await: the module resolves once the data is decoded
 //
 // Works in the browser (fetch relative to this module) and in Node (reads the files with node:fs) so tests can import it.
 // Coordinates: world metres in the js/geo-frame.js frame (x east, z south, origin Nelson's Column), 0.1 m precision.
 //
-// File format (v1) — ldn-geo.json: { v, frame, bounds, enums:{…kind tables}, names:[…], roads:[[…]], water, parks, … }
-// with every point list delta-encoded in decimetre ints: [x0, z0, dx1, dz1, …]. ldn-buildings.bin (little-endian):
-// 'LDNB', u32 version, u32 count, u32 nPts, u32 nSections, u32 offset[nSections] then the sections ringStart u32[count+1],
+// File format (v1) — bxl-geo.json: { v, frame, bounds, enums:{…kind tables}, names:[…], roads:[[…]], water, parks, … }
+// with every point list delta-encoded in decimetre ints: [x0, z0, dx1, dz1, …]. bxl-buildings.bin (little-endian):
+// 'BXLB', u32 version, u32 count, u32 nPts, u32 nSections, u32 offset[nSections] then the sections ringStart u32[count+1],
 // origin i32[2count] (first point, dm), colour u32[count], nameIdx i32[count], delta i16[2nPts] (dm, first = 0),
 // height u16[count] (dm), minHeight u16[count] (dm), kind u8, material u8, roof u8, landmark u8.
 import { FRAME, WORLD_BOUNDS } from './geo-frame.js';
 
+const BRUSSELS_SELECTED = (typeof process !== 'undefined' && process.env?.CITY === 'brussels') ||
+  (typeof location !== 'undefined' && new URLSearchParams(location.search).get('city') === 'brussels');
+
 export const BUILDING_KINDS = ['house', 'terrace', 'flats', 'office', 'retail', 'civic', 'church', 'station', 'industrial', 'glass_tower', 'other'];
-export const MATERIALS = ['london_stock_brick', 'red_brick', 'portland_stone', 'stucco_white', 'glass', 'concrete', 'sandstone'];
+export const MATERIALS = ['brussels_stock_brick', 'red_brick', 'portland_stone', 'stucco_white', 'glass', 'concrete', 'sandstone'];
 export const ROOFS = ['flat', 'gabled', 'hipped', 'mansard', 'dome', 'spire'];
 
 /** delta-encoded decimetre ints -> Float32Array of metres */
@@ -32,7 +35,7 @@ const cm = (a) => (a ? Float32Array.from(a, (v) => v / 100) : null);
 function decodeBuildings(ab) {
   const dv = new DataView(ab);
   const magic = String.fromCharCode(dv.getUint8(0), dv.getUint8(1), dv.getUint8(2), dv.getUint8(3));
-  if (magic !== 'LDNB') throw new Error('ldn-buildings.bin: bad magic');
+  if (magic !== 'BXLB') throw new Error('bxl-buildings.bin: bad magic');
   const count = dv.getUint32(8, true), nPts = dv.getUint32(12, true), nSec = dv.getUint32(16, true);
   const o = [];
   for (let i = 0; i < nSec; i++) o.push(dv.getUint32(20 + i * 4, true));
@@ -63,11 +66,11 @@ function decodeBuildings(ab) {
   };
 }
 
-/** decode the parsed ldn-geo.json object + the ldn-buildings.bin ArrayBuffer into GEO */
+/** decode the parsed bxl-geo.json object + the bxl-buildings.bin ArrayBuffer into GEO */
 export function decodeGeo(j, buildingsBuffer) {
   const E = j.enums, names = j.names;
   for (const [a, b] of [[E.buildingKinds, BUILDING_KINDS], [E.materials, MATERIALS], [E.roofs, ROOFS]]) {
-    if (a.join() !== b.join()) throw new Error('ldn-geodata: enum mismatch, rebuild data');
+    if (a.join() !== b.join()) throw new Error('bxl-geodata: enum mismatch, rebuild data');
   }
   const S = (i) => names[i] || '';
   const crossPts = dec(j.crossings.p);
@@ -110,16 +113,18 @@ export function decodeGeo(j, buildingsBuffer) {
 }
 
 /** fetch (browser) or read (Node) the baked files and decode them */
-export async function loadGeo(base = new URL('../data/', import.meta.url)) {
-  const jsonUrl = new URL('ldn-geo.json', base), binUrl = new URL('ldn-buildings.bin', base);
+export async function loadGeo(base = new URL(BRUSSELS_SELECTED ? '../data/brussels-build/' : '../data/', import.meta.url)) {
+  const jsonName = BRUSSELS_SELECTED ? 'brx-geo.json' : 'bxl-geo.json';
+  const binName = BRUSSELS_SELECTED ? 'brx-buildings.bin' : 'bxl-buildings.bin';
+  const jsonUrl = new URL(jsonName, base), binUrl = new URL(binName, base);
   if (base.protocol === 'file:') {
     const fs = await import('node:fs');
     const b = fs.readFileSync(binUrl);
     return decodeGeo(JSON.parse(fs.readFileSync(jsonUrl, 'utf8')), b.buffer.slice(b.byteOffset, b.byteOffset + b.byteLength));
   }
   const [j, bin] = await Promise.all([
-    fetch(jsonUrl).then((r) => { if (!r.ok) throw new Error('ldn-geo.json ' + r.status); return r.json(); }),
-    fetch(binUrl).then((r) => { if (!r.ok) throw new Error('ldn-buildings.bin ' + r.status); return r.arrayBuffer(); })
+    fetch(jsonUrl).then((r) => { if (!r.ok) throw new Error(jsonName + ' ' + r.status); return r.json(); }),
+    fetch(binUrl).then((r) => { if (!r.ok) throw new Error(binName + ' ' + r.status); return r.arrayBuffer(); })
   ]);
   return decodeGeo(j, bin);
 }

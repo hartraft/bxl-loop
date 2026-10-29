@@ -1,13 +1,17 @@
-// js/geo-frame.js — the one shared world frame for London Loop.
-// 1 unit = 1 m. Origin = Trafalgar Square (Nelson's Column). +x = east, +z = south (north = -z), +y = up.
-// No rotation (London has no grid to align to). Used by tools/ (Node) and by the game (browser).
+// js/geo-frame.js — shared world frame for the currently selected build city.
+// Browser builds stay London by default. Set CITY=brussels only for the geodata build pipeline.
+import { BRUSSELS_FRAME, BRUSSELS_WORLD_BOUNDS, BRUSSELS_LANDMARK_ANCHORS } from './brussels-frame.js';
 
-export const FRAME = {
+const BUILD_CITY = (typeof process !== 'undefined' && process.env?.CITY === 'brussels') ||
+  (typeof location !== 'undefined' && new URLSearchParams(location.search).get('city') === 'brussels');
+const LONDON_FRAME = {
   lat0: 51.50773,
   lon0: -0.12803,
-  // play area (lat/lon): Paddington to Tower Bridge, King's Cross to Vauxhall + Battersea
+  // Paddington to Tower Bridge, King's Cross to Vauxhall + Battersea
   bbox: { south: 51.476, west: -0.2, north: 51.538, east: -0.065 }
 };
+
+export const FRAME = BUILD_CITY ? BRUSSELS_FRAME : LONDON_FRAME;
 
 const RAD = Math.PI / 180;
 const phi = FRAME.lat0 * RAD;
@@ -26,11 +30,11 @@ export function toLatLon(x, z) {
 const sw = toWorld(FRAME.bbox.south, FRAME.bbox.west);
 const ne = toWorld(FRAME.bbox.north, FRAME.bbox.east);
 /** world bounds of the play area in metres */
-export const WORLD_BOUNDS = { minX: sw.x, maxX: ne.x, minZ: ne.z, maxZ: sw.z };
+export const WORLD_BOUNDS = BUILD_CITY ? BRUSSELS_WORLD_BOUNDS : { minX: sw.x, maxX: ne.x, minZ: ne.z, maxZ: sw.z };
 
-/** Landmark anchor points (lat/lon of the real thing). Landmark models are built around these. */
-export const LANDMARK_ANCHORS = {
-  bigBen: { lat: 51.50073, lon: -0.12463, name: 'Big Ben & Houses of Parliament' }, // Elizabeth Tower
+/** Landmark anchor points used by the geodata builder. */
+export const LANDMARK_ANCHORS = BUILD_CITY ? BRUSSELS_LANDMARK_ANCHORS : {
+  bigBen: { lat: 51.50073, lon: -0.12463, name: 'Big Ben & Houses of Parliament' },
   parliament: { lat: 51.49929, lon: -0.12476, name: 'Palace of Westminster' },
   londonEye: { lat: 51.5033, lon: -0.11953, name: 'London Eye' },
   towerBridge: { lat: 51.50546, lon: -0.0754, name: 'Tower Bridge' },

@@ -1,23 +1,23 @@
-// js/audio/london-audio.js — Workstream L: the sound of London Loop. Everything synthesised in WebAudio.
+// js/audio/brussels-base-audio.js — Workstream L: the sound of Brussels Loop. Everything synthesised in WebAudio.
 //
-//   import { createLondonAudio } from './audio/london-audio.js';
-//   const audio = createLondonAudio({ controllers, traffic, life, lighting, world, geo, landmarks, cameraSystem, night });
+//   import { createBrusselsAudio } from './audio/brussels-base-audio.js';
+//   const audio = createBrusselsAudio({ controllers, traffic, life, lighting, world, geo, landmarks, cameraSystem, night });
 //   audio.update(dt, camera);                 // every frame (cheap: parameter updates at ≤ 30 Hz)
 //   audio.play('busBell');                    // cues: busBell busDoorsOpen busDoorsClose kneel airBrake notify coin cancel bikeBell whistle click
 //   audio.horn(true/false) (key G); audio.toggleMute() (key K); audio.setVolume(0..1); audio.chime(quarter?)  (test the bells)
 //
 // - Starts on the first user gesture (pointer / key / touch); suspends while the tab is hidden or muted.
-// - Player: per-mode engines (black cab diesel clatter + autobox, RideLDN hybrid whine, bus diesel + air brakes, hire
+// - Player: per-mode engines (black cab diesel clatter + autobox, RideBXL hybrid whine, bus diesel + air brakes, hire
 //   bike freewheel + tyre/wind, helicopter rotor thump + turbine, river boat diesel + wash + slaps, footsteps on foot),
 //   tyre squeal from the cab's sideways slip / handbrake, horn (G), collision thuds (controllers' collision listener).
 // - World: traffic hum + pass-bys of the nearest traffic (panned, Doppler), crowd babble that follows the pavement
 //   crowd and landmarks, birds in parks (by day), gulls and lapping water near the Thames, rain in drizzle, wind aloft,
 //   distant sirens now and then, river boats and their horns, aircraft overhead, the odd helicopter, pigeons taking
-//   off, and Big Ben: the Westminster Quarters on the quarter hours and the hour strike in real London time (delayed
+//   off, and Big Ben: the Westminster Quarters on the quarter hours and the hour strike in real Brussels time (delayed
 //   by the speed of sound and muffled by distance).
 import { AudioCore, clamp, spatial } from './audio-core.js';
 import { later, EngineVoice, RotorVoice, NoiseBed, SirenVoice, CrowdVoice, HornVoice, SquealVoice, bell, thud, footstep, tick, bird, flutter, slap, shipHorn, cue, CUES } from './synth.js';
-import { chimeSchedule, londonTime, dueChime } from './chimes.js';
+import { chimeSchedule, brusselsTime, dueChime } from './chimes.js';
 import { toWorld, LANDMARK_ANCHORS } from '../geo-frame.js';
 
 const SOUND = 343;
@@ -32,11 +32,11 @@ const PROFILES = {
   boat: { kind: 'boat', idle: 640, red: 2200, cyl: 6, gears: [6.5], up: 9999, cut: 480, clatter: 0.35, clatterHz: 1200, level: 0.28 }
 };
 
-export function createLondonAudio(opts = {}) {
-  return new LondonAudio(opts);
+export function createBrusselsAudio(opts = {}) {
+  return new BrusselsAudio(opts);
 }
 
-export class LondonAudio {
+export class BrusselsAudio {
   constructor(opts = {}) {
     this.o = opts;
     this.core = new AudioCore({ ctxFactory: opts.ctxFactory, volume: readPref('vol', 0.8), muted: readPref('muted', false) });
@@ -58,7 +58,10 @@ export class LondonAudio {
     this._lastHit = -1;
     this.parks = prepParks(opts.geo);
     this.landmarks = (opts.landmarks || []).map((l) => ({ x: l.x, z: l.z, r: l.r || 80, id: l.id }));
-    this.bigBen = opts.bigBen || toWorld(LANDMARK_ANCHORS.bigBen.lat, LANDMARK_ANCHORS.bigBen.lon); // Elizabeth Tower
+    // Brussels has no Big Ben anchor. Prefer the cathedral as the local chime source,
+    // while retaining the historic anchor for compatibility with the original London build.
+    const chimeAnchor = LANDMARK_ANCHORS.bigBen || LANDMARK_ANCHORS.cathedral || LANDMARK_ANCHORS.grandPlace;
+    this.bigBen = opts.bigBen || (chimeAnchor ? toWorld(chimeAnchor.lat, chimeAnchor.lon) : { x: 0, z: 0 });
     this.weather = 'clear';
     if (opts.lighting) {
       this.weather = opts.lighting.weather || 'clear';
@@ -111,7 +114,7 @@ export class LondonAudio {
   }
   /** ring the bells now (quarter 1–4; default the latest quarter) — for testing */
   chime(quarter = null, hour = null) {
-    const t = londonTime();
+    const t = brusselsTime();
     this._ringChime(quarter || (Math.floor(t.m / 15) || 4), hour || (t.h % 12 || 12), true);
   }
 
@@ -456,7 +459,7 @@ export class LondonAudio {
     this.timers.chime = (this.timers.chime ?? 0) - dt;
     if (this.timers.chime <= 0) {
       this.timers.chime = 0.5;
-      const due = dueChime(londonTime());
+      const due = dueChime(brusselsTime());
       if (due && due.key !== this.lastChime) { this.lastChime = due.key; this._ringChime(due.quarter, due.hour, false, due.age); }
     }
     // ---- life: boats, aircraft, helicopters, pigeons
@@ -587,15 +590,15 @@ export class LondonAudio {
       const btn = document.createElement('button');
       btn.id = 'btn-sound';
       btn.type = 'button';
-      btn.className = host ? 'tool-btn icon-only' : 'ldn-sound-btn';
+      btn.className = host ? 'tool-btn icon-only' : 'bxl-sound-btn';
       btn.innerHTML = '<svg class="icon" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H3v6h3l5 4z"/><path class="snd-on" d="M15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13"/><path class="snd-off" d="m16 9 6 6M22 9l-6 6"/></svg>';
       btn.addEventListener('click', () => { this.core.unlock(); this.toggleMute(); });
-      if (!document.getElementById('ldn-sound-style')) {
+      if (!document.getElementById('bxl-sound-style')) {
         const st = document.createElement('style');
-        st.id = 'ldn-sound-style';
+        st.id = 'bxl-sound-style';
         st.textContent = `#btn-sound .snd-off{display:none}#btn-sound.is-muted .snd-off{display:inline}#btn-sound.is-muted .snd-on{display:none}
-.ldn-sound-btn{position:fixed;left:12px;bottom:12px;z-index:20;width:36px;height:36px;border-radius:10px;border:0;background:rgba(20,22,26,.72);color:#fff;display:grid;place-items:center;cursor:pointer}
-body.hud-minimized .ldn-sound-btn{display:none}`;
+.bxl-sound-btn{position:fixed;left:12px;bottom:12px;z-index:20;width:36px;height:36px;border-radius:10px;border:0;background:rgba(20,22,26,.72);color:#fff;display:grid;place-items:center;cursor:pointer}
+body.hud-minimized .bxl-sound-btn{display:none}`;
         document.head.appendChild(st);
       }
       const before = host && document.getElementById('btn-toggle-hud');
@@ -622,9 +625,9 @@ body.hud-minimized .ldn-sound-btn{display:none}`;
 // helpers
 // ---------------------------------------------------------------------------------------------------------------------
 function readPref(k, d) {
-  try { const v = globalThis.localStorage && localStorage.getItem('londonloop_audio_' + k); return v === null || v === undefined ? d : JSON.parse(v); } catch { return d; }
+  try { const v = globalThis.localStorage && localStorage.getItem('brusselsloop_audio_' + k); return v === null || v === undefined ? d : JSON.parse(v); } catch { return d; }
 }
-function writePref(k, v) { try { if (globalThis.localStorage) localStorage.setItem('londonloop_audio_' + k, JSON.stringify(v)); } catch { /* private mode */ } }
+function writePref(k, v) { try { if (globalThis.localStorage) localStorage.setItem('brusselsloop_audio_' + k, JSON.stringify(v)); } catch { /* private mode */ } }
 
 /** share of water around (x, z): 8 points at 35 m + 12 at 80 m */
 function waterFraction(world, x, z) {

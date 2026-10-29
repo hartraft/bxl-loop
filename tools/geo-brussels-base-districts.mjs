@@ -1,7 +1,7 @@
-// tools/geo-london-districts.mjs — coarse character zones of central London used for building defaults
+// tools/geo-brussels-base-districts.mjs — coarse character zones of central Brussels used for building defaults
 // (height / material / roof when OSM doesn't say). Hand-drawn approximations in lat/lon, converted to world metres.
 import { toWorld } from '../js/geo-frame.js';
-import { pointInRing } from './geo-london-util.mjs';
+import { pointInRing } from './geo-brussels-base-util.mjs';
 
 const poly = (pts) => pts.map(([lat, lon]) => { const w = toWorld(lat, lon); return [w.x, w.z]; });
 const circ = (lat, lon, r) => { const w = toWorld(lat, lon); return { x: w.x, z: w.z, r }; };

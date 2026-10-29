@@ -1,16 +1,16 @@
-// js/london-map.js — Workstream E: the live radar minimap + the full-screen "London Street Atlas" (A–Z style).
+// js/brussels-base-map.js — Workstream E: the live radar minimap + the full-screen "Brussels Street Atlas" (A–Z style).
 //
-//   import { LondonMapSystem } from './london-map.js';
-//   const mapSystem = new LondonMapSystem({ controllerManager, cameraSystem, trafficSystem, onTeleport, onToggle });
+//   import { BrusselsMapSystem } from './brussels-base-map.js';
+//   const mapSystem = new BrusselsMapSystem({ controllerManager, cameraSystem, trafficSystem, onTeleport, onToggle });
 //   mapSystem.update();                       // every frame (renders the radar, or the full map while it is open)
 //   mapSystem.toggleFullMap(true | false);    mapSystem.isFullMapOpen
 //   mapSystem.waypoint = { x, z, name };      // (or setWaypoint(x, z, name)) GPS target: a road-following route is drawn
-//   mapSystem.setRoute([{x, z}, …] | Float32Array | null, { color })   // external route (RideLDN) — overrides the GPS
+//   mapSystem.setRoute([{x, z}, …] | Float32Array | null, { color })   // external route (RideBXL) — overrides the GPS
 //   mapSystem.setPins([{ x, z, kind: 'pickup' | 'dropoff' | 'waypoint' | string, label }])
 //
 // Same public surface as NYCMapSystem (js/nyc-map.js) so main.js swaps one for the other. Everything is drawn from the
 // baked OpenStreetMap geodata (GEO): Thames, docks & lakes, parks, plazas, 78k building footprints, roads by class in a
-// London A–Z-ish palette (primary routes red, A roads pink, B roads orange, minor roads white), rail, bridges, street
+// Brussels A–Z-ish palette (primary routes red, A roads pink, B roads orange, minor roads white), rail, bridges, street
 // names along their course, road-number shields, district / park / river names, landmark pictograms and stations
 // (generic square glyph — deliberately no TfL roundel).
 //
@@ -18,11 +18,12 @@
 // frame, nearest first, with a whole-city overview canvas as a stand-in until they arrive). The radar blits from a
 // cached composite around the player and only rotates it; the full map re-composites tiles + labels when the view moves.
 
-import { GEO } from './ldn-geodata.js';
-import { WORLD, LONDON_LANDMARKS, getLocationLabel, isTypingInField, WORLD_BOUNDS } from './london-config.js';
+import { GEO } from './brx-geodata.js';
+import { WORLD, BRUSSELS_LANDMARKS, getLocationLabel, isTypingInField, WORLD_BOUNDS } from './city-config.js';
 import { toWorld } from './geo-frame.js';
 
 const FONT = 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, sans-serif';
+const IS_BRUSSELS = typeof location !== 'undefined' && new URLSearchParams(location.search).get('city') === 'brussels';
 const MIN_ZOOM = 0.06; // full map, CSS px per metre (all of Zone 1)
 const MAX_ZOOM = 6.0;
 const RADAR_SCALE = 0.62; // radar CSS px per metre at street level (~460 m across)
@@ -504,9 +505,9 @@ const DISTRICTS = GEO.districts.filter((d) => d.rank >= 1 && !/Estate$/.test(d.n
 
 // Landmark pictogram by id
 const LANDMARK_GLYPH = {
-  bigBen: 'clock', londonEye: 'wheel', towerBridge: 'bridge', shard: 'shard', stPauls: 'dome', gherkin: 'gherkin',
+  bigBen: 'clock', brusselsEye: 'wheel', towerBridge: 'bridge', shard: 'shard', stPauls: 'dome', gherkin: 'gherkin',
   buckinghamPalace: 'palace', trafalgarSquare: 'column', piccadillyCircus: 'star', batterseaPowerStation: 'chimneys',
-  towerOfLondon: 'castle', westminsterAbbey: 'church', britishMuseum: 'museum', coventGarden: 'market', boroughMarket: 'market',
+  towerOfBrussels: 'castle', westminsterAbbey: 'church', britishMuseum: 'museum', coventGarden: 'market', boroughMarket: 'market',
   kingsCross: 'train', royalAlbertHall: 'dome', tateModern: 'museum', millenniumBridge: 'bridge', somersetHouse: 'museum',
   naturalHistoryMuseum: 'museum'
 };
@@ -685,15 +686,15 @@ function injectMapStyle() {
   if (STYLE_DONE || typeof document === 'undefined') return;
   STYLE_DONE = true;
   const el = document.createElement('style');
-  el.id = 'ldn-map-style';
+  el.id = 'bxl-map-style';
   el.textContent = `
 #minimap-card.panel.radar{background:${P.paper}}
-.radar.ldn-rot .radar-north{transition:none}
-.ldn-legend-road{width:18px;height:6px;border-radius:3px;display:inline-block;flex:none}
-.ldn-legend-station{width:11px;height:11px;border-radius:3px;background:${P.station.tube};box-shadow:0 0 0 1.5px #fff;display:inline-block;flex:none}
-.ldn-legend-landmark{width:11px;height:11px;border-radius:50%;background:${P.landmark};box-shadow:0 0 0 1.5px #fff;display:inline-block;flex:none}
-.ldn-legend-gps{width:18px;height:4px;border-radius:2px;background:${P.route};display:inline-block;flex:none;box-shadow:0 0 0 1.5px #fff}
-.ldn-legend-park{width:12px;height:10px;border-radius:2px;background:${P.parks.park};display:inline-block;flex:none}
+.radar.bxl-rot .radar-north{transition:none}
+.bxl-legend-road{width:18px;height:6px;border-radius:3px;display:inline-block;flex:none}
+.bxl-legend-station{width:11px;height:11px;border-radius:3px;background:${P.station.tube};box-shadow:0 0 0 1.5px #fff;display:inline-block;flex:none}
+.bxl-legend-landmark{width:11px;height:11px;border-radius:50%;background:${P.landmark};box-shadow:0 0 0 1.5px #fff;display:inline-block;flex:none}
+.bxl-legend-gps{width:18px;height:4px;border-radius:2px;background:${P.route};display:inline-block;flex:none;box-shadow:0 0 0 1.5px #fff}
+.bxl-legend-park{width:12px;height:10px;border-radius:2px;background:${P.parks.park};display:inline-block;flex:none}
 .fullmap-modal .fullmap-canvas-wrap{background:${P.paper}}
 `;
   document.head.appendChild(el);
@@ -702,7 +703,7 @@ function injectMapStyle() {
 // ---------------------------------------------------------------------------------------------------------------------
 // The map system
 // ---------------------------------------------------------------------------------------------------------------------
-class LondonMapSystem {
+class BrusselsMapSystem {
   /**
    * @param {object} o
    * @param {object} o.controllerManager   needs getActiveEntity() -> { position: {x, y, z}, heading, speed }
@@ -712,7 +713,7 @@ class LondonMapSystem {
    * @param {(open: boolean) => void} [o.onToggle]
    * @param {(wp: {x, z, name} | null) => void} [o.onWaypointChange]
    * @param {boolean} [o.rotateMinimap=true]  radar turns with the camera (north marker orbits the rim)
-   * @param {object} [o.roadGraph]  a RoadGraph (js/rideldn.js) to share; otherwise one is built on the first GPS route
+   * @param {object} [o.roadGraph]  a RoadGraph (js/ridebxl.js) to share; otherwise one is built on the first GPS route
    */
   constructor({ controllerManager, cameraSystem = null, trafficSystem = null, onTeleport = null, onToggle = null,
     onWaypointChange = null, rotateMinimap = true, roadGraph = null } = {}) {
@@ -741,7 +742,7 @@ class LondonMapSystem {
     this.miniScale = RADAR_SCALE;
     this.miniCache = null;
     this.miniLabels = null;
-    if (this.miniCard && rotateMinimap) this.miniCard.classList.add('ldn-rot');
+    if (this.miniCard && rotateMinimap) this.miniCard.classList.add('bxl-rot');
 
     this.modal = document.getElementById('fullmap-modal');
     this.fullCanvas = document.getElementById('fullmap-canvas');
@@ -806,7 +807,10 @@ class LondonMapSystem {
     const compass = document.querySelector('.map-compass');
     if (compass) compass.title = 'North is up';
     const fit = document.getElementById('map-view-all');
-    if (fit) { fit.title = 'All of Zone 1 (Paddington to Tower Bridge)'; fit.setAttribute('aria-label', 'Fit all of central London'); }
+    if (fit) {
+      fit.title = IS_BRUSSELS ? 'All of central Brussels' : 'All of Zone 1 (Paddington to Tower Bridge)';
+      fit.setAttribute('aria-label', IS_BRUSSELS ? 'Fit all of central Brussels' : 'Fit all of central Brussels');
+    }
     const legend = document.querySelector('.fullmap-legend');
     if (legend) {
       const item = (cls, label, style) => {
@@ -820,9 +824,9 @@ class LondonMapSystem {
       };
       const you = item('legend-swatch player-swatch', 'You');
       you.firstChild.style.background = P.player;
-      const nodes = [you, item('ldn-legend-gps', 'GPS route'), item('ldn-legend-road', 'Primary route', P.road.trunk.fill),
-        item('ldn-legend-road', 'A road', P.road.primary.fill), item('ldn-legend-road', 'B road', P.road.secondary.fill),
-        item('ldn-legend-station', 'Station'), item('ldn-legend-landmark', 'Landmark')];
+      const nodes = [you, item('bxl-legend-gps', 'GPS route'), item('bxl-legend-road', 'Primary route', P.road.trunk.fill),
+        item('bxl-legend-road', 'A road', P.road.primary.fill), item('bxl-legend-road', 'B road', P.road.secondary.fill),
+        item('bxl-legend-station', 'Station'), item('bxl-legend-landmark', 'Landmark')];
       if (counts) nodes.push(counts);
       legend.replaceChildren(...nodes);
     }
@@ -1010,8 +1014,8 @@ class LondonMapSystem {
   clearWaypoint() { this.waypoint = null; }
 
   /**
-   * External route (e.g. RideLDN's remaining GPS route) [{x, z}] or flat; null / [] clears. The 2nd argument is either
-   * { color } or a RideLDN target { x, z, kind: 'pickup' | 'dropoff', name } (route coloured by kind + a pin there).
+   * External route (e.g. RideBXL's remaining GPS route) [{x, z}] or flat; null / [] clears. The 2nd argument is either
+   * { color } or a RideBXL target { x, z, kind: 'pickup' | 'dropoff', name } (route coloured by kind + a pin there).
    */
   setRoute(points, opts = {}) {
     const pts = toFlat(points);
@@ -1042,9 +1046,9 @@ class LondonMapSystem {
   async ensureRoadGraph() {
     if (this.roadGraph) return this.roadGraph;
     if (!this._graphPromise) {
-      this._graphPromise = import('./rideldn.js')
+      this._graphPromise = import('./ridebxl.js')
         .then((m) => (this.roadGraph = new m.RoadGraph(GEO.roads)))
-        .catch((e) => { console.warn('[london-map] no road graph, straight GPS line', e); return null; });
+        .catch((e) => { console.warn('[brussels-map] no road graph, straight GPS line', e); return null; });
     }
     return this._graphPromise;
   }
@@ -1059,7 +1063,7 @@ class LondonMapSystem {
     const a = ent.position;
     let pts = [{ x: a.x, z: a.z }, { x: wp.x, z: wp.z }];
     if (g) {
-      try { pts = g.route(a.x, a.z, wp.x, wp.z).pts; } catch (e) { console.warn('[london-map] route', e); }
+      try { pts = g.route(a.x, a.z, wp.x, wp.z).pts; } catch (e) { console.warn('[brussels-map] route', e); }
     }
     this.gpsRoute = toFlat(pts);
   }
@@ -1099,7 +1103,7 @@ class LondonMapSystem {
     this.searchHighlight = q;
     this.searchPath = null;
     if (q.length > 1) {
-      const lm = LONDON_LANDMARKS.find((l) => l.name.toLowerCase().includes(q) || l.short.toLowerCase().includes(q));
+      const lm = BRUSSELS_LANDMARKS.find((l) => l.name.toLowerCase().includes(q) || l.short.toLowerCase().includes(q));
       const st = GEO.stations.find((s) => s.name.toLowerCase().includes(q));
       const roads = ROAD_LABELS.filter((l) => l.lower.includes(q));
       const exact = roads.filter((l) => l.lower === q || l.lower.startsWith(q + ' '));
@@ -1330,7 +1334,7 @@ class LondonMapSystem {
     if (full === true) {
       ctx.font = `700 11.5px ${FONT}`;
       const r = s >= 0.5 ? 8 : 6.5;
-      for (const lm of LONDON_LANDMARKS) {
+      for (const lm of BRUSSELS_LANDMARKS) {
         const [X, Y] = sx(lm.x, lm.z);
         if (!inScreen(X, Y, 4)) continue;
         const box = [X - r - 2, Y - r - 2, X + r + 2, Y + r + 2];
@@ -1688,7 +1692,7 @@ class LondonMapSystem {
 
     const rs = (x, z) => { const a = toX(x), b = toY(z); return [a * cr - b * sr, a * sr + b * cr]; };
     const inside = ([X, Y], m = 0) => Math.abs(X) < w / 2 - m && Math.abs(Y) < h / 2 - m;
-    for (const lm of LONDON_LANDMARKS) {
+    for (const lm of BRUSSELS_LANDMARKS) {
       const q = rs(lm.x, lm.z);
       if (inside(q, 6)) drawLandmarkGlyph(ctx, LANDMARK_GLYPH[lm.id] || 'star', q[0], q[1], 6.5);
     }
@@ -1878,4 +1882,4 @@ function nearestOnPolyline(p, x, z) {
   return best;
 }
 
-export { LondonMapSystem, STREET_COUNT, drawLandmarkGlyph, drawStationGlyph };
+export { BrusselsMapSystem, STREET_COUNT, drawLandmarkGlyph, drawStationGlyph };

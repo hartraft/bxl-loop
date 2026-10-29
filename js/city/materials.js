@@ -796,3 +796,12 @@ export function lampPoolMaterial() {
   _pool = m;
   return m;
 }
+
+
+// Brussels port compatibility names. The procedural implementations are shared
+// with the original city renderer; expose the names consumed by brussels-base-city.js.
+export {
+  createLondonBuildingMaterial as createBrusselsBuildingMaterial,
+  createLondonGlassMaterial as createBrusselsGlassMaterial,
+  createLondonWaterMaterial as createBrusselsWaterMaterial
+};

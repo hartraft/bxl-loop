@@ -1,11 +1,11 @@
-// js/rideldn.js — RideLDN: an Uber-style ride-hail game for London Loop (fictional brand, Workstream D).
+// js/ridebxl.js — RideBXL: an Uber-style ride-hail game for Brussels Loop (fictional brand, Workstream D).
 //
-//   const rideldn = new RideLDN({ scene, camera, controllers, world, geo: GEO, backend, ui: { setMode } });
-//   rideldn.update(dt);         // every frame, after controllers.update()
-//   rideldn.getRoute();         // [{x, z}, …] remaining GPS route (car -> current pin), [] when there is none
-//   rideldn.getTarget();        // { x, z, kind: 'pickup' | 'dropoff', name } | null
+//   const ridebxl = new RideBXL({ scene, camera, controllers, world, geo: GEO, backend, ui: { setMode } });
+//   ridebxl.update(dt);         // every frame, after controllers.update()
+//   ridebxl.getRoute();         // [{x, z}, …] remaining GPS route (car -> current pin), [] when there is none
+//   ridebxl.getTarget();        // { x, z, kind: 'pickup' | 'dropoff', name } | null
 //
-// Only plays in the 'ride' mode (the RideLDN car). Builds its own DOM (phone panel, HUD chip, toasts, pin label,
+// Only plays in the 'ride' mode (the RideBXL car). Builds its own DOM (phone panel, HUD chip, toasts, pin label,
 // edge arrow) with scoped .rl- styles, and its own 3D markers (pin beam, waiting passenger, route ribbon).
 
 import * as THREE from 'three/webgpu';
@@ -30,7 +30,7 @@ const STOP_HOLD_S = 1.5;
 const SPEED_LIMIT = 35 / 2.237; // 35 mph
 const ROUTE_DRAW_M = 600;
 const PICKUP_GIVE_UP_S = 300;
-const AVG_SPEED = 7.5; // m/s, for ETAs (London traffic ~17 mph)
+const AVG_SPEED = 7.5; // m/s, for ETAs (Brussels traffic ~17 mph)
 const C_PICKUP = 0x3ee6b4;
 const C_DROPOFF = 0xff5fa2;
 const MPH = 2.237;
@@ -41,11 +41,11 @@ const PASSENGERS = ['Amira', 'Tom', 'Priya', 'Kwame', 'Siobhan', 'Olu', 'Jess', 
 
 const CHAT = {
   board: ['Alright? Cheers for coming.', 'Evening! Sorry, I was by the wrong door.', 'Hiya — mind if I charge my phone?',
-    "Lovely, thanks. Don't go via the Embankment, it's rammed.", 'Cheers mate. Long day.', 'Hello! Is this the RideLDN? Brilliant.'],
+    "Lovely, thanks. Don't go via the Embankment, it's rammed.", 'Cheers mate. Long day.', 'Hello! Is this the RideBXL? Brilliant.'],
   cruise: ['Is it me or is it always drizzling?', "I've lived here ten years and still can't find a decent bagel south of the river.",
     "My mate says it's quicker on the Tube. My mate is wrong.", 'Ooh, is that the Shard? Never gets old.', 'Can you believe what they charge for a pint round here?',
     "Sorry, I'm just on a call — yeah, I'm in the car, ten minutes.", 'You do the Knowledge or just the app?', 'This is the bit where the satnav always panics.',
-    "I'd have walked but, you know. London.", 'Do you get many tourists asking for Platform 9¾?', 'Love this song. Can you turn it up a bit?',
+    "I'd have walked but, you know. Brussels.", 'Do you get many tourists asking for Platform 9¾?', 'Love this song. Can you turn it up a bit?',
     'Mad how many cranes there are now.'],
   speeding: ['Er… are we late for something?', "Bit quick, isn't it?", 'I would like to arrive alive, please.', "Steady on, Lewis Hamilton!"],
   brake: ['Woah! My coffee!', 'Easy on the brakes, mate.', 'Whiplash. Lovely.'],
@@ -375,7 +375,7 @@ function chevronTexture() {
 class PinMarker {
   constructor(scene) {
     this.group = new THREE.Group();
-    this.group.name = 'RideLDNPin';
+    this.group.name = 'RideBXLPin';
     this.group.visible = false;
     this.color = new THREE.Color(C_PICKUP);
     const beamTex = beamTexture();
@@ -481,7 +481,7 @@ class PassengerFigure {
     ];
     const [mShirt, mSkin, mLegs, mHair] = this.mats;
     const g = new THREE.Group();
-    g.name = 'RideLDNPassenger';
+    g.name = 'RideBXLPassenger';
     const legGeo = new THREE.CapsuleGeometry(0.085, 0.72, 4, 8);
     const legL = new THREE.Mesh(legGeo, mLegs);
     legL.position.set(0.1, 0.45, 0);
@@ -591,7 +591,7 @@ class RouteRibbon {
     this.mat = new THREE.MeshBasicMaterial({ color: C_PICKUP, map: this.tex, transparent: true, opacity: 0.85, depthWrite: false,
       blending: THREE.AdditiveBlending, side: THREE.DoubleSide, fog: false, toneMapped: false, polygonOffset: true, polygonOffsetFactor: -4, polygonOffsetUnits: -4 });
     this.mesh = new THREE.Mesh(geo, this.mat);
-    this.mesh.name = 'RideLDNRoute';
+    this.mesh.name = 'RideBXLRoute';
     this.mesh.frustumCulled = false;
     this.mesh.renderOrder = 4;
     this.mesh.visible = false;
@@ -834,9 +834,9 @@ function icon(name) {
 }
 
 // ------------------------------------------------------------------------------------------------------------------
-// RideLDN
+// RideBXL
 // ------------------------------------------------------------------------------------------------------------------
-export class RideLDN {
+export class RideBXL {
   /**
    * @param {object} o
    * @param {THREE.Scene} o.scene
@@ -924,7 +924,7 @@ export class RideLDN {
   setOnline(on) {
     on = !!on;
     if (on && !this.inRideMode) {
-      this.toast('Switch to the RideLDN car to take jobs', 'bad');
+      this.toast('Switch to the RideBXL car to take jobs', 'bad');
       this._render();
       return;
     }
@@ -983,7 +983,7 @@ export class RideLDN {
     const collapsed = this.root.classList.contains('rl-collapsed');
     const next = open === undefined ? !collapsed : !open;
     this.root.classList.toggle('rl-collapsed', next);
-    try { safeStorage.set('londonloop_rl_collapsed', next); } catch { /* ignore */ }
+    try { safeStorage.set('brusselsloop_rl_collapsed', next); } catch { /* ignore */ }
     if (!next) this._render();
   }
 
@@ -1134,7 +1134,7 @@ export class RideLDN {
     if (!this._graph) {
       const t0 = performance.now();
       this._graph = new RoadGraph(this.geo.roads || []);
-      console.log(`[rideldn] road graph: ${this._graph.n} nodes, ${this._graph.to.length} edges, ${Math.round(performance.now() - t0)} ms`);
+      console.log(`[ridebxl] road graph: ${this._graph.n} nodes, ${this._graph.to.length} edges, ${Math.round(performance.now() - t0)} ms`);
     }
     return this._graph;
   }
@@ -1187,7 +1187,7 @@ export class RideLDN {
         dist = r.dist ?? Math.hypot(r.x - x, r.z - z);
       }
     } catch (e) {
-      console.warn('[rideldn] nearestRoad', e);
+      console.warn('[ridebxl] nearestRoad', e);
     }
     if (!road) {
       const g = this._ensureGraph();
@@ -1250,7 +1250,7 @@ export class RideLDN {
 
   _makeOffer() {
     if (!this._ensureGraph().n) {
-      this.toast('No roads loaded — RideLDN needs the road map', 'bad');
+      this.toast('No roads loaded — RideBXL needs the road map', 'bad');
       return false;
     }
     for (let attempt = 0; attempt < 8; attempt++) if (this._tryOffer()) return true;
@@ -1463,7 +1463,7 @@ export class RideLDN {
       res = await this.backend.finishRide(payload);
     } catch (e) {
       err = e;
-      console.warn('[rideldn] finish_ride rejected:', e && e.message);
+      console.warn('[ridebxl] finish_ride rejected:', e && e.message);
     }
     if (this._disposed) return;
     const result = { ...payload, fare: res ? res.fare : 0, estFare: computeFare(r.dist, r.time, rating), error: err ? err.message || String(err) : null,
@@ -1589,7 +1589,7 @@ export class RideLDN {
 
   _emitRoute() {
     if (this.ui.onRouteChange) {
-      try { this.ui.onRouteChange(this.getRoute(), this.getTarget()); } catch (e) { console.warn('[rideldn] onRouteChange', e); }
+      try { this.ui.onRouteChange(this.getRoute(), this.getTarget()); } catch (e) { console.warn('[ridebxl] onRouteChange', e); }
     }
   }
 
@@ -1661,30 +1661,30 @@ export class RideLDN {
     const host = this.ui.container || document.body;
     const root = (this.root = h('div', 'rl-root'));
     let collapsed = false;
-    try { collapsed = !!safeStorage.get('londonloop_rl_collapsed'); } catch { /* ignore */ }
+    try { collapsed = !!safeStorage.get('brusselsloop_rl_collapsed'); } catch { /* ignore */ }
     root.classList.toggle('rl-collapsed', collapsed);
 
     // collapsed handle
     const handle = (this.handle = h('button', 'rl-handle'));
     handle.type = 'button';
-    handle.title = 'Open RideLDN [R]';
+    handle.title = 'Open RideBXL [R]';
     const hl = h('span', 'rl-logo');
-    hl.append(h('b', '', 'R'), document.createTextNode('Ride'), h('em', '', 'LDN'));
+    hl.append(h('b', '', 'R'), document.createTextNode('Ride'), h('em', '', 'BXL'));
     this.handleSub = h('span', 'rl-hsub', '');
     handle.append(hl, this.handleSub, h('span', 'rl-kbd', 'R'));
     handle.addEventListener('click', () => this.togglePanel(true));
 
     // phone
     const phone = (this.phone = h('section', 'rl-phone'));
-    phone.setAttribute('aria-label', 'RideLDN driver app');
+    phone.setAttribute('aria-label', 'RideBXL driver app');
     const head = h('div', 'rl-head');
     const logo = h('span', 'rl-logo');
-    logo.append(h('b', '', 'R'), document.createTextNode('Ride'), h('em', '', 'LDN'));
+    logo.append(h('b', '', 'R'), document.createTextNode('Ride'), h('em', '', 'BXL'));
     this.statusEl = h('span', 'rl-status');
     const min = h('button', 'rl-iconbtn');
     min.type = 'button';
     min.title = 'Minimise [R]';
-    min.setAttribute('aria-label', 'Minimise RideLDN');
+    min.setAttribute('aria-label', 'Minimise RideBXL');
     min.appendChild(icon('min'));
     min.addEventListener('click', () => this.togglePanel(false));
     head.append(logo, this.statusEl, min);
@@ -1818,12 +1818,12 @@ export class RideLDN {
       const w = h('div', 'rl-warn');
       w.appendChild(icon('car'));
       const tx = h('div');
-      tx.append(h('h3', '', this.job ? 'Get back in the car!' : 'RideLDN car needed'),
-        h('div', 'rl-sub', this.job ? `${this.job.pax.name} is waiting. Jump back in your RideLDN car.` : 'Jobs only come through in the RideLDN car.'));
+      tx.append(h('h3', '', this.job ? 'Get back in the car!' : 'RideBXL car needed'),
+        h('div', 'rl-sub', this.job ? `${this.job.pax.name} is waiting. Jump back in your RideBXL car.` : 'Jobs only come through in the RideBXL car.'));
       w.appendChild(tx);
       card.appendChild(w);
       if (this.ui.setMode) {
-        const b = this._btn('Switch to RideLDN car', 'primary', () => {
+        const b = this._btn('Switch to RideBXL car', 'primary', () => {
           this.ui.setMode(this.rideMode);
           setTimeout(() => this._render(), 0);
         });
@@ -1958,7 +1958,7 @@ export class RideLDN {
       try {
         this._leaderCache = { t: performance.now(), rows: await this.backend.leaderboard(15) };
       } catch (e) {
-        this.body.replaceChildren(h('div', 'rl-empty', `Couldn't load: ${e.message}`));
+        this.body.replaceChildren(h('div', 'rl-empty', `Coubxl't load: ${e.message}`));
         return;
       }
       if (this.tab !== 'leaders') return;
@@ -1987,7 +1987,7 @@ export class RideLDN {
       try {
         this._recentCache = { rows: await this.backend.recentRides() };
       } catch (e) {
-        this.body.replaceChildren(h('div', 'rl-empty', `Couldn't load: ${e.message}`));
+        this.body.replaceChildren(h('div', 'rl-empty', `Coubxl't load: ${e.message}`));
         return;
       }
       if (this.tab !== 'rides') return;
@@ -2092,7 +2092,7 @@ export class RideLDN {
       }
       const near = Math.hypot(px - t.x, pz - t.z) < 45;
       this.chipTitle.textContent = this.phase === 'boarding' ? `${j.pax.name} is getting in…` : drop ? `Drop off at ${t.name}` : `Pick up ${j.pax.name} · ${t.name}`;
-      this.chipSub.textContent = this.phase === 'boarding' ? 'Hold on a sec' : near ? (speed >= STOP_SPEED ? 'Pull over at the pin and stop' : 'Hold still…') : `${this.inRideMode ? '' : 'Get back in your RideLDN car · '}ETA ${fmtMin(eta)}`;
+      this.chipSub.textContent = this.phase === 'boarding' ? 'Hold on a sec' : near ? (speed >= STOP_SPEED ? 'Pull over at the pin and stop' : 'Hold still…') : `${this.inRideMode ? '' : 'Get back in your RideBXL car · '}ETA ${fmtMin(eta)}`;
       this.chipBig.textContent = fmtDist(remain);
       this.chipHold.classList.toggle('on', this.holdT > 0.01);
       this.chipHoldBar.style.transform = `scaleX(${clamp(this.holdT / STOP_HOLD_S, 0, 1)})`;
@@ -2159,13 +2159,13 @@ export class RideLDN {
   }
 
   _loadToday() {
-    const t = safeStorage.get('londonloop_rl_today');
+    const t = safeStorage.get('brusselsloop_rl_today');
     if (t && t.date === todayKey()) return t;
     return { date: todayKey(), earnings: 0, rides: 0 };
   }
 
   _saveToday() {
     this.today.date = todayKey();
-    safeStorage.set('londonloop_rl_today', this.today);
+    safeStorage.set('brusselsloop_rl_today', this.today);
   }
 }

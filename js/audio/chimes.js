@@ -56,6 +56,18 @@ export function londonTime(date = new Date()) {
   }
 }
 
+/** Brussels wall-clock {h, m, s} for a JS Date (Europe/Brussels, including CET/CEST). */
+export function brusselsTime(date = new Date()) {
+  try {
+    const f = brusselsTime._f || (brusselsTime._f = new Intl.DateTimeFormat('en-GB', { timeZone: 'Europe/Brussels', hour: '2-digit', minute: '2-digit', second: '2-digit', hourCycle: 'h23' }));
+    const parts = f.formatToParts(date);
+    const g = (t) => +parts.find((p) => p.type === t).value;
+    return { h: g('hour'), m: g('minute'), s: g('second') + (date.getMilliseconds() / 1000) };
+  } catch {
+    return { h: date.getUTCHours(), m: date.getUTCMinutes(), s: date.getUTCSeconds() };
+  }
+}
+
 /**
  * Which chime is due: the quarter that started within the last `window` seconds → {quarter, hour, key, age} or null.
  * The quarters of the hour chime start ~20 s before the hour in reality; we start every chime on the quarter itself.

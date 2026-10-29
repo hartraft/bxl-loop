@@ -1,14 +1,14 @@
-// tools/geo-london-roadcheck.mjs — finds drawn roads that "lead nowhere" in the baked geodata and categorises them.
-// usage: node tools/geo-london-roadcheck.mjs [--crops N] [--tag before|after] [--json out.json]
+// tools/geo-brussels-base-roadcheck.mjs — finds drawn roads that "lead nowhere" in the baked geodata and categorises them.
+// usage: node tools/geo-brussels-base-roadcheck.mjs [--crops N] [--tag before|after] [--json out.json]
 //   prints counts per category; --crops N renders N zoomed top-down crops of the worst examples per category to
 //   tools/out/roadcheck/<tag>-<cat>-<k>.png (red ring = the suspicious end; tunnels dashed blue, passages orange).
 import fs from 'node:fs';
 import path from 'node:path';
 import { execFileSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
-import { GEO } from '../js/ldn-geodata.js';
-import { createWorldQueries } from '../js/london-world.js';
-import { BuildingIndex, classifyEnds, drawnCar, drawnPed, drawnPath, insideRuns, vertexMap, neighbours, flatLength } from './geo-london-roadtopo.mjs';
+import { GEO } from '../js/bxl-geodata.js';
+import { createWorldQueries } from '../js/brussels-world.js';
+import { BuildingIndex, classifyEnds, drawnCar, drawnPed, drawnPath, insideRuns, vertexMap, neighbours, flatLength } from './geo-brussels-base-roadtopo.mjs';
 
 const ROOT = fileURLToPath(new URL('../', import.meta.url));
 const args = process.argv.slice(2);
@@ -74,7 +74,7 @@ const ORDER = ['ok_junction', 'edge', 'touch', 'to_path', 'open', 'gap', 'at_wal
 for (const c of ORDER) console.log(`  ${c.padEnd(22)} ${String(byCat[c] || 0).padStart(6)}   ${['ok_junction', 'edge', 'touch', 'path_end_in_building'].includes(c) ? '' : subOf(c)}`);
 const NOWHERE = ['gap', 'at_wall', 'into_building', 'tunnel_mouth', 'in_water', 'through_building'];
 console.log(`  "nowhere" total (${NOWHERE.join(' + ')}): ${NOWHERE.reduce((s, c) => s + (byCat[c] || 0), 0)}`);
-// treatments baked by tools/geo-london-roadfix.mjs (capA/capB, GEO.passages) — "untreated" = still a bare ribbon end
+// treatments baked by tools/geo-brussels-base-roadfix.mjs (capA/capB, GEO.passages) — "untreated" = still a bare ribbon end
 const passRoads = new Set((GEO.passages || []).map((p) => p.road));
 const capOf = (e) => (e.end ? roads[e.ri].capB : roads[e.ri].capA) || '';
 const caps = {}, untreated = {};
@@ -114,7 +114,7 @@ if (CROPS > 0) {
     const near = findings.filter((f) => Math.abs(f.x - j.x) < 80 && Math.abs(f.z - j.z) < 80).map((f) => [f.x, f.z, f.cat === 'through_building' ? 0x0060ff : 0xff0000, 3]);
     fs.writeFileSync(marks, JSON.stringify(near));
     const out = path.join(OUTDIR, `${TAG}-${j.cat}-${j.k}.png`);
-    execFileSync(process.execPath, [path.join(ROOT, 'tools/geo-london-topdown.mjs'), out, '0.4', String(j.x), String(j.z), '160', '160'], { env: { ...process.env, MARKS: marks }, stdio: 'ignore' });
+    execFileSync(process.execPath, [path.join(ROOT, 'tools/geo-brussels-base-topdown.mjs'), out, '0.4', String(j.x), String(j.z), '160', '160'], { env: { ...process.env, MARKS: marks }, stdio: 'ignore' });
     console.log(`  crop ${out}  ${j.cat} ${j.kind || ''}${j.sub ? ':' + j.sub : ''} at ${j.x.toFixed(1)},${j.z.toFixed(1)} road ${j.ri ?? ''} ${roads[j.ri]?.name || ''} ${j.note || ''}`);
   }
 }

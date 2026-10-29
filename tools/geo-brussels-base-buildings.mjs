@@ -1,12 +1,12 @@
-// tools/geo-london-buildings.mjs — OSM buildings (+ building:part) -> footprint records with height/kind/material/roof.
+// tools/geo-brussels-base-buildings.mjs — OSM buildings (+ building:part) -> footprint records with height/kind/material/roof.
 import {
   wayParts, assembleRings, quantise, rdpRing, ringArea, centroid, ccw, bboxOf, pointInRing, hash01, inBounds,
   expandBounds, WORLD_BOUNDS, log
-} from './geo-london-util.mjs';
-import { districtFlags } from './geo-london-districts.mjs';
+} from './geo-brussels-base-util.mjs';
+import { districtFlags } from './geo-brussels-base-districts.mjs';
 
 export const BUILDING_KINDS = ['house', 'terrace', 'flats', 'office', 'retail', 'civic', 'church', 'station', 'industrial', 'glass_tower', 'other'];
-export const MATERIALS = ['london_stock_brick', 'red_brick', 'portland_stone', 'stucco_white', 'glass', 'concrete', 'sandstone'];
+export const MATERIALS = ['brussels_stock_brick', 'red_brick', 'portland_stone', 'stucco_white', 'glass', 'concrete', 'sandstone'];
 export const ROOFS = ['flat', 'gabled', 'hipped', 'mansard', 'dome', 'spire'];
 const K = Object.fromEntries(BUILDING_KINDS.map((k, i) => [k, i]));
 const M = Object.fromEntries(MATERIALS.map((k, i) => [k, i]));
@@ -103,7 +103,7 @@ function pick(r, table) { // table: [[name, weight], ...]
 function materialFor(t, kind, f, h, area, colour, r, name) {
   const bm = String(t['building:material'] || t['building:facade:material'] || '').toLowerCase();
   if (bm) {
-    if (/brick/.test(bm)) return colour && reddish(colour) ? 'red_brick' : 'london_stock_brick';
+    if (/brick/.test(bm)) return colour && reddish(colour) ? 'red_brick' : 'brussels_stock_brick';
     if (/plaster|stucco|render/.test(bm)) return 'stucco_white';
     if (/sandstone/.test(bm)) return 'sandstone';
     if (/stone|limestone|marble|granite/.test(bm)) return 'portland_stone';
@@ -118,21 +118,21 @@ function materialFor(t, kind, f, h, area, colour, r, name) {
   if (/St\.? Pancras|Prudential|Natural History/i.test(name || '')) return 'red_brick';
   if (kind === 'glass_tower') return 'glass';
   if (f.whitehall && ['civic', 'office', 'other', 'church', 'flats'].includes(kind)) return 'portland_stone';
-  if (kind === 'church') return pick(r, [['portland_stone', 5], ['london_stock_brick', 3], ['red_brick', 1], ['sandstone', 1]]);
-  if (kind === 'civic') return pick(r, [['portland_stone', 6], ['london_stock_brick', 2], ['red_brick', 2]]);
-  if (kind === 'station') return pick(r, [['london_stock_brick', 6], ['concrete', 2], ['red_brick', 1], ['glass', 1]]);
-  if (kind === 'industrial') return pick(r, [['london_stock_brick', 6], ['concrete', 4]]);
+  if (kind === 'church') return pick(r, [['portland_stone', 5], ['brussels_stock_brick', 3], ['red_brick', 1], ['sandstone', 1]]);
+  if (kind === 'civic') return pick(r, [['portland_stone', 6], ['brussels_stock_brick', 2], ['red_brick', 2]]);
+  if (kind === 'station') return pick(r, [['brussels_stock_brick', 6], ['concrete', 2], ['red_brick', 1], ['glass', 1]]);
+  if (kind === 'industrial') return pick(r, [['brussels_stock_brick', 6], ['concrete', 4]]);
   if ((f.stucco || f.regents) && h < 30 && ['house', 'terrace', 'flats', 'other', 'civic'].includes(kind)) {
-    return pick(r, f.stucco ? [['stucco_white', 8], ['london_stock_brick', 1], ['red_brick', 1]] : [['stucco_white', 6], ['london_stock_brick', 4]]);
+    return pick(r, f.stucco ? [['stucco_white', 8], ['brussels_stock_brick', 1], ['red_brick', 1]] : [['stucco_white', 6], ['brussels_stock_brick', 4]]);
   }
   if (f.city && ['office', 'other', 'retail', 'flats'].includes(kind)) {
-    return h > 45 ? pick(r, [['glass', 6], ['portland_stone', 2], ['concrete', 2]]) : pick(r, [['portland_stone', 9], ['concrete', 5], ['london_stock_brick', 4], ['glass', 2]]);
+    return h > 45 ? pick(r, [['glass', 6], ['portland_stone', 2], ['concrete', 2]]) : pick(r, [['portland_stone', 9], ['concrete', 5], ['brussels_stock_brick', 4], ['glass', 2]]);
   }
-  if (f.westEnd && ['office', 'retail', 'flats', 'other'].includes(kind)) return pick(r, [['portland_stone', 7], ['london_stock_brick', 6], ['red_brick', 5], ['stucco_white', 2]]);
-  if ((f.southBank || f.nineElms || f.kingsCross) && ['office', 'flats', 'other'].includes(kind) && h > 25) return pick(r, [['glass', 4], ['concrete', 3], ['london_stock_brick', 3]]);
-  if (kind === 'office') return pick(r, [['concrete', 3], ['portland_stone', 3], ['london_stock_brick', 3], ['glass', 1]]);
-  if (kind === 'retail') return pick(r, [['london_stock_brick', 6], ['red_brick', 2], ['stucco_white', 1], ['concrete', 1]]);
-  return pick(r, [['london_stock_brick', 75], ['red_brick', 25]]);
+  if (f.westEnd && ['office', 'retail', 'flats', 'other'].includes(kind)) return pick(r, [['portland_stone', 7], ['brussels_stock_brick', 6], ['red_brick', 5], ['stucco_white', 2]]);
+  if ((f.southBank || f.nineElms || f.kingsCross) && ['office', 'flats', 'other'].includes(kind) && h > 25) return pick(r, [['glass', 4], ['concrete', 3], ['brussels_stock_brick', 3]]);
+  if (kind === 'office') return pick(r, [['concrete', 3], ['portland_stone', 3], ['brussels_stock_brick', 3], ['glass', 1]]);
+  if (kind === 'retail') return pick(r, [['brussels_stock_brick', 6], ['red_brick', 2], ['stucco_white', 1], ['concrete', 1]]);
+  return pick(r, [['brussels_stock_brick', 75], ['red_brick', 25]]);
 }
 
 function roofFor(t, kind, f, h, r, name, area) {

@@ -1,15 +1,15 @@
-// tools/build-london-geodata.mjs — OSM (tools/data/osm_central.json) -> data/ldn-geo.json + data/ldn-buildings.bin
-// usage: node --max-old-space-size=12000 tools/build-london-geodata.mjs [in.json] [outDir]
-// Dependency-free. Decoder: js/ldn-geodata.js (format documented there). ~1 min.
+// tools/build-brussels-base-geodata.mjs — OSM (tools/data/osm_central.json) -> data/bxl-geo.json + data/bxl-buildings.bin
+// usage: node --max-old-space-size=12000 tools/build-brussels-base-geodata.mjs [in.json] [outDir]
+// Dependency-free. Decoder: js/bxl-geodata.js (format documented there). ~1 min.
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { FRAME, WORLD_BOUNDS } from '../js/geo-frame.js';
-import { log, Grid, expandBounds, pointInRing, centroid, bboxOf } from './geo-london-util.mjs';
-import { buildBuildings, BUILDING_KINDS, MATERIALS, ROOFS } from './geo-london-buildings.mjs';
-import { buildWater, buildParks, buildPlazas, buildBridgeOutlines, buildLandmarkZones, WATER_KINDS, PARK_KINDS } from './geo-london-areas.mjs';
-import { buildRoads, buildRail, buildBridgeDecks, buildPoints, ROAD_KINDS, RAIL_KINDS, STATION_KINDS } from './geo-london-lines.mjs';
-import { cleanRoads, ROAD_CAPS } from './geo-london-roadfix.mjs';
+import { log, Grid, expandBounds, pointInRing, centroid, bboxOf } from './geo-brussels-base-util.mjs';
+import { buildBuildings, BUILDING_KINDS, MATERIALS, ROOFS } from './geo-brussels-base-buildings.mjs';
+import { buildWater, buildParks, buildPlazas, buildBridgeOutlines, buildLandmarkZones, WATER_KINDS, PARK_KINDS } from './geo-brussels-base-areas.mjs';
+import { buildRoads, buildRail, buildBridgeDecks, buildPoints, ROAD_KINDS, RAIL_KINDS, STATION_KINDS } from './geo-brussels-base-lines.mjs';
+import { cleanRoads, ROAD_CAPS } from './geo-brussels-base-roadfix.mjs';
 
 const ROOT = fileURLToPath(new URL('../', import.meta.url));
 const IN = process.argv[2] || path.join(ROOT, 'tools/data/osm_central.json');
@@ -35,7 +35,7 @@ const water = buildWater(ctx);
 const WB = expandBounds(WORLD_BOUNDS, 100);
 const waterGrid = new Grid(WB, 4);
 for (const w of water) if (w.kind !== 'fountain' && w.kind !== 'river') waterGrid.fill([w.outer, ...w.holes], 1);
-for (const w of water) if (w.kind === 'river') waterGrid.fill([w.outer, ...w.holes], 2); // 2 = the Thames
+for (const w of water) if (w.kind === 'river') waterGrid.fill([w.outer, ...w.holes], 2); // 2 = the Brussels canal
 const parks = buildParks(ctx);
 const plazas = buildPlazas(ctx);
 const outlines = buildBridgeOutlines(ctx);
@@ -90,7 +90,7 @@ const CROSSING_KINDS = ['zebra', 'signals'];
 
 const json = {
   v: 1,
-  source: 'OpenStreetMap contributors (ODbL), Geofabrik Greater London extract 2026-10-20',
+  source: process.env.CITY === 'brussels' ? 'OpenStreetMap contributors (ODbL), source file ' + path.basename(IN) + ', Brussels bbox 50.815,4.305,50.875,4.405' : 'OpenStreetMap contributors (ODbL), Geofabrik Greater Brussels extract 2026-10-20',
   frame: FRAME, bounds: WORLD_BOUNDS,
   enums: { roadKinds: ROAD_KINDS, roadSubs: ROAD_SUBS, roadCaps: ROAD_CAPS, waterKinds: WATER_KINDS, parkKinds: PARK_KINDS, railKinds: RAIL_KINDS,
     stationKinds: STATION_KINDS, poiKinds: POI_KINDS, crossingKinds: CROSSING_KINDS, buildingKinds: BUILDING_KINDS, materials: MATERIALS, roofs: ROOFS },
@@ -140,7 +140,7 @@ const offs = {};
 let off = HEADER;
 for (const [n, bpe, len] of SECTIONS) { offs[n] = off; off += bpe * len; off = (off + 3) & ~3; }
 const buf = Buffer.alloc(off);
-buf.write('LDNB', 0, 'ascii');
+buf.write('BXLB', 0, 'ascii');
 buf.writeUInt32LE(1, 4); buf.writeUInt32LE(count, 8); buf.writeUInt32LE(nPts, 12); buf.writeUInt32LE(SECTIONS.length, 16);
 SECTIONS.forEach(([n], i) => buf.writeUInt32LE(offs[n], 20 + i * 4));
 let pi = 0;
@@ -167,29 +167,36 @@ buf.writeUInt32LE(pi, offs.ringStart + count * 4);
 
 fs.mkdirSync(OUT, { recursive: true });
 const jsonStr = JSON.stringify(json);
-fs.writeFileSync(path.join(OUT, 'ldn-geo.json'), jsonStr);
-fs.writeFileSync(path.join(OUT, 'ldn-buildings.bin'), buf);
-log(`wrote ldn-geo.json ${(jsonStr.length / 1e6).toFixed(2)} MB (` +
+const geoName = process.env.CITY === 'brussels' ? 'brx-geo.json' : 'bxl-geo.json';
+const buildingName = process.env.CITY === 'brussels' ? 'brx-buildings.bin' : 'bxl-buildings.bin';
+fs.writeFileSync(path.join(OUT, geoName), jsonStr);
+fs.writeFileSync(path.join(OUT, buildingName), buf);
+log(`wrote ${geoName} ${(jsonStr.length / 1e6).toFixed(2)} MB (` +
   Object.entries(json).filter(([, v]) => typeof v === 'object').map(([k, v]) => `${k} ${(JSON.stringify(v).length / 1e6).toFixed(2)}`).join(', ') + ')');
-log(`wrote ldn-buildings.bin ${(buf.length / 1e6).toFixed(2)} MB (${count} buildings, ${nPts} points)`);
+log(`wrote ${buildingName} ${(buf.length / 1e6).toFixed(2)} MB (${count} buildings, ${nPts} points)`);
 
-// ---- quick self-check: the Thames is one water body from the SW edge to the east edge ----------------------------
-{
+// ---- city-specific water sanity check ---------------------------------------------------------------------------
+if (process.env.CITY === 'brussels') {
+  const canals = waterOut.filter((w) => w.kind === 'canal');
+  const namedCanal = canals.filter((w) => /Canal Charleroi|Kanaal Brussel-Charleroi/i.test(w.name));
+  log(`Brussels canal check: ${canals.length} canal polygons (${namedCanal.length} named Charleroi–Brussels canal sections)`);
+} else {
   const g = new Grid(WORLD_BOUNDS, 8);
   for (const w of waterOut) if (w.kind === 'river') g.fill([w.outer, ...w.holes]);
   const seen = new Uint8Array(g.w * g.h), st = [];
   for (let r = 0; r < g.h; r++) { const i = r * g.w + g.w - 1; if (g.d[i]) { seen[i] = 1; st.push(i); } }
   let minC = Infinity;
   while (st.length) {
-    const i = st.pop(), c = i % g.w, r = (i - c) / g.w;
-    if (c < minC) minC = c;
+    const i = st.pop(), col = i % g.w, row = (i - col) / g.w;
+    if (col < minC) minC = col;
     for (const [dc, dr] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) {
-      const cc = c + dc, rr = r + dr;
+      const cc = col + dc, rr = row + dr;
       if (cc < 0 || rr < 0 || cc >= g.w || rr >= g.h) continue;
       const j = rr * g.w + cc;
       if (g.d[j] && !seen[j]) { seen[j] = 1; st.push(j); }
     }
   }
-  log(`Thames check: river connected from the east edge to x = ${(WORLD_BOUNDS.minX + minC * 8).toFixed(0)} (west edge ${WORLD_BOUNDS.minX.toFixed(0)})`);
+  if (minC === Infinity) log('Brussels canal check: no connected river polygon reached the east edge');
+  else log(`Brussels canal check: connected from east edge to x = ${(WORLD_BOUNDS.minX + minC * 8).toFixed(0)} (west edge ${WORLD_BOUNDS.minX.toFixed(0)})`);
 }
 lap('done');

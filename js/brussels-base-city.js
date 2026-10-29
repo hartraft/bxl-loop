@@ -1,17 +1,17 @@
-// js/london-city.js — Workstream F: the static city of London Loop built from the baked OSM geodata.
+// js/brussels-base-city.js — Workstream F: the static city of Brussels Loop built from the baked OSM geodata.
 //
-//   import { buildLondonCity } from './london-city.js';
-//   const city = buildLondonCity(scene, { geo: GEO, world: WORLD });   // see INTEGRATION.md "Workstream F"
+//   import { buildBrusselsCity } from './brussels-base-city.js';
+//   const city = buildBrusselsCity(scene, { geo: GEO, world: WORLD });   // see INTEGRATION.md "Workstream F"
 //   city.colliders / city.sidewalks / city.footprints / city.groups / city.update(dt, camera)
 //
 // Layers (each its own named root group so main.js can hand them to setupSceneCulling):
-//   LondonCityTiles      buildings: 500 m tiles x (masonry+roofs, glass curtain walls)            js/city/buildings.js
-//   LondonGround         ground plane, parks, plazas                                              js/city/ground.js
-//   LondonWater          Thames / lakes / canals + embankment walls & parapets                    js/city/ground.js
-//   LondonRoads          carriageways, junctions, pavements + kerbs, footways, markings, rail     js/city/roads.js
-//   LondonBridges        decks, fascias, parapets, piers                                          js/city/roads.js
-//   LondonStreetDetails  street furniture (instanced)                                             js/street-details.js
-//   LondonTrees          street & park trees (London planes…)                                     js/trees.js
+//   BrusselsCityTiles      buildings: 500 m tiles x (masonry+roofs, glass curtain walls)            js/city/buildings.js
+//   BrusselsGround         ground plane, parks, plazas                                              js/city/ground.js
+//   BrusselsWater          Thames / lakes / canals + embankment walls & parapets                    js/city/ground.js
+//   BrusselsRoads          carriageways, junctions, pavements + kerbs, footways, markings, rail     js/city/roads.js
+//   BrusselsBridges        decks, fascias, parapets, piers                                          js/city/roads.js
+//   BrusselsStreetDetails  street furniture (instanced)                                             js/street-details.js
+//   BrusselsTrees          street & park trees (Brussels planes…)                                     js/trees.js
 import * as THREE from 'three/webgpu';
 import { buildBuildingGeometry, buildFillerGeometry } from './city/buildings.js';
 import { buildGroundGeometry, buildWaterSDF, buildStreetMask } from './city/ground.js';
@@ -19,8 +19,8 @@ import { buildRoadGeometry, KERB_H } from './city/roads.js';
 import { RoadIndex } from './city/road-index.js';
 import { regionTest, makeHash, ringBox, pointInRing } from './city/util.js';
 import {
-  createLondonBuildingMaterial, createLondonGlassMaterial, createAsphaltMaterial, createPavingMaterial, createMarkingMaterial,
-  createGroundMaterial, createGrassMaterial, createStoneMaterial, createLondonWaterMaterial, createBallastMaterial, plainMaterial, waterSDF, streetMask
+  createBrusselsBuildingMaterial, createBrusselsGlassMaterial, createAsphaltMaterial, createPavingMaterial, createMarkingMaterial,
+  createGroundMaterial, createGrassMaterial, createStoneMaterial, createBrusselsWaterMaterial, createBallastMaterial, plainMaterial, waterSDF, streetMask
 } from './city/materials.js';
 import { buildStreetDetails } from './street-details.js';
 
@@ -40,11 +40,11 @@ function meshFrom(geometry, material, name, { cast = false, receive = true } = {
 /**
  * Build the city into `scene`.
  * @param opts { geo, world, region: {cx, cz, r} | null (build only a square around a point), details = true,
- *   trees = true, onProgress(label), landmarkZones: buildLondonLandmarks(...).zones (optional, skip buildings inside) }
+ *   trees = true, onProgress(label), landmarkZones: buildBrusselsLandmarks(...).zones (optional, skip buildings inside) }
  */
-export function buildLondonCity(scene, opts = {}) {
+export function buildBrusselsCity(scene, opts = {}) {
   const { geo, world, region = null, details = true, trees = true, onProgress = null, landmarkZones = null } = opts;
-  if (!geo || !world) throw new Error('buildLondonCity: pass { geo, world }');
+  if (!geo || !world) throw new Error('buildBrusselsCity: pass { geo, world }');
   const t0 = performance.now();
   const timings = {};
   let tMark = t0;
@@ -52,12 +52,12 @@ export function buildLondonCity(scene, opts = {}) {
   const inRegion = regionTest(region);
 
   const root = new THREE.Group();
-  root.name = 'LondonCity';
+  root.name = 'BrusselsCity';
   scene.add(root);
   const group = (name) => { const g = new THREE.Group(); g.name = name; root.add(g); return g; };
   const groups = {
-    tiles: group('LondonCityTiles'), ground: group('LondonGround'), water: group('LondonWater'), roads: group('LondonRoads'),
-    bridges: group('LondonBridges'), details: null, trees: null
+    tiles: group('BrusselsCityTiles'), ground: group('BrusselsGround'), water: group('BrusselsWater'), roads: group('BrusselsRoads'),
+    bridges: group('BrusselsBridges'), details: null, trees: null
   };
 
   // ---- shared road indices -----------------------------------------------------------------------------------------
@@ -127,8 +127,8 @@ export function buildLondonCity(scene, opts = {}) {
   if (geo.passages && geo.passages.length) ctx.passageArches = true;
   const fillerBlocks = opts.filler === false ? 0 : buildFillerGeometry(geo.bounds, sdf, inRegion, bld.tiles);
   mark('buildings.geometry');
-  const mBuilding = createLondonBuildingMaterial();
-  const mGlass = createLondonGlassMaterial();
+  const mBuilding = createBrusselsBuildingMaterial();
+  const mGlass = createBrusselsGlassMaterial();
   for (const [key, t] of bld.tiles) {
     add(groups.tiles, t.masonry.build(), mBuilding, 'Buildings_' + key, { cast: true });
     add(groups.tiles, t.glass.build(), mGlass, 'Glass_' + key, { cast: true });
@@ -140,7 +140,7 @@ export function buildLondonCity(scene, opts = {}) {
   add(groups.ground, gnd.ground.build(), createGroundMaterial(), 'Ground');
   for (const [k, b] of gnd.grass) add(groups.ground, b.build(), createGrassMaterial(), 'Parks_' + k);
   for (const [k, b] of gnd.plaza) add(groups.ground, b.build(), createPavingMaterial(), 'Plazas_' + k);
-  for (const [k, b] of gnd.water) add(groups.water, b.build(), createLondonWaterMaterial(), 'Water_' + k);
+  for (const [k, b] of gnd.water) add(groups.water, b.build(), createBrusselsWaterMaterial(), 'Water_' + k);
   for (const [k, b] of gnd.walls) add(groups.water, b.build(), createStoneMaterial(), 'Embankment_' + k, { cast: true });
   mark('ground');
 

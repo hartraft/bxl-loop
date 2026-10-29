@@ -1,4 +1,4 @@
-// tools/geo-london-roadfix.mjs — bake-time clean-up so every drawn road "goes somewhere" (Round 2, Agent R).
+// tools/geo-brussels-base-roadfix.mjs — bake-time clean-up so every drawn road "goes somewhere" (Round 2, Agent R).
 // Runs on the builder's road objects (pts = [[x, z], …]) after buildRoads and before the bridge decks:
 //  1. short tunnels that only duck under a building, a railway or a road junction are drawn at grade
 //     (tunnel = 0): the flat world has no underground, so the road would otherwise stop at both portals
@@ -11,7 +11,7 @@
 //     'portal' (tunnel mouth: retaining walls + dark mouth + headwall), 'gate' (a building entrance)
 //  6. passages: runs of drawn carriageways / pedestrian streets through ground-level building footprints →
 //     {road, pts, w, minY, portals:[{x, z, nx, nz}]} (portals = wall crossings, n = outward wall normal)
-import { BuildingIndex, SegIndex, classifyEnds, vertexMap, neighbours, insideRuns, slicePolyline, flatLength, drawnCar, drawnPed, CAR_KINDS } from './geo-london-roadtopo.mjs';
+import { BuildingIndex, SegIndex, classifyEnds, vertexMap, neighbours, insideRuns, slicePolyline, flatLength, drawnCar, drawnPed, CAR_KINDS } from './geo-brussels-base-roadtopo.mjs';
 
 export const ROAD_CAPS = ['', 'kerb', 'bollards', 'portal', 'gate'];
 const MAJOR = new Set(['motorway', 'trunk', 'primary', 'secondary', 'tertiary']);
