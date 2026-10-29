@@ -19,7 +19,7 @@
 // cached composite around the player and only rotates it; the full map re-composites tiles + labels when the view moves.
 
 import { GEO } from './ldn-geodata.js';
-import { WORLD, LONDON_LANDMARKS, getLocationLabel, isTypingInField, WORLD_BOUNDS } from './london-config.js';
+import { WORLD, LONDON_LANDMARKS, getLocationLabel, isTypingInField, WORLD_BOUNDS } from './city-config.js';
 import { toWorld } from './geo-frame.js';
 
 const FONT = 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, sans-serif';
