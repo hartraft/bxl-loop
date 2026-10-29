@@ -2,7 +2,9 @@ name: Build Brussels geodata
 
 on:
   workflow_dispatch:
-  workflow_call:
+  push:
+    branches: ["feat/brussels-world-port"]
+    paths: ["tools/validate-brussels-geodata.mjs"]
 
 permissions:
   contents: read
