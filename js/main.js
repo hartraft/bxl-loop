@@ -34,6 +34,9 @@ import { LONDON_LANDMARKS } from './city-config.js';
 
 const URL_PARAMS = new URLSearchParams(location.search);
 const LITE = URL_PARAMS.has('lite'); // ?lite: no SSR / smaller shadow work for slower machines
+const CITY_NAME = URL_PARAMS.get('city') === 'brussels' ? 'Brussels' : 'London';
+const CITY_WATER = CITY_NAME === 'Brussels' ? 'the canal and ponds' : 'the Thames';
+if (CITY_NAME === 'Brussels') document.title = 'Brussels Loop';
 
 async function initApp() {
   const container = document.getElementById('canvas-container');
@@ -86,14 +89,14 @@ async function initApp() {
   // yield so the loading text paints between the long synchronous build steps
   const paint = () => new Promise((r) => requestAnimationFrame(() => setTimeout(r, 0)));
 
-  status('Raising Big Ben, the Eye, Tower Bridge & friends...');
+  status(CITY_NAME === 'Brussels' ? 'Raising Brussels landmarks...' : 'Raising Big Ben, the Eye, Tower Bridge & friends...');
   await paint();
   const landmarks = buildLondonLandmarks(scene, { world: WORLD, uniforms: cityUniforms });
   markInit('landmarks');
 
-  status(`Building London: ${GEO.buildings.count.toLocaleString('en-GB')} buildings, ${GEO.roads.length.toLocaleString('en-GB')} streets & the Thames...`);
+  status(`Building ${CITY_NAME}: ${GEO.buildings.count.toLocaleString('en-GB')} buildings, ${GEO.roads.length.toLocaleString('en-GB')} streets & ${CITY_WATER}...`);
   await paint();
-  const city = buildLondonCity(scene, { geo: GEO, world: WORLD, landmarkZones: landmarks.zones, onProgress: (label) => status(`Building London: ${label}...`) });
+  const city = buildLondonCity(scene, { geo: GEO, world: WORLD, landmarkZones: landmarks.zones, onProgress: (label) => status(`Building ${CITY_NAME}: ${label}...`) });
   markInit('city');
   const allColliders = [...landmarks.colliders, ...city.colliders];
   const edgeBarriers = buildEdgeBarriers(scene, { geo: GEO, world: WORLD, bounds: WORLD_BOUNDS });
@@ -115,7 +118,7 @@ async function initApp() {
   // edge of the map: the controller brakes the car smoothly; say why
   const edgeToast = document.createElement('div');
   edgeToast.className = 'edge-toast';
-  edgeToast.innerHTML = '<b>Edge of the map</b><span>London Loop ends here. Turn around, or press M to jump somewhere else.</span>';
+  edgeToast.innerHTML = `<b>Edge of the map</b><span>${CITY_NAME} Loop ends here. Turn around, or press M to jump somewhere else.</span>`;
   document.body.appendChild(edgeToast);
   const edgeStyle = document.createElement('style');
   edgeStyle.textContent = `.edge-toast{position:fixed;left:50%;top:96px;transform:translate(-50%,-8px);z-index:45;display:flex;flex-direction:column;gap:2px;align-items:center;
