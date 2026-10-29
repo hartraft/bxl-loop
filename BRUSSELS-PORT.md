@@ -11,8 +11,12 @@ The current game runtime and baked data remain London-specific. The build pipeli
 ### 1. Brussels world and data pipeline
 - Set the world origin near Grand-Place and define a bounded play area covering central Brussels first.
 - Added `tools/build-brussels-geodata.mjs`: extracts a central Brussels bbox from a local Belgium OSM PBF and bakes `brx-geo.json` + `brx-buildings.bin` using the Brussels frame.
+- The PBF reader retains a 1 km geometry margin around the requested bbox so roads/building rings crossing the edge can be clipped cleanly.
+- Added `tools/validate-brussels-geodata.mjs` to verify attribution, coordinate frame, layer counts, landmark zones, and binary layout.
+- Added `js/brx-geodata.js`, a decoder/loader for the generated files using the existing city engine's data schema.
 - The existing `js/geo-frame.js` keeps London as the default; `CITY=brussels` selects Brussels only for the Node-side bake process.
-- Local build: `mkdir -p tools/data && curl -L https://download.geofabrik.de/europe/belgium-latest.osm.pbf -o tools/data/belgium-latest.osm.pbf && node --max-old-space-size=12000 tools/build-brussels-geodata.mjs`.
+- Local build: `mkdir -p tools/data && curl -fL https://download.geofabrik.de/europe/belgium-latest.osm.pbf -o tools/data/belgium-latest.osm.pbf && node --max-old-space-size=6144 tools/build-brussels-geodata.mjs`.
+- Or run the manual GitHub Actions workflow **Build Brussels geodata** from the Actions tab; it downloads the PBF, bakes and validates the map, then uploads a 7-day artifact for review.
 - The Belgium PBF is large; the extraction reads the PBF and can require substantial memory. Pass an existing PBF and output directory as arguments to the build script if needed.
 - Generate fresh road, building, water, park, rail/tram and landmark-zone data. Never ship the London baked files under a Brussels label.
 - Preserve OSM attribution and ODbL requirements.
@@ -40,4 +44,5 @@ The current game runtime and baked data remain London-specific. The build pipeli
 ## Repository notes
 - Feature branch: `feat/brussels-world-port`
 - Tracking issue: [#3 — Port London Loop into a playable Brussels city](https://github.com/hartraft/bxl-loop/issues/3)
-- Current CI checks validate the frame and build-script syntax; they do not yet download OSM data, generate the full map, or test the browser runtime.
+- The regular CI workflow validates frame selection and build/loader script syntax. The separate manual data workflow performs the expensive PBF download/build/validation and uploads generated data for review.
+- The Brussels runtime loader is present, but the browser still uses London-specific config/landmarks and the generated Brussels data has not yet been reviewed. Do not publish as the default city until those pieces are switched together.
