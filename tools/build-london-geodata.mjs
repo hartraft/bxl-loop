@@ -175,23 +175,28 @@ log(`wrote ${geoName} ${(jsonStr.length / 1e6).toFixed(2)} MB (` +
   Object.entries(json).filter(([, v]) => typeof v === 'object').map(([k, v]) => `${k} ${(JSON.stringify(v).length / 1e6).toFixed(2)}`).join(', ') + ')');
 log(`wrote ${buildingName} ${(buf.length / 1e6).toFixed(2)} MB (${count} buildings, ${nPts} points)`);
 
-// ---- quick connectivity diagnostic for the selected city's river/water layer -------------------------------------
-{
+// ---- city-specific water sanity check ---------------------------------------------------------------------------
+if (process.env.CITY === 'brussels') {
+  const canals = waterOut.filter((w) => w.kind === 'canal');
+  const namedCanal = canals.filter((w) => /Canal Charleroi|Kanaal Brussel-Charleroi/i.test(w.name));
+  log(`Brussels canal check: ${canals.length} canal polygons (${namedCanal.length} named Charleroi–Brussels canal sections)`);
+} else {
   const g = new Grid(WORLD_BOUNDS, 8);
   for (const w of waterOut) if (w.kind === 'river') g.fill([w.outer, ...w.holes]);
   const seen = new Uint8Array(g.w * g.h), st = [];
   for (let r = 0; r < g.h; r++) { const i = r * g.w + g.w - 1; if (g.d[i]) { seen[i] = 1; st.push(i); } }
   let minC = Infinity;
   while (st.length) {
-    const i = st.pop(), c = i % g.w, r = (i - c) / g.w;
-    if (c < minC) minC = c;
+    const i = st.pop(), col = i % g.w, row = (i - col) / g.w;
+    if (col < minC) minC = col;
     for (const [dc, dr] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) {
-      const cc = c + dc, rr = r + dr;
+      const cc = col + dc, rr = row + dr;
       if (cc < 0 || rr < 0 || cc >= g.w || rr >= g.h) continue;
       const j = rr * g.w + cc;
       if (g.d[j] && !seen[j]) { seen[j] = 1; st.push(j); }
     }
   }
-  log(`${process.env.CITY === 'brussels' ? 'Brussels river/water' : 'Thames'} check: connected from east edge to x = ${(WORLD_BOUNDS.minX + minC * 8).toFixed(0)} (west edge ${WORLD_BOUNDS.minX.toFixed(0)})`);
+  if (minC === Infinity) log('Thames check: no connected river polygon reached the east edge');
+  else log(`Thames check: connected from east edge to x = ${(WORLD_BOUNDS.minX + minC * 8).toFixed(0)} (west edge ${WORLD_BOUNDS.minX.toFixed(0)})`);
 }
 lap('done');
