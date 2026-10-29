@@ -440,8 +440,8 @@ async function initApp() {
     }
   });
 
-  // Bus driver job: real London routes (js/bus-driver.js, J = route picker, F = doors on shift)
-  const busDriver = new BusDriver({
+  // London route data is not valid in Brussels; keep the generic bus vehicle mode but disable the London route job.
+  const busDriver = CITY_NAME === 'Brussels' ? { openPicker() {}, update() {} } : new BusDriver({
     scene, camera: () => cameraSystem.camera, controllers: controllerManager, world: WORLD, geo: GEO, backend,
     ui: {
       setMode: (m) => selectMode(m), teleport: (x, z, h) => teleportTo(x, z, h),
@@ -451,7 +451,7 @@ async function initApp() {
     }
   });
   const busBtn = document.getElementById('btn-bus-driver');
-  if (busBtn) busBtn.addEventListener('click', () => busDriver.openPicker());
+  if (busBtn && CITY_NAME !== 'Brussels') busBtn.addEventListener('click', () => busDriver.openPicker());
 
   teleportButtons.forEach((btn) => {
     btn.addEventListener('click', () => {
