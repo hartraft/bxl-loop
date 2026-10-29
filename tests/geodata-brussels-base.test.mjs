@@ -21,7 +21,8 @@ test('runtime world and landmarks use the Brussels coordinate frame', () => {
   assert.equal(BRUSSELS_FRAME.lat0, 50.84673);
   assert.ok(BRUSSELS_WORLD_BOUNDS.minX < BRUSSELS_WORLD_BOUNDS.maxX);
   assert.ok(BRUSSELS_WORLD_BOUNDS.minZ < BRUSSELS_WORLD_BOUNDS.maxZ);
-  assert.equal(WORLD, createWorldQueries(GEO) && WORLD);
+  assert.equal(typeof WORLD.isWater, 'function');
+  assert.equal(typeof createWorldQueries(GEO).groundHeight, 'function');
   assert.ok(TELEPORT_LOCATIONS.grandPlace);
   assert.ok(TELEPORT_LOCATIONS.cinquantenaire);
   assert.ok(BRUSSELS_LANDMARKS.some((landmark) => /Grand-Place/i.test(landmark.name)));
