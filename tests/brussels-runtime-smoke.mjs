@@ -44,7 +44,7 @@ if (!route) console.error(JSON.stringify({
   reachableLinks, goalReachable, reverseGoalReachable
 }, null, 2));
 assert.ok(startLane && finishLane, 'GPS should find drivable lanes near Grand-Place and Cinquantenaire');
-assert.ok(route && route.length > 100, 'GPS routing should connect Grand-Place to Cinquantenaire');
+assert.ok(route && route.length > 100, 'GPS routing should connect Grand-Place to a reachable surface street near Cinquantenaire');
 const snapDistance = Math.hypot(route.points[route.points.length - 2] - finish.x, route.points[route.points.length - 1] - finish.z);
 assert.ok(snapDistance <= 150, `GPS route endpoint should stay near Cinquantenaire (snapped ${snapDistance.toFixed(1)} m)`);
 console.log(JSON.stringify({
