@@ -5,6 +5,7 @@ import { buildLondonRoadNetwork, ASPECT_NAMES } from './road-network.js';
 import { createTrafficSim, VEHICLE_TYPES } from './traffic-sim.js';
 import { VEHICLE_FACTORIES, VEHICLE_UNIFORMS, CAR_COLOURS, getInstanceParts, createVehicleUniforms } from './london-vehicles.js';
 import { createBusPlanner, loadBusRoutes } from './life/bus-routes.js';
+const IS_BRUSSELS = typeof location !== 'undefined' && new URLSearchParams(location.search).get('city') === 'brussels';
 import { toWorld } from './geo-frame.js';
 import { HEADLIGHTS, createVehicleHeadlight, placeVehicleHeadlight } from './vehicle-lights.js';
 import { createContactShadowMaterial } from './tsl-materials.js';
@@ -179,7 +180,7 @@ function createTrafficSystem(scene, opts = {}) {
       bm.material = mat;
     }
   }
-  loadBusRoutes().then((d) => { if (d) { planner.setData(d); drawBlinds(planner.variants); } });
+  if (!IS_BRUSSELS) loadBusRoutes().then((d) => { if (d) { planner.setData(d); drawBlinds(planner.variants); } });
 
   // vehicle dimensions for the sim from the models themselves
   const types = {};
