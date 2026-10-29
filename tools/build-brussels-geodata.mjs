@@ -1,5 +1,5 @@
 // Build Brussels OSM geometry from a local .osm.pbf extract.
-// Usage: node --max-old-space-size=12000 tools/build-brussels-geodata.mjs [input.osm.pbf] [output-dir]
+// Usage: node --max-old-space-size=6144 tools/build-brussels-geodata.mjs [input.osm.pbf] [output-dir]
 // The extractor is dependency-free. Keep generated files out of git until the dataset is reviewed.
 import fs from 'node:fs';
 import path from 'node:path';
