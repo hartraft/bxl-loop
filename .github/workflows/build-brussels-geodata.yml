@@ -1,10 +1,10 @@
-name: Build Brussels geodata
+name: Build Brussels geodata and smoke-test the runtime
 
 on:
   workflow_dispatch:
   push:
     branches: ["feat/brussels-world-port"]
-    paths: ["tools/validate-brussels-geodata.mjs", "tools/geo-london-areas.mjs", "tools/build-brussels-geodata.mjs", "tools/build-london-geodata.mjs", "tools/geo-london-lines.mjs", "tests/brussels-runtime-smoke.mjs"]
+    paths: [".github/workflows/build-brussels-geodata.yml", "tools/validate-brussels-geodata.mjs", "tools/geo-london-areas.mjs", "tools/build-brussels-geodata.mjs", "tools/build-london-geodata.mjs", "tools/geo-london-lines.mjs", "tests/brussels-runtime-smoke.mjs"]
 
 permissions:
   contents: read
