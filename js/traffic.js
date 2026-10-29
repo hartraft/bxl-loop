@@ -1,6 +1,6 @@
 import * as THREE from 'three/webgpu';
 import { texture, uv, attribute, float, uniform } from 'three/tsl';
-import { GEO, WORLD, LONDON_LANDMARKS } from './london-config.js';
+import { GEO, WORLD, LONDON_LANDMARKS } from './city-config.js';
 import { buildLondonRoadNetwork, ASPECT_NAMES } from './road-network.js';
 import { createTrafficSim, VEHICLE_TYPES } from './traffic-sim.js';
 import { VEHICLE_FACTORIES, VEHICLE_UNIFORMS, CAR_COLOURS, getInstanceParts, createVehicleUniforms } from './london-vehicles.js';
