@@ -90,7 +90,7 @@ const CROSSING_KINDS = ['zebra', 'signals'];
 
 const json = {
   v: 1,
-  source: process.env.CITY === 'brussels' ? 'OpenStreetMap contributors (ODbL), Brussels-area extract; see BRUSSELS-PORT.md for source and refresh instructions' : 'OpenStreetMap contributors (ODbL), Geofabrik Greater London extract 2026-10-20',
+  source: process.env.CITY === 'brussels' ? 'OpenStreetMap contributors (ODbL), source file ' + path.basename(IN) + ', Brussels bbox 50.815,4.305,50.875,4.405' : 'OpenStreetMap contributors (ODbL), Geofabrik Greater London extract 2026-10-20',
   frame: FRAME, bounds: WORLD_BOUNDS,
   enums: { roadKinds: ROAD_KINDS, roadSubs: ROAD_SUBS, roadCaps: ROAD_CAPS, waterKinds: WATER_KINDS, parkKinds: PARK_KINDS, railKinds: RAIL_KINDS,
     stationKinds: STATION_KINDS, poiKinds: POI_KINDS, crossingKinds: CROSSING_KINDS, buildingKinds: BUILDING_KINDS, materials: MATERIALS, roofs: ROOFS },
