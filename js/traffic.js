@@ -1,6 +1,6 @@
 import * as THREE from 'three/webgpu';
 import { texture, uv, attribute, float, uniform } from 'three/tsl';
-import { GEO, WORLD, LONDON_LANDMARKS } from './city-config.js';
+import { GEO, WORLD, BRUSSELS_LANDMARKS } from './city-config.js';
 import { buildLondonRoadNetwork, ASPECT_NAMES } from './road-network.js';
 import { createTrafficSim, VEHICLE_TYPES } from './traffic-sim.js';
 import { VEHICLE_FACTORIES, VEHICLE_UNIFORMS, CAR_COLOURS, getInstanceParts, createVehicleUniforms } from './brussels-base-vehicles.js';
@@ -190,7 +190,7 @@ function createTrafficSystem(scene, opts = {}) {
   }
 
   // ---- simulation --------------------------------------------------------------------------------------------
-  const lmNear = (x, z, k) => LONDON_LANDMARKS.some((l) => Math.hypot(x - l.x, z - l.z) < l.r * k);
+  const lmNear = (x, z, k) => BRUSSELS_LANDMARKS.some((l) => Math.hypot(x - l.x, z - l.z) < l.r * k);
   const sim = createTrafficSim(network, {
     vehicles: numVehicles, peds: numPeds, radius: opts.radius ?? RADIUS, types, towerBridge: opts.towerBridge || null,
     assignBus: (v, lane, s) => planner.assign(v, lane, s),
@@ -206,7 +206,7 @@ function createTrafficSystem(scene, opts = {}) {
     // tourists stop to photograph the landmark they're at
     lookAt: (x, z) => {
       let best = null, bd = Infinity;
-      for (const l of LONDON_LANDMARKS) { const d = Math.hypot(x - l.x, z - l.z); if (d < l.r * 2.5 && d < bd) { bd = d; best = l; } }
+      for (const l of BRUSSELS_LANDMARKS) { const d = Math.hypot(x - l.x, z - l.z); if (d < l.r * 2.5 && d < bd) { bd = d; best = l; } }
       return best;
     },
     shows: opts.shows === false ? [] : SHOWS
