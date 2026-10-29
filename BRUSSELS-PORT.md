@@ -4,7 +4,7 @@ This repository is being adapted from the London Loop codebase into a playable, 
 
 ## Current state
 
-The current game runtime and baked data remain London-specific. The build pipeline can now select the Brussels coordinate frame without changing the default runtime frame. Do not treat the app as a playable Brussels build until fresh data is generated and the runtime, map, landmarks and traffic are switched together.
+The generated Brussels dataset is now validated and the runtime can be previewed with `?city=brussels`. The normal local URL still defaults to London unless that query is present; the GitHub Pages deploy workflow injects a redirect so the deployed site defaults to Brussels.
 
 ## Work plan
 
@@ -14,6 +14,11 @@ The current game runtime and baked data remain London-specific. The build pipeli
 - The PBF reader retains a 1 km geometry margin around the requested bbox so roads/building rings crossing the edge can be clipped cleanly.
 - Added `tools/validate-brussels-geodata.mjs` to verify attribution, coordinate frame, layer counts, landmark zones, and binary layout.
 - Added `js/brx-geodata.js`, a decoder/loader for the generated files using the existing city engine's data schema.
+- Added `js/city-config.js` and `js/brussels-config.js` so the same runtime selects Brussels data, landmark anchors, street labels and teleports from `?city=brussels`.
+- Added procedural models for the Grand-Place, Manneken Pis, Mont des Arts, Royal Palace, Cathedral, Palace of Justice, Cinquantenaire, European Parliament and Koekelberg Basilica.
+- Added right-hand traffic lane offsets/turn-lane preference and surface-street snapping for Brussels teleports. London bus route jobs and Thames boat mode are disabled in Brussels rather than sending players to London-only routes.
+- Added visible OpenStreetMap contributor attribution and ODbL notice to the UI.
+- Added `.github/workflows/deploy-brussels.yml`: builds/validates the data, smoke-tests routing, stages the static site, defaults Pages to Brussels and deploys with GitHub Pages Actions.
 - The existing `js/geo-frame.js` keeps London as the default; `CITY=brussels` selects Brussels only for the Node-side bake process.
 - Local build: `mkdir -p tools/data && curl -fL https://download.geofabrik.de/europe/belgium-latest.osm.pbf -o tools/data/belgium-latest.osm.pbf && node --max-old-space-size=6144 tools/build-brussels-geodata.mjs`.
 - Or run the manual GitHub Actions workflow **Build Brussels geodata** from the Actions tab; it downloads the PBF, bakes and validates the map, then uploads a 7-day artifact for review.
@@ -44,5 +49,6 @@ The current game runtime and baked data remain London-specific. The build pipeli
 ## Repository notes
 - Feature branch: `feat/brussels-world-port`
 - Tracking issue: [#3 — Port London Loop into a playable Brussels city](https://github.com/hartraft/bxl-loop/issues/3)
-- The regular CI workflow validates frame selection and build/loader script syntax. The separate manual data workflow performs the expensive PBF download/build/validation and uploads generated data for review.
-- The Brussels runtime loader is present, but the browser still uses London-specific config/landmarks and the generated Brussels data has not yet been reviewed. Do not publish as the default city until those pieces are switched together.
+- Latest end-to-end data/runtime smoke test passed: [run 40870016352](https://github.com/hartraft/bxl-loop/actions/runs/40870016352). It validated 44,253 roads, 115,635 buildings, 268 water features including 100 canal polygons, right-hand traffic, 34,567 road links, and a 3.736 km GPS route from Grand-Place toward Cinquantenaire.
+- The data workflow uploads generated files as a 7-day artifact for review. The Pages workflow builds its own fresh data so the generated binary assets need not be committed to Git.
+- Browser visual testing is still outstanding. The Node runtime smoke test covers data loading and GPS routing, but a human visual check should confirm landmark scale, lighting, spawn placement and traffic flow after Pages deployment.
