@@ -19,7 +19,7 @@
 // cached composite around the player and only rotates it; the full map re-composites tiles + labels when the view moves.
 
 import { GEO } from './bxl-geodata.js';
-import { WORLD, LONDON_LANDMARKS, getLocationLabel, isTypingInField, WORLD_BOUNDS } from './city-config.js';
+import { WORLD, BRUSSELS_LANDMARKS, getLocationLabel, isTypingInField, WORLD_BOUNDS } from './city-config.js';
 import { toWorld } from './geo-frame.js';
 
 const FONT = 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, sans-serif';
@@ -1103,7 +1103,7 @@ class BrusselsMapSystem {
     this.searchHighlight = q;
     this.searchPath = null;
     if (q.length > 1) {
-      const lm = LONDON_LANDMARKS.find((l) => l.name.toLowerCase().includes(q) || l.short.toLowerCase().includes(q));
+      const lm = BRUSSELS_LANDMARKS.find((l) => l.name.toLowerCase().includes(q) || l.short.toLowerCase().includes(q));
       const st = GEO.stations.find((s) => s.name.toLowerCase().includes(q));
       const roads = ROAD_LABELS.filter((l) => l.lower.includes(q));
       const exact = roads.filter((l) => l.lower === q || l.lower.startsWith(q + ' '));
@@ -1334,7 +1334,7 @@ class BrusselsMapSystem {
     if (full === true) {
       ctx.font = `700 11.5px ${FONT}`;
       const r = s >= 0.5 ? 8 : 6.5;
-      for (const lm of LONDON_LANDMARKS) {
+      for (const lm of BRUSSELS_LANDMARKS) {
         const [X, Y] = sx(lm.x, lm.z);
         if (!inScreen(X, Y, 4)) continue;
         const box = [X - r - 2, Y - r - 2, X + r + 2, Y + r + 2];
@@ -1692,7 +1692,7 @@ class BrusselsMapSystem {
 
     const rs = (x, z) => { const a = toX(x), b = toY(z); return [a * cr - b * sr, a * sr + b * cr]; };
     const inside = ([X, Y], m = 0) => Math.abs(X) < w / 2 - m && Math.abs(Y) < h / 2 - m;
-    for (const lm of LONDON_LANDMARKS) {
+    for (const lm of BRUSSELS_LANDMARKS) {
       const q = rs(lm.x, lm.z);
       if (inside(q, 6)) drawLandmarkGlyph(ctx, LANDMARK_GLYPH[lm.id] || 'star', q[0], q[1], 6.5);
     }
