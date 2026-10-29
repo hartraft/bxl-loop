@@ -77,8 +77,18 @@ function visit(file) {
   }
 }
 
-test('browser runtime module graph has no missing relative files or named exports', () => {
-  visit(entry);
-  assert.ok(sourceFiles.size > 5, 'audit traversed the live runtime graph (visited ' + sourceFiles.size + ' files)');
-  console.log('Audited ' + sourceFiles.size + ' runtime modules from js/main.js');
+function collectJavaScriptFiles(directory) {
+  const files = [];
+  for (const item of fs.readdirSync(directory, { withFileTypes: true })) {
+    const full = path.join(directory, item.name);
+    if (item.isDirectory()) files.push(...collectJavaScriptFiles(full));
+    else if (item.isFile() && /\\.m?js$/.test(item.name)) files.push(full);
+  }
+  return files;
+}
+
+test('JavaScript module graph has no missing relative files or named exports', () => {
+  for (const file of collectJavaScriptFiles(path.join(root, 'js'))) visit(file);
+  assert.ok(sourceFiles.size > 40, 'audit scanned the source tree (visited ' + sourceFiles.size + ' files)');
+  console.log('Audited ' + sourceFiles.size + ' JavaScript modules');
 });
