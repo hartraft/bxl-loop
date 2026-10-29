@@ -27,7 +27,7 @@ testCase('initial play-area bounds are ordered and central anchors are inside', 
   assert.ok(BRUSSELS_WORLD_BOUNDS.minZ < 0 && BRUSSELS_WORLD_BOUNDS.maxZ > 0);
   for (const [id, a] of Object.entries(BRUSSELS_LANDMARK_ANCHORS)) {
     const p = brusselsToWorld(a.lat, a.lon);
-    if (['atomium', 'koekelbergBasilica'].includes(id)) continue;
+    if (id === 'atomium') continue;
     assert.ok(p.x >= BRUSSELS_WORLD_BOUNDS.minX && p.x <= BRUSSELS_WORLD_BOUNDS.maxX, id + ' longitude');
     assert.ok(p.z >= BRUSSELS_WORLD_BOUNDS.minZ && p.z <= BRUSSELS_WORLD_BOUNDS.maxZ, id + ' latitude');
   }
