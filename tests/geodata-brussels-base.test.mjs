@@ -97,7 +97,7 @@ test('buildings: heights 2-320 m, CCW, not closed, the Shard ~310 m', () => {
   assert.equal(maxH, shard);
 });
 
-test('the Thames is one continuous water body from the south-west to the east edge', () => {
+test('the Brussels canal is one continuous water body from the south-west to the east edge', () => {
   const C = 8, W = Math.ceil((WORLD_BOUNDS.maxX - WORLD_BOUNDS.minX) / C), H = Math.ceil((WORLD_BOUNDS.maxZ - WORLD_BOUNDS.minZ) / C);
   const wet = new Uint8Array(W * H);
   for (let r = 0; r < H; r++) for (let c = 0; c < W; c++) wet[r * W + c] = world.isWater(WORLD_BOUNDS.minX + (c + 0.5) * C, WORLD_BOUNDS.minZ + (r + 0.5) * C) ? 1 : 0;

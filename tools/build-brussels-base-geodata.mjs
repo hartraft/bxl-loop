@@ -35,7 +35,7 @@ const water = buildWater(ctx);
 const WB = expandBounds(WORLD_BOUNDS, 100);
 const waterGrid = new Grid(WB, 4);
 for (const w of water) if (w.kind !== 'fountain' && w.kind !== 'river') waterGrid.fill([w.outer, ...w.holes], 1);
-for (const w of water) if (w.kind === 'river') waterGrid.fill([w.outer, ...w.holes], 2); // 2 = the Thames
+for (const w of water) if (w.kind === 'river') waterGrid.fill([w.outer, ...w.holes], 2); // 2 = the Brussels canal
 const parks = buildParks(ctx);
 const plazas = buildPlazas(ctx);
 const outlines = buildBridgeOutlines(ctx);
@@ -196,7 +196,7 @@ if (process.env.CITY === 'brussels') {
       if (g.d[j] && !seen[j]) { seen[j] = 1; st.push(j); }
     }
   }
-  if (minC === Infinity) log('Thames check: no connected river polygon reached the east edge');
-  else log(`Thames check: connected from east edge to x = ${(WORLD_BOUNDS.minX + minC * 8).toFixed(0)} (west edge ${WORLD_BOUNDS.minX.toFixed(0)})`);
+  if (minC === Infinity) log('Brussels canal check: no connected river polygon reached the east edge');
+  else log(`Brussels canal check: connected from east edge to x = ${(WORLD_BOUNDS.minX + minC * 8).toFixed(0)} (west edge ${WORLD_BOUNDS.minX.toFixed(0)})`);
 }
 lap('done');

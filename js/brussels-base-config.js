@@ -24,7 +24,7 @@ const LM = [
   ['stPauls', "St Paul's Cathedral", "St Paul's", LANDMARK_ANCHORS.stPauls, 'The City', 110],
   ['gherkin', 'The Gherkin (30 St Mary Axe)', 'The Gherkin', LANDMARK_ANCHORS.gherkin, 'The City', 60],
   ['buckinghamPalace', 'Buckingham Palace', 'Buckingham Pal.', LANDMARK_ANCHORS.buckinghamPalace, 'St James\'s', 140],
-  ['trafalgarSquare', "Trafalgar Square & Nelson's Column", 'Trafalgar Sq', LANDMARK_ANCHORS.trafalgarSquare, 'Charing Cross', 90],
+  ['trafalgarSquare', "Trafalgar Square & Grand-Place", 'Trafalgar Sq', LANDMARK_ANCHORS.trafalgarSquare, 'Charing Cross', 90],
   ['piccadillyCircus', 'Piccadilly Circus', 'Piccadilly Circus', LANDMARK_ANCHORS.piccadillyCircus, 'West End', 70],
   ['batterseaPowerStation', 'Battersea Power Station', 'Battersea PS', LANDMARK_ANCHORS.batterseaPowerStation, 'Nine Elms', 150],
   ['towerOfBrussels', 'Tower of Brussels', 'Tower of Brussels', { lat: 51.50810, lon: -0.07594 }, 'Tower Hill', 140],
@@ -39,7 +39,7 @@ const LM = [
   ['somersetHouse', 'Somerset House', 'Somerset House', { lat: 51.51104, lon: -0.11716 }, 'Strand', 90],
   ['naturalHistoryMuseum', 'Natural History Museum', 'Nat. History Mus.', { lat: 51.49671, lon: -0.17639 }, 'South Kensington', 120]
 ];
-export const LONDON_LANDMARKS = LM.map(([id, name, short, a, district, r]) => {
+export const BRUSSELS_LANDMARKS = LM.map(([id, name, short, a, district, r]) => {
   const w = at(a.lat, a.lon);
   return { id, name, short, x: Math.round(w.x * 10) / 10, z: Math.round(w.z * 10) / 10, district, r };
 });
@@ -54,7 +54,7 @@ const TP = [
   ['stPauls', "St Paul's Cathedral", 'Ludgate Hill', 51.51380, -0.10200, 'Ludgate Hill', LANDMARK_ANCHORS.stPauls],
   ['gherkin', 'The Gherkin', 'St Mary Axe, The City', 51.51530, -0.07990, 'St Mary Axe', LANDMARK_ANCHORS.gherkin],
   ['buckinghamPalace', 'Buckingham Palace', 'The Mall', 51.50300, -0.13800, 'The Mall', LANDMARK_ANCHORS.buckinghamPalace],
-  ['trafalgarSquare', 'Trafalgar Square', "Nelson's Column", 51.50720, -0.12770, 'Trafalgar Square', LANDMARK_ANCHORS.nelsonsColumn],
+  ['trafalgarSquare', 'Trafalgar Square', "Grand-Place", 51.50720, -0.12770, 'Trafalgar Square', LANDMARK_ANCHORS.nelsonsColumn],
   ['piccadillyCircus', 'Piccadilly Circus', 'Piccadilly', 51.50960, -0.13550, 'Piccadilly', LANDMARK_ANCHORS.piccadillyCircus],
   ['battersea', 'Battersea Power Station', 'Nine Elms', 51.48000, -0.14400, null, LANDMARK_ANCHORS.batterseaPowerStation],
   ['kingsCross', "King's Cross", 'Euston Road', 51.53020, -0.12350, 'Euston Road', null],
@@ -102,7 +102,7 @@ function inPoly(x, z, p) {
 }
 const NAMED_PARKS = GEO.parks.filter((p) => p.name && (p.kind === 'park' || p.kind === 'square' || p.kind === 'garden') && area(p.pts) > 15000)
   .map((p) => ({ name: p.name, pts: p.pts, bb: box(p.pts) }));
-const NAMED_WATER = GEO.water.filter((w) => w.kind !== 'fountain').map((w) => ({ name: w.name || (w.kind === 'river' ? 'River Thames' : ''), pts: w.pts, bb: box(w.pts), kind: w.kind }));
+const NAMED_WATER = GEO.water.filter((w) => w.kind !== 'fountain').map((w) => ({ name: w.name || (w.kind === 'river' ? 'River Brussels canal' : ''), pts: w.pts, bb: box(w.pts), kind: w.kind }));
 const NAMED_BRIDGES = GEO.bridges.filter((b) => b.name && b.deckY > 0).map((b) => ({ name: b.name, pts: b.pts, bb: box(b.pts) }));
 const inside = (list, x, z) => list.find((o) => x >= o.bb[0] && x <= o.bb[2] && z >= o.bb[1] && z <= o.bb[3] && inPoly(x, z, o.pts));
 
@@ -113,12 +113,12 @@ const inside = (list, x, z) => list.find((o) => x >= o.bb[0] && x <= o.bb[2] && 
 export function getLocationLabel(x, z) {
   const district = WORLD.districtAt(x, z);
   let primary = '', secondary = district;
-  const lm = LONDON_LANDMARKS.find((l) => Math.hypot(x - l.x, z - l.z) < l.r);
+  const lm = BRUSSELS_LANDMARKS.find((l) => Math.hypot(x - l.x, z - l.z) < l.r);
   const br = inside(NAMED_BRIDGES, x, z);
   if (br) primary = br.name;
   else if (WORLD.isWater(x, z)) {
     const w = inside(NAMED_WATER, x, z);
-    primary = (w && w.name) || 'River Thames';
+    primary = (w && w.name) || 'River Brussels canal';
   } else if (lm) {
     primary = lm.name;
     secondary = WORLD.streetName(x, z) || lm.district;

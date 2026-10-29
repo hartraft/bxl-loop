@@ -4,7 +4,7 @@
 //   import { GEO } from './bxl-geodata.js';      // top-level await: the module resolves once the data is decoded
 //
 // Works in the browser (fetch relative to this module) and in Node (reads the files with node:fs) so tests can import it.
-// Coordinates: world metres in the js/geo-frame.js frame (x east, z south, origin Nelson's Column), 0.1 m precision.
+// Coordinates: world metres in the js/geo-frame.js frame (x east, z south, origin Grand-Place), 0.1 m precision.
 //
 // File format (v1) — brx-geo.json: { v, frame, bounds, enums:{…kind tables}, names:[…], roads:[[…]], water, parks, … }
 // with every point list delta-encoded in decimetre ints: [x0, z0, dx1, dz1, …]. brx-buildings.bin (little-endian):
@@ -63,7 +63,7 @@ function decodeBuildings(ab) {
   };
 }
 
-/** decode the parsed ldn-geo.json object + the ldn-buildings.bin ArrayBuffer into GEO */
+/** decode the parsed bxl-geo.json object + the bxl-buildings.bin ArrayBuffer into GEO */
 export function decodeGeo(j, buildingsBuffer) {
   const E = j.enums, names = j.names;
   for (const [a, b] of [[E.buildingKinds, BUILDING_KINDS], [E.materials, MATERIALS], [E.roofs, ROOFS]]) {
