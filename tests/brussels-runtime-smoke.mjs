@@ -45,6 +45,8 @@ if (!route) console.error(JSON.stringify({
 }, null, 2));
 assert.ok(startLane && finishLane, 'GPS should find drivable lanes near Grand-Place and Cinquantenaire');
 assert.ok(route && route.length > 100, 'GPS routing should connect Grand-Place to Cinquantenaire');
+const snapDistance = Math.hypot(route.points[route.points.length - 2] - finish.x, route.points[route.points.length - 1] - finish.z);
+assert.ok(snapDistance <= 150, `GPS route endpoint should stay near Cinquantenaire (snapped ${snapDistance.toFixed(1)} m)`);
 console.log(JSON.stringify({
   status: 'ok',
   trafficSide: roads.TRAFFIC_SIDE,
@@ -53,5 +55,6 @@ console.log(JSON.stringify({
   canalFeatures: GEO.water.filter((w) => w.kind === 'canal').length,
   links: network.stats.links,
   routeMetres: Math.round(route.length),
-  routeSteps: route.steps.length
+  routeSteps: route.steps.length,
+  destinationSnapMetres: Math.round(snapDistance)
 }, null, 2));
