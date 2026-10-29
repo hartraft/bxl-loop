@@ -44,9 +44,13 @@ const teleports = [
 export const TELEPORT_LOCATIONS = Object.fromEntries(teleports.map(([id, name, sub, lat, lon]) => {
   const target = brusselsToWorld(lat, lon);
   const anchor = BRUSSELS_LANDMARK_ANCHORS[id];
-  const hit = WORLD.nearestRoad(target.x, target.z, { kinds: 'drive', maxDist: 300 }) ||
-    WORLD.nearestRoad(target.x, target.z, { kinds: 'major', maxDist: 300 }) ||
-    WORLD.nearestRoad(target.x, target.z, { kinds: 'walk', maxDist: 300 });
+  const hit = WORLD.nearestRoad(target.x, target.z, {
+    kinds: ['primary', 'secondary', 'tertiary', 'unclassified', 'residential', 'living_street'],
+    maxDist: 300
+  }) || WORLD.nearestRoad(target.x, target.z, {
+    kinds: 'drive', maxDist: 400,
+    filter: (road) => !['service', 'motorway', 'trunk'].includes(road.kind) && !road.tunnel
+  }) || WORLD.nearestRoad(target.x, target.z, { kinds: 'walk', maxDist: 300 });
   let x = target.x, z = target.z, heading = 0;
   if (hit) {
     heading = hit.heading;
