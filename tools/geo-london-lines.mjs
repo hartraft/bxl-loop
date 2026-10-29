@@ -93,7 +93,7 @@ export function buildRoads(ctx) {
     }
     const lanes = VEHICLE.has(kind) ? (lanesTag > 0 ? Math.round(lanesTag) : Math.max(1, Math.round(width / (oneway ? 3.3 : 3.5)))) : 0;
     let maxspeed = num(t.maxspeed);
-    if (/km\\/?h/i.test(t.maxspeed || '') || (process.env.CITY === 'brussels' && t.maxspeed && !/mph|mi\\/?h/i.test(t.maxspeed))) maxspeed = Math.round(maxspeed / 1.609);
+    if (/km\/?h/i.test(t.maxspeed || '') || (process.env.CITY === 'brussels' && t.maxspeed && !/mph|mi\/?h/i.test(t.maxspeed))) maxspeed = Math.round(maxspeed / 1.609);
     if (!(maxspeed > 0)) maxspeed = VEHICLE.has(kind) ? (kind === 'motorway' ? 50 : kind === 'trunk' ? 30 : kind === 'service' ? 10 : 20) : 0;
     const bridge = t.bridge && t.bridge !== 'no' ? 1 : 0;
     const tunnel = t.tunnel === 'yes' || t.tunnel === 'culvert' ? 1 : 0;
