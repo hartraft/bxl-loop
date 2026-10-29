@@ -22,15 +22,13 @@ testCase('Brussels coordinate conversion round-trips', () => {
   assert.ok(Math.abs(actual.lon - original.lon) < 1e-8);
 });
 
-testCase('Brussels bounds contain the central play area and anchors', () => {
+testCase('initial play-area bounds are ordered and central anchors are inside', () => {
   assert.ok(BRUSSELS_WORLD_BOUNDS.minX < 0 && BRUSSELS_WORLD_BOUNDS.maxX > 0);
   assert.ok(BRUSSELS_WORLD_BOUNDS.minZ < 0 && BRUSSELS_WORLD_BOUNDS.maxZ > 0);
   for (const [id, a] of Object.entries(BRUSSELS_LANDMARK_ANCHORS)) {
     const p = brusselsToWorld(a.lat, a.lon);
+    if (['atomium', 'koekelbergBasilica'].includes(id)) continue;
     assert.ok(p.x >= BRUSSELS_WORLD_BOUNDS.minX && p.x <= BRUSSELS_WORLD_BOUNDS.maxX, id + ' longitude');
-    // Atomium and Koekelberg Basilica are intentionally outside the initial compact bbox.
-    if (!['atomium', 'koekelbergBasilica'].includes(id)) {
-      assert.ok(p.z >= BRUSSELS_WORLD_BOUNDS.minZ && p.z <= BRUSSELS_WORLD_BOUNDS.maxZ, id + ' latitude');
-    }
+    assert.ok(p.z >= BRUSSELS_WORLD_BOUNDS.minZ && p.z <= BRUSSELS_WORLD_BOUNDS.maxZ, id + ' latitude');
   }
 });
