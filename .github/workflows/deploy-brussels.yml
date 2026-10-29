@@ -55,6 +55,7 @@ jobs:
           rsync -a \
             --exclude='.git/' \
             --exclude='.github/' \
+            --exclude='_site/' \
             --exclude='tools/' \
             --exclude='tests/' \
             --exclude='data/brussels-build/' \
