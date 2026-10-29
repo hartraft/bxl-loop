@@ -1,7 +1,7 @@
 // Brussels-specific world queries, landmarks and street-level teleports.
 // Kept separate until the Brussels dataset and browser entry point are switched together.
-import { GEO } from './ldn-geodata.js';
-import { createWorldQueries } from './london-world.js';
+import { GEO } from './brx-geodata.js';
+import { createWorldQueries } from './brussels-base-world.js';
 import { BRUSSELS_FRAME, BRUSSELS_WORLD_BOUNDS, BRUSSELS_LANDMARK_ANCHORS, brusselsToWorld } from './brussels-frame.js';
 
 export { GEO };
