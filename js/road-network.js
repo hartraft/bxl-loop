@@ -7,11 +7,10 @@
 //
 // GEO.roads are whole OSM ways; junctions are bit-exact shared vertices (hashed at 0.1 m), including mid-way ones.
 // Every way is cut at its junctions, signals, crossings and ends into "pieces"; each piece gives one directed *link*
-// per legal direction (oneway respected), each link one or more *lanes* (left-hand traffic: lane 0 is the kerb lane,
-// on the left of the direction of travel). Lane polylines are offset and trimmed back from the junction centre;
-// *connectors* (cubic curves) join an arriving lane end to a leaving lane start through each junction box:
+// per legal direction (oneway respected), each link has lanes ordered from the kerb inward for the selected traffic side.
+// Lane polylines are offset and trimmed back from the junction centre; *connectors* (cubic curves) join lane ends:
 //   - no U-turns except at dead ends (or when nothing else leaves a lane),
-//   - left turns from the kerb-side lanes, right turns from the offside lanes, straight on from any,
+//   - turns prefer the kerb-side lane (left in left-hand traffic, right in right-hand traffic), straight on from any,
 //   - each connector knows which others it geometrically conflicts with (paths closer than CONFLICT_GAP),
 //     and a priority (road rank, roundabout circulation > entry, straight > left > right) for giving way.
 // Roundabouts are oneway ways in OSM order, which is clockwise for UK roundabouts.
@@ -37,7 +36,7 @@ const RIGHT_HAND_TRAFFIC = (typeof process !== 'undefined' && process.env?.CITY 
   (typeof location !== 'undefined' && new URLSearchParams(location.search).get('city') === 'brussels');
 export const TRAFFIC_SIDE = RIGHT_HAND_TRAFFIC ? 'right' : 'left';
 
-const TURN_RANK = { S: 3, L: 2, R: 1, U: 0 };
+const TURN_RANK = RIGHT_HAND_TRAFFIC ? { S: 3, R: 2, L: 1, U: 0 } : { S: 3, L: 2, R: 1, U: 0 };
 
 export const LANE_MIN_W = 2.45; // narrowest lane spacing on two-way streets (cars are 1.8 m wide)
 export const ASPECT = { RED: 0, RED_AMBER: 1, GREEN: 2, AMBER: 3 };
@@ -446,7 +445,7 @@ export function buildLondonRoadNetwork(geo, world = null, opts = {}) {
   for (const n of nodes) { n.inLinks = []; n.outLinks = []; n.connectors = null; n.conflictsReady = false; }
   for (const l of links) { l.to.inLinks.push(l); l.from.outLinks.push(l); }
 
-  /** build a link's lanes (offset, trimmed polylines; lane 0 = kerb lane on the left) */
+  /** build a link's lanes (offset, trimmed polylines; lane 0 = kerb-side lane) */
   // OSM often maps dual carriageways closer together than their (estimated) widths: keep a oneway link's offside
   // lanes on our side of the midline to the nearest oncoming carriageway
   const nearTmp = [];
@@ -468,7 +467,7 @@ export function buildLondonRoadNetwork(geo, world = null, opts = {}) {
           const dx = p[k + 2] - p[k], dz = p[k + 3] - p[k + 1], dl = Math.hypot(dx, dz) || 1;
           if ((dx * TP.dx + dz * TP.dz) / dl > -0.8) continue; // not oncoming
           const qx = p[k] + dx * _t - TP.x, qz = p[k + 1] + dz * _t - TP.z;
-          if (qx * rx + qz * rz <= 0) continue; // not on our right
+          if (qx * rx + qz * rz <= 0) continue; // not on the side where oncoming traffic should be
           limit = Math.min(limit, d / 2 - 0.35);
         }
       }
