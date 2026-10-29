@@ -27,7 +27,7 @@ The generated Brussels dataset is now validated and the runtime can be previewed
 - Preserve OSM attribution and ODbL requirements.
 
 ### 2. Gameplay and local identity
-- Replace landmark anchors and builders with Grand-Place, Manneken Pis, Mont des Arts, Royal Palace, St Michael and St Gudula Cathedral, Palais de Justice, Cinquantenaire and European Parliament; add Atomium and Koekelberg Basilica if included in the play area.
+- Replace landmark anchors and builders with Grand-Place, Manneken Pis, Mont des Arts, Royal Palace, St Michael and St Gudula Cathedral, Palais de Justice, Cinquantenaire and European Parliament; include Koekelberg Basilica in the current bbox; Atomium is outside the initial bbox and should be added only when the map expands north.
 - Switch to right-hand traffic and account for Belgian roundabouts, tram tracks, crossings and road markings.
 - Adapt vehicles, route/job mode, sounds, signs and street furniture to Brussels without copying real operator branding.
 - Keep the existing control modes, cameras, map/GPS routing, time/weather, pedestrians and offline fallback where feasible.
