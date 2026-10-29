@@ -67,6 +67,20 @@ function waterKind(t) {
 const isWaterArea = (t) => t && (t.natural === 'water' || t.waterway === 'riverbank' || (t.waterway === 'dock' && (t.area === 'yes' || true)) ||
   t.landuse === 'basin' || t.landuse === 'reservoir');
 
+function bufferPolyline(line, halfWidth) {
+  if (line.length < 2) return [];
+  const left = [], right = [];
+  for (let i = 0; i < line.length; i++) {
+    const p = line[i];
+    const prev = line[Math.max(0, i - 1)], next = line[Math.min(line.length - 1, i + 1)];
+    const dx = next[0] - prev[0], dz = next[1] - prev[1], len = Math.hypot(dx, dz) || 1;
+    const nx = dz / len, nz = -dx / len;
+    left.push([p[0] + nx * halfWidth, p[1] + nz * halfWidth]);
+    right.push([p[0] - nx * halfWidth, p[1] - nz * halfWidth]);
+  }
+  return left.concat(right.reverse());
+}
+
 export function buildWater(ctx) {
   const { ways, relations } = ctx;
   const water = [];
@@ -81,13 +95,31 @@ export function buildWater(ctx) {
     }
   }
   for (const w of ways.values()) {
-    const t = w.tags;
-    if (!isWaterArea(t) || relMember.has(w.id)) continue;
-    if (t.waterway === 'dock' && !(w.geometry.length > 3)) continue;
-    const kind = waterKind(t);
-    for (const p of polysOf(w, ways, { eps: 0.6, minArea: kind === 'fountain' ? 3 : 10 })) water.push({ kind, name: t.name || '', ...p, osm: w.id });
+    const t = w.tags || {};
+    if (relMember.has(w.id)) continue;
+    if (isWaterArea(t)) {
+      if (t.waterway === 'dock' && !(w.geometry.length > 3)) continue;
+      const kind = waterKind(t);
+      for (const p of polysOf(w, ways, { eps: 0.6, minArea: kind === 'fountain' ? 3 : 10 })) water.push({ kind, name: t.name || '', ...p, osm: w.id });
+      continue;
+    }
+    // Linear waterways (especially Brussels' Canal Bruxelles-Charleroi) are not tagged as area polygons.
+    // Buffer their centre lines into clipped water polygons so the renderer and road/bridge checks see them.
+    if (!['canal', 'river', 'stream'].includes(t.waterway)) continue;
+    const kind = t.waterway === 'river' ? 'river' : 'canal';
+    const taggedWidth = Number.parseFloat(String(t.width || t.est_width || '').replace(/\s*m\s*$/i, ''));
+    const halfWidth = Number.isFinite(taggedWidth) && taggedWidth > 0
+      ? Math.max(1, Math.min(40, taggedWidth / 2))
+      : (t.waterway === 'canal' ? 16 : t.waterway === 'river' ? 6 : 1.5);
+    for (const line of wayParts(w)) {
+      if (line.length < 2) continue;
+      const clipped = clipRing(ccw(bufferPolyline(line, halfWidth)), CLIP);
+      if (clipped && clipped.length >= 3 && ringArea(clipped) >= 10) {
+        water.push({ kind, name: t.name || '', outer: ccw(clipped), holes: [], osm: w.id });
+      }
+    }
   }
-  log(`water: ${water.length} polygons (${water.filter((w) => w.kind === 'river').length} river)`);
+  log(`water: ${water.length} polygons (${water.filter((w) => w.kind === 'river').length} river, ${water.filter((w) => w.kind === 'canal').length} canal)`);
   return water;
 }
 
