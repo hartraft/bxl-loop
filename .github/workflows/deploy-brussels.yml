@@ -50,6 +50,8 @@ jobs:
         run: node tools/validate-brussels-geodata.mjs data/brussels-build
       - name: Smoke-test city config and GPS routing
         run: node tests/brussels-runtime-smoke.mjs
+      - name: Test generated Brussels geodata contract
+        run: node --test tests/geodata-brussels-base.test.mjs
       - name: Configure Pages
         uses: actions/configure-pages@v5
         with:
