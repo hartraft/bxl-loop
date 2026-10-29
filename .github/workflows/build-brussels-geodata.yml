@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
   push:
     branches: ["feat/brussels-world-port"]
-    paths: [".github/workflows/build-brussels-geodata.yml", "tools/validate-brussels-geodata.mjs", "tools/geo-london-areas.mjs", "tools/build-brussels-geodata.mjs", "tools/build-london-geodata.mjs", "tools/geo-london-lines.mjs", "tests/brussels-runtime-smoke.mjs"]
+    paths: [".github/workflows/build-brussels-geodata.yml", "tools/validate-brussels-geodata.mjs", "tools/geo-brussels-base-areas.mjs", "tools/build-brussels-geodata.mjs", "tools/build-brussels-base-geodata.mjs", "tools/geo-brussels-base-lines.mjs", "tests/brussels-runtime-smoke.mjs"]
 
 permissions:
   contents: read

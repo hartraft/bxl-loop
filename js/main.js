@@ -27,7 +27,7 @@ import { setupSceneCulling, updateSceneCulling } from './scene-culling.js';
 import { createBrusselsLife } from './life/brussels-base-life.js';
 import { createBrusselsAudio } from './audio/brussels-base-audio.js';
 import { VEHICLE_UNIFORMS } from './brussels-base-vehicles.js';
-import { LONDON_LANDMARKS } from './city-config.js';
+import { BRUSSELS_LANDMARKS } from './city-config.js';
 
 // js/main.js
 // Main entry point for Brussels Loop (Zone 1 at 1:1 from OpenStreetMap) in three.js WebGPURenderer & TSL (vendored r186)
@@ -140,7 +140,7 @@ async function initApp() {
   const life = createBrusselsLife(scene, { world: WORLD, surfaceHeight: city.surfaceHeight });
   life.onBoatHit = (e) => controllerManager._emitCollision && controllerManager._emitCollision(controllerManager.getActiveEntity(), e.impulse, 'boat');
   const audio = createBrusselsAudio({ controllers: controllerManager, traffic: trafficSystem, life, lighting: lightingSystem, world: WORLD, geo: GEO,
-    landmarks: LONDON_LANDMARKS, cameraSystem, night: () => VEHICLE_UNIFORMS.night.value });
+    landmarks: BRUSSELS_LANDMARKS, cameraSystem, night: () => VEHICLE_UNIFORMS.night.value });
   markInit('controllers');
 
   // Island-wide static geometry: chunk & distance-cull the small props, shadow stand-ins for the big casters
