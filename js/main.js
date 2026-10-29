@@ -4,7 +4,7 @@ import { ssr } from 'three/addons/tsl/display/SSRNode.js';
 import { createPostProcessing } from './post-processing.js';
 import { ClusteredLighting } from 'three/addons/lighting/ClusteredLighting.js';
 import { GEO } from './ldn-geodata.js';
-import { WORLD, getLocationLabel, isTypingInField, TELEPORT_LOCATIONS } from './london-config.js';
+import { WORLD, getLocationLabel, isTypingInField, TELEPORT_LOCATIONS } from './city-config.js';
 import { cityUniforms } from './tsl-materials.js';
 import { buildLondonCity } from './london-city.js';
 import { buildEdgeBarriers } from './city/edge-barriers.js';
@@ -27,7 +27,7 @@ import { setupSceneCulling, updateSceneCulling } from './scene-culling.js';
 import { createLondonLife } from './life/london-life.js';
 import { createLondonAudio } from './audio/london-audio.js';
 import { VEHICLE_UNIFORMS } from './london-vehicles.js';
-import { LONDON_LANDMARKS } from './london-config.js';
+import { LONDON_LANDMARKS } from './city-config.js';
 
 // js/main.js
 // Main entry point for London Loop (Zone 1 at 1:1 from OpenStreetMap) in three.js WebGPURenderer & TSL (vendored r186)
