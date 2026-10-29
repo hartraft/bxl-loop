@@ -20,6 +20,7 @@ import { buildTrafalgarSquare } from './landmarks/trafalgar.js';
 import { buildPiccadillyCircus } from './landmarks/piccadilly.js';
 import { buildBattersea } from './landmarks/battersea.js';
 import * as THREE from 'three/webgpu';
+import { buildBrusselsLandmarks } from './brussels-landmarks.js';
 
 export const LANDMARK_BUILDERS = {
   westminster: buildWestminster, // Elizabeth Tower (Big Ben) + Palace of Westminster
@@ -45,6 +46,9 @@ export const LANDMARK_ALIASES = { bigBen: 'westminster', parliament: 'westminste
  *   only     — subset of landmark ids to build (sandbox)
  */
 export function buildLondonLandmarks(scene, opts = {}) {
+  if (typeof location !== 'undefined' && new URLSearchParams(location.search).get('city') === 'brussels') {
+    return buildBrusselsLandmarks(scene, opts);
+  }
   const { world = null, uniforms = null, only = null } = opts;
   linkCityUniforms(uniforms);
   const group = new THREE.Group();
