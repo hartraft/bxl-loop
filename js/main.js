@@ -3,13 +3,13 @@ import { pass, mrt, output, normalView, positionView, metalness, roughness, vec2
 import { ssr } from 'three/addons/tsl/display/SSRNode.js';
 import { createPostProcessing } from './post-processing.js';
 import { ClusteredLighting } from 'three/addons/lighting/ClusteredLighting.js';
-import { GEO } from './bxl-geodata.js';
+import { GEO } from './brx-geodata.js';
 import { WORLD, getLocationLabel, isTypingInField, TELEPORT_LOCATIONS } from './city-config.js';
 import { cityUniforms } from './tsl-materials.js';
 import { buildBrusselsCity } from './brussels-base-city.js';
 import { buildEdgeBarriers } from './city/edge-barriers.js';
 import { WORLD_BOUNDS } from './geo-frame.js';
-import { buildBrusselsLandmarks } from './brussels-base-landmarks.js';
+import { buildBrusselsLandmarks } from './brussels-landmarks.js';
 import { buildBrusselsRoadNetwork } from './road-network.js';
 import { createTrafficSystem } from './traffic.js';
 import { buildRoadPaint } from './road-paint.js';
@@ -34,8 +34,8 @@ import { BRUSSELS_LANDMARKS } from './city-config.js';
 
 const URL_PARAMS = new URLSearchParams(location.search);
 const LITE = URL_PARAMS.has('lite'); // ?lite: no SSR / smaller shadow work for slower machines
-const CITY_NAME = URL_PARAMS.get('city') === 'brussels' ? 'Brussels' : 'Brussels';
-const CITY_WATER = CITY_NAME === 'Brussels' ? 'the canal and ponds' : 'the Thames';
+const CITY_NAME = 'Brussels';
+const CITY_WATER = 'the canal and ponds';
 if (CITY_NAME === 'Brussels') document.title = 'Brussels Loop';
 
 async function initApp() {

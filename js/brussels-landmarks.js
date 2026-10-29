@@ -1,6 +1,6 @@
 // Lightweight, procedural Brussels landmarks used while keeping the existing city renderer.
 import * as THREE from 'three/webgpu';
-import { GEO } from './ldn-geodata.js';
+import { GEO } from './brx-geodata.js';
 import { BRUSSELS_LANDMARK_ANCHORS, brusselsToWorld } from './brussels-frame.js';
 
 export function buildBrusselsLandmarks(scene, opts = {}) {

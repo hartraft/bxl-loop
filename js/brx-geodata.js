@@ -1,20 +1,20 @@
 // js/brx-geodata.js — loads the generated Brussels geodata (data/brussels-build/brx-geo.json + brx-buildings.bin).
 // The binary/data schema intentionally matches the existing city engine; only the coordinate frame and source data differ.
 //
-//   import { GEO } from './ldn-geodata.js';      // top-level await: the module resolves once the data is decoded
+//   import { GEO } from './bxl-geodata.js';      // top-level await: the module resolves once the data is decoded
 //
 // Works in the browser (fetch relative to this module) and in Node (reads the files with node:fs) so tests can import it.
 // Coordinates: world metres in the js/geo-frame.js frame (x east, z south, origin Nelson's Column), 0.1 m precision.
 //
-// File format (v1) — ldn-geo.json: { v, frame, bounds, enums:{…kind tables}, names:[…], roads:[[…]], water, parks, … }
-// with every point list delta-encoded in decimetre ints: [x0, z0, dx1, dz1, …]. ldn-buildings.bin (little-endian):
-// 'LDNB', u32 version, u32 count, u32 nPts, u32 nSections, u32 offset[nSections] then the sections ringStart u32[count+1],
+// File format (v1) — brx-geo.json: { v, frame, bounds, enums:{…kind tables}, names:[…], roads:[[…]], water, parks, … }
+// with every point list delta-encoded in decimetre ints: [x0, z0, dx1, dz1, …]. brx-buildings.bin (little-endian):
+// 'BRXB', u32 version, u32 count, u32 nPts, u32 nSections, u32 offset[nSections] then the sections ringStart u32[count+1],
 // origin i32[2count] (first point, dm), colour u32[count], nameIdx i32[count], delta i16[2nPts] (dm, first = 0),
 // height u16[count] (dm), minHeight u16[count] (dm), kind u8, material u8, roof u8, landmark u8.
 import { BRUSSELS_FRAME as FRAME, BRUSSELS_WORLD_BOUNDS as WORLD_BOUNDS } from './brussels-frame.js';
 
 export const BUILDING_KINDS = ['house', 'terrace', 'flats', 'office', 'retail', 'civic', 'church', 'station', 'industrial', 'glass_tower', 'other'];
-export const MATERIALS = ['london_stock_brick', 'red_brick', 'portland_stone', 'stucco_white', 'glass', 'concrete', 'sandstone'];
+export const MATERIALS = ['brussels_stock_brick', 'red_brick', 'portland_stone', 'stucco_white', 'glass', 'concrete', 'sandstone'];
 export const ROOFS = ['flat', 'gabled', 'hipped', 'mansard', 'dome', 'spire'];
 
 /** delta-encoded decimetre ints -> Float32Array of metres */
@@ -32,7 +32,7 @@ const cm = (a) => (a ? Float32Array.from(a, (v) => v / 100) : null);
 function decodeBuildings(ab) {
   const dv = new DataView(ab);
   const magic = String.fromCharCode(dv.getUint8(0), dv.getUint8(1), dv.getUint8(2), dv.getUint8(3));
-  if (magic !== 'LDNB') throw new Error('brx-buildings.bin: bad magic');
+  if (magic !== 'BXLB') throw new Error('brx-buildings.bin: bad magic');
   const count = dv.getUint32(8, true), nPts = dv.getUint32(12, true), nSec = dv.getUint32(16, true);
   const o = [];
   for (let i = 0; i < nSec; i++) o.push(dv.getUint32(20 + i * 4, true));
