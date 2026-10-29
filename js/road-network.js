@@ -963,6 +963,37 @@ export function buildLondonRoadNetwork(geo, world = null, opts = {}) {
     return best;
   }
 
+  function nearestLaneCandidates(x, z, { heading = null, maxDist = 150, filter = null } = {}) {
+    const candidates = [];
+    const near = [];
+    lanesNear(x, z, maxDist, near);
+    for (const lane of near) {
+      if (filter && !filter(lane)) continue;
+      const p = lane.pts;
+      let best = null, bestScore = Infinity;
+      for (let k = 0; k + 3 < p.length; k += 2) {
+        const h = distPointSeg(x, z, p[k], p[k + 1], p[k + 2], p[k + 3]);
+        if (h.d > maxDist) continue;
+        let score = h.d;
+        if (heading !== null) {
+          const dx = p[k + 2] - p[k], dz = p[k + 3] - p[k + 1], len = Math.hypot(dx, dz) || 1;
+          const dot = (dx * Math.sin(heading) + dz * Math.cos(heading)) / len;
+          score += (1 - dot) * 6;
+        }
+        if (score < bestScore) {
+          bestScore = score;
+          const segLen = Math.hypot(p[k + 2] - p[k], p[k + 3] - p[k + 1]);
+          best = { lane, s: lane.cum[k / 2] + h.t * segLen,
+            x: p[k] + (p[k + 2] - p[k]) * h.t, z: p[k + 1] + (p[k + 3] - p[k + 1]) * h.t,
+            dist: h.d, score };
+        }
+      }
+      if (best) candidates.push(best);
+    }
+    candidates.sort((a, b) => a.score - b.score);
+    return candidates;
+  }
+
   let maxSpeed = 1;
   for (const l of links) maxSpeed = Math.max(maxSpeed, l.speed);
 
@@ -973,9 +1004,25 @@ export function buildLondonRoadNetwork(geo, world = null, opts = {}) {
    */
   function route(from, to, { heading = null, targetHeading = null } = {}) {
     const a = nearestLane(from.x, from.z, { heading, maxDist: 150 });
-    const b = nearestLane(to.x, to.z, { heading: targetHeading, maxDist: 150 });
+    let b = nearestLane(to.x, to.z, { heading: targetHeading, maxDist: 150 });
     if (!a || !b) return null;
-    const startL = a.lane.link, goalL = b.lane.link;
+    const startL = a.lane.link;
+    // A nearest road can be an isolated service spur or a one-way link facing away from the reachable graph.
+    // Build the directed reachable set once and snap the destination to the closest reachable lane if necessary.
+    const reachable = new Set([startL]), reachStack = [startL];
+    while (reachStack.length) {
+      const link = reachStack.pop();
+      for (const next of link.succ || []) if (!reachable.has(next)) { reachable.add(next); reachStack.push(next); }
+    }
+    const unusableTarget = (candidate) => !reachable.has(candidate.lane.link) ||
+      (candidate.lane.link === startL && candidate.s < a.s - 0.5);
+    if (unusableTarget(b)) {
+      const alternative = nearestLaneCandidates(to.x, to.z, { heading: targetHeading, maxDist: 150 })
+        .find((candidate) => !unusableTarget(candidate));
+      if (!alternative) return null;
+      b = alternative;
+    }
+    const goalL = b.lane.link;
     const hx = (l) => Math.hypot(l.to.x - to.x, l.to.z - to.z) / maxSpeed;
     const g = new Map(), prev = new Map(), closed = new Set();
     // binary heap of [f, link]
