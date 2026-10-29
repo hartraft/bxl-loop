@@ -5,11 +5,15 @@ on:
   push:
     branches: [main, "feat/brussels-world-port"]
     paths:
+      - ".github/workflows/deploy-brussels.yml"
       - "index.html"
       - "css/**"
       - "js/**"
       - "data/**"
       - "vendor/**"
+      - "tools/build-brussels-geodata.mjs"
+      - "tools/validate-brussels-geodata.mjs"
+      - "tests/brussels-runtime-smoke.mjs"
 
 permissions:
   contents: read
