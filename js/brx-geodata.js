@@ -8,7 +8,7 @@
 //
 // File format (v1) — brx-geo.json: { v, frame, bounds, enums:{…kind tables}, names:[…], roads:[[…]], water, parks, … }
 // with every point list delta-encoded in decimetre ints: [x0, z0, dx1, dz1, …]. brx-buildings.bin (little-endian):
-// 'BRXB', u32 version, u32 count, u32 nPts, u32 nSections, u32 offset[nSections] then the sections ringStart u32[count+1],
+// 'BXLB', u32 version, u32 count, u32 nPts, u32 nSections, u32 offset[nSections] then the sections ringStart u32[count+1],
 // origin i32[2count] (first point, dm), colour u32[count], nameIdx i32[count], delta i16[2nPts] (dm, first = 0),
 // height u16[count] (dm), minHeight u16[count] (dm), kind u8, material u8, roof u8, landmark u8.
 import { BRUSSELS_FRAME as FRAME, BRUSSELS_WORLD_BOUNDS as WORLD_BOUNDS } from './brussels-frame.js';
