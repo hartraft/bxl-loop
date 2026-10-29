@@ -90,7 +90,7 @@ const CROSSING_KINDS = ['zebra', 'signals'];
 
 const json = {
   v: 1,
-  source: 'OpenStreetMap contributors (ODbL), Geofabrik Greater London extract 2026-10-20',
+  source: process.env.CITY === 'brussels' ? 'OpenStreetMap contributors (ODbL), Brussels-area extract; see BRUSSELS-PORT.md for source and refresh instructions' : 'OpenStreetMap contributors (ODbL), Geofabrik Greater London extract 2026-10-20',
   frame: FRAME, bounds: WORLD_BOUNDS,
   enums: { roadKinds: ROAD_KINDS, roadSubs: ROAD_SUBS, roadCaps: ROAD_CAPS, waterKinds: WATER_KINDS, parkKinds: PARK_KINDS, railKinds: RAIL_KINDS,
     stationKinds: STATION_KINDS, poiKinds: POI_KINDS, crossingKinds: CROSSING_KINDS, buildingKinds: BUILDING_KINDS, materials: MATERIALS, roofs: ROOFS },
@@ -167,13 +167,15 @@ buf.writeUInt32LE(pi, offs.ringStart + count * 4);
 
 fs.mkdirSync(OUT, { recursive: true });
 const jsonStr = JSON.stringify(json);
-fs.writeFileSync(path.join(OUT, 'ldn-geo.json'), jsonStr);
-fs.writeFileSync(path.join(OUT, 'ldn-buildings.bin'), buf);
-log(`wrote ldn-geo.json ${(jsonStr.length / 1e6).toFixed(2)} MB (` +
+const geoName = process.env.CITY === 'brussels' ? 'brx-geo.json' : 'ldn-geo.json';
+const buildingName = process.env.CITY === 'brussels' ? 'brx-buildings.bin' : 'ldn-buildings.bin';
+fs.writeFileSync(path.join(OUT, geoName), jsonStr);
+fs.writeFileSync(path.join(OUT, buildingName), buf);
+log(`wrote ${geoName} ${(jsonStr.length / 1e6).toFixed(2)} MB (` +
   Object.entries(json).filter(([, v]) => typeof v === 'object').map(([k, v]) => `${k} ${(JSON.stringify(v).length / 1e6).toFixed(2)}`).join(', ') + ')');
-log(`wrote ldn-buildings.bin ${(buf.length / 1e6).toFixed(2)} MB (${count} buildings, ${nPts} points)`);
+log(`wrote ${buildingName} ${(buf.length / 1e6).toFixed(2)} MB (${count} buildings, ${nPts} points)`);
 
-// ---- quick self-check: the Thames is one water body from the SW edge to the east edge ----------------------------
+// ---- quick connectivity diagnostic for the selected city's river/water layer -------------------------------------
 {
   const g = new Grid(WORLD_BOUNDS, 8);
   for (const w of waterOut) if (w.kind === 'river') g.fill([w.outer, ...w.holes]);
@@ -190,6 +192,6 @@ log(`wrote ldn-buildings.bin ${(buf.length / 1e6).toFixed(2)} MB (${count} build
       if (g.d[j] && !seen[j]) { seen[j] = 1; st.push(j); }
     }
   }
-  log(`Thames check: river connected from the east edge to x = ${(WORLD_BOUNDS.minX + minC * 8).toFixed(0)} (west edge ${WORLD_BOUNDS.minX.toFixed(0)})`);
+  log(`${process.env.CITY === 'brussels' ? 'Brussels river/water' : 'Thames'} check: connected from east edge to x = ${(WORLD_BOUNDS.minX + minC * 8).toFixed(0)} (west edge ${WORLD_BOUNDS.minX.toFixed(0)})`);
 }
 lap('done');
