@@ -1136,3 +1136,9 @@ export function buildLondonRoadNetwork(geo, world = null, opts = {}) {
 export function buildRoadNetwork(geo, world) {
   return buildLondonRoadNetwork(geo, world);
 }
+
+// Explicit city-named entry point used by the Brussels runtime; retain the
+// generic and historical exports for existing tests and downstream callers.
+export function buildBrusselsRoadNetwork(geo, world) {
+  return buildLondonRoadNetwork(geo, world);
+}
