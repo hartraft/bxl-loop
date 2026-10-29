@@ -178,6 +178,16 @@ export function renderLocationPlates(container, label, pos = null) {
   if (container.dataset.ldnKey === key) return;
   container.dataset.ldnKey = key;
   const lm = LANDMARK_NAMES.get(lab.primary);
+  if (typeof location !== 'undefined' && new URLSearchParams(location.search).get('city') === 'brussels') {
+    const wrap = el('div', 'ldn-plates');
+    const street = lm ? lab.secondary : lab.primary;
+    const district = lm ? lm.district : lab.secondary;
+    if (lm) wrap.appendChild(el('div', 'ldn-place', lm.name));
+    if (street) wrap.appendChild(makeStreetPlate(street, '', district || 'Brussels'));
+    if (!lm && district && district !== street) wrap.appendChild(el('div', 'ldn-district', district));
+    container.replaceChildren(wrap);
+    return;
+  }
   let street = lab.primary, district = lab.secondary, place = '';
   if (lm) {
     place = lm.name;
