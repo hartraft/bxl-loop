@@ -22,6 +22,10 @@ for (const key of ['roads', 'water', 'parks', 'rail', 'stations', 'pois', 'landm
 }
 if (geo.roads.length < 100) fail(`suspiciously few roads: ${geo.roads.length}`);
 if (geo.parks.length < 1) fail('no parks were baked');
+const canalFeatures = geo.water.filter((w) => geo.enums.waterKinds[w[0]] === 'canal');
+const namedCanals = canalFeatures.filter((w) => /Canal Charleroi|Kanaal Brussel-Charleroi/i.test(geo.names[w[1]] || ''));
+if (canalFeatures.length < 20) fail(`too few canal polygons: ${canalFeatures.length}`);
+if (namedCanals.length < 1) fail('the Charleroi–Brussels canal was not found in the water layer');
 const zoneIds = new Set(geo.landmarkZones.map((z) => z[0]));
 for (const id of ['grandPlace', 'mannekenPis', 'montDesArts', 'royalPalace', 'cathedral', 'palaisDeJustice', 'cinquantenaire', 'europeanParliament', 'koekelbergBasilica']) {
   if (!zoneIds.has(id)) fail(`missing landmark zone ${id}`);
