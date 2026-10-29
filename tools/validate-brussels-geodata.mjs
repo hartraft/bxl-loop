@@ -15,6 +15,7 @@ const fail = (message) => { throw new Error(`Brussels geodata validation failed:
 if (geo.v !== 1) fail(`unsupported geo version ${geo.v}`);
 if (!geo.source?.includes('OpenStreetMap contributors (ODbL)')) fail('missing OpenStreetMap attribution / ODbL source');
 if (geo.frame?.lat0 !== 50.84673 || geo.frame?.lon0 !== 4.35247) fail('wrong coordinate origin; expected Grand-Place');
+if (geo.frame?.bbox?.south !== 50.815 || geo.frame?.bbox?.west !== 4.305 || geo.frame?.bbox?.north !== 50.875 || geo.frame?.bbox?.east !== 4.405) fail('wrong central Brussels extraction bounds');
 if (!geo.bounds || !(geo.bounds.minX < 0 && geo.bounds.maxX > 0 && geo.bounds.minZ < 0 && geo.bounds.maxZ > 0)) fail('invalid play-area bounds');
 for (const key of ['roads', 'water', 'parks', 'rail', 'stations', 'pois', 'landmarkZones']) {
   if (!Array.isArray(geo[key])) fail(`missing layer ${key}`);
