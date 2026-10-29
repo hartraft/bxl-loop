@@ -50,5 +50,5 @@ The generated Brussels dataset is now validated and the runtime can be previewed
 - Feature branch: `feat/brussels-world-port`
 - Tracking issue: [#3 — Port London Loop into a playable Brussels city](https://github.com/hartraft/bxl-loop/issues/3)
 - Latest end-to-end data/runtime smoke test passed: [run 40870016352](https://github.com/hartraft/bxl-loop/actions/runs/40870016352). It validated 44,253 roads, 115,635 buildings, 268 water features including 100 canal polygons, right-hand traffic, 34,567 road links, and a 3.736 km GPS route from Grand-Place toward Cinquantenaire.
-- The data workflow uploads generated files as a 7-day artifact for review. The Pages workflow builds its own fresh data so the generated binary assets need not be committed to Git.
+- The data workflow uploads generated files as a 7-day artifact for review. The Pages workflow builds its own fresh data so the generated binary assets need not be committed to Git. Its final live-URL checks are ready, but the first deployment is blocked until Pages is enabled in repository settings.
 - Browser visual testing is still outstanding. The Node runtime smoke test covers data loading and GPS routing, but a human visual check should confirm landmark scale, lighting, spawn placement and traffic flow after Pages deployment.
