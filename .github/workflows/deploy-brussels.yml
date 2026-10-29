@@ -49,6 +49,8 @@ jobs:
         run: node tests/brussels-runtime-smoke.mjs
       - name: Configure Pages
         uses: actions/configure-pages@v5
+        with:
+          enablement: true
       - name: Stage static site and set Brussels as the Pages default
         run: |
           mkdir -p _site
