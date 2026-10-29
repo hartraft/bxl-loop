@@ -2,7 +2,8 @@
 // Browser builds stay London by default. Set CITY=brussels only for the geodata build pipeline.
 import { BRUSSELS_FRAME, BRUSSELS_WORLD_BOUNDS, BRUSSELS_LANDMARK_ANCHORS } from './brussels-frame.js';
 
-const BUILD_CITY = typeof process !== 'undefined' && process.env?.CITY === 'brussels';
+const BUILD_CITY = (typeof process !== 'undefined' && process.env?.CITY === 'brussels') ||
+  (typeof location !== 'undefined' && new URLSearchParams(location.search).get('city') === 'brussels');
 const LONDON_FRAME = {
   lat0: 51.50773,
   lon0: -0.12803,
