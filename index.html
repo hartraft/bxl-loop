@@ -56,6 +56,13 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400..800&amp;display=swap" />
   <link rel="stylesheet" href="./css/style.css?v=20261022-repo-link" />
+  <style>
+    #osm-attribution { position: fixed; left: 10px; bottom: 8px; z-index: 90; padding: 4px 7px;
+      border: 1px solid rgba(255,255,255,.14); border-radius: 6px; background: rgba(12,14,17,.72);
+      color: #d8d9dc; font: 10px/1.3 system-ui, sans-serif; pointer-events: auto; }
+    #osm-attribution a { color: #f2f2f2; text-decoration: underline; text-underline-offset: 2px; }
+    @media (max-width: 600px) { #osm-attribution { left: 6px; bottom: 6px; font-size: 9px; } }
+  </style>
 </head>
 <body>
   <!-- Icon sprite (24 × 24 stroke icons, drawn in currentColor) -->
@@ -332,5 +339,6 @@
     </div>
   </section>
 
+  <div id="osm-attribution">Map data <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">© OpenStreetMap contributors</a> · ODbL 1.0</div>
 </body>
 </html>
