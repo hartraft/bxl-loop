@@ -33,6 +33,10 @@ const DRIVE_KINDS = new Set(['motorway', 'trunk', 'primary', 'secondary', 'terti
 const SERVICE_OK = new Set(['', 'alley', 'bus', 'link']);
 const RANK = { motorway: 7, trunk: 6, primary: 5, secondary: 4, tertiary: 3, unclassified: 2, residential: 2, living_street: 1, service: 0 };
 const DEFAULT_MPH = { motorway: 50, trunk: 30, primary: 20, secondary: 20, tertiary: 20, unclassified: 20, residential: 20, living_street: 10, service: 10 };
+const RIGHT_HAND_TRAFFIC = (typeof process !== 'undefined' && process.env?.CITY === 'brussels') ||
+  (typeof location !== 'undefined' && new URLSearchParams(location.search).get('city') === 'brussels');
+export const TRAFFIC_SIDE = RIGHT_HAND_TRAFFIC ? 'right' : 'left';
+
 const TURN_RANK = { S: 3, L: 2, R: 1, U: 0 };
 
 export const LANE_MIN_W = 2.45; // narrowest lane spacing on two-way streets (cars are 1.8 m wide)
@@ -205,10 +209,15 @@ function polyDist(A, B, limit) {
   return best;
 }
 
-/** left offset of lane i of a link from the road centreline (lane 0 = kerb lane) */
+/** offset lane i from the road centreline; lane 0 is always the kerb-side lane */
 export function laneOffset(link, i) {
-  if (link.edgeR !== undefined) return link.edgeL - (i + 0.5) * ((link.edgeL - link.edgeR) / link.nLanes);
-  return link.oneway ? link.road.w / 2 - (i + 0.5) * link.laneW : (link.nLanes - i - 0.5) * link.laneW;
+  if (link.edgeR !== undefined) return RIGHT_HAND_TRAFFIC
+    ? link.edgeR + (i + 0.5) * ((link.edgeL - link.edgeR) / link.nLanes)
+    : link.edgeL - (i + 0.5) * ((link.edgeL - link.edgeR) / link.nLanes);
+  if (link.oneway) return RIGHT_HAND_TRAFFIC
+    ? -link.road.w / 2 + (i + 0.5) * link.laneW
+    : link.road.w / 2 - (i + 0.5) * link.laneW;
+  return (RIGHT_HAND_TRAFFIC ? -1 : 1) * (link.nLanes - i - 0.5) * link.laneW;
 }
 
 /** packs many small coordinate arrays into a few big Float32Arrays (subarray views: far less GC than 1e5 arrays) */
@@ -447,7 +456,7 @@ export function buildLondonRoadNetwork(geo, world = null, opts = {}) {
     let limit = half;
     for (const f of [0.15, 0.5, 0.85]) {
       pointAt(link, link.len * f, TP);
-      const rx = -TP.dz, rz = TP.dx; // right of travel
+      const rx = RIGHT_HAND_TRAFFIC ? TP.dz : -TP.dz, rz = RIGHT_HAND_TRAFFIC ? -TP.dx : TP.dx; // oncoming carriageway side
       nearTmp.length = 0;
       linkGrid.query(TP.x, TP.z, half + 12, nearTmp, ++stamp);
       for (const o of nearTmp) {
@@ -590,15 +599,15 @@ export function buildLondonRoadNetwork(geo, world = null, opts = {}) {
         const ol = c.ol, nOut = ol.nLanes;
         let allowed;
         if (use.length === 1 || nIn === 1) allowed = all;
-        else if (c.turn === 'L') allowed = all.slice(0, Math.ceil(nIn / 2));
-        else if (c.turn === 'R' || c.turn === 'U') allowed = all.slice(Math.floor(nIn / 2));
+        else if ((RIGHT_HAND_TRAFFIC ? c.turn === 'R' : c.turn === 'L')) allowed = all.slice(0, Math.ceil(nIn / 2));
+        else if ((RIGHT_HAND_TRAFFIC ? c.turn === 'L' : c.turn === 'R') || c.turn === 'U') allowed = all.slice(Math.floor(nIn / 2));
         else allowed = all;
         for (let k = 0; k < allowed.length; k++) {
           const i = allowed[k];
           let j;
           if (nOut === 1) j = 0;
-          else if (c.turn === 'L') j = Math.min(k, nOut - 1);
-          else if (c.turn === 'R' || c.turn === 'U') j = Math.max(0, nOut - allowed.length + k);
+          else if (RIGHT_HAND_TRAFFIC ? c.turn === 'R' : c.turn === 'L') j = Math.min(k, nOut - 1);
+          else if ((RIGHT_HAND_TRAFFIC ? c.turn === 'L' : c.turn === 'R') || c.turn === 'U') j = Math.max(0, nOut - allowed.length + k);
           else j = allowed.length === 1 ? Math.min(i, nOut - 1) : Math.round((k * (nOut - 1)) / (allowed.length - 1));
           n.connectors.push(makeConnector(n, il.lanes[i], ol.lanes[j], c.turn, c.angle));
         }
@@ -655,7 +664,8 @@ export function buildLondonRoadNetwork(geo, world = null, opts = {}) {
           if (d >= lim || d >= bd) continue;
           const t = _t;
           const dx = p[k + 2] - p[k], dz = p[k + 3] - p[k + 1];
-          if ((x - p[k]) * dz - (z - p[k + 1]) * dx < 0.5) continue; // must be on the left (kerb) side
+          const kerbSide = (x - p[k]) * dz - (z - p[k + 1]) * dx;
+          if (RIGHT_HAND_TRAFFIC ? kerbSide > -0.5 : kerbSide < 0.5) continue; // stop must be on the kerb side
           bd = d; best = { link, s: link.cum[k / 2] + t * Math.hypot(dx, dz) };
         }
       }
@@ -777,9 +787,10 @@ export function buildLondonRoadNetwork(geo, world = null, opts = {}) {
     for (const ap of ctl.approaches) {
       const l = ap.link;
       pointAt(l, l.len - l.trimE, TP);
-      const lx = TP.dz, lz = -TP.dx, o0 = laneOffset(l, 0);
+      const sideSign = RIGHT_HAND_TRAFFIC ? -1 : 1;
+      const lx = TP.dz * sideSign, lz = -TP.dx * sideSign, o0 = laneOffset(l, 0);
       const ex = TP.x + lx * o0, ez = TP.z + lz * o0;
-      // head on the left verge at the stop line, facing the arriving drivers
+      // signal head on the kerb verge at the stop line, facing the arriving drivers
       const off = l.laneW * 0.5 + 1.2;
       ap.head = signalHeads.length;
       signalHeads.push({ id: signalHeads.length, controller: ctl.id, phase: ap.phase, node: ap.node.id, link: l.id,
