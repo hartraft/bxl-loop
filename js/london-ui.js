@@ -251,6 +251,35 @@ export function applyLondonHud({ mainHooks = {} } = {}) {
   const desc = document.querySelector('meta[name="description"]');
   if (desc) desc.setAttribute('content', isBrussels ? 'Brussels Loop: a playable 1:1-scale Brussels city built from OpenStreetMap with three.js WebGPU & TSL.' : 'London Loop: a GTA-style 1:1 Zone 1 London built from OpenStreetMap with three.js WebGPU & TSL.');
 
+  if (isBrussels) {
+    const carLabel = document.querySelector('#mode-car .mode-label');
+    if (carLabel) carLabel.textContent = 'Car';
+    const carButton = document.getElementById('mode-car');
+    if (carButton) carButton.title = 'Drive a car [2]';
+    const rideLabel = document.querySelector('#mode-ride .mode-label');
+    if (rideLabel) rideLabel.textContent = 'Ride-hail';
+    const rideButton = document.getElementById('mode-ride');
+    if (rideButton) rideButton.title = 'Ride-hail car [3]';
+    const boatButton = document.getElementById('mode-boat');
+    if (boatButton) {
+      boatButton.disabled = true;
+      boatButton.title = 'Canal boat mode is not available yet';
+      boatButton.setAttribute('aria-label', 'Canal boat mode not available yet');
+    }
+    const busJobButton = document.getElementById('btn-bus-driver');
+    if (busJobButton) {
+      busJobButton.disabled = true;
+      busJobButton.title = 'Brussels bus routes are not wired up yet';
+      const label = busJobButton.querySelector('.tool-label');
+      if (label) label.textContent = 'Bus routes soon';
+      busJobButton.setAttribute('aria-label', 'Brussels bus route job not available yet');
+    }
+    const busButton = document.getElementById('mode-bus');
+    if (busButton) busButton.title = 'Drive a bus [N]';
+    const helicopterButton = document.getElementById('mode-helicopter');
+    if (helicopterButton) helicopterButton.title = 'Helicopter [5]';
+  }
+
   // weather buttons
   const buttons = [];
   const setActiveWeather = (id) => {
