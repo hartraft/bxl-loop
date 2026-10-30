@@ -53,6 +53,14 @@ function cumulative(pts) {
 }
 
 /** index i with cum[i] <= s < cum[i+1] (clamped) */
+/** Sample the shared scene-relative terrain surface along an [x,z] polyline. */
+export function terrainLineHeights(pts, world) {
+  if (!world || typeof world.terrainSurfaceHeight !== 'function') return null;
+  const ys = new Float32Array(pts.length / 2);
+  for (let i = 0; i < ys.length; i++) ys[i] = world.terrainSurfaceHeight(pts[i * 2], pts[i * 2 + 1]);
+  return ys;
+}
+
 export function segIndex(cum, s) {
   let lo = 0, hi = cum.length - 1;
   if (s <= 0) return 0;
@@ -250,7 +258,7 @@ export function buildLondonRoadNetwork(geo, world = null, opts = {}) {
       for (let i = 0; i < r.pts.length && !any; i += 2) any = inArea(r.pts[i], r.pts[i + 1]);
       if (!any) continue;
     }
-    roads.push({ src: r, pts: Array.from(r.pts), ys: r.deck ? Array.from(r.deck) : null, feat: [] });
+    roads.push({ src: r, pts: Array.from(r.pts), ys: r.deck ? Array.from(r.deck) : (!r.tunnel ? terrainLineHeights(r.pts, world) : null), feat: [] });
   }
 
   // ---- 2. snap signals / crossings onto the roads (insert vertices where needed) -------------------------------
@@ -872,7 +880,10 @@ export function buildLondonRoadNetwork(geo, world = null, opts = {}) {
       const lc = cumulative(line);
       const cut = cutLine(line, pc.ys, Math.min(pc.trimA * 0.6, pc.len * 0.3), lc[lc.length - 1] - Math.min(pc.trimB * 0.6, pc.len * 0.3));
       pv.pts = cut.pts; pv.ys = cut.ys;
-    } else { pv.pts = pv.road.pts; pv.ys = pv.road.deck; }
+    } else {
+      pv.pts = pv.road.pts;
+      pv.ys = pv.road.deck || (!pv.road.tunnel ? terrainLineHeights(pv.road.pts, world) : null);
+    }
     pv.cum = cumulative(pv.pts);
     pv.len = pv.cum[pv.cum.length - 1];
     return pv;
