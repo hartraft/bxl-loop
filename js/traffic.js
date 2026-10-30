@@ -530,7 +530,7 @@ function createTrafficSystem(scene, opts = {}) {
         if (Math.abs(v.x - x) > r || Math.abs(v.z - z) > r) continue;
         const cs = Math.cos(v.yaw), sn = Math.sin(v.yaw);
         const ex = Math.abs(sn) * v.half + Math.abs(cs) * v.halfW, ez = Math.abs(cs) * v.half + Math.abs(sn) * v.halfW;
-        const h = v.bus ? 4.4 : v.type === 'van' ? 2.3 : v.type === 'cab' ? 1.9 : 1.6;
+        const h = v.bus ? (IS_BRUSSELS ? 3.25 : 4.4) : v.type === 'van' ? 2.3 : v.type === 'cab' ? 1.9 : 1.6;
         out.push({ minX: v.x - ex, maxX: v.x + ex, minZ: v.z - ez, maxZ: v.z + ez, minY: v.y, maxY: v.y + h,
           obb: { cx: v.x, cz: v.z, hx: v.halfW, hz: v.half, cs, sn }, vehicle: v });
       }
