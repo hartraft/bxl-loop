@@ -289,7 +289,8 @@ export class RoadGraph {
 // ------------------------------------------------------------------------------------------------------------------
 const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
 const pick = (a, rng = Math.random) => a[Math.floor(rng() * a.length)];
-const fmtMoney = (v) => `£${(Math.round((v || 0) * 100) / 100).toLocaleString('en-GB', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+const moneyFormatter = new Intl.NumberFormat('en-BE', { style: 'currency', currency: 'EUR', minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const fmtMoney = (v) => moneyFormatter.format(Math.round((v || 0) * 100) / 100);
 const fmtDist = (m) => (m < 950 ? `${Math.max(10, Math.round(m / 10) * 10)} m` : `${(m / 1000).toFixed(m < 9950 ? 1 : 0)} km`);
 const fmtMin = (s) => (s < 60 ? '<1 min' : `${Math.round(s / 60)} min`);
 const fmtDur = (s) => `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, '0')}`;
@@ -1929,7 +1930,7 @@ export class RideBXL {
     m2.append(document.createTextNode('ETA '), this._live.eta);
     meta.append(m1, m2);
     if (this.phase === 'ride' || this.phase === 'finishing') {
-      this._live.meter = h('b', '', '£0.00');
+      this._live.meter = h('b', '', fmtMoney(0));
       const m3 = h('span');
       m3.append(document.createTextNode('Meter '), this._live.meter);
       meta.appendChild(m3);
