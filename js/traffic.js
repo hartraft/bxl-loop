@@ -169,7 +169,7 @@ function createTrafficSystem(scene, opts = {}) {
   drawBlinds(planner.variants);
   {
     const bm = busV.meshes.find((m) => m.name.endsWith('_blinds'));
-    if (bm) {
+    if (bm && !IS_BRUSSELS) {
       bm.geometry.setAttribute('aBlind', blindAttr);
       const mat = new THREE.MeshStandardNodeMaterial();
       const t = texture(blindTex, uv().add(attribute('aBlind', 'vec2')).mul(uniform(new THREE.Vector2(1 / BLIND_COLS, 1 / BLIND_ROWS))));
