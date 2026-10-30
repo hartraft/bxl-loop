@@ -10,6 +10,7 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     limestone: new THREE.MeshStandardMaterial({ color: 0xbca98c, roughness: 0.88 }),
     paleStone: new THREE.MeshStandardMaterial({ color: 0xd8c9ad, roughness: 0.82 }),
     warmStone: new THREE.MeshStandardMaterial({ color: 0x9f8060, roughness: 0.86 }),
+    green: new THREE.MeshStandardMaterial({ color: 0x70936a, roughness: 0.92 }),
     roof: new THREE.MeshStandardMaterial({ color: 0x343d3b, roughness: 0.9 }),
     slate: new THREE.MeshStandardMaterial({ color: 0x59615c, roughness: 0.9 }),
     glass: new THREE.MeshStandardMaterial({ color: 0x354b50, roughness: 0.35, metalness: 0.12 }),
@@ -192,6 +193,7 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     const south = new THREE.Group();
     south.name = 'South frontage';
     south.position.set(0, 0, 36);
+    south.rotation.y = Math.PI;
     plaza.add(south);
     townHall(south);
     guildHouse(south, { name: 'Guild House – Le Pigeon', x: 24, width: 12, height: 19, floors: 3, style: 'stepped', stone: materials.warmStone });
@@ -200,7 +202,6 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     const north = new THREE.Group();
     north.name = 'North frontage';
     north.position.set(0, 0, -36);
-    north.rotation.y = Math.PI;
     plaza.add(north);
     guildHouse(north, { name: 'Guild House – Le Renard', x: -43, width: 12, height: 20, style: 'stepped', stone: materials.warmStone });
     guildHouse(north, { name: 'Guild House – Le Cornet', x: -29, width: 13, height: 23, style: 'gable', stone: materials.paleStone });
