@@ -3,6 +3,12 @@
 
 const finite = Number.isFinite;
 
+/** Lowest scene-relative foundation-skirt vertex; terrain above the podium underside needs no exposed skirt. */
+export function foundationSkirtBottom(terrainY, podiumBottomY, clearance = 0.05) {
+  if (![terrainY, podiumBottomY, clearance].every(finite) || clearance < 0) throw new TypeError('Invalid foundation skirt heights');
+  return Math.min(terrainY, podiumBottomY - clearance);
+}
+
 /** Terrain-conforming lower edge for ground-level building walls. Inputs and result are scene-relative metres. */
 export function foundationWallBase(terrainAt, anchorY, lowerY, upperY) {
   if (![terrainAt, anchorY, lowerY, upperY].every(finite)) throw new TypeError('Invalid foundation wall heights');
