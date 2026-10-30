@@ -2,6 +2,7 @@
 import * as THREE from 'three/webgpu';
 import { GEO } from './brx-geodata.js';
 import { BRUSSELS_LANDMARK_ANCHORS, MONT_DES_ARTS_ROTATION, brusselsToWorld } from './brussels-frame.js';
+import { foundationSkirtBottom } from './brussels-terrain.js';
 
 export function buildBrusselsLandmarks(scene, opts = {}) {
   const group = new THREE.Group();
@@ -37,6 +38,46 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
   }
   function cylinder(parent, top, bottom, height, x, y, z, material, sides = 12) {
     return mesh(parent, new THREE.CylinderGeometry(top, bottom, height, sides), material, x, y, z);
+  }
+
+  // Close the gap between a level podium underside and lower terrain on steep edges.
+  // The main deck remains level; this creates a sampled retaining skirt rather than tilting the landmark.
+  function terrainFoundationSkirt(parent, root, anchor, width, depth, topY, material, name) {
+    const surfaceHeight = opts.world?.terrainSurfaceHeight;
+    if (typeof surfaceHeight !== 'function') return null;
+    const cos = Math.cos(root.rotation.y), sin = Math.sin(root.rotation.y);
+    const edges = [
+      { count: Math.ceil(width / 6), point: t => [-width / 2 + width * t, -depth / 2 - 0.06] },
+      { count: Math.ceil(width / 6), point: t => [width / 2 - width * t, depth / 2 + 0.06] },
+      { count: Math.ceil(depth / 6), point: t => [-width / 2 - 0.06, depth / 2 - depth * t] },
+      { count: Math.ceil(depth / 6), point: t => [width / 2 + 0.06, -depth / 2 + depth * t] }
+    ];
+    const positions = [], indices = [];
+    for (const edge of edges) {
+      const samples = [];
+      for (let i = 0; i <= edge.count; i++) {
+        const [x, z] = edge.point(i / edge.count);
+        const worldX = anchor.x + x * cos + z * sin;
+        const worldZ = anchor.z - x * sin + z * cos;
+        const terrainY = surfaceHeight(worldX, worldZ) - root.position.y;
+        samples.push({ x, z, bottom: foundationSkirtBottom(terrainY, topY) });
+      }
+      for (let i = 0; i < samples.length - 1; i++) {
+        const a = samples[i], b = samples[i + 1];
+        if (a.bottom >= topY - 0.049 && b.bottom >= topY - 0.049) continue;
+        const base = positions.length / 3;
+        positions.push(a.x, topY, a.z, a.x, a.bottom, a.z, b.x, topY, b.z, b.x, b.bottom, b.z);
+        indices.push(base, base + 1, base + 2, base + 2, base + 1, base + 3);
+      }
+    }
+    if (!positions.length) return null;
+    const geometry = new THREE.BufferGeometry();
+    geometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+    geometry.setIndex(indices);
+    geometry.computeVertexNormals();
+    const skirtMaterial = material.clone();
+    skirtMaterial.side = THREE.DoubleSide;
+    return mesh(parent, geometry, skirtMaterial, 0, 0, 0, name);
   }
   function addLandmark(id, build) {
     const anchor = BRUSSELS_LANDMARK_ANCHORS[id];
@@ -273,6 +314,7 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     // Suspended-garden podium and the covered parking/gallery base.
     box(g, 112, 3.0, 132, 0, -1.5, 0, blueStone, 'Mont des Arts underground structure');
     box(g, 108, 1.0, 128, 0, 0.5, 0, limestone, 'Garden waterproofing deck');
+    terrainFoundationSkirt(g, g, brusselsToWorld(BRUSSELS_LANDMARK_ANCHORS.montDesArts.lat, BRUSSELS_LANDMARK_ANCHORS.montDesArts.lon), 112, 132, -3.0, blueStone, 'Mont des Arts terrain retaining skirt');
     // The principal garden axis is diagonal in the city frame. Eight broad terraces
     // descend by measured increments; each has a retaining wall and a clear upper landing.
     const levels = 8, terraceWidth = 78, terraceDepth = 12.5, rise = 1.65;
@@ -481,6 +523,7 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
 
     // Broad podium and perimeter terrace: the courthouse sits above the Marolles escarpment.
     box(g, 174, 4.2, 182, 0, -1.0, -1, weathered, 'Palais de Justice monumental podium');
+    terrainFoundationSkirt(g, g, brusselsToWorld(BRUSSELS_LANDMARK_ANCHORS.palaisDeJustice.lat, BRUSSELS_LANDMARK_ANCHORS.palaisDeJustice.lon), 174, 182, -3.1, weathered, 'Palais de Justice terrain retaining skirt');
     box(g, 166, 2.2, 174, 0, 2.2, -1, light, 'Courthouse podium coping');
     // Eight internal courts are left open. Four long ranges and cross-ranges create
     // a legible courtyard plan instead of a single opaque rectangular mass.

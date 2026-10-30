@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { createTerrainSampler, createTerrainSurface, subdivideTerrainTriangle, foundationWallBase } from '../js/brussels-terrain.js';
+import { createTerrainSampler, createTerrainSurface, subdivideTerrainTriangle, foundationWallBase, foundationSkirtBottom } from '../js/brussels-terrain.js';
 import { MONT_DES_ARTS_ROTATION } from '../js/brussels-frame.js';
 import { terrainLineHeights, pointAt } from '../js/road-network.js';
 
@@ -109,4 +109,11 @@ test('Mont des Arts local garden axis runs from southeast upper city to northwes
   const z = Math.cos(MONT_DES_ARTS_ROTATION);
   assert.ok(x > 0 && z > 0, 'local +Z should point southeast in the Brussels frame (+x east, +z south)');
   assert.ok(-x < 0 && -z < 0, 'the descending -Z garden axis should point northwest');
+});
+
+test('terrain foundation skirts extend only below the podium underside', () => {
+  assert.equal(foundationSkirtBottom(-15, -3.1), -15);
+  assert.equal(foundationSkirtBottom(-2, -3.1), -3.15);
+  assert.equal(foundationSkirtBottom(4, -3.1), -3.15);
+  assert.throws(() => foundationSkirtBottom(NaN, -3), /Invalid foundation skirt/);
 });
