@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { createTerrainSampler, createTerrainSurface, subdivideTerrainTriangle, foundationWallBase } from '../js/brussels-terrain.js';
+import { MONT_DES_ARTS_ROTATION } from '../js/brussels-frame.js';
 import { terrainLineHeights, pointAt } from '../js/road-network.js';
 
 const metadata = { width: 3, height: 3, cellSize: 10, minX: 100, minZ: 200, noData: -9999 };
@@ -101,4 +102,11 @@ test('road and pavement height samples inherit the shared terrain surface', () =
   pointAt(p, Math.hypot(10, 5) * 1.5, out);
   assert.ok(Math.abs(out.y - 6) < 1e-6);
   assert.equal(terrainLineHeights(pts, null), null);
+});
+
+test('Mont des Arts local garden axis runs from southeast upper city to northwest lower city', () => {
+  const x = Math.sin(MONT_DES_ARTS_ROTATION);
+  const z = Math.cos(MONT_DES_ARTS_ROTATION);
+  assert.ok(x > 0 && z > 0, 'local +Z should point southeast in the Brussels frame (+x east, +z south)');
+  assert.ok(-x < 0 && -z < 0, 'the descending -Z garden axis should point northwest');
 });
