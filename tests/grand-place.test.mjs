@@ -20,7 +20,7 @@ test('the Town Hall and its tower are distinct from the opposite Kings House', (
 test('guild-house rooflines and facade details are varied and instanced', () => {
   assert.match(source, /style === 'stepped'/);
   assert.match(source, /style === 'bell'/);
-  assert.match(source, /style === 'gable'/);
+  assert.match(source, /style = 'gable'/);
   assert.match(source, /new THREE.InstancedMesh/);
   assert.match(source, /gilded window surrounds/);
 });
