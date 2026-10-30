@@ -122,7 +122,7 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
   function townHall(parent) {
     const root = new THREE.Group();
     root.name = 'Brussels Town Hall (Hôtel de Ville)';
-    root.position.set(-20, 0, 0);
+    root.position.set(20, 0, 0);
     parent.add(root);
     const width = 47, height = 25, depth = 14;
     box(root, width, height, depth, 0, height / 2, -depth / 2, materials.paleStone, 'Town Hall Gothic facade');
@@ -140,7 +140,7 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     // The famous asymmetrical, open-work belfry rises from the western portion of the roof.
     const tower = new THREE.Group();
     tower.name = 'Town Hall tower and openwork spire';
-    tower.position.set(-16, 22, -6);
+    tower.position.set(16, 22, -6);
     root.add(tower);
     box(tower, 8.5, 17, 8.5, 0, 8.5, 0, materials.paleStone, 'Town Hall square tower');
     for (let level = 0; level < 3; level++) {
@@ -196,8 +196,8 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     south.rotation.y = Math.PI;
     plaza.add(south);
     townHall(south);
-    guildHouse(south, { name: 'Guild House – Le Pigeon', x: 24, width: 12, height: 19, floors: 3, style: 'stepped', stone: materials.warmStone });
-    guildHouse(south, { name: 'Guild House – La Brouette', x: 39, width: 13, height: 22, floors: 4, style: 'bell', stone: materials.paleStone });
+    guildHouse(south, { name: 'Guild House – Le Pigeon', x: -24, width: 12, height: 19, floors: 3, style: 'stepped', stone: materials.warmStone });
+    guildHouse(south, { name: 'Guild House – La Brouette', x: -39, width: 13, height: 22, floors: 4, style: 'bell', stone: materials.paleStone });
 
     const north = new THREE.Group();
     north.name = 'North frontage';
