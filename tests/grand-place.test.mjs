@@ -13,6 +13,8 @@ test('Grand-Place is modelled as a full pedestrian square, not a small generic p
 test('the Town Hall and its tower are distinct from the opposite Kings House', () => {
   assert.match(source, /Brussels Town Hall \(Hôtel de Ville\)/);
   assert.match(source, /Town Hall tower and openwork spire/);
+  assert.match(source, /Open belfry pier/);
+  assert.match(source, /Town Hall octagonal spire/);
   assert.match(source, /King’s House \(Maison du Roi \/ Broodhuis\)/);
   assert.match(source, /Gothic lancet window/);
 });
