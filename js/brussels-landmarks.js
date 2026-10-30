@@ -1,7 +1,7 @@
 // Brussels-specific, procedural landmark geometry. Kept behind the Brussels city selector.
 import * as THREE from 'three/webgpu';
 import { GEO } from './brx-geodata.js';
-import { BRUSSELS_LANDMARK_ANCHORS, brusselsToWorld } from './brussels-frame.js';
+import { BRUSSELS_LANDMARK_ANCHORS, MONT_DES_ARTS_ROTATION, brusselsToWorld } from './brussels-frame.js';
 
 export function buildBrusselsLandmarks(scene, opts = {}) {
   const group = new THREE.Group();
@@ -48,7 +48,7 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     // Align each landmark's local architectural frontage with the real city axis.
     if (id === 'royalPalace') root.rotation.y = Math.PI; // north-facing façade toward Parc de Bruxelles
     if (id === 'palaisDeJustice') root.rotation.y = Math.PI; // monumental entrance faces Place Poelaert to the north
-    if (id === 'montDesArts') root.rotation.y = Math.PI * 0.75; // garden axis descends north-west from the upper city
+    if (id === 'montDesArts') root.rotation.y = MONT_DES_ARTS_ROTATION; // local +Z points southeast; the garden descends northwest
     if (id === 'cinquantenaire') root.rotation.y = Math.PI / 2; // triumphal axis east-west; pavilions north/south
     build(root);
     group.add(root);
@@ -268,6 +268,7 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     const water = new THREE.MeshStandardMaterial({ color: 0x6c969b, metalness: 0.18, roughness: 0.24 });
     const glass = new THREE.MeshStandardMaterial({ color: 0x526a70, metalness: 0.12, roughness: 0.3 });
     const bronze = new THREE.MeshStandardMaterial({ color: 0x78694d, metalness: 0.45, roughness: 0.62 });
+    const recess = new THREE.MeshStandardMaterial({ color: 0x343b3b, roughness: 0.9 });
 
     // Suspended-garden podium and the covered parking/gallery base.
     box(g, 112, 3.0, 132, 0, -1.5, 0, blueStone, 'Mont des Arts underground structure');
