@@ -2,7 +2,7 @@ name: Brussels frame checks
 
 on:
   push:
-    branches: [main, "feat/brussels-world-port"]
+    branches: [main, "feat/*"]
   pull_request:
     branches: [main]
 
@@ -15,8 +15,8 @@ jobs:
         with:
           node-version: 22
       - name: Check Brussels build pipeline syntax
-        run: node --check tools/osm-pbf-extract.mjs && node --check tools/build-brussels-geodata.mjs && node --check tools/validate-brussels-geodata.mjs && node --check js/brx-geodata.js && node --check js/brussels-config.js && node --check js/city-config.js && node --check js/brussels-landmarks.js && node --check js/brussels-base-landmarks.js && node --check js/main.js && node --check js/cameras.js && node --check js/brussels-base-map.js && node --check js/traffic.js && node --check js/brussels-bus.js && node --check js/controllers.js && node --check js/bus-driver.js && node --check js/brussels-base-ui.js && node --check js/bxl-geodata.js && node --check js/brx-geodata.js && node --check js/road-network.js && node --check tests/traffic-side.test.mjs && node --check tools/build-brussels-base-geodata.mjs && node --check tools/geo-brussels-base-areas.mjs && node --check tools/geo-brussels-base-lines.mjs && node --check js/geo-frame.js
+        run: node --check tools/osm-pbf-extract.mjs && node --check tools/build-brussels-geodata.mjs && node --check tools/validate-brussels-geodata.mjs && node --check js/brx-geodata.js && node --check js/brussels-config.js && node --check js/city-config.js && node --check js/brussels-landmarks.js && node --check js/brussels-base-landmarks.js && node --check js/main.js && node --check js/cameras.js && node --check js/brussels-base-map.js && node --check js/traffic.js && node --check js/brussels-bus.js && node --check js/street-details.js && node --check js/city/roads.js && node --check js/brussels-base-city.js && node --check js/controllers.js && node --check js/bus-driver.js && node --check js/brussels-base-ui.js && node --check js/bxl-geodata.js && node --check js/brx-geodata.js && node --check js/road-network.js && node --check tests/traffic-side.test.mjs && node --check tools/build-brussels-base-geodata.mjs && node --check tools/geo-brussels-base-areas.mjs && node --check tools/geo-brussels-base-lines.mjs && node --check js/geo-frame.js
       - name: Parse GitHub Pages workflow YAML
         run: ruby -e "require 'yaml'; YAML.load_file('.github/workflows/deploy-brussels.yml')"
       - name: Test Brussels frame and anchors
-        run: node --test tests/brussels-frame.test.mjs tests/brussels-build-frame.test.mjs tests/traffic-side.test.mjs tests/boot.test.cjs tests/module-graph-audit.test.mjs tests/brussels-bus-selection.test.mjs
+        run: node --test tests/brussels-frame.test.mjs tests/brussels-build-frame.test.mjs tests/traffic-side.test.mjs tests/boot.test.cjs tests/module-graph-audit.test.mjs tests/brussels-bus-selection.test.mjs tests/brussels-street-infrastructure.test.mjs
