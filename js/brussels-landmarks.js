@@ -343,7 +343,7 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       box(g, 9, 1.4, 21, x, 24.3, -1, roof, 'Pavilion roof');
       for (const dx of [-2.5, 0, 2.5]) box(g, 1.5, 4, 0.2, x + dx, 14, facadeZ + 0.1, shadow, 'Pavilion window');
     }
-    for ((let x = -58; x <= 58; x += 4)) {
+    for (let x = -58; x <= 58; x += 4) {
       cylinder(g, 0.12, 0.16, 1.15, x, 0.58, 14, ashlar, 8);
     }
   });
