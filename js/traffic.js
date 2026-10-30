@@ -4,6 +4,7 @@ import { GEO, WORLD, BRUSSELS_LANDMARKS } from './city-config.js';
 import { buildLondonRoadNetwork, ASPECT_NAMES } from './road-network.js';
 import { createTrafficSim, VEHICLE_TYPES } from './traffic-sim.js';
 import { VEHICLE_FACTORIES, VEHICLE_UNIFORMS, CAR_COLOURS, getInstanceParts, createVehicleUniforms } from './brussels-base-vehicles.js';
+import { brusselsBus } from './brussels-bus.js';
 import { createBusPlanner, loadBusRoutes } from './life/bus-routes.js';
 const IS_BRUSSELS = typeof location !== 'undefined' && new URLSearchParams(location.search).get('city') === 'brussels';
 import { toWorld } from './geo-frame.js';
@@ -127,7 +128,10 @@ function createTrafficSystem(scene, opts = {}) {
   addVariant('van', F.van({ seed: 9 }), VAN_PAINTS, 60);
   // buses: one model; route number & destination per instance from a blind atlas (real routes, data/ldn-bus-routes.json)
   const BUS_CAP = 48;
-  const busV = addVariant('bus', F.doubleDecker({ route: '0', destination: ' ' }), [0xc8102e], BUS_CAP);
+  const busModel = IS_BRUSSELS
+    ? brusselsBus({ route: '71', destination: 'De Brouckère' })
+    : F.doubleDecker({ route: '0', destination: ' ' });
+  const busV = addVariant('bus', busModel, IS_BRUSSELS ? [0xf47721] : [0xc8102e], BUS_CAP);
   const planner = createBusPlanner(network);
   const blindCanvas = typeof document !== 'undefined' ? document.createElement('canvas') : null;
   const blindTex = blindCanvas ? new THREE.CanvasTexture(blindCanvas) : new THREE.Texture();
