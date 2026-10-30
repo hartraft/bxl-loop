@@ -15,9 +15,48 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
       - name: Check Brussels build pipeline syntax
-        run: node --check tools/osm-pbf-extract.mjs && node --check tools/build-brussels-geodata.mjs && node --check tools/validate-brussels-geodata.mjs && node --check js/brx-geodata.js && node --check js/brussels-config.js && node --check js/city-config.js && node --check js/brussels-landmarks.js && node --check js/brussels-base-landmarks.js && node --check js/main.js && node --check js/cameras.js && node --check js/brussels-base-map.js && node --check js/traffic.js && node --check js/brussels-bus.js && node --check js/street-details.js && node --check js/city/roads.js && node --check js/brussels-base-city.js && node --check js/controllers.js && node --check js/bus-driver.js && node --check js/brussels-base-ui.js && node --check js/bxl-geodata.js && node --check js/brx-geodata.js && node --check js/road-network.js && node --check tests/traffic-side.test.mjs && node --check tools/build-brussels-base-geodata.mjs && node --check tools/geo-brussels-base-areas.mjs && node --check tools/geo-brussels-base-lines.mjs && node --check js/geo-frame.js
+        run: |
+          node --check tools/osm-pbf-extract.mjs
+          node --check tools/build-brussels-geodata.mjs
+          node --check tools/validate-brussels-geodata.mjs
+          node --check js/brx-geodata.js
+          node --check js/brussels-config.js
+          node --check js/city-config.js
+          node --check js/brussels-landmarks.js
+          node --check js/brussels-base-landmarks.js
+          node --check js/main.js
+          node --check js/cameras.js
+          node --check js/brussels-base-map.js
+          node --check js/traffic.js
+          node --check js/brussels-bus.js
+          node --check js/street-details.js
+          node --check js/city/roads.js
+          node --check js/brussels-base-city.js
+          node --check js/controllers.js
+          node --check js/bus-driver.js
+          node --check js/brussels-base-ui.js
+          node --check js/bxl-geodata.js
+          node --check js/brx-geodata.js
+          node --check js/road-network.js
+          node --check tests/traffic-side.test.mjs
+          node --check tools/build-brussels-base-geodata.mjs
+          node --check tools/geo-brussels-base-areas.mjs
+          node --check tools/geo-brussels-base-lines.mjs
+          node --check js/geo-frame.js
+          node --check js/brussels-terrain.js
+          node --check tests/brussels-terrain.test.mjs
+          python -m py_compile tools/prepare-brussels-terrain.py tools/download-brussels-dtm.py tests/brussels-terrain-importer.test.py tests/brussels-dtm-download.test.py
+      - name: Install terrain importer test dependencies
+        run: |
+          python -m pip install --only-binary=:all: -r tools/requirements-terrain.txt
+      - name: Test GeoTIFF to local terrain-grid importer
+        run: python tests/brussels-terrain-importer.test.py
       - name: Parse GitHub Pages workflow YAML
         run: ruby -e "require 'yaml'; YAML.load_file('.github/workflows/deploy-brussels.yml')"
       - name: Test Brussels frame and anchors
-        run: node --test tests/brussels-frame.test.mjs tests/brussels-build-frame.test.mjs tests/traffic-side.test.mjs tests/boot.test.cjs tests/module-graph-audit.test.mjs tests/brussels-bus-selection.test.mjs tests/brussels-street-infrastructure.test.mjs
+        run: |
+          node --test tests/brussels-frame.test.mjs tests/brussels-build-frame.test.mjs tests/traffic-side.test.mjs tests/boot.test.cjs tests/module-graph-audit.test.mjs tests/brussels-bus-selection.test.mjs tests/brussels-street-infrastructure.test.mjs tests/brussels-terrain.test.mjs

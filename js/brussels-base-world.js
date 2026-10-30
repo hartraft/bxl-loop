@@ -57,7 +57,7 @@ function makeHash(b, cell, n, bboxOf) {
   };
 }
 
-export function createWorldQueries(GEO) {
+export function createWorldQueries(GEO, { terrain = null } = {}) {
   const B0 = GEO.bounds;
   const B = { minX: B0.minX - 150, maxX: B0.maxX + 150, minZ: B0.minZ - 150, maxZ: B0.maxZ + 150 };
   const roads = GEO.roads;
@@ -242,6 +242,11 @@ export function createWorldQueries(GEO) {
    * ground height: bridge deck on raised bridges, 0 elsewhere. mode 'boat': WATER_LEVEL on water (boats pass under
    * bridges), 0 on land.
    */
+  /** Numeric bare-earth elevation from the optional DTM grid (null outside coverage or before the grid is installed). */
+  function terrainHeight(x, z) {
+    return terrain ? terrain.sample(x, z) : null;
+  }
+
   function groundHeight(x, z, mode) {
     if (mode === 'boat') return isWater(x, z) ? WATER_LEVEL : 0;
     return deckHeight(x, z);
@@ -288,5 +293,5 @@ export function createWorldQueries(GEO) {
     return false;
   }
 
-  return { groundHeight, deckHeight, isWater, onBridge, nearestRoad, streetName, districtAt, randomRoadPoint, bridgeDeckAt, WATER_LEVEL };
+  return { groundHeight, terrainHeight, terrain, deckHeight, isWater, onBridge, nearestRoad, streetName, districtAt, randomRoadPoint, bridgeDeckAt, WATER_LEVEL };
 }
