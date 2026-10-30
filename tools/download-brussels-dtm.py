@@ -100,7 +100,7 @@ def main():
         print(f"Output: {width} x {height} pixels, {args.resolution:g} m, {args.crs}")
         print(f"Source licence: CC0 — Paradigm / Brussels Mobility ({SOURCE_URL})")
         payload = request_bytes(url, args.timeout)
-        if len(payload) < 1024 or not (payload[:4] in (b"II*\\x00", b"MM\\x00*")):
+        if len(payload) < 1024 or not (payload[:4] in (bytes((0x49, 0x49, 0x2a, 0x00)), bytes((0x4d, 0x4d, 0x00, 0x2a))):
             preview = payload[:500].decode("utf-8", errors="replace")
             raise RuntimeError("WCS did not return a TIFF payload. Response begins: " + preview)
         args.output.parent.mkdir(parents=True, exist_ok=True)
