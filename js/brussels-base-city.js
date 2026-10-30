@@ -166,7 +166,7 @@ export function buildBrusselsCity(scene, opts = {}) {
   // ---- street furniture & trees ----------------------------------------------------------------------------------
   let det = { footprints: [], colliders: [], update() {}, stats: {} };
   if (details || trees) {
-    det = buildStreetDetails(scene, { geo, world, ctx, inRegion, roads: rd, ground: gnd, details, trees, parent: root });
+    det = buildStreetDetails(scene, { geo, world, ctx, inRegion, roads: rd, ground: gnd, details, trees, parent: root, city: 'brussels' });
     groups.details = det.group || null;
     groups.trees = det.treeGroup || null;
   }
