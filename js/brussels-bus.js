@@ -1,5 +1,5 @@
 import * as THREE from 'three/webgpu';
-import { createVehicleMaterial, createVehicleUniforms, VEHICLE_UNIFORMS } from './brussels-base-vehicles.js';
+import { createVehicleMaterial, createVehicleUniforms } from './brussels-base-vehicles.js';
 
 // Original, lightweight STIB/MIVB-inspired 12 m low-floor single-decker.
 // Geometry is deliberately procedural; no editorial photo or third-party model is bundled.
@@ -131,6 +131,40 @@ export function brusselsBus({ route = '71', destination = 'De Brouckère', unifo
   body.name = 'body';
   body.castShadow = body.receiveShadow = true;
   group.add(body);
+
+  // Plain-text fleet markings and an amber destination blind, made from original canvas artwork.
+  const canvas = document.createElement('canvas');
+  canvas.width = 1024; canvas.height = 256;
+  const ctx = canvas.getContext('2d');
+  ctx.fillStyle = '#111a20'; ctx.fillRect(0, 0, canvas.width, canvas.height);
+  ctx.fillStyle = '#ffb52e'; ctx.font = '900 108px Arial, sans-serif'; ctx.textBaseline = 'middle';
+  ctx.fillText(String(route), 28, 126);
+  ctx.fillStyle = '#ffffff'; ctx.font = '700 76px Arial, sans-serif';
+  ctx.fillText(String(destination).toUpperCase().slice(0, 18), 260, 126);
+  const blindTexture = new THREE.CanvasTexture(canvas);
+  blindTexture.colorSpace = THREE.SRGBColorSpace;
+  const blindMaterial = new THREE.MeshBasicMaterial({ map: blindTexture, toneMapped: false });
+  const blind = new THREE.Mesh(new THREE.PlaneGeometry(1.25, 0.28), blindMaterial);
+  blind.name = 'blinds';
+  blind.position.set(0, 2.94, 5.735);
+  group.add(blind);
+
+  const markCanvas = document.createElement('canvas');
+  markCanvas.width = 512; markCanvas.height = 128;
+  const mg = markCanvas.getContext('2d');
+  mg.fillStyle = '#f47721'; mg.fillRect(0, 0, 512, 128);
+  mg.fillStyle = '#ffffff'; mg.font = '900 76px Arial, sans-serif'; mg.textBaseline = 'middle';
+  mg.fillText('STIB / MIVB', 20, 66);
+  const markTexture = new THREE.CanvasTexture(markCanvas);
+  markTexture.colorSpace = THREE.SRGBColorSpace;
+  const markMaterial = new THREE.MeshBasicMaterial({ map: markTexture, toneMapped: false });
+  for (const side of [-1, 1]) {
+    const mark = new THREE.Mesh(new THREE.PlaneGeometry(1.45, 0.36), markMaterial);
+    mark.name = 'decals';
+    mark.position.set(side * 1.292, 1.12, -2.05);
+    mark.rotation.y = side > 0 ? Math.PI / 2 : -Math.PI / 2;
+    group.add(mark);
+  }
 
   const spec = {
     kind: 'brusselsBus', route, destination, length: 12.0, width: 2.55, height: 3.25,
