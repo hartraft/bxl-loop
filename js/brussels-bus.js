@@ -68,11 +68,7 @@ export function brusselsBus({ route = '71', destination = 'De Brouckère', unifo
     box(pieces, 0.22, 0.56, 0.06, side * 1.05, 0.98, -5.73, tail);
     box(pieces, 0.12, 0.18, 0.06, side * 1.05, 0.62, -5.73, lamp);
   }
-  // Wheels: 6-wheel layout, black tyres and silver hubs; fixed geometry is also used by traffic instances.
-  for (const z of [3.55, -2.95]) for (const side of [-1, 1]) {
-    cylinder(pieces, 0.43, 0.28, side * 1.05, 0.44, z, rubber);
-    cylinder(pieces, 0.22, 0.295, side * 1.05, 0.44, z, matSurf(0x9da4a8, 0.28, 0.78));
-  }
+  // Wheels are separate animated meshes so player and traffic instances can spin them.
   // STIB orange fleet livery and a restrained operator mark, rendered as original geometry.
   box(pieces, 0.035, 0.22, 1.0, 1.292, 1.12, -2.05, orange);
   box(pieces, 0.035, 0.22, 1.0, -1.292, 1.12, -2.05, orange);
@@ -97,6 +93,42 @@ export function brusselsBus({ route = '71', destination = 'De Brouckère', unifo
   body.name = 'body';
   body.castShadow = body.receiveShadow = true;
   group.add(body);
+
+  // Four low-profile wheels with silver hubs, shared by the player and traffic instancer.
+  const wheelPieces = [];
+  cylinder(wheelPieces, 0.43, 0.28, 0, 0, 0, rubber);
+  cylinder(wheelPieces, 0.22, 0.295, 0.006, 0, 0, matSurf(0x9da4a8, 0.28, 0.78));
+  const wheelParts = wheelPieces.map(({ geometry: source, surf }) => {
+    const g = source.toNonIndexed();
+    const n = g.attributes.position.count;
+    const colors = new Float32Array(n * 3);
+    const aSurf = new Float32Array(n * 4);
+    const c = new THREE.Color(surf.color);
+    for (let i = 0; i < n; i++) {
+      colors[i * 3] = c.r; colors[i * 3 + 1] = c.g; colors[i * 3 + 2] = c.b;
+      aSurf[i * 4] = surf.rough; aSurf[i * 4 + 1] = surf.metal; aSurf[i * 4 + 2] = surf.emit; aSurf[i * 4 + 3] = 0;
+    }
+    g.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+    g.setAttribute('aSurf', new THREE.BufferAttribute(aSurf, 4));
+    return g;
+  });
+  const wheelGeo = mergeGeometries(wheelParts, false);
+  wheelGeo.computeBoundingSphere();
+  const wheelGeoRight = wheelGeo.clone().rotateY(Math.PI);
+  wheelGeoRight.computeBoundingSphere();
+  const wheelMaterial = createVehicleMaterial({ uniforms });
+  const wheels = [];
+  for (const z of [3.55, -2.95]) for (const side of [1, -1]) {
+    const pivot = new THREE.Group();
+    pivot.name = `wheel_${z > 0 ? 'front' : 'rear'}_${side > 0 ? 'left' : 'right'}`;
+    pivot.position.set(side * 1.05, 0.43, z);
+    const spin = new THREE.Mesh(side > 0 ? wheelGeo : wheelGeoRight, wheelMaterial);
+    spin.name = 'spin';
+    spin.castShadow = true;
+    pivot.add(spin);
+    group.add(pivot);
+    wheels.push({ group: pivot, spin, front: z > 0, side, x: side * 1.05, y: 0.43, z, radius: 0.43 });
+  }
 
   // Plain-text fleet markings and an amber destination blind, made from original canvas artwork.
   const canvas = document.createElement('canvas');
@@ -143,7 +175,7 @@ export function brusselsBus({ route = '71', destination = 'De Brouckère', unifo
   group.userData.kind = spec.kind;
   group.userData.uniforms = uniforms;
   group.userData.animated = [];
-  group.userData.wheels = [];
-  group.userData.wheelGeo = null;
+  group.userData.wheels = wheels;
+  group.userData.wheelGeo = { left: wheelGeo, right: wheelGeoRight };
   return group;
 }
