@@ -1,4 +1,5 @@
 name: Brussels frame checks
+# Feature branches run the Belgian street-infrastructure regression suite.
 
 on:
   push:
