@@ -310,6 +310,7 @@ export function buildRoadGeometry(geo, ctx, inRegion) {
   }
 
   // ---- markings ------------------------------------------------------------------------------------------------------
+  // Brussels uses continental/right-hand conventions; never draw London's red routes or double-yellow kerb lines.
   const markLine = (b, p, ys, off, halfW, dash, gap, col, road, margin, phase = 0) => {
     // dashed (dash > 0) or solid line offset `off` from the centreline, cut wherever it enters another carriageway
     const o = offsetPolyline(p, off);
@@ -356,17 +357,12 @@ export function buildRoadGeometry(geo, ctx, inRegion) {
     const hw = r.w / 2;
     const h = hash01(r.id * 31 + 5);
     if (!r.oneway && r.w >= 5.5 && r.junction !== 'roundabout') markLine(b, d.p, d.y, 0, 0.05, 4, 5, WHITE, r, 1.0, h * 9);
-    // kerb-side restrictions: red routes on trunk roads, double yellows on most central streets
-    const red = r.kind === 'trunk';
-    if (red || h < 0.72) {
-      const col = red ? RED : YELLOW;
+    // Belgian urban parking restrictions use a single broken yellow edge line, not UK double yellows/red routes.
+    if (r.kind !== 'residential' || h < 0.45) {
       for (const side of [1, -1]) {
         if (r.junction === 'roundabout') continue;
-        markLine(b, d.p, d.y, side * (hw - 0.22), 0.05, 0, 0, col, r, 0.4);
-        markLine(b, d.p, d.y, side * (hw - 0.42), 0.05, 0, 0, col, r, 0.4);
+        markLine(b, d.p, d.y, side * (hw - 0.3), 0.045, 1.0, 1.0, YELLOW, r, 0.4, h * 2);
       }
-    } else if (r.kind !== 'residential') {
-      for (const side of [1, -1]) markLine(b, d.p, d.y, side * (hw - 0.3), 0.05, 0, 0, YELLOW, r, 0.4); // single yellow
     }
     // give-way lines where a minor road ends on a bigger one
     for (const end of [0, 1]) {
@@ -413,22 +409,7 @@ export function buildRoadGeometry(geo, ctx, inRegion) {
         const o = -hw + span * (k + 0.5);
         rect(b, cx + vx * o, cz + vz * o, ux, uz, 1.5, span * 0.25, y + Y_MARK + 0.002);
       }
-      // zig-zags along both kerbs (and the centre of two-way roads) for ~9 m either side
-      const offs = r.oneway ? [hw - 0.35, -(hw - 0.35)] : [hw - 0.35, -(hw - 0.35), 0];
-      for (const o of offs) {
-        for (const dir of [-1, 1]) {
-          let px = 0, pz = 0;
-          for (let k = 0, s = 2.6; s <= 11.6; k++, s += 1.5) {
-            const lo = o + (k % 2 ? 0.15 : -0.15);
-            const qx = cx + ux * dir * s + vx * lo, qz = cz + uz * dir * s + vz * lo;
-            if (k > 0) {
-              const mx = (px + qx) / 2, mz = (pz + qz) / 2, dl = Math.hypot(qx - px, qz - pz);
-              if (!carriageIndex.onCarriageway(mx, mz, r, 0.5)) rect(b, mx, mz, (qx - px) / dl, (qz - pz) / dl, dl / 2 + 0.03, 0.05, y + Y_MARK);
-            }
-            px = qx; pz = qz;
-          }
-        }
-      }
+      // Belgian zebra crossings use the transverse white bars without the British zig-zag approach markings.
       sites.zebras.push({ x: cx, z: cz, ux, uz, hw, y, road: r });
       stats.zebras++;
     } else {

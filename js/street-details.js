@@ -46,7 +46,15 @@ function lampGeometry() {
 }
 function lanternGeometry() { return cyl(0.27, 0.17, 0.55, 0, 4.4, 0, 0xffffff, 4, false).rotateY(Math.PI / 4); }
 
-function signalGeometry() {
+function signalGeometry(isBrussels = false) {
+  // Brussels uses a compact Belgian-style dark signal head; London retains its original UK backing board.
+  if (isBrussels) return merge([
+    cyl(0.07, 0.08, 3.3, 0, 1.65, 0, 0x303638),
+    box(0.38, 1.02, 0.22, 0, 2.95, 0.08, 0x171b1d),
+    box(0.44, 0.08, 0.26, 0, 3.47, 0.08, 0x171b1d),
+    box(0.44, 0.08, 0.26, 0, 2.43, 0.08, 0x171b1d),
+    box(0.14, 0.22, 0.18, 0, 1.15, 0.08, 0x303638)
+  ]);
   // pole + 3-aspect head (facing +z) with backing board
   return merge([
     cyl(0.07, 0.08, 3.3, 0, 1.65, 0, 0x2a2c2e),
@@ -67,6 +75,13 @@ function belishaPole() {
   return merge(parts);
 }
 function belishaGlobe() { return colored(new THREE.SphereGeometry(0.2, 8, 5).translate(0, 2.75, 0), 0xffffff); }
+function pedestrianSignalGeometry() {
+  return merge([
+    box(0.34, 0.62, 0.18, 0, 1.95, 0.12, 0x171b1d),
+    colored(new THREE.CircleGeometry(0.075, 10).translate(0, 2.12, 0.22), 0xf12b2b),
+    colored(new THREE.CircleGeometry(0.075, 10).translate(0, 1.78, 0.22), 0x35c66b)
+  ]);
+}
 
 function shelterGlassGeometry() {
   // the clear panes of shelterGeometry (drawn apart with a see-through material: opaque panes read as grey boxes)
@@ -112,6 +127,19 @@ function k6Geometry() {
     parts.push(box(nx ? 0.02 : 0.6, 0.12, nz ? 0.02 : 0.6, ox * 1.01, 2.3, oz * 1.01, 0xf0efe6));
   }
   return merge(parts);
+}
+function bpostMailboxGeometry() {
+  // Freestanding Belgian bpost-style mailbox: compact red cabinet, sloped cap, mail slot and pale service label.
+  const red = 0xe32636;
+  return merge([
+    box(0.58, 1.02, 0.38, 0, 1.02, 0, red),
+    box(0.62, 0.12, 0.42, 0, 1.59, 0, red),
+    box(0.46, 0.16, 0.025, 0, 1.31, 0.205, 0xf4eee7),
+    box(0.3, 0.045, 0.025, 0, 1.03, 0.205, 0x202326),
+    box(0.42, 0.035, 0.025, 0, 0.78, 0.205, 0xf4eee7),
+    box(0.1, 0.72, 0.1, 0, 0.36, 0, 0x44484a),
+    box(0.38, 0.035, 0.025, 0, 1.38, 0.205, 0xffd54a)
+  ]);
 }
 function pillarGeometry() {
   return merge([
@@ -169,9 +197,10 @@ function lensMaterial(kind) {
 }
 
 function buildStreetDetails(scene, opts) {
-  const { geo, world, ctx, inRegion, roads: rd, ground: gnd, details = true, trees = true, parent = scene } = opts;
+  const { geo, world, ctx, inRegion, roads: rd, ground: gnd, details = true, trees = true, parent = scene, city = 'london' } = opts;
+  const isBrussels = city === 'brussels';
   const group = new THREE.Group();
-  group.name = 'LondonStreetDetails';
+  group.name = isBrussels ? 'BrusselsStreetDetails' : 'LondonStreetDetails';
   parent.add(group);
   const footprints = [], colliders = [];
   const stats = {};
@@ -239,8 +268,9 @@ function buildStreetDetails(scene, opts) {
       const y = r.deck ? world.groundHeight(hit.x, hit.z) : 0;
       const dirs = r.oneway ? [r.oneway] : [1, -1];
       for (const dir of dirs) {
-        // traffic moving along dir*u: pole on its left kerb, head facing the oncoming traffic (-dir*u)
-        const px = hit.x + lx * dir * (hw + 0.7), pz = hit.z + lz * dir * (hw + 0.7);
+        // UK signals sit on the left; Belgian signals sit on the right for right-hand traffic.
+        const kerbSide = isBrussels ? -1 : 1;
+        const px = hit.x + lx * dir * kerbSide * (hw + 0.7), pz = hit.z + lz * dir * kerbSide * (hw + 0.7);
         if (world.isWater(px, pz) && !r.deck) continue;
         const yy = (rd.sidewalks.pavementAt(px, pz) ?? y);
         sig.push({ x: px, y: yy, z: pz, yaw: yawTo(-ux * dir, -uz * dir) });
@@ -249,7 +279,8 @@ function buildStreetDetails(scene, opts) {
         fp(px, pz, 0.3, 'signal');
       }
     }
-    const sigMesh = add(instanced(signalGeometry(), vc, sig, 'TrafficSignals'));
+    const sigMesh = add(instanced(signalGeometry(isBrussels), vc, sig, isBrussels ? 'BrusselsTrafficSignals' : 'TrafficSignals'));
+    if (isBrussels) add(instanced(pedestrianSignalGeometry(), vc, sig, 'BrusselsPedestrianSignals'));
     const stateAttrs = [];
     // lenses: one instanced disc mesh per aspect
     const lensMeshes = [];
@@ -270,7 +301,7 @@ function buildStreetDetails(scene, opts) {
 
     // ---- zebra crossings: Belisha beacons -------------------------------------------------------------------------
     const bel = [];
-    for (const zc of rd.sites.zebras) {
+    if (!isBrussels) for (const zc of rd.sites.zebras) {
       const lx = zc.uz, lz = -zc.ux;
       for (const sd of [1, -1]) {
         for (const along of [-1.9, 1.9]) {
@@ -283,8 +314,10 @@ function buildStreetDetails(scene, opts) {
         }
       }
     }
-    add(instanced(belishaPole(), vc, bel, 'BelishaPoles'));
-    add(instanced(belishaGlobe(), glowMaterial(0xffa21c, { blink: 0.75, day: 0.9 }), bel, 'BelishaGlobes', { cast: false }));
+    if (!isBrussels) {
+      add(instanced(belishaPole(), vc, bel, 'BelishaPoles'));
+      add(instanced(belishaGlobe(), glowMaterial(0xffa21c, { blink: 0.75, day: 0.9 }), bel, 'BelishaGlobes', { cast: false }));
+    }
     stats.beacons = bel.length;
 
     // ---- bus shelters, phone boxes, pillar boxes -------------------------------------------------------------------
@@ -316,7 +349,7 @@ function buildStreetDetails(scene, opts) {
         colliders.push(obbCollider({ cx: px, cz: pz, hx: 2.1, hz: 0.8, cs: Math.cos(-yawTo(fx, fz)), sn: Math.sin(-yawTo(fx, fz)) }, y + 2.6));
         footprints.push({ minX: px - 2.2, maxX: px + 2.2, minZ: pz - 2.2, maxZ: pz + 2.2, kind: 'shelter' });
       }
-      if (h > 0.82) {
+      if (!isBrussels && h > 0.82) {
         const qx = px + ux * 4.2, qz = pz + uz * 4.2;
         const qy = rd.sidewalks.pavementAt(qx, qz);
         if (qy !== null && !onRoad(qx, qz, 0.7)) {
@@ -326,8 +359,8 @@ function buildStreetDetails(scene, opts) {
         }
       }
     }
-    // phone boxes in pairs near stations
-    for (const stn of geo.stations) {
+    // London K6 kiosks are deliberately absent in Brussels; do not replace them with a recoloured UK kiosk.
+    if (!isBrussels) for (const stn of geo.stations) {
       if (!inRegion(stn.x, stn.z) || hash01(Math.round(stn.x * 3 + stn.z)) > 0.55) continue;
       const hit = ctx.carriageIndex.nearest(stn.x, stn.z, 60);
       if (!hit) continue;
@@ -358,9 +391,10 @@ function buildStreetDetails(scene, opts) {
     }
     add(instanced(shelterGeometry(), vc, shelters, 'BusShelters'));
     { const g = instanced(shelterGlassGeometry(), shelterGlassMaterial(), shelters, 'BusShelterGlass', { cast: false }); if (g) g.renderOrder = 2; add(g); }
-    add(instanced(k6Geometry(), vc, k6, 'PhoneBoxes'));
-    add(instanced(pillarGeometry(), vc, pillars, 'PillarBoxes'));
-    stats.shelters = shelters.length; stats.phoneBoxes = k6.length; stats.pillarBoxes = pillars.length;
+    if (!isBrussels) add(instanced(k6Geometry(), vc, k6, 'PhoneBoxes'));
+    if (isBrussels) add(instanced(bpostMailboxGeometry(), vc, pillars, 'BpostMailboxes'));
+    else add(instanced(pillarGeometry(), vc, pillars, 'PillarBoxes'));
+    stats.shelters = shelters.length; stats.phoneBoxes = isBrussels ? 0 : k6.length; stats.pillarBoxes = isBrussels ? 0 : pillars.length; stats.bpostMailboxes = isBrussels ? pillars.length : 0;
 
     // ---- bollards at pedestrian street ends, benches along park paths ---------------------------------------------
     const bollards = [], benches = [];
