@@ -152,11 +152,17 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     }
     cylinder(tower, 4.5, 5.5, 5, 0, 20, 0, materials.paleStone, 8);
     cylinder(tower, 3.8, 4.5, 4, 0, 24, 0, materials.gold, 8);
-    cylinder(tower, 0.2, 3.8, 20, 0, 36, 0, materials.roof, 8);
-    cylinder(tower, 0.04, 0.2, 3.5, 0, 47.5, 0, materials.gold, 8);
+    // Open belfry lantern: eight piers and two octagonal rings leave the silhouette visibly open.
+    cylinder(tower, 3.8, 3.8, 0.55, 0, 28.5, 0, materials.gold, 8);
+    for (let i = 0; i < 8; i++) {
+      const angle = (i / 8) * Math.PI * 2;
+      box(tower, 0.42, 9.2, 0.42, Math.cos(angle) * 3.45, 33.2, Math.sin(angle) * 3.45, materials.paleStone, 'Open belfry pier');
+    }
+    cylinder(tower, 3.8, 3.8, 0.55, 0, 38, 0, materials.gold, 8);
+    mesh(tower, new THREE.ConeGeometry(3.8, 18, 8), materials.roof, 0, 47, 0, 'Town Hall octagonal spire');
+    cylinder(tower, 0.12, 0.3, 1.8, 0, 56.2, 0, materials.gold, 8);
     // A small gilded pinnacle/guardian silhouette, visible above the roofline.
-    cylinder(tower, 0.08, 0.35, 1.6, 0, 50, 0, materials.gold, 8);
-    const finial = mesh(tower, new THREE.SphereGeometry(0.42, 8, 6), materials.gold, 0, 51, 0, 'Town Hall gilded finial');
+    const finial = mesh(tower, new THREE.SphereGeometry(0.42, 8, 6), materials.gold, 0, 57.4, 0, 'Town Hall gilded finial');
     finial.scale.set(0.7, 1.6, 0.7);
   }
 
