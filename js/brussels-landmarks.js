@@ -45,6 +45,9 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     const root = new THREE.Group();
     root.name = id;
     root.position.set(p.x, opts.world?.groundHeight?.(p.x, p.z) || 0, p.z);
+    // Align each landmark's local architectural frontage with the real city axis.
+    if (id === 'royalPalace') root.rotation.y = Math.PI; // north-facing façade toward Parc de Bruxelles
+    if (id === 'cinquantenaire') root.rotation.y = Math.PI / 2; // triumphal axis east-west; pavilions north/south
     build(root);
     group.add(root);
     landmarks[id] = { group: root, anchor };
