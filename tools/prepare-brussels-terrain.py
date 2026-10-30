@@ -127,7 +127,7 @@ def main():
         "sourceRaster": args.source.name,
         "attribution": "Source: Paradigm / Brussels Mobility (CC0)",
     }
-    (args.output / "metadata.json").write_text(json.dumps(metadata, indent=2) + "\\n", encoding="utf-8")
+    (args.output / "metadata.json").write_text(json.dumps(metadata, indent=2) + "\n", encoding="utf-8")
     print(f"Wrote {data_path} ({data_path.stat().st_size:,} bytes)")
     print(f"Grid: {width} x {height} at {cell:g} m; valid cells: {np.count_nonzero(out != -9999):,}/{out.size:,}")
     print("Review metadata, vertical datum and elevation checkpoints before enabling the grid in the runtime.")
