@@ -2,11 +2,17 @@
 // Kept separate until the Brussels dataset and browser entry point are switched together.
 import { GEO } from './brx-geodata.js';
 import { createWorldQueries } from './brussels-base-world.js';
+import { loadBrusselsTerrain } from './brussels-terrain.js';
 import { BRUSSELS_FRAME, BRUSSELS_WORLD_BOUNDS, BRUSSELS_LANDMARK_ANCHORS, brusselsToWorld } from './brussels-frame.js';
 
 export { GEO };
 export const WORLD_BOUNDS = BRUSSELS_WORLD_BOUNDS;
-export const WORLD = createWorldQueries(GEO);
+// The DTM is an optional generated asset. The app remains playable on flat ground if it is not installed.
+const TERRAIN = await loadBrusselsTerrain().catch((error) => {
+  console.warn('[Brussels terrain] DTM grid unavailable; using the current flat-ground fallback.', error);
+  return null;
+});
+export const WORLD = createWorldQueries(GEO, { terrain: TERRAIN });
 export const ROADS = GEO.roads;
 
 const landmarkMeta = [
