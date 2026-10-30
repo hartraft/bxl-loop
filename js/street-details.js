@@ -265,7 +265,7 @@ function buildStreetDetails(scene, opts) {
       let base = clusterOff.get(ck);
       if (base === undefined) clusterOff.set(ck, (base = hash01(Math.round(x) * 31 + Math.round(z)) * SIG.cycle));
       const axisOff = Math.abs(ux) > Math.abs(uz) ? SIG.cycle / 2 : 0;
-      const y = r.deck ? world.groundHeight(hit.x, hit.z) : 0;
+      const y = world.groundHeight(hit.x, hit.z);
       const dirs = r.oneway ? [r.oneway] : [1, -1];
       for (const dir of dirs) {
         // UK signals sit on the left; Belgian signals sit on the right for right-hand traffic.
@@ -413,7 +413,7 @@ function buildStreetDetails(scene, opts) {
           const back = hit.dist + 0.5 + (hit.road.w / 2 > hit.dist ? hit.road.w / 2 - hit.dist + 3.5 : 3.5);
           for (let q = -hw + 0.6; q <= hw - 0.6; q += 1.6) {
             const bx = x + ux * Math.min(back, ul) + lx * q, bz = z + uz * Math.min(back, ul) + lz * q;
-            bollards.push({ x: bx, y: 0, z: bz, yaw: 0 });
+            bollards.push({ x: bx, y: world.groundHeight(bx, bz), z: bz, yaw: 0 });
             fp(bx, bz, 0.15, 'bollard');
           }
         }
@@ -428,7 +428,7 @@ function buildStreetDetails(scene, opts) {
             const ux = dx / L, uz = dz / L, sd = hash01(r.id + k) < 0.5 ? 1 : -1, lx = uz * sd, lz = -ux * sd;
             const off = Math.max(1, r.w / 2) + 0.6;
             const x = ax + ux * s + lx * off, z = az + uz * s + lz * off;
-            if (ctx.inPark(x, z) && !world.isWater(x, z)) { benches.push({ x, y: 0, z, yaw: yawTo(-lx, -lz) }); fp(x, z, 0.9, 'bench'); }
+            if (ctx.inPark(x, z) && !world.isWater(x, z)) { benches.push({ x, y: world.groundHeight(x, z), z, yaw: yawTo(-lx, -lz) }); fp(x, z, 0.9, 'bench'); }
             s += 75;
           }
           acc = s - L;
@@ -464,7 +464,7 @@ function buildStreetDetails(scene, opts) {
       if (!inRegion(x, z) || world.isWater(x, z)) continue;
       const h = hash01(i * 5 + 3);
       const onStreet = ctx.carriageIndex.nearest(x, z, 9) !== null;
-      sites.push({ x, z, species: h < 0.72 ? 0 : h < 0.86 ? 2 : 1, scale: onStreet ? 0.78 + h * 0.35 : 0.85 + h * 0.5, tier: onStreet ? 1 : 0 });
+      sites.push({ x, y: world.groundHeight(x, z), z, species: h < 0.72 ? 0 : h < 0.86 ? 2 : 1, scale: onStreet ? 0.78 + h * 0.35 : 0.85 + h * 0.5, tier: onStreet ? 1 : 0 });
     }
     // scatter in parks & woods, thinner where trees are already mapped
     const mapped = new Map();
@@ -494,7 +494,7 @@ function buildStreetDetails(scene, opts) {
         // clumps: open lawns keep fewer, woods are dense
         if (pk.kind === 'park' && noiseClump(x, z) < 0.42) continue;
         const h = hash01(seed++);
-        sites.push({ x, z, species: h < 0.6 ? 0 : h < 0.85 ? 2 : 1, scale: 0.8 + h * 0.6, tier: 0 });
+        sites.push({ x, y: world.groundHeight(x, z), z, species: h < 0.6 ? 0 : h < 0.85 ? 2 : 1, scale: 0.8 + h * 0.6, tier: 0 });
         made++;
       }
       scattered += made;

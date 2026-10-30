@@ -3,6 +3,13 @@
 
 const finite = Number.isFinite;
 
+/** Terrain-conforming lower edge for ground-level building walls. Inputs and result are scene-relative metres. */
+export function foundationWallBase(terrainAt, anchorY, lowerY, upperY) {
+  if (![terrainAt, anchorY, lowerY, upperY].every(finite)) throw new TypeError('Invalid foundation wall heights');
+  if (upperY <= lowerY + 0.05) return lowerY;
+  return Math.max(lowerY, Math.min(upperY - 0.05, terrainAt - anchorY + 0.04));
+}
+
 export function createTerrainSampler(metadata, values) {
   const { width, height, cellSize, minX, minZ, noData = -9999 } = metadata || {};
   if (!Number.isInteger(width) || width < 2 || !Number.isInteger(height) || height < 2 ||
@@ -75,4 +82,63 @@ export async function loadBrusselsTerrain({ fetchImpl = globalThis.fetch } = {})
   const values = new Float32Array(metadata.width * metadata.height);
   for (let i = 0; i < values.length; i++) values[i] = view.getFloat32(i * 4, true);
   return createTerrainSampler(metadata, values);
+}
+
+/**
+ * Convert Belgian zero-D elevations into the existing local scene's Y frame.
+ * The local origin (Grand-Place) is scene Y=0. A cosine fade returns the
+ * existing flat-world height outside the DTM edge instead of creating a cliff.
+ */
+export function createTerrainSurface(terrain, { referenceX = 0, referenceZ = 0, edgeBlend = 250 } = {}) {
+  if (!terrain) return null;
+  if (!finite(referenceX) || !finite(referenceZ) || !finite(edgeBlend) || edgeBlend < 0) {
+    throw new Error('Invalid Brussels terrain surface options');
+  }
+  const referenceElevation = terrain.sample(referenceX, referenceZ);
+  if (!finite(referenceElevation)) throw new Error('Brussels terrain does not cover its local vertical reference');
+  const smoothstep = (t) => { const v = Math.max(0, Math.min(1, t)); return v * v * (3 - 2 * v); };
+  function sample(x, z) {
+    const absolute = terrain.sample(x, z);
+    if (!finite(absolute)) return 0;
+    const edgeDistance = Math.min(x - terrain.minX, terrain.maxX - x, z - terrain.minZ, terrain.maxZ - z);
+    const fade = edgeBlend === 0 ? 1 : smoothstep(edgeDistance / edgeBlend);
+    return fade <= 0 ? 0 : (absolute - referenceElevation) * fade;
+  }
+  return Object.freeze({ sample, referenceElevation, referenceX, referenceZ, edgeBlend, source: terrain.source });
+}
+
+/**
+ * Build a conforming barycentric subdivision for one triangle.
+ * A shared steps value across a polygon guarantees matching samples on shared edges.
+ */
+export function subdivideTerrainTriangle(p0, p1, p2, maxStep = 50, sharedSteps = null) {
+  if (![...p0, ...p1, ...p2, maxStep].every(finite) || maxStep <= 0) {
+    throw new Error('Invalid terrain triangle');
+  }
+  const distance = (a, b) => Math.hypot(a[0] - b[0], a[1] - b[1]);
+  const steps = sharedSteps ?? Math.max(1, Math.ceil(Math.max(distance(p0, p1), distance(p1, p2), distance(p2, p0)) / maxStep));
+  if (!Number.isInteger(steps) || steps < 1) throw new Error('Invalid terrain subdivision steps');
+  const vertices = [], index = new Map();
+  const vertex = (i, j) => {
+    const key = i + ',' + j;
+    if (index.has(key)) return index.get(key);
+    const u = i / steps, v = j / steps, w = 1 - u - v;
+    const id = vertices.length;
+    vertices.push([p0[0] * w + p1[0] * u + p2[0] * v, p0[1] * w + p1[1] * u + p2[1] * v]);
+    index.set(key, id);
+    return id;
+  };
+  const winding = (p1[1] - p0[1]) * (p2[0] - p0[0]) - (p1[0] - p0[0]) * (p2[1] - p0[1]) >= 0;
+  const triangles = [];
+  for (let i = 0; i < steps; i++) {
+    for (let j = 0; j < steps - i; j++) {
+      const a = vertex(i, j), b = vertex(i + 1, j), c = vertex(i, j + 1);
+      triangles.push(winding ? [a, b, c] : [a, c, b]);
+      if (i + j < steps - 1) {
+        const d = vertex(i + 1, j + 1);
+        triangles.push(winding ? [b, d, c] : [b, c, d]);
+      }
+    }
+  }
+  return { vertices, triangles, steps };
 }

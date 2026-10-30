@@ -3,9 +3,20 @@
 // the water signed-distance texture the ground & grass shaders use to cut themselves away over water.
 // Flat layers are merged into FLAT_TILE chunks (they don't cast shadows, so few big meshes are cheapest).
 import { GeoBuilder, TileBuckets, ringArea, ringBox, triangulate, clipRect } from './util.js';
+import { subdivideTerrainTriangle } from '../brussels-terrain.js';
 
 export const FLAT_TILE = 2000;
 export const WATER_Y = -1.2;
+function terrainNormal(surface, x, z) {
+  if (!surface) return [0, 1, 0];
+  const step = 5;
+  const left = surface.sample(x - step, z) ?? 0, right = surface.sample(x + step, z) ?? 0;
+  const back = surface.sample(x, z - step) ?? 0, front = surface.sample(x, z + step) ?? 0;
+  const dx = (right - left) / (2 * step), dz = (front - back) / (2 * step);
+  const length = Math.hypot(dx, 1, dz);
+  return [-dx / length, 1 / length, -dz / length];
+}
+
 // y layers of the flat surfaces (carriageways sit at 0; see roads.js)
 export const LAYER = { ground: -0.06, park: -0.035, parkSmall: -0.03, pitch: -0.026, plaza: -0.02, footway: -0.012 };
 
@@ -20,11 +31,31 @@ export class FlatBuckets extends TileBuckets {
 }
 
 /** add a flat polygon (outer + holes) at height y to a builder, triangles facing up */
-export function addFlatPolygon(b, outer, holes, y) {
+export function addFlatPolygon(b, outer, holes, y, terrainSurface = null, maxStep = 50) {
   const tris = triangulate(outer, holes);
   if (!tris.length) return 0;
-  const o = b.n;
   const all = [outer, ...holes];
+  if (terrainSurface) {
+    // Subdivide every source triangle on a shared, polygon-wide lattice so adjacent triangles
+    // have identical edge samples and parks/plazas follow the same terrain as the base mesh.
+    const flat = [];
+    for (const ring of all) for (let i = 0; i < ring.length; i += 2) flat.push(ring[i], ring[i + 1]);
+    const [x0, z0, x1, z1] = ringBox(outer);
+    const steps = Math.max(1, Math.ceil(Math.max(x1 - x0, z1 - z0) / maxStep));
+    let count = 0;
+    for (const tri of tris) {
+      const p0 = [flat[tri[0] * 2], flat[tri[0] * 2 + 1]];
+      const p1 = [flat[tri[1] * 2], flat[tri[1] * 2 + 1]];
+      const p2 = [flat[tri[2] * 2], flat[tri[2] * 2 + 1]];
+      const mesh = subdivideTerrainTriangle(p0, p1, p2, maxStep, steps);
+      const offset = b.n;
+      for (const [x, z] of mesh.vertices) b.v(x, y + (terrainSurface.sample(x, z) ?? 0), z, ...terrainNormal(terrainSurface, x, z));
+      for (const t of mesh.triangles) b.tri(offset + t[0], offset + t[1], offset + t[2]);
+      count += mesh.triangles.length;
+    }
+    return count;
+  }
+  const o = b.n;
   for (const r of all) for (let i = 0; i < r.length; i += 2) b.v(r[i], y, r[i + 1], 0, 1, 0);
   const P = b.pos;
   for (const t of tris) {
@@ -37,7 +68,7 @@ export function addFlatPolygon(b, outer, holes, y) {
 }
 
 /** add a flat polygon split into FLAT_TILE chunks (big parks / the Thames) */
-function addTiledPolygon(buckets, outer, holes, y, setup) {
+function addTiledPolygon(buckets, outer, holes, y, setup, terrainSurface = null) {
   const [x0, z0, x1, z1] = ringBox(outer);
   const T = FLAT_TILE;
   for (let tx = Math.floor(x0 / T); tx <= Math.floor(x1 / T); tx++) {
@@ -56,7 +87,7 @@ function addTiledPolygon(buckets, outer, holes, y, setup) {
       }
       const b = buckets.get(rx0 + 1, rz0 + 1);
       setup(b);
-      addFlatPolygon(b, o, hs, y);
+      addFlatPolygon(b, o, hs, y, terrainSurface);
     }
   }
 }
@@ -175,14 +206,14 @@ export function buildStreetMask(geo, bounds, res = 4, near = 9, far = 15) {
 /**
  * @returns { water: Map, walls: Map(500 m tiles), grass: Map, plaza: Map, ground: GeoBuilder, lampSites: [{x,z,nx,nz}] }
  */
-export function buildGroundGeometry(geo, inRegion, bounds) {
+export function buildGroundGeometry(geo, inRegion, bounds, terrainSurface = null) {
   const SC = { scol: [4, 'u8n'] };
   const water = new FlatBuckets(() => new GeoBuilder(SC));
   const walls = new FlatBuckets(() => new GeoBuilder(SC));
   const grass = new FlatBuckets(() => new GeoBuilder(SC));
   const plaza = new FlatBuckets(() => new GeoBuilder({ scol: [4, 'u8n'], uv: [2, 'f32'] }));
   const lampSites = [];
-  const stats = { water: 0, parks: 0, plazas: 0, wallM: 0 };
+  const stats = { water: 0, parks: 0, plazas: 0, wallM: 0, terrainVertices: 0, terrainCells: 0 };
 
   // ---- water + embankments -------------------------------------------------------------------------------------------
   for (const w of geo.water) {
@@ -249,27 +280,31 @@ export function buildGroundGeometry(geo, inRegion, bounds) {
     const big = p.kind === 'park' || p.kind === 'wood' || p.kind === 'cemetery';
     const y = p.kind === 'pitch' || p.kind === 'playground' ? LAYER.pitch : big ? LAYER.park : LAYER.parkSmall;
     const j = ((x0 * 7 + z1 * 13) % 17) / 17 * 0.12 + 0.94;
-    addTiledPolygon(grass, p.pts, p.holes, y, (b) => b.set('scol', col[0] * j, col[1] * j, col[2] * j, a * 255));
+    addTiledPolygon(grass, p.pts, p.holes, y, (b) => b.set('scol', col[0] * j, col[1] * j, col[2] * j, a * 255), terrainSurface);
     stats.parks++;
   }
   // ---- plazas (pedestrian areas, squares) ----------------------------------------------------------------------------
   for (const p of geo.plazas) {
     const [x0, z0, x1, z1] = ringBox(p.pts);
     if (!inRegion((x0 + x1) / 2, (z0 + z1) / 2, Math.max(x1 - x0, z1 - z0) / 2)) continue;
-    addTiledPolygon(plaza, p.pts, [], LAYER.plaza, (b) => { b.set('scol', 176, 170, 158, 0.55 * 255); b.set('uv', 0, 0); });
+    addTiledPolygon(plaza, p.pts, [], LAYER.plaza, (b) => { b.set('scol', 176, 170, 158, 0.55 * 255); b.set('uv', 0, 0); }, terrainSurface);
     stats.plazas++;
   }
 
   // ---- base ground: a grid of 500 m quads over the play area + 3 km beyond -------------------------------------------
   const ground = new GeoBuilder({});
-  const G = 500, pad = 3000;
+  // A 50 m terrain grid follows the regional DTM without exploding the draw cost; London keeps 500 m quads.
+  const G = terrainSurface ? 50 : 500, pad = 3000;
+  const groundY = (x, z) => terrainSurface ? (terrainSurface.sample(x, z) ?? 0) + LAYER.ground : LAYER.ground;
+  const groundVertex = (x, z) => ground.v(x, groundY(x, z), z, ...terrainNormal(terrainSurface, x, z));
   const gx0 = Math.floor((bounds.minX - pad) / G) * G, gx1 = Math.ceil((bounds.maxX + pad) / G) * G;
   const gz0 = Math.floor((bounds.minZ - pad) / G) * G, gz1 = Math.ceil((bounds.maxZ + pad) / G) * G;
   for (let x = gx0; x < gx1; x += G) {
     for (let z = gz0; z < gz1; z += G) {
       if (!inRegion(x + G / 2, z + G / 2, G)) continue;
-      const a = ground.v(x, LAYER.ground, z), b = ground.v(x, LAYER.ground, z + G), c = ground.v(x + G, LAYER.ground, z + G), d = ground.v(x + G, LAYER.ground, z);
+      const a = groundVertex(x, z), b = groundVertex(x, z + G), c = groundVertex(x + G, z + G), d = groundVertex(x + G, z);
       ground.quad(a, b, c, d); // CCW from above
+      if (terrainSurface) stats.terrainCells++;
     }
   }
   // water beyond the play area (the ground there is masked by the clamped edge of the water SDF)
@@ -285,5 +320,6 @@ export function buildGroundGeometry(geo, inRegion, bounds) {
       b.quad(a, c, d, e);
     }
   }
+  stats.terrainVertices = terrainSurface ? ground.n : 0;
   return { water: water.map, walls: walls.map, grass: grass.map, plaza: plaza.map, ground, lampSites, stats };
 }

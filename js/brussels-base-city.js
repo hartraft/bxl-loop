@@ -136,7 +136,7 @@ export function buildBrusselsCity(scene, opts = {}) {
   mark('buildings.meshes');
 
   // ---- ground, parks, water ------------------------------------------------------------------------------------------
-  const gnd = buildGroundGeometry(geo, inRegion, geo.bounds);
+  const gnd = buildGroundGeometry(geo, inRegion, geo.bounds, world.terrainSurface || null);
   add(groups.ground, gnd.ground.build(), createGroundMaterial(), 'Ground');
   for (const [k, b] of gnd.grass) add(groups.ground, b.build(), createGrassMaterial(), 'Parks_' + k);
   for (const [k, b] of gnd.plaza) add(groups.ground, b.build(), createPavingMaterial(), 'Plazas_' + k);

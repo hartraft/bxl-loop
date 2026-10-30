@@ -10,10 +10,11 @@ import sys
 import urllib.error
 import urllib.parse
 import urllib.request
+import time
 import xml.etree.ElementTree as ET
 from pathlib import Path
 
-ENDPOINT = "https://geoservices-urbis.irisnet.be/geoserver/wcs"
+ENDPOINT = "https://geoservices-urbis.irisnet.be/geoserver/urbisgrid/wcs"
 SOURCE_URL = "https://data.mobility.brussels/fr/info/511c6314-7144-4223-9bda-725e06b9f60a/"
 BOUNDS = (4.305, 50.815, 4.405, 50.875)  # west, south, east, north
 
@@ -44,14 +45,34 @@ def discover_coverage(xml_bytes, preferred):
     if len(matches) == 1:
         return matches[0]
     if not matches:
-        raise RuntimeError("WCS capabilities did not advertise an Altitude2019 coverage. Advertised: " + ", ".join(candidates[:30]))
+        exceptions = [node.text.strip() for node in root.iter() if local_name(node.tag) in {"ExceptionText", "ServiceException"} and node.text]
+        preview = ET.tostring(root, encoding="unicode")[:1800]
+        detail = " Server exception: " + " | ".join(exceptions) if exceptions else ""
+        raise RuntimeError(
+            "WCS capabilities did not advertise an Altitude2019 coverage. "
+            f"Root={local_name(root.tag)!r}; advertised={candidates[:30]!r}.{detail} "
+            f"XML preview: {preview}"
+        )
     raise RuntimeError("Multiple Altitude2019 coverages found; pass --coverage explicitly: " + ", ".join(matches))
 
 
-def request_bytes(url, timeout):
+def request_bytes(url, timeout, retries=2):
+    """Fetch WCS responses with bounded retries for transient network/proxy failures."""
     req = urllib.request.Request(url, headers={"User-Agent": "bxl-loop-terrain-baker/1.0"})
-    with urllib.request.urlopen(req, timeout=timeout) as response:
-        return response.read()
+    if "REQUEST=GetCoverage" in url:
+        timeout = max(timeout, 600)
+    last_error = None
+    for attempt in range(retries + 1):
+        try:
+            with urllib.request.urlopen(req, timeout=timeout) as response:
+                return response.read()
+        except (urllib.error.URLError, TimeoutError) as exc:
+            last_error = exc
+            if attempt < retries:
+                delay = min(5 * (2 ** attempt), 30)
+                print(f"WCS request failed ({exc}); retrying in {delay}s", file=sys.stderr, flush=True)
+                time.sleep(delay)
+    raise RuntimeError(f"WCS request failed after {retries + 1} attempts: {last_error}")
 
 
 def build_wcs10_url(endpoint, coverage, bbox, width, height, crs):
@@ -71,7 +92,7 @@ def main():
     parser.add_argument("--crs", default="EPSG:31370", help="requested output CRS (default: Belgian Lambert 72)")
     parser.add_argument("--resolution", type=float, default=5.0, help="requested output pixel size in metres")
     parser.add_argument("--output", type=Path, default=Path("brussels-dtm-wcs.tif"))
-    parser.add_argument("--timeout", type=int, default=120)
+    parser.add_argument("--timeout", type=int, default=600, help="HTTP timeout in seconds; regional WCS exports can be slow")
     args = parser.parse_args()
     if args.resolution <= 0:
         parser.error("--resolution must be positive")

@@ -2,7 +2,7 @@
 // Kept separate until the Brussels dataset and browser entry point are switched together.
 import { GEO } from './brx-geodata.js';
 import { createWorldQueries } from './brussels-base-world.js';
-import { loadBrusselsTerrain } from './brussels-terrain.js';
+import { loadBrusselsTerrain, createTerrainSurface } from './brussels-terrain.js';
 import { BRUSSELS_FRAME, BRUSSELS_WORLD_BOUNDS, BRUSSELS_LANDMARK_ANCHORS, brusselsToWorld } from './brussels-frame.js';
 
 export { GEO };
@@ -12,7 +12,10 @@ const TERRAIN = await loadBrusselsTerrain().catch((error) => {
   console.warn('[Brussels terrain] DTM grid unavailable; using the current flat-ground fallback.', error);
   return null;
 });
-export const WORLD = createWorldQueries(GEO, { terrain: TERRAIN });
+// DTM heights are Belgian zero-D; normalize them to the scene's Grand-Place Y=0 datum.
+// The 250 m edge fade prevents a hard terrain cliff where the regional export ends.
+export const TERRAIN_SURFACE = createTerrainSurface(TERRAIN, { referenceX: 0, referenceZ: 0, edgeBlend: 250 });
+export const WORLD = createWorldQueries(GEO, { terrain: TERRAIN, terrainSurface: TERRAIN_SURFACE });
 export const ROADS = GEO.roads;
 
 const landmarkMeta = [

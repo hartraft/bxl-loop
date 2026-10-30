@@ -57,7 +57,7 @@ function makeHash(b, cell, n, bboxOf) {
   };
 }
 
-export function createWorldQueries(GEO, { terrain = null } = {}) {
+export function createWorldQueries(GEO, { terrain = null, terrainSurface = null } = {}) {
   const B0 = GEO.bounds;
   const B = { minX: B0.minX - 150, maxX: B0.maxX + 150, minZ: B0.minZ - 150, maxZ: B0.maxZ + 150 };
   const roads = GEO.roads;
@@ -247,9 +247,15 @@ export function createWorldQueries(GEO, { terrain = null } = {}) {
     return terrain ? terrain.sample(x, z) : null;
   }
 
+  // Scene-relative ground elevation (Grand-Place datum), with a smooth flat-world edge fallback.
+  function terrainSurfaceHeight(x, z) {
+    return terrainSurface ? terrainSurface.sample(x, z) : 0;
+  }
+
   function groundHeight(x, z, mode) {
     if (mode === 'boat') return isWater(x, z) ? WATER_LEVEL : 0;
-    return deckHeight(x, z);
+    const deck = deckHeight(x, z);
+    return deck > 0 ? deck : terrainSurfaceHeight(x, z);
   }
 
   // ---- random spawn points ------------------------------------------------------------------------------------
@@ -293,5 +299,5 @@ export function createWorldQueries(GEO, { terrain = null } = {}) {
     return false;
   }
 
-  return { groundHeight, terrainHeight, terrain, deckHeight, isWater, onBridge, nearestRoad, streetName, districtAt, randomRoadPoint, bridgeDeckAt, WATER_LEVEL };
+  return { groundHeight, terrainHeight, terrainSurfaceHeight, terrainSurface, terrain, deckHeight, isWater, onBridge, nearestRoad, streetName, districtAt, randomRoadPoint, bridgeDeckAt, WATER_LEVEL };
 }

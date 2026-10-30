@@ -4,6 +4,7 @@
 // roofs geometry and one glass curtain-wall geometry per tile) and one OBB collider per building (split for big
 // concave footprints). Pure geometry: materials are attached by js/london-city.js.
 import { BUILDING_KINDS, MATERIALS, ROOFS } from '../brx-geodata.js';
+import { foundationWallBase } from '../brussels-terrain.js';
 import { SURF, STYLE } from './materials-shared.js';
 import {
   GeoBuilder, TileBuckets, EdgeHash, hash01, ringArea, ringBox, pointInRing, minAreaRect, obbCollider, clipHalfPlane, triangulate
@@ -108,7 +109,7 @@ export function buildBuildingGeometry(geo, ctx, inRegion) {
   const B = geo.buildings;
   const tiles = new TileBuckets(() => ({ masonry: new GeoBuilder(ATTRS), glass: new GeoBuilder(ATTRS) }));
   const colliders = [];
-  const stats = { buildings: 0, pitched: 0, chimneys: 0, plant: 0, partyWalls: 0, frontQueries: 0 };
+  const stats = { buildings: 0, pitched: 0, chimneys: 0, plant: 0, partyWalls: 0, frontQueries: 0, gradedFoundationEdges: 0 };
 
   // ---- pass 1: rings (cleaned, CCW from above), centroids, party-wall edge set -------------------------------------
   const N = B.count;
@@ -355,6 +356,15 @@ export function buildBuildingGeometry(geo, ctx, inRegion) {
     const tile = tiles.get(cx, cz);
     const wb = isGlass ? tile.glass : tile.masonry;
     const mb = tile.masonry;
+    const wbStart = wb.n, mbStart = mb.n;
+    // Anchor this building to the sampled local terrain at its footprint centroid.
+    // Large footprints will later receive per-edge foundation grading; centroid anchoring
+    // is a safe first step that keeps ordinary urban blocks from floating above the DTM.
+    const terrainAt = ctx.world?.terrainSurfaceHeight || (() => 0);
+    const terrainY = terrainAt(cx, cz);
+    let minTerrainY = Infinity;
+    for (let k = 0; k < nRing; k++) minTerrainY = Math.min(minTerrainY, terrainAt(ring[k * 2], ring[k * 2 + 1]));
+    if (!Number.isFinite(minTerrainY)) minTerrainY = 0;
     const flagsBase = style + (shop ? 8 : 0) + (mansardBand && !pieces ? 32 : 0);
     const matCode = isGlass ? mat : mat;
     const nRing = ring.length / 2;
@@ -443,8 +453,14 @@ export function buildBuildingGeometry(geo, ctx, inRegion) {
         }
         if (Math.max(ha, hb) - lo < 0.05) continue;
         wb.set('bfu', 0, windowTop);
-        const v0 = wb.v(ax0, lo, az0, nx, 0, nz); wb.attr(v0, 'bfu', ta * uScale, windowTop);
-        const v1 = wb.v(bx0, lo, bz0, nx, 0, nz); wb.attr(v1, 'bfu', tb * uScale, windowTop);
+        // Ground-level walls meet the actual terrain at each edge endpoint rather than a single
+        // centroid plane. Party-wall cuts and elevated passages retain their authored lower edge.
+        const grade = base <= 2.5 && lo <= base + 0.05;
+        const wallLoA = grade ? foundationWallBase(terrainAt(ax0, az0), terrainY, lo, ha) : lo;
+        const wallLoB = grade ? foundationWallBase(terrainAt(bx0, bz0), terrainY, lo, hb) : lo;
+        if (grade && Math.abs(wallLoA - lo) + Math.abs(wallLoB - lo) > 0.01) stats.gradedFoundationEdges++;
+        const v0 = wb.v(ax0, wallLoA, az0, nx, 0, nz); wb.attr(v0, 'bfu', ta * uScale, windowTop);
+        const v1 = wb.v(bx0, wallLoB, bz0, nx, 0, nz); wb.attr(v1, 'bfu', tb * uScale, windowTop);
         const v2 = wb.v(bx0, Math.max(hb, lo), bz0, nx, 0, nz); wb.attr(v2, 'bfu', tb * uScale, windowTop);
         const v3 = wb.v(ax0, Math.max(ha, lo), az0, nx, 0, nz); wb.attr(v3, 'bfu', ta * uScale, windowTop);
         wb.quad(v0, v1, v2, v3);
@@ -595,9 +611,24 @@ export function buildBuildingGeometry(geo, ctx, inRegion) {
       }
     }
 
-    // ---- colliders --------------------------------------------------------------------------------------------------
+    // ---- terrain anchoring + colliders -----------------------------------------------------------------------------
+    if (terrainY) {
+      const shiftBuilder = (builder, start) => {
+        for (let v = start; v < builder.n; v++) builder.pos[v * 3 + 1] += terrainY;
+      };
+      shiftBuilder(wb, wbStart);
+      if (mb !== wb) shiftBuilder(mb, mbStart);
+    }
     const minY = base > 2.5 ? base : 0;
+    const colliderStart = colliders.length;
     pushBuildingColliders(colliders, ring, obb, area, H, minY, ctx.carriageIndex);
+    for (let j = colliderStart; j < colliders.length; j++) {
+      const collider = colliders[j];
+      if (terrainY) collider.maxY += terrainY;
+      // Ground-level collision starts at the lowest sampled footprint edge; elevated buildings
+      // keep their authored clearance below the structure. Apply this even when the centroid is y=0.
+      collider.minY = base > 2.5 ? (collider.minY ?? minY) + terrainY : minTerrainY;
+    }
   }
   return { tiles: tiles.map, colliders, stats };
 }

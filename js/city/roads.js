@@ -157,7 +157,7 @@ export function buildRoadGeometry(geo, ctx, inRegion) {
     for (let i = 0; i < p.length; i += 2) {
       const k = nodeKey(p[i], p[i + 1]);
       let nd = nodes.get(k);
-      if (!nd) nodes.set(k, (nd = { x: p[i], z: p[i + 1], y: r.deck ? r.deck[i / 2] : 0, n: 0, hw: 0, rank: -1, roads: [] }));
+      if (!nd) nodes.set(k, (nd = { x: p[i], z: p[i + 1], y: r.deck ? r.deck[i / 2] : (world.terrainSurfaceHeight ? world.terrainSurfaceHeight(p[i], p[i + 1]) : 0), n: 0, hw: 0, rank: -1, roads: [] }));
       if (nd.roads[nd.roads.length - 1] !== r) { nd.roads.push(r); nd.n++; }
       nd.hw = Math.max(nd.hw, r.w / 2);
       nd.rank = Math.max(nd.rank, RANK[r.kind] ?? 0);
@@ -173,8 +173,11 @@ export function buildRoadGeometry(geo, ctx, inRegion) {
     const isPath = PATH_KINDS.has(r.kind);
     if (!isCar && !isPed && !isPath) continue;
     if (isPath && (r.sub === 'sidewalk' || r.sub === 'crossing')) continue;
-    const step = 1e9; // ribbons only need the road's own vertices (deck heights are per vertex)
-    const d = densify(r.pts, r.deck, step);
+    // DTM-following at-grade roads need intermediate samples; bridge decks retain their authored profile.
+    const d = densify(r.pts, r.deck, world.terrainSurface ? 25 : 1e9);
+    if (!r.deck && world.terrainSurfaceHeight) {
+      for (let i = 0; i < d.y.length; i++) d.y[i] += world.terrainSurfaceHeight(d.p[i * 2], d.p[i * 2 + 1]);
+    }
     const n = d.p.length / 2;
     if (n < 2) continue;
     const mx = d.p[(n >> 1) * 2], mz = d.p[(n >> 1) * 2 + 1];
@@ -398,7 +401,7 @@ export function buildRoadGeometry(geo, ctx, inRegion) {
     if (!hit || hit.road.kind === 'service') continue;
     const r = hit.road, ux = hit.dx, uz = hit.dz, vx = -uz, vz = ux;
     const hw = r.w / 2;
-    const y = r.deck ? world.groundHeight(c.x, c.z) : 0;
+    const y = world.groundHeight(c.x, c.z);
     const b = L.markings.get(c.x, c.z);
     const cx = hit.x, cz = hit.z;
     if (c.kind === 'zebra') {
