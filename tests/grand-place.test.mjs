@@ -7,7 +7,7 @@ const source = readFileSync(new URL('../js/brussels-landmarks.js', import.meta.u
 test('Grand-Place is modelled as a full pedestrian square, not a small generic pad', () => {
   assert.match(source, /box\(plaza, 108, 0\.45, 66/);
   assert.match(source, /Grand-Place pedestrian square/);
-  assert.match(source, /Grand-Place cobblestone courses/);
+  assert.match(source, /Grand-Place cobblestone courses/);\n  assert.match(source, /box\\(plaza, 108, 0\\.45, 66, 0, -0\\.225, 0/);\n  assert.match(source, /dummy\\.position\\.set\\(x, -0\\.06, z\\)/);
 });
 
 test('the Town Hall and its tower are distinct from the opposite Kings House', () => {
@@ -22,7 +22,7 @@ test('the Town Hall and its tower are distinct from the opposite Kings House', (
 test('guild-house rooflines and facade details are varied and instanced', () => {
   assert.match(source, /style === 'stepped'/);
   assert.match(source, /style === 'bell'/);
-  assert.match(source, /style = 'gable'/);
+  assert.match(source, /style = 'gable'/);\n  assert.match(source, /else \\{\\s*shape\\.moveTo\\(-width \\/ 2, 0\\)/);
   assert.match(source, /new THREE.InstancedMesh/);
   assert.match(source, /gilded window surrounds/);
 });
