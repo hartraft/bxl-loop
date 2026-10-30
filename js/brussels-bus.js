@@ -1,4 +1,5 @@
 import * as THREE from 'three/webgpu';
+import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 import { createVehicleMaterial, createVehicleUniforms } from './brussels-base-vehicles.js';
 
 // Original, lightweight STIB/MIVB-inspired 12 m low-floor single-decker.
@@ -110,23 +111,8 @@ export function brusselsBus({ route = '71', destination = 'De Brouckère', unifo
     g.setAttribute('aSurf', new THREE.BufferAttribute(aSurf, 4));
     return g;
   });
-  const bodyGeo = THREE.BufferGeometryUtils?.mergeGeometries?.(bodyGeos);
-  // BufferGeometryUtils is not exposed on THREE in every build; concatenate compatible box buffers as a fallback.
-  let geometry = bodyGeo;
-  if (!geometry) {
-    const positions = [], normals = [], colors = [], surfaces = [];
-    for (const g of bodyGeos) {
-      positions.push(g.attributes.position.array); normals.push(g.attributes.normal.array);
-      colors.push(g.attributes.color.array); surfaces.push(g.attributes.aSurf.array);
-    }
-    const join = (arrays, size) => { const out = new Float32Array(arrays.reduce((n, a) => n + a.length, 0)); let at = 0; for (const a of arrays) { out.set(a, at); at += a.length; } return out; };
-    geometry = new THREE.BufferGeometry();
-    geometry.setAttribute('position', new THREE.BufferAttribute(join(positions), 3));
-    geometry.setAttribute('normal', new THREE.BufferAttribute(join(normals), 3));
-    geometry.setAttribute('color', new THREE.BufferAttribute(join(colors), 3));
-    geometry.setAttribute('aSurf', new THREE.BufferAttribute(join(surfaces), 4));
-    geometry.computeBoundingSphere();
-  }
+  const bodyGeo = mergeGeometries(bodyGeos, false);
+  const geometry = bodyGeo;
   const body = new THREE.Mesh(geometry, createVehicleMaterial({ uniforms }));
   body.name = 'body';
   body.castShadow = body.receiveShadow = true;
