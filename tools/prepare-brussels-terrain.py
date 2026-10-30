@@ -17,7 +17,7 @@ from pathlib import Path
 import numpy as np
 import rasterio
 from pyproj import Transformer
-from rasterio.windows import from_bounds
+from rasterio.windows import Window, from_bounds
 
 ROOT = Path(__file__).resolve().parents[1]
 LAT0, LON0 = 50.84673, 4.35247
@@ -66,7 +66,9 @@ def main():
         xs, ys = zip(*corners)
         pad = max(abs(src.res[0]), abs(src.res[1])) * 4
         win = from_bounds(min(xs) - pad, min(ys) - pad, max(xs) + pad, max(ys) + pad, src.transform)
-        win = win.round_offsets().round_lengths()
+        win = win.round_offsets().round_lengths().intersection(Window(0, 0, src.width, src.height))
+        if win.width < 2 or win.height < 2:
+            raise SystemExit("The source DTM does not cover the Brussels play-area bounds")
         raster = src.read(1, window=win, masked=False).astype(np.float32, copy=False)
         transform = src.window_transform(win)
         inv = ~transform
