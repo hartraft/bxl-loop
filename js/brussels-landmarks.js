@@ -44,7 +44,7 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     const p = brusselsToWorld(anchor.lat, anchor.lon);
     const root = new THREE.Group();
     root.name = id;
-    root.position.set(p.x, 0, p.z);
+    root.position.set(p.x, opts.world?.groundHeight?.(p.x, p.z) || 0, p.z);
     build(root);
     group.add(root);
     landmarks[id] = { group: root, anchor };
@@ -256,11 +256,96 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     for (let i = 0; i < 6; i++) cylinder(g, 1.2, 1.2, 0.6, -13 + i * 5, 4.3, -8, materials.green, 12);
   });
   addLandmark('royalPalace', (g) => {
-    box(g, 54, 13, 13, 0, 6.5, 0, materials.paleStone, 'Royal Palace facade');
-    box(g, 18, 17, 15, 0, 8.5, -1, materials.limestone);
-    box(g, 60, 1.2, 15, 0, 13.5, 0, materials.gold);
-    for (let i = 0; i < 12; i++) cylinder(g, 0.35, 0.45, 8, -24 + i * 4.35, 4, 7.5, materials.paleStone, 10);
-    box(g, 54, 1.5, 14, 0, 15, 0, materials.roof);
+    // Palais Royal: the long, pale Euville-stone north front facing Parc de Bruxelles.
+    // The model is deliberately composed as the real accreted palace: central corps de logis,
+    // two long wings and slightly projecting terminal pavilions, rather than one generic block.
+    const stone = new THREE.MeshStandardMaterial({ color: 0xd8d0c2, roughness: 0.86 });
+    const ashlar = new THREE.MeshStandardMaterial({ color: 0xc7bdad, roughness: 0.9 });
+    const roof = new THREE.MeshStandardMaterial({ color: 0x343a3a, roughness: 0.92 });
+    const shadow = new THREE.MeshStandardMaterial({ color: 0x303a3c, roughness: 0.8 });
+    const bronze = new THREE.MeshStandardMaterial({ color: 0x796c53, metalness: 0.35, roughness: 0.72 });
+    const facadeZ = 8;
+    const wingW = 39, wingH = 20.5, wingD = 19;
+    const wingXs = [-42, 42];
+    for (const x of wingXs) {
+      box(g, wingW, wingH, wingD, x, wingH / 2, -1.5, stone, 'Royal Palace long wing');
+      // Rusticated piano nobile base with evenly spaced arched ground-floor openings.
+      box(g, wingW + 0.5, 1.1, wingD + 0.4, x, 0.55, -1.5, ashlar, 'Palace rusticated plinth');
+      for (let i = 0; i < 7; i++) {
+        const bx = x - 16.5 + i * 5.5;
+        box(g, 2.6, 5.2, 0.22, bx, 3.4, facadeZ + 0.1, shadow, 'Ground-floor arched opening');
+        mesh(g, new THREE.TorusGeometry(1.3, 0.16, 6, 16, Math.PI), stone, bx, 6.0, facadeZ + 0.1, 'Arcade voussoir');
+        box(g, 3.7, 0.3, 0.45, bx, 6.15, facadeZ + 0.12, ashlar, 'Arcade impost');
+      }
+      // Two upper storeys: aligned French windows, stone surrounds, sill courses and cornices.
+      for (let floor = 0; floor < 2; floor++) {
+        const y = floor === 0 ? 10.1 : 16.0;
+        for (let i = 0; i < 7; i++) {
+          const bx = x - 16.5 + i * 5.5;
+          box(g, 2.05, 3.45, 0.18, bx, y, facadeZ + 0.13, shadow, 'Palace tall sash window');
+          box(g, 2.45, 0.22, 0.3, bx, y - 1.95, facadeZ + 0.22, ashlar, 'Window sill');
+          box(g, 2.45, 0.2, 0.3, bx, y + 1.9, facadeZ + 0.22, ashlar, 'Window lintel');
+          box(g, 0.16, 3.75, 0.24, bx - 1.2, y, facadeZ + 0.22, ashlar, 'Window jamb');
+          box(g, 0.16, 3.75, 0.24, bx + 1.2, y, facadeZ + 0.22, ashlar, 'Window jamb');
+        }
+      }
+      box(g, wingW + 1.8, 0.8, wingD + 1, x, 20.6, -1.5, ashlar, 'Palace continuous entablature');
+      box(g, wingW + 1.2, 1.3, wingD + 0.8, x, 21.6, -1.5, roof, 'Palace mansard roof');
+      // Dormers punctuate the slate roof.
+      for (let i = 0; i < 5; i++) {
+        const bx = x - 15 + i * 7.5;
+        box(g, 1.7, 1.8, 1.2, bx, 22.7, 4.5, stone, 'Palace roof dormer');
+        mesh(g, new THREE.ConeGeometry(1.2, 1.1, 4), roof, bx, 24.0, 4.5, 'Dormer cap');
+      }
+    }
+    // Central projecting avant-corps, the ceremonial focus of the façade.
+    box(g, 34, 22.5, 22, 0, 11.25, -1, stone, 'Palace central corps de logis');
+    box(g, 35, 1.4, 22.8, 0, 1.0, -1, ashlar, 'Central rusticated base');
+    // Five open arcades at ground level.
+    for (let i = 0; i < 5; i++) {
+      const x = -10 + i * 5;
+      box(g, 2.6, 5.6, 0.32, x, 3.8, facadeZ + 0.35, shadow, 'Central ceremonial arcade');
+      mesh(g, new THREE.TorusGeometry(1.3, 0.19, 8, 20, Math.PI), ashlar, x, 6.5, facadeZ + 0.35, 'Central arcade arch');
+      box(g, 3.4, 0.35, 0.5, x, 6.65, facadeZ + 0.35, ashlar, 'Arcade impost');
+    }
+    // Six monumental columns above the arcade.
+    for (let i = 0; i < 6; i++) {
+      const x = -12.5 + i * 5;
+      cylinder(g, 0.72, 0.82, 9.1, x, 12.5, facadeZ + 0.9, stone, 20);
+      cylinder(g, 0.95, 0.95, 0.45, x, 8.0, facadeZ + 0.9, ashlar, 20);
+      cylinder(g, 0.95, 0.95, 0.5, x, 17.0, facadeZ + 0.9, ashlar, 20);
+      cylinder(g, 0.12, 0.12, 0.35, x, 17.5, facadeZ + 0.9, bronze, 12);
+    }
+    // Upper ceremonial windows and the deep classical entablature.
+    for (let i = 0; i < 7; i++) {
+      const x = -14 + i * 4.65;
+      box(g, 2.0, 3.2, 0.18, x, 19.2, facadeZ + 0.25, shadow, 'Palace piano nobile window');
+    }
+    box(g, 37, 1.15, 24, 0, 22.8, -1, ashlar, 'Palace central entablature');
+    box(g, 38, 0.65, 24.5, 0, 23.7, -1, stone, 'Palace attic balustrade');
+    for (let i = 0; i < 25; i++) {
+      const x = -18 + i * 1.5;
+      box(g, 0.42, 1.0, 0.42, x, 24.5, facadeZ + 0.2, ashlar, 'Balustrade baluster');
+    }
+    // The restrained square-plan central roof pavilion and shallow dome; not an oversized fantasy cupola.
+    box(g, 11, 3.0, 11, 0, 25.4, -1, roof, 'Palace central roof pavilion');
+    box(g, 9.5, 0.45, 9.5, 0, 27.1, -1, ashlar, 'Dome cornice');
+    mesh(g, new THREE.SphereGeometry(4.4, 24, 12, 0, Math.PI * 2, 0, Math.PI / 2), roof, 0, 27.0, -1, 'Palace shallow dome');
+    for (let i = 0; i < 4; i++) {
+      const a = i * Math.PI / 2;
+      cylinder(g, 0.72, 0.72, 0.22, Math.sin(a) * 3.5, 29.3, -1 + Math.cos(a) * 3.5, ashlar, 16);
+    }
+    cylinder(g, 0.16, 0.2, 1.2, 0, 31.0, -1, bronze, 12);
+    // Terminal pavilions and the ceremonial forecourt railing.
+    for (const x of [-65, 65]) {
+      box(g, 8, 23, 21, x, 11.5, -1, stone, 'Palace terminal pavilion');
+      box(g, 9.5, 1, 22, x, 23.2, -1, ashlar, 'Pavilion cornice');
+      box(g, 9, 1.4, 21, x, 24.3, -1, roof, 'Pavilion roof');
+      for (const dx of [-2.5, 0, 2.5]) box(g, 1.5, 4, 0.2, x + dx, 14, facadeZ + 0.1, shadow, 'Pavilion window');
+    }
+    for ((let x = -58; x <= 58; x += 4)) {
+      cylinder(g, 0.12, 0.16, 1.15, x, 0.58, 14, ashlar, 8);
+    }
   });
   addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');
@@ -278,10 +363,132 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     for (const x of [-23, -15, -7, 7, 15, 23]) cylinder(g, 0.8, 1, 9, x, 4.5, 22, materials.paleStone);
   });
   addLandmark('cinquantenaire', (g) => {
-    for (const x of [-20, -7, 7, 20]) box(g, 5, 24, 5, x, 12, 0, materials.paleStone, 'Triumphal arch pier');
-    box(g, 48, 5, 7, 0, 25, 0, materials.gold, 'Triumphal arch cornice');
-    box(g, 12, 12, 2, 0, 31, -1, materials.limestone, 'Arch crown');
-    box(g, 45, 1, 34, 0, 0.5, 12, materials.green, 'Park lawn');
+    // Parc du Cinquantenaire: a full architectural ensemble on the great east-west axis.
+    // Local +Z is the park's ceremonial front; the triple arch and hemicycle dominate the composition.
+    const stone = new THREE.MeshStandardMaterial({ color: 0xd7cdbb, roughness: 0.88 });
+    const cutStone = new THREE.MeshStandardMaterial({ color: 0xc4b9a5, roughness: 0.9 });
+    const shadow = new THREE.MeshStandardMaterial({ color: 0x343a3b, roughness: 0.85 });
+    const roof = new THREE.MeshStandardMaterial({ color: 0x454b49, roughness: 0.92 });
+    const bronze = new THREE.MeshStandardMaterial({ color: 0x76613d, metalness: 0.58, roughness: 0.55 });
+    const arch = new THREE.Group();
+    arch.name = 'Cinquantenaire monumental triple triumphal arch';
+    g.add(arch);
+    // Solid piers define three openings, with the central opening taller and wider.
+    for (const x of [-19, -8.4, 8.4, 19]) {
+      box(arch, x === -19 || x === 19 ? 4.2 : 3.6, 25, 8, x, 12.5, 0, stone, 'Arcade massive pier');
+      box(arch, 4.8, 1.0, 8.8, x, 24.5, 0, cutStone, 'Pier capital');
+      box(arch, 4.8, 1.1, 8.8, x, 0.55, 0, cutStone, 'Pier plinth');
+    }
+    // Three genuine arch rings, each with a dark recessed passage and radial voussoirs.
+    function archRing(parent, cx, spring, radius, thickness, depth, name) {
+      const shape = new THREE.Shape();
+      shape.moveTo(cx - radius, 0); shape.lineTo(cx - radius, spring);
+      shape.absarc(cx, spring, radius, Math.PI, 0, true);
+      shape.lineTo(cx + radius, 0); shape.closePath();
+      const hole = new THREE.Path();
+      hole.moveTo(cx - radius + thickness, 0); hole.lineTo(cx - radius + thickness, spring);
+      hole.absarc(cx, spring, radius - thickness, Math.PI, 0, true);
+      hole.lineTo(cx + radius - thickness, 0); hole.closePath();
+      shape.holes.push(hole);
+      const geom = new THREE.ExtrudeGeometry(shape, { depth, bevelEnabled: true, bevelSegments: 1, steps: 1, bevelSize: 0.12, bevelThickness: 0.12, curveSegments: 24 });
+      mesh(parent, geom, stone, 0, 0, -depth / 2, name);
+      box(parent, radius * 2 - thickness * 2, spring * 1.95, 0.2, cx, spring * 0.96, depth / 2 + 0.12, shadow, name + ' recessed passage');
+    }
+    archRing(arch, -13.2, 10.5, 5.2, 1.35, 8.6, 'West triumphal arch');
+    archRing(arch, 0, 12.4, 8.4, 1.7, 9.0, 'Central triumphal arch');
+    archRing(arch, 13.2, 10.5, 5.2, 1.35, 8.6, 'East triumphal arch');
+    // Upper attic, inscription band, cornices and balustrade.
+    box(arch, 46, 4.0, 9.2, 0, 27, 0, stone, 'Arcade attic');
+    box(arch, 48, 0.85, 10, 0, 29.4, 0, cutStone, 'Arcade upper cornice');
+    box(arch, 46, 0.7, 9.4, 0, 31.0, 0, stone, 'Arcade crown');
+    for (let i = 0; i < 23; i++) box(arch, 0.45, 1.25, 0.45, -22 + i * 2, 31.8, 0, cutStone, 'Attic baluster');
+    // Fluted engaged pilasters and paired columns articulate the monumental face.
+    for (const x of [-21.2, -16.2, -10.0, -5.0, 5.0, 10.0, 16.2, 21.2]) {
+      cylinder(arch, 0.55, 0.65, 8.4, x, 16.0, 4.35, stone, 18);
+      cylinder(arch, 0.78, 0.78, 0.45, x, 11.8, 4.35, cutStone, 18);
+      cylinder(arch, 0.78, 0.78, 0.45, x, 20.2, 4.35, cutStone, 18);
+    }
+    // Quadriga: bronze chariot, driver and four rearing horses, modelled as a readable skyline silhouette.
+    const q = new THREE.Group();
+    q.name = 'Bronze quadriga by Thomas Vinçotte and Jules Lagae';
+    q.position.set(0, 32.1, -0.2);
+    arch.add(q);
+    box(q, 5.8, 1.0, 2.4, 0, 1.4, 0, bronze, 'Quadriga chariot body');
+    for (const x of [-2.7, 2.7]) {
+      cylinder(q, 1.05, 1.05, 0.28, x, 1.35, -0.25, bronze, 24).rotation.z = Math.PI / 2;
+      for (let k = 0; k < 8; k++) {
+        const a = k * Math.PI / 4;
+        cylinder(q, 0.055, 0.055, 1.9, x, 1.35, -0.25, bronze, 6).rotation.set(0, a, Math.PI / 2);
+      }
+    }
+    // Standing allegorical driver with a raised arm and a simple laurel standard.
+    cylinder(q, 0.48, 0.62, 2.2, 0, 3.0, 0.1, bronze, 12);
+    mesh(q, new THREE.SphereGeometry(0.48, 12, 10), bronze, 0, 4.35, 0.1, 'Quadriga figure head');
+    cylinder(q, 0.12, 0.12, 2.1, 0.95, 4.0, 0.1, bronze, 8).rotation.z = -0.8;
+    // Four horses across the chariot: body, raised neck/head, and separated legs.
+    for (let i = 0; i < 4; i++) {
+      const x = -4.5 + i * 3;
+      const body = mesh(q, new THREE.SphereGeometry(1.35, 12, 10), bronze, x, 2.3, 1.2, 'Quadriga horse body');
+      body.scale.set(1.55, 0.78, 0.72);
+      const neck = mesh(q, new THREE.CylinderGeometry(0.48, 0.7, 2.2, 10), bronze, x + (i < 2 ? -0.45 : 0.45), 3.8, 1.1);
+      neck.rotation.z = i < 2 ? -0.35 : 0.35;
+      mesh(q, new THREE.SphereGeometry(0.62, 10, 8), bronze, x + (i < 2 ? -0.9 : 0.9), 4.8, 1.1, 'Horse head');
+      for (const dx of [-0.8, 0.8]) {
+        const leg = cylinder(q, 0.13, 0.18, 2.0, x + dx, 1.05, 1.25, bronze, 8);
+        leg.rotation.z = dx < 0 ? -0.22 : 0.22;
+      }
+    }
+    // Semicircular double colonnade connecting the arch to the north and south museum pavilions.
+    for (let row = 0; row < 2; row++) {
+      const radius = row === 0 ? 47 : 53;
+      for (let i = 0; i <= 24; i++) {
+        const a = Math.PI * (0.12 + 0.76 * i / 24);
+        const x = Math.cos(a) * radius;
+        const z = 6 + Math.sin(a) * radius * 0.58;
+        cylinder(g, 0.52, 0.62, 10.5, x, 5.25, z, stone, 16);
+        cylinder(g, 0.78, 0.78, 0.45, x, 0.25, z, cutStone, 16);
+        cylinder(g, 0.78, 0.78, 0.45, x, 10.5, z, cutStone, 16);
+      }
+    }
+    // Horizontal entablature segments visually bind the double colonnade into a hemicycle.
+    for (const radius of [47, 53]) {
+      const pts = [];
+      for (let i = 0; i <= 48; i++) {
+        const a = Math.PI * (0.12 + 0.76 * i / 48);
+        pts.push(new THREE.Vector3(Math.cos(a) * radius, 10.65, 6 + Math.sin(a) * radius * 0.58));
+      }
+      mesh(g, new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts), 96, 0.65, 8, false), cutStone, 0, 0, 0, 'Hemicycle entablature');
+    }
+    // Distinct north Bordiau hall and south museum pavilion, flanking the central axis.
+    box(g, 34, 19, 26, -69, 9.5, -7, stone, 'North Bordiau exhibition hall');
+    box(g, 36, 2.0, 28, -69, 20, -7, cutStone, 'North hall cornice');
+    box(g, 36, 2.4, 28, -69, 21.8, -7, roof, 'North hall roof');
+    box(g, 33, 17, 24, 69, 8.5, -7, stone, 'South museum pavilion');
+    box(g, 35, 1.5, 26, 69, 17.3, -7, cutStone, 'South pavilion cornice');
+    box(g, 34, 2.2, 25, 69, 19.0, -7, roof, 'South pavilion roof');
+    // Long museum wings with repeated high windows, but lower and quieter than the triumphal arch.
+    for (const side of [-1, 1]) {
+      box(g, 42, 13, 22, side * 94, 6.5, -8, stone, 'Cinquantenaire museum wing');
+      for (let i = 0; i < 7; i++) {
+        const x = side * 94 - 17 + i * 5.5;
+        box(g, 2.0, 5.0, 0.2, x, 8.0, 3.2, shadow, 'Museum gallery window');
+      }
+      box(g, 44, 1.1, 23, side * 94, 13.3, -8, cutStone, 'Museum wing cornice');
+      box(g, 43, 1.8, 22, side * 94, 14.7, -8, roof, 'Museum wing roof');
+    }
+    // Axis and formal parterre; preserve open sightline beneath the triple arcade.
+    box(g, 26, 0.22, 110, 0, 0.11, 67, materials.pavingEdge, 'Ceremonial esplanade');
+    for (let side of [-1, 1]) {
+      for (let i = 0; i < 5; i++) {
+        box(g, 10, 0.18, 22, side * (21 + i * 15), 0.09, 68 + (i % 2) * 2, materials.green, 'Formal garden parterre');
+      }
+      for (let i = 0; i < 7; i++) {
+        const x = side * (28 + i * 10);
+        cylinder(g, 1.8, 2.1, 5.5, x, 2.75, 35 + (i % 2) * 6, materials.green, 12);
+      }
+    }
+    // Tunnel cut-through: leave a visible open corridor on the western approach rather than filling it with park lawn.
+    box(g, 18, 0.12, 52, -115, 0.06, 38, materials.pavingEdge, 'Belliard tunnel approach hardscape');
   });
   addLandmark('europeanParliament', (g) => {
     cylinder(g, 15, 18, 30, 0, 15, 0, materials.glass, 24);
