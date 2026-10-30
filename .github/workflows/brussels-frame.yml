@@ -2,7 +2,7 @@ name: Brussels frame checks
 
 on:
   push:
-    branches: [main, "feat/brussels-world-port"]
+    branches: [main, "feat/*"]
   pull_request:
     branches: [main]
 
