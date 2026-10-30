@@ -18,7 +18,7 @@ const MOCK_KEY = 'londonloop_mock_db';
 const NAME_RE = /^[A-Za-z0-9 _.-]{2,20}$/;
 const STATE_MAX = 4000; // the server rejects p_state longer than this (as text)
 
-/** The server's fare formula (slop_finish_ride): £3 + £1.60/km + £0.25/min, capped £250, × (0.8 + 0.05 × rating) */
+/** The Brussels fare formula (slop_finish_ride): €3 + €1.60/km + €0.25/min, capped €250, × (0.8 + 0.05 × rating) */
 export function computeFare(distance_m, duration_s, rating = 5) {
   const r = Math.max(1, Math.min(5, Math.round(rating || 5)));
   const base = Math.min(250, 3 + 1.6 * (distance_m / 1000) + 0.25 * (duration_s / 60));
@@ -27,8 +27,8 @@ export function computeFare(distance_m, duration_s, rating = 5) {
 
 /**
  * The server's bus pay formula (slop_bus_finish_shift):
- *   base = min(150, £2.50 + £1.10/km + £0.35/passenger + £0.15/stop served)
- *   pay  = max(0, base × (0.6 + 0.25 × on-time% + 0.15 × comfort%) − £0.25 × min(penalties, 40))
+ *   base = min(150, €2.50 + €1.10/km + €0.35/passenger + €0.15/stop served)
+ *   pay  = max(0, base × (0.6 + 0.25 × on-time% + 0.15 × comfort%) − €0.25 × min(penalties, 40))
  */
 export function computeBusPay({ distance_m = 0, passengers = 0, stops_served = 0, on_time_pct = 0, comfort = 0, penalties = 0 } = {}) {
   const ot = Math.max(0, Math.min(100, Math.round(on_time_pct || 0)));
