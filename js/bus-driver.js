@@ -15,6 +15,7 @@
 
 import * as THREE from 'three/webgpu';
 import { computeBusPay, injectStyle, safeStorage } from './backend.js';
+const IS_BRUSSELS = typeof location !== 'undefined' && new URLSearchParams(location.search).get('city') === 'brussels';
 
 // ------------------------------------------------------------------------------------------------------------------
 // Tunables
@@ -785,6 +786,10 @@ export class BusDriver {
   async ready() { if (!this.data) await this._load(); return this.data; }
 
   openPicker() {
+    if (IS_BRUSSELS) {
+      this.toast('STIB/MIVB bus driving is available, but Brussels route timetables are not integrated yet.', 'bad');
+      return;
+    }
     if (this.pickerOpen) return;
     this.pickerOpen = true;
     this._ensurePicker();

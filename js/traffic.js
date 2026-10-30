@@ -4,6 +4,7 @@ import { GEO, WORLD, BRUSSELS_LANDMARKS } from './city-config.js';
 import { buildLondonRoadNetwork, ASPECT_NAMES } from './road-network.js';
 import { createTrafficSim, VEHICLE_TYPES } from './traffic-sim.js';
 import { VEHICLE_FACTORIES, VEHICLE_UNIFORMS, CAR_COLOURS, getInstanceParts, createVehicleUniforms } from './brussels-base-vehicles.js';
+import { brusselsBus } from './brussels-bus.js';
 import { createBusPlanner, loadBusRoutes } from './life/bus-routes.js';
 const IS_BRUSSELS = typeof location !== 'undefined' && new URLSearchParams(location.search).get('city') === 'brussels';
 import { toWorld } from './geo-frame.js';
@@ -127,7 +128,10 @@ function createTrafficSystem(scene, opts = {}) {
   addVariant('van', F.van({ seed: 9 }), VAN_PAINTS, 60);
   // buses: one model; route number & destination per instance from a blind atlas (real routes, data/ldn-bus-routes.json)
   const BUS_CAP = 48;
-  const busV = addVariant('bus', F.doubleDecker({ route: '0', destination: ' ' }), [0xc8102e], BUS_CAP);
+  const busModel = IS_BRUSSELS
+    ? brusselsBus({ route: '71', destination: 'De Brouckère' })
+    : F.doubleDecker({ route: '0', destination: ' ' });
+  const busV = addVariant('bus', busModel, IS_BRUSSELS ? [0xf47721] : [0xc8102e], BUS_CAP);
   const planner = createBusPlanner(network);
   const blindCanvas = typeof document !== 'undefined' ? document.createElement('canvas') : null;
   const blindTex = blindCanvas ? new THREE.CanvasTexture(blindCanvas) : new THREE.Texture();
@@ -165,7 +169,7 @@ function createTrafficSystem(scene, opts = {}) {
   drawBlinds(planner.variants);
   {
     const bm = busV.meshes.find((m) => m.name.endsWith('_blinds'));
-    if (bm) {
+    if (bm && !IS_BRUSSELS) {
       bm.geometry.setAttribute('aBlind', blindAttr);
       const mat = new THREE.MeshStandardNodeMaterial();
       const t = texture(blindTex, uv().add(attribute('aBlind', 'vec2')).mul(uniform(new THREE.Vector2(1 / BLIND_COLS, 1 / BLIND_ROWS))));
@@ -526,7 +530,7 @@ function createTrafficSystem(scene, opts = {}) {
         if (Math.abs(v.x - x) > r || Math.abs(v.z - z) > r) continue;
         const cs = Math.cos(v.yaw), sn = Math.sin(v.yaw);
         const ex = Math.abs(sn) * v.half + Math.abs(cs) * v.halfW, ez = Math.abs(cs) * v.half + Math.abs(sn) * v.halfW;
-        const h = v.bus ? 4.4 : v.type === 'van' ? 2.3 : v.type === 'cab' ? 1.9 : 1.6;
+        const h = v.bus ? (IS_BRUSSELS ? 3.25 : 4.4) : v.type === 'van' ? 2.3 : v.type === 'cab' ? 1.9 : 1.6;
         out.push({ minX: v.x - ex, maxX: v.x + ex, minZ: v.z - ez, maxZ: v.z + ez, minY: v.y, maxY: v.y + h,
           obb: { cx: v.x, cz: v.z, hx: v.halfW, hz: v.half, cs, sn }, vehicle: v });
       }

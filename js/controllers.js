@@ -4,6 +4,9 @@ import { cityUniforms, createContactShadowMaterial } from './tsl-materials.js';
 import { PersonCrowd, PersonRig } from './pedestrians.js';
 import { HEADLIGHTS, SEARCHLIGHT, beamScaleForGlow, createVehicleHeadlight, placeVehicleHeadlight, createSearchlight } from './vehicle-lights.js';
 import { blackCab, rideCar, doubleDecker, hireBike, policeHeli, riverBoat, createVehicleUniforms, setVehicleNightFromGlow } from './london-vehicles.js';
+import { brusselsBus } from './brussels-bus.js';
+const IS_BRUSSELS = typeof location !== 'undefined' && new URLSearchParams(location.search).get('city') === 'brussels';
+const makeBusModel = (opts = {}) => IS_BRUSSELS ? brusselsBus(opts) : doubleDecker(opts);
 
 // js/controllers.js — London Loop player controllers (Workstream C)
 // Modes: 'person' (walk), 'car' (black cab), 'ride' (RideLDN car, same physics), 'cyclist' (hire bike),
@@ -25,7 +28,7 @@ export const MODE_INFO = {
   cyclist: { label: 'Hire Bike', topSpeedMph: 24, hints: [[['W', 'S'], 'Pedal / Brake'], [['A', 'D'], 'Steer'], [['Shift'], 'Sprint']] },
   helicopter: { label: 'Police Helicopter', topSpeedMph: 145, hints: [[['W', 'S'], 'Pitch'], [['A', 'D'], 'Yaw'], [['Space', 'E'], 'Climb'], [['Q', 'C'], 'Descend'], [['L'], 'Searchlight']] },
   boat: { label: 'River Bus', topSpeedMph: 34, hints: [[['W', 'S'], 'Throttle / Astern'], [['A', 'D'], 'Helm'], [['Shift'], 'Boost']] },
-  bus: { label: 'London Bus', topSpeedMph: 34, hints: [[['W', 'S'], 'Drive / Brake'], [['A', 'D'], 'Steer'], [['Space'], 'Parking brake'], [['Shift'], 'Put your foot down']] }
+  bus: { label: typeof location !== 'undefined' && new URLSearchParams(location.search).get('city') === 'brussels' ? 'STIB/MIVB Bus' : 'London Bus', topSpeedMph: 34, hints: [[['W', 'S'], 'Drive / Brake'], [['A', 'D'], 'Steer'], [['Space'], 'Parking brake'], [['Shift'], 'Put your foot down']] }
 };
 
 /**
@@ -643,12 +646,12 @@ class ThirdPersonControllerManager extends (THREE.EventDispatcher || Object) {
 
   /** Drivable red double-decker (bus-driver job): car physics with bus handling, nearside doors, cab POV */
   createBusEntity() {
-    const model = doubleDecker({ route: '24', destination: 'Pimlico', uniforms: createVehicleUniforms() });
+    const model = makeBusModel({ route: IS_BRUSSELS ? '71' : '24', destination: IS_BRUSSELS ? 'De Brouckère' : 'Pimlico', uniforms: createVehicleUniforms() });
     const ent = this.createCarEntity('bus', model, MODE_INFO.bus.label, HANDLING.bus);
     ent.mesh.name = 'PlayerBus';
     ent.isBus = true;
-    ent.route = '24';
-    ent.destination = 'Pimlico';
+    ent.route = IS_BRUSSELS ? '71' : '24';
+    ent.destination = IS_BRUSSELS ? 'De Brouckère' : 'Pimlico';
     ent.doorsOpen = false;
     ent.doorInterlock = true; // won't pull away with the doors open
     ent.doorOpen = 0; // 0..1 door animation
@@ -750,7 +753,7 @@ class ThirdPersonControllerManager extends (THREE.EventDispatcher || Object) {
     route = route == null ? bus.route : String(route);
     destination = destination == null ? bus.destination : String(destination);
     if (route === bus.route && destination === bus.destination) return;
-    const tmp = doubleDecker({ route, destination, uniforms: bus.uniforms });
+    const tmp = makeBusModel({ route, destination, uniforms: bus.uniforms });
     const fresh = tmp.getObjectByName('blinds');
     const old = bus.model.getObjectByName('blinds');
     if (fresh && old) {
