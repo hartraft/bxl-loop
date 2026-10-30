@@ -171,7 +171,7 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     const plaza = new THREE.Group();
     plaza.name = 'Grand-Place pedestrian square';
     g.add(plaza);
-    box(plaza, 108, 0.45, 66, 0, 0.02, 0, materials.pavingEdge, 'Grand-Place stone perimeter');
+    box(plaza, 108, 0.45, 66, 0, -0.225, 0, materials.pavingEdge, 'Grand-Place stone perimeter');
     const cobbleGeo = new THREE.BoxGeometry(6.8, 0.12, 4.1);
     const cobblesA = new THREE.InstancedMesh(cobbleGeo, materials.pavingA, 180);
     const cobblesB = new THREE.InstancedMesh(cobbleGeo, materials.pavingB, 180);
@@ -181,7 +181,7 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       for (let col = 0; col < 15; col++) {
         const x = -50 + col * 6.9 + (row % 2) * 0.45;
         const z = -30 + row * 5.15;
-        dummy.position.set(x, 0.34, z);
+        dummy.position.set(x, -0.06, z);
         dummy.rotation.y = ((row + col) % 3) * 0.025;
         dummy.updateMatrix();
         if ((row + col) % 2) cobblesA.setMatrixAt(a++, dummy.matrix);
