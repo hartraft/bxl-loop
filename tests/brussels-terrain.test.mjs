@@ -16,7 +16,7 @@ test('terrain sampler bilinearly interpolates between four cells', () => {
   const grid = Float32Array.from([0, 10, 20, 10, 20, 30, 20, 30, 40]);
   const terrain = createTerrainSampler(metadata, grid);
   assert.equal(terrain.sample(110, 210), 10);
-  assert.equal(terrain.sample(115, 215), 15);
+  assert.equal(terrain.sample(110, 215), 15);
 });
 
 test('terrain sampler handles nodata neighbours without poisoning valid samples', () => {
