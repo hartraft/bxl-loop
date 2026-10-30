@@ -56,7 +56,11 @@ const SAY = {
 // ------------------------------------------------------------------------------------------------------------------
 const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
 const pick = (a, rng = Math.random) => a[Math.floor(rng() * a.length)];
-const fmtMoney = (v) => `£${(Math.round((v || 0) * 100) / 100).toLocaleString('en-GB', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+const moneyFormatter = new Intl.NumberFormat(IS_BRUSSELS ? 'en-BE' : 'en-GB', {
+  style: 'currency', currency: IS_BRUSSELS ? 'EUR' : 'GBP',
+  minimumFractionDigits: 2, maximumFractionDigits: 2
+});
+const fmtMoney = (v) => moneyFormatter.format(Math.round((v || 0) * 100) / 100);
 const fmtDist = (m) => (m < 950 ? `${Math.max(10, Math.round(m / 10) * 10)} m` : `${(m / 1000).toFixed(m < 9950 ? 1 : 0)} km`);
 const fmtDur = (s) => `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, '0')}`;
 const fmtMins = (s) => `${Math.max(1, Math.round(s / 60))} min`;
