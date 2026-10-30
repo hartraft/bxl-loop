@@ -61,8 +61,8 @@ export function brusselsBus({ route = '71', destination = 'De Brouckère', unifo
     for (const z of [-4.25, -2.55, -0.75, 1.05, 2.85, 4.2]) {
       box(pieces, 0.055, 1.22, 0.075, side * 1.27, 2.23, z, dark);
     }
-    // Two-piece front entrance and centre exit, with glazed door leaves.
-    for (const [z, width] of [[3.75, 1.05], [-0.65, 1.05]]) {
+    // Belgian right-side passenger doors (the opposite side remains uninterrupted glazing).
+    if (side === 1) for (const [z, width] of [[3.75, 1.05], [-0.65, 1.05]]) {
       box(pieces, 0.045, 2.08, width, side * 1.265, 1.55, z, dark);
       box(pieces, 0.025, 1.55, width * 0.82, side * 1.294, 1.82, z, glass);
       box(pieces, 0.04, 0.06, width * 0.82, side * 1.3, 0.92, z, trim);
