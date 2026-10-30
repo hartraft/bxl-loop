@@ -56,8 +56,8 @@ const SAY = {
 // ------------------------------------------------------------------------------------------------------------------
 const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
 const pick = (a, rng = Math.random) => a[Math.floor(rng() * a.length)];
-const moneyFormatter = new Intl.NumberFormat(IS_BRUSSELS ? 'en-BE' : 'en-GB', {
-  style: 'currency', currency: IS_BRUSSELS ? 'EUR' : 'GBP',
+const moneyFormatter = new Intl.NumberFormat('en-BE', {
+  style: 'currency', currency: 'EUR',
   minimumFractionDigits: 2, maximumFractionDigits: 2
 });
 const fmtMoney = (v) => moneyFormatter.format(Math.round((v || 0) * 100) / 100);
