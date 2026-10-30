@@ -17,26 +17,6 @@ function cylinder(geos, radius, length, x, y, z, surf) {
   g.translate(x, y, z);
   geos.push({ geometry: g, surf });
 }
-function merged(geos) {
-  const parts = geos.map(({ geometry, surf }) => {
-    const g = geometry.toNonIndexed();
-    const n = g.attributes.position.count;
-    const colors = new Float32Array(n * 3);
-    const aSurf = new Float32Array(n * 4);
-    const c = new THREE.Color(surf.color);
-    for (let i = 0; i < n; i++) {
-      colors.set([c.r, c.g, c.b], i * 3);
-      aSurf.set([surf.rough, surf.metal, surf.emit, 0], i * 4);
-    }
-    g.setAttribute('color', new THREE.BufferAttribute(colors, 3));
-    g.setAttribute('aSurf', new THREE.BufferAttribute(aSurf, 4));
-    return g;
-  });
-  const out = THREE.BufferGeometryUtils?.mergeGeometries?.(parts) || parts[0];
-  if (!out.boundingSphere) out.computeBoundingSphere();
-  return out;
-}
-
 export function brusselsBus({ route = '71', destination = 'De Brouckère', uniforms = createVehicleUniforms() } = {}) {
   const group = new THREE.Group();
   group.name = `STIBBus_${route}`;
