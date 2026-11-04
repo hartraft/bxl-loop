@@ -3,6 +3,7 @@ import * as THREE from 'three/webgpu';
 import { GEO } from './brx-geodata.js';
 import { BRUSSELS_LANDMARK_ANCHORS, MONT_DES_ARTS_ROTATION, brusselsToWorld } from './brussels-frame.js';
 import { foundationSkirtBottom } from './brussels-terrain.js';
+import { createBrusselsLandmarkColliders } from './brussels-colliders.js';
 
 export function buildBrusselsLandmarks(scene, opts = {}) {
   const group = new THREE.Group();
@@ -92,6 +93,7 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     if (id === 'montDesArts') root.rotation.y = MONT_DES_ARTS_ROTATION; // local +Z points southeast; the garden descends northwest
     if (id === 'cinquantenaire') root.rotation.y = Math.PI / 2; // triumphal axis east-west; pavilions north/south
     build(root);
+    colliders.push(...createBrusselsLandmarkColliders(id, p, root.rotation.y, root.position.y));
     group.add(root);
     landmarks[id] = { group: root, anchor };
   }
