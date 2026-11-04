@@ -3,8 +3,10 @@
 
 const palaisDeJustice = [
   // The four occupied courthouse ranges and the central hall; the courtyards remain open.
-  { name: 'north range', x: 0, z: -72, hx: 75, hz: 8.5, maxY: 33 },
-  { name: 'south range', x: 0, z: 70, hx: 75, hz: 8.5, maxY: 33 },
+  { name: 'rear range', x: 0, z: -72, hx: 75, hz: 8.5, maxY: 33 },
+  // Split the entrance-facing range around the broad principal stair and portico.
+  { name: 'entrance range west wing', x: -57, z: 70, hx: 18, hz: 8.5, maxY: 33 },
+  { name: 'entrance range east wing', x: 57, z: 70, hx: 18, hz: 8.5, maxY: 33 },
   { name: 'west range', x: -66.5, z: -1, hx: 8.5, hz: 63, maxY: 33 },
   { name: 'east range', x: 66.5, z: -1, hx: 8.5, hz: 63, maxY: 33 },
   { name: 'central hall', x: 0, z: -1, hx: 26, hz: 24, maxY: 48 },
