@@ -15,8 +15,8 @@ const palaisDeJustice = [
   { name: 'west podium edge', x: -86.5, z: -1, hx: 0.9, hz: 91, maxY: 1.2 },
   { name: 'east podium edge', x: 86.5, z: -1, hx: 0.9, hz: 91, maxY: 1.2 },
   { name: 'south podium edge', x: 0, z: -92, hx: 87, hz: 0.9, maxY: 1.2 },
-  { name: 'north podium west wing', x: -60, z: 90, hx: 27, hz: 0.9, maxY: 1.2 },
-  { name: 'north podium east wing', x: 60, z: 90, hx: 27, hz: 0.9, maxY: 1.2 }
+  { name: 'north podium west wing', x: -63.5, z: 90, hx: 23.5, hz: 0.9, maxY: 1.2 },
+  { name: 'north podium east wing', x: 63.5, z: 90, hx: 23.5, hz: 0.9, maxY: 1.2 }
 ];
 
 const montDesArts = [
