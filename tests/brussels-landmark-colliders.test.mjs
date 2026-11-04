@@ -31,7 +31,7 @@ test('Palais de Justice and Mont des Arts each register world-space colliders ne
 test('Palais de Justice collider layout leaves the principal Place Poelaert stair approach open', () => {
   const anchor = brusselsToWorld(BRUSSELS_LANDMARK_ANCHORS.palaisDeJustice.lat, BRUSSELS_LANDMARK_ANCHORS.palaisDeJustice.lon);
   const colliders = createBrusselsLandmarkColliders('palaisDeJustice', anchor, Math.PI);
-  const approach = { x: 0, z: 85, hx: 31, hz: 7 };
+  const approach = { x: 0, z: 85, hx: 38, hz: 7 };
   for (const collider of colliders) {
     assert.equal(overlapsRect(localCollider(collider, anchor, Math.PI), approach), false,
       'no solid collider may cover the central monumental stair/landing corridor');
