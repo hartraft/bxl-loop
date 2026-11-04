@@ -13,8 +13,8 @@ const palaisDeJustice = [
   { name: 'west podium edge', x: -86.5, z: -1, hx: 0.9, hz: 91, maxY: 1.2 },
   { name: 'east podium edge', x: 86.5, z: -1, hx: 0.9, hz: 91, maxY: 1.2 },
   { name: 'south podium edge', x: 0, z: -92, hx: 87, hz: 0.9, maxY: 1.2 },
-  { name: 'north podium west wing', x: -59, z: 90, hx: 28, hz: 0.9, maxY: 1.2 },
-  { name: 'north podium east wing', x: 59, z: 90, hx: 28, hz: 0.9, maxY: 1.2 }
+  { name: 'north podium west wing', x: -60, z: 90, hx: 27, hz: 0.9, maxY: 1.2 },
+  { name: 'north podium east wing', x: 60, z: 90, hx: 27, hz: 0.9, maxY: 1.2 }
 ];
 
 const montDesArts = [
@@ -27,8 +27,8 @@ const montDesArts = [
   ...Array.from({ length: 8 }, (_, i) => {
     const width = 78 - Math.max(0, i - 5) * 2.5;
     const wallWidth = width + 2;
-    const segmentHalf = (wallWidth - 16) / 4;
-    const segmentCentre = (wallWidth + 16) / 4;
+    const segmentHalf = (wallWidth - 18) / 4;
+    const segmentCentre = (wallWidth + 18) / 4;
     const y = 1.1 + (7 - i) * 1.65;
     const z = 43 - i * 12.2 - 12.5 / 2;
     return [-1, 1].map(side => ({
