@@ -362,12 +362,12 @@ export function buildBuildingGeometry(geo, ctx, inRegion) {
     // is a safe first step that keeps ordinary urban blocks from floating above the DTM.
     const terrainAt = ctx.world?.terrainSurfaceHeight || (() => 0);
     const terrainY = terrainAt(cx, cz);
+    const nRing = ring.length / 2;
     let minTerrainY = Infinity;
     for (let k = 0; k < nRing; k++) minTerrainY = Math.min(minTerrainY, terrainAt(ring[k * 2], ring[k * 2 + 1]));
     if (!Number.isFinite(minTerrainY)) minTerrainY = 0;
     const flagsBase = style + (shop ? 8 : 0) + (mansardBand && !pieces ? 32 : 0);
     const matCode = isGlass ? mat : mat;
-    const nRing = ring.length / 2;
     const panelW = isGlass ? 1.5 : bayW;
     const windowTop = pieces ? eave : flatParapet ? H - 0.6 : H;
     wb.set('bcol', rgb[0], rgb[1], rgb[2], isGlass ? Math.floor(hash01(i) * 255) : rv);

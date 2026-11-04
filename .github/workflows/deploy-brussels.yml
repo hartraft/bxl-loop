@@ -12,6 +12,10 @@ on:
       - "data/**"
       - "vendor/**"
       - "tools/build-brussels-geodata.mjs"
+      - "tools/download-brussels-dtm.py"
+      - "tools/prepare-brussels-terrain.py"
+      - "tools/validate-brussels-dtm.py"
+      - "tools/requirements-terrain.txt"
       - "tools/validate-brussels-geodata.mjs"
       - "tests/brussels-runtime-smoke.mjs"
 
@@ -38,6 +42,17 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 22
+      - name: Set up Python for Brussels terrain generation
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install terrain generation dependencies
+        run: "python -m pip install --only-binary=:all: -r tools/requirements-terrain.txt"
+      - name: Download and bake official Brussels DTM
+        run: |
+          python tools/download-brussels-dtm.py --resolution 5 --timeout 600 --output /tmp/brussels-dtm-5m.tif
+          python tools/prepare-brussels-terrain.py /tmp/brussels-dtm-5m.tif --resolution 5 --output data/brussels-terrain
+          python tools/validate-brussels-dtm.py data/brussels-terrain
       - name: Download Belgium OpenStreetMap extract
         run: |
           mkdir -p tools/data
@@ -71,6 +86,8 @@ jobs:
             ./ _site/
           mkdir -p _site/data/brussels-build
           cp data/brussels-build/brx-geo.json data/brussels-build/brx-buildings.bin _site/data/brussels-build/
+          mkdir -p _site/data/brussels-terrain
+          cp data/brussels-terrain/metadata.json data/brussels-terrain/heightmap.f32 _site/data/brussels-terrain/
           node --input-type=module <<'NODE'
           import fs from 'node:fs';
           const file = '_site/index.html';
@@ -101,3 +118,6 @@ jobs:
           grep -Fq "url.searchParams.set('city', 'brussels')" /tmp/index.html
           curl --fail --silent --show-error --location --retry 5 --retry-delay 5 --retry-connrefused "${base%/}/js/city-config.js" | grep -q "brussels-config.js"
           curl --fail --silent --show-error --location --retry 5 --retry-delay 5 --retry-connrefused "${base%/}/data/brussels-build/brx-geo.json" -o /dev/null
+          curl --fail --silent --show-error --location --retry 5 --retry-delay 5 --retry-connrefused "${base%/}/data/brussels-terrain/metadata.json" -o /tmp/brussels-terrain-metadata.json
+          node --input-type=module -e "import fs from 'node:fs'; const m=JSON.parse(fs.readFileSync('/tmp/brussels-terrain-metadata.json','utf8')); if(m.dataFile!=='heightmap.f32') throw new Error('Unexpected terrain data file');"
+          curl --fail --silent --show-error --location --retry 5 --retry-delay 5 --retry-connrefused "${base%/}/data/brussels-terrain/heightmap.f32" -o /dev/null
