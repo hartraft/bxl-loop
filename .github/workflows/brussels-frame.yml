@@ -48,6 +48,8 @@ jobs:
           node --check tools/geo-brussels-base-lines.mjs
           node --check js/geo-frame.js
           node --check js/brussels-terrain.js
+          node --check js/brussels-colliders.js
+          node --check tests/brussels-landmark-colliders.test.mjs
           node --check tests/brussels-terrain.test.mjs
           python -m py_compile tools/prepare-brussels-terrain.py tools/download-brussels-dtm.py tools/validate-brussels-dtm.py tests/brussels-terrain-importer.test.py tests/brussels-dtm-download.test.py
       - name: Install terrain importer test dependencies
@@ -73,4 +75,4 @@ jobs:
         run: ruby -e "require 'yaml'; YAML.load_file('.github/workflows/deploy-brussels.yml')"
       - name: Test Brussels frame and anchors
         run: |
-          node --test tests/brussels-frame.test.mjs tests/brussels-build-frame.test.mjs tests/traffic-side.test.mjs tests/boot.test.cjs tests/module-graph-audit.test.mjs tests/brussels-bus-selection.test.mjs tests/brussels-street-infrastructure.test.mjs tests/brussels-terrain.test.mjs
+          node --test tests/brussels-frame.test.mjs tests/brussels-build-frame.test.mjs tests/traffic-side.test.mjs tests/boot.test.cjs tests/module-graph-audit.test.mjs tests/brussels-bus-selection.test.mjs tests/brussels-street-infrastructure.test.mjs tests/brussels-terrain.test.mjs tests/brussels-landmark-colliders.test.mjs
