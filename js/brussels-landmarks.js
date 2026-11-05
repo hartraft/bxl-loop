@@ -3,7 +3,7 @@ import * as THREE from 'three/webgpu';
 import { GEO } from './brx-geodata.js';
 import { BRUSSELS_LANDMARK_ANCHORS, MONT_DES_ARTS_ROTATION, brusselsToWorld } from './brussels-frame.js';
 import { foundationSkirtBottom } from './brussels-terrain.js';
-import { createBrusselsLandmarkColliders } from './brussels-colliders.js';
+import { createBrusselsLandmarkColliders, splitMontDesArtsWall } from './brussels-colliders.js';
 
 export function buildBrusselsLandmarks(scene, opts = {}) {
   const group = new THREE.Group();
@@ -327,8 +327,13 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       box(g, width, 0.48, terraceDepth, 0, y, z, limestone, 'Mont des Arts terrace paving');
       box(g, width - 5, 0.18, terraceDepth - 3.0, 0, y + 0.32, z, lawn, 'Formal garden lawn panel');
       // Retaining wall on the downhill edge, capped with a stone coping.
-      box(g, width + 2, 1.45, 1.0, 0, y - 0.5, z - terraceDepth / 2, blueStone, 'Terrace retaining wall');
-      box(g, width + 2.5, 0.28, 1.4, 0, y + 0.34, z - terraceDepth / 2, limestone, 'Retaining wall coping');
+      const wallZ = z - terraceDepth / 2;
+      for (const { x, halfWidth } of splitMontDesArtsWall(width + 2)) {
+        box(g, halfWidth * 2, 1.45, 1.0, x, y - 0.5, wallZ, blueStone, 'Terrace retaining wall wing');
+      }
+      for (const { x, halfWidth } of splitMontDesArtsWall(width + 2.5)) {
+        box(g, halfWidth * 2, 0.28, 1.4, x, y + 0.34, wallZ, limestone, 'Retaining wall coping wing');
+      }
       // Clipped hedges and symmetrical low planting beds.
       for (const side of [-1, 1]) {
         box(g, 2.2, 1.0, terraceDepth - 3.5, side * (width / 2 - 4), y + 0.85, z, hedge, 'Clipped terrace hedge');
