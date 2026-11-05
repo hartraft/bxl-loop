@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { BRUSSELS_LANDMARK_ANCHORS, brusselsToWorld, MONT_DES_ARTS_ROTATION } from '../js/brussels-frame.js';
-import { BRUSSELS_LANDMARK_COLLIDER_LAYOUT, createBrusselsLandmarkColliders } from '../js/brussels-colliders.js';
+import { BRUSSELS_LANDMARK_COLLIDER_LAYOUT, createBrusselsLandmarkColliders, splitMontDesArtsWall } from '../js/brussels-colliders.js';
 
 function localCollider(collider, anchor, yaw) {
   const dx = collider.obb.cx - anchor.x;
@@ -57,4 +57,17 @@ test('collider frame transform preserves the shared AABB/OBB convention', () => 
   assert.ok(c.maxY > 3);
   assert.ok(c.minX <= c.maxX && c.minZ <= c.maxZ);
   assert.deepEqual(Object.keys(c.obb).sort(), ['cs', 'cx', 'cz', 'hx', 'hz', 'sn']);
+});
+
+test('Mont des Arts rendered retaining walls and copings share the open central passage geometry', () => {
+  for (const width of [80, 80.5, 77.5]) {
+    const wings = splitMontDesArtsWall(width);
+    assert.equal(wings.length, 2);
+    const leftInner = wings[0].x + wings[0].halfWidth;
+    const rightInner = wings[1].x - wings[1].halfWidth;
+    assert.ok(Math.abs(leftInner + 9) < 1e-9);
+    assert.ok(Math.abs(rightInner - 9) < 1e-9);
+    assert.ok(rightInner - leftInner >= 18);
+  }
+  assert.throws(() => splitMontDesArtsWall(12, 18), RangeError);
 });
