@@ -1,6 +1,16 @@
 // Pure world-frame collider definitions for the Brussels landmark models.
 // Coordinates and dimensions are metres in each landmark's local frame.
 
+/** Return the two side wings of a retaining wall with a clear central passage. */
+export function splitMontDesArtsWall(width, opening = 18) {
+  if (!Number.isFinite(width) || !Number.isFinite(opening) || width <= opening || opening <= 0) {
+    throw new RangeError('Wall width must exceed a positive central opening');
+  }
+  const halfWidth = (width - opening) / 4;
+  const centre = (width + opening) / 4;
+  return [-1, 1].map(side => ({ x: side * centre, halfWidth }));
+}
+
 const palaisDeJustice = [
   // The four occupied courthouse ranges and the central hall; the courtyards remain open.
   { name: 'rear range', x: 0, z: -72, hx: 75, hz: 8.5, maxY: 33 },
@@ -29,13 +39,11 @@ const montDesArts = [
   ...Array.from({ length: 8 }, (_, i) => {
     const width = 78 - Math.max(0, i - 5) * 2.5;
     const wallWidth = width + 2;
-    const segmentHalf = (wallWidth - 18) / 4;
-    const segmentCentre = (wallWidth + 18) / 4;
     const y = 1.1 + (7 - i) * 1.65;
     const z = 43 - i * 12.2 - 12.5 / 2;
-    return [-1, 1].map(side => ({
-      name: `terrace ${i + 1} retaining wall ${side < 0 ? 'west' : 'east'}`,
-      x: side * segmentCentre, z, hx: segmentHalf, hz: 0.5, maxY: y + 0.225
+    return splitMontDesArtsWall(wallWidth).map(({ x, halfWidth }, wing) => ({
+      name: `terrace ${i + 1} retaining wall ${wing === 0 ? 'west' : 'east'}`,
+      x, z, hx: halfWidth, hz: 0.5, maxY: y + 0.225
     }));
   }).flat(),
   // Opaque cultural-building masses. The carillon passage itself stays open between its piers.
