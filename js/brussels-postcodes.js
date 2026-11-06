@@ -6,7 +6,7 @@ const DISTRICT_INFO = new Map(Object.entries({
   'Pentagon': ['1000', 'City of Brussels'], 'Marolles': ['1000', 'City of Brussels'], 'Sablon': ['1000', 'City of Brussels'],
   'Dansaert': ['1000', 'City of Brussels'], 'Sainte-Catherine': ['1000', 'City of Brussels'], 'Sint-Katelijne': ['1000', 'City of Brussels'],
   'Laeken': ['1020', 'City of Brussels'], 'Laken': ['1020', 'City of Brussels'],
-  'Neder-Over-Heembeek': ['1120', 'City of Brussels'], 'Neder-Over-Heembeek': ['1120', 'City of Brussels'],
+  'Neder-Over-Heembeek': ['1120', 'City of Brussels'],
   'Haren': ['1130', 'City of Brussels'],
   'Schaerbeek': ['1030', 'Schaerbeek'], 'Schaarbeek': ['1030', 'Schaerbeek'], 'Helmet': ['1030', 'Schaerbeek'],
   'Josaphat': ['1030', 'Schaerbeek'], 'Plasky': ['1030', 'Schaerbeek'], 'Dailly': ['1030', 'Schaerbeek'],
