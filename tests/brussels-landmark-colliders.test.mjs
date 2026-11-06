@@ -10,7 +10,11 @@ function localCollider(collider, anchor, yaw) {
   return { x: dx * cos - dz * sin, z: dx * sin + dz * cos, hx: collider.obb.hx, hz: collider.obb.hz };
 }
 function overlapsRect(c, rect) {
-  return Math.abs(c.x - rect.x) < c.hx + rect.hx && Math.abs(c.z - rect.z) < c.hz + rect.hz;
+  // Treat exact edge contact as non-overlap; leave a small tolerance for rotated
+  // world/local transforms and floating-point rounding at the 18 m corridor edge.
+  const epsilon = 1e-6;
+  return Math.abs(c.x - rect.x) < c.hx + rect.hx - epsilon &&
+    Math.abs(c.z - rect.z) < c.hz + rect.hz - epsilon;
 }
 
 test('Palais de Justice and Mont des Arts each register world-space colliders near their anchors', () => {
