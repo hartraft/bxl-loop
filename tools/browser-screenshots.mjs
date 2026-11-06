@@ -72,7 +72,7 @@ try {
     await page.screenshot({ path: file, fullPage: false, animations: 'disabled' });
     const stat = await fs.stat(file);
     if (stat.size < 15000) throw new Error(`Screenshot ${name} looks unexpectedly small (${stat.size} bytes)`);
-    captures.push({ name, file: path.relative(process.cwd(), file), bytes: stat.size, viewport });
+    captures.push({ name, file: path.relative(process.cwd(), file), bytes: stat.size, viewport: page.viewportSize() });
     console.log(`[browser-scenes] Captured ${name} (${stat.size} bytes)`);
   };
 
@@ -96,6 +96,16 @@ try {
     await page.waitForTimeout(1400);
     await capture(name);
   }
+
+  await page.evaluate(async () => {
+    const { TELEPORT_LOCATIONS } = await import('./js/city-config.js');
+    const destination = TELEPORT_LOCATIONS.grandPlace;
+    window.__bxl.teleportTo(destination.x, destination.z, destination.heading);
+    window.__bxl.selectCamera('chase', true);
+  });
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.waitForTimeout(1200);
+  await capture('brussels-mobile-grand-place');
 
   await fs.writeFile(path.join(outputDir, 'metadata.json'), JSON.stringify({
     commit: process.env.GITHUB_SHA || null,
