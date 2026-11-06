@@ -908,8 +908,18 @@ export function buildLondonRoadNetwork(geo, world = null, opts = {}) {
       const cut = cutLine(line, pc.ys, Math.min(pc.trimA * 0.6, pc.len * 0.3), lc[lc.length - 1] - Math.min(pc.trimB * 0.6, pc.len * 0.3));
       pv.pts = cut.pts; pv.ys = cut.ys;
     } else {
-      pv.pts = pv.road.pts;
-      pv.ys = pv.road.deck || (!pv.road.tunnel ? terrainLineHeights(pv.road.pts, world) : null);
+      const road = pv.road;
+      if (road.deck) {
+        pv.pts = road.pts;
+        pv.ys = road.deck;
+      } else if (!road.tunnel) {
+        const terrainProfile = terrainConformPolyline(road.pts, world);
+        pv.pts = terrainProfile ? terrainProfile.pts : road.pts;
+        pv.ys = terrainProfile ? terrainProfile.ys : null;
+      } else {
+        pv.pts = road.pts;
+        pv.ys = null;
+      }
     }
     pv.cum = cumulative(pv.pts);
     pv.len = pv.cum[pv.cum.length - 1];
