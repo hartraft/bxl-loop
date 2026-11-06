@@ -16,6 +16,13 @@ export function foundationWallBase(terrainAt, anchorY, lowerY, upperY) {
   return Math.max(lowerY, Math.min(upperY - 0.05, terrainAt - anchorY + 0.04));
 }
 
+/** Interior edge parameters that keep terrain-conforming building walls within maxStep metres per segment. */
+export function terrainEdgeSubdivisionParameters(length, maxStep = 10) {
+  if (![length, maxStep].every(finite) || length < 0 || maxStep <= 0) throw new TypeError('Invalid terrain edge subdivision');
+  const segments = Math.max(1, Math.ceil(length / maxStep));
+  return Array.from({ length: segments - 1 }, (_, i) => (i + 1) / segments);
+}
+
 export function createTerrainSampler(metadata, values) {
   const { width, height, cellSize, minX, minZ, noData = -9999 } = metadata || {};
   if (!Number.isInteger(width) || width < 2 || !Number.isInteger(height) || height < 2 ||

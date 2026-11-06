@@ -4,7 +4,7 @@
 // roofs geometry and one glass curtain-wall geometry per tile) and one OBB collider per building (split for big
 // concave footprints). Pure geometry: materials are attached by js/london-city.js.
 import { BUILDING_KINDS, MATERIALS, ROOFS } from '../brx-geodata.js';
-import { foundationWallBase } from '../brussels-terrain.js';
+import { foundationWallBase, terrainEdgeSubdivisionParameters } from '../brussels-terrain.js';
 import { SURF, STYLE } from './materials-shared.js';
 import {
   GeoBuilder, TileBuckets, EdgeHash, hash01, ringArea, ringBox, pointInRing, minAreaRect, obbCollider, clipHalfPlane, triangulate
@@ -425,7 +425,11 @@ export function buildBuildingGeometry(geo, ctx, inRegion) {
           ts.push(tn); tau = tn; act = nk;
         }
       }
+      // Sample long ground-level wall edges at <=10 m intervals so the lower wall follows
+      // the 5 m DTM instead of drawing a straight chord between distant corner elevations.
+      if (base <= 2.5 && ctx.world?.terrainSurface) ts.push(...terrainEdgeSubdivisionParameters(L));
       ts.push(1);
+      ts.sort((a, b) => a - b);
       // openings where the wall crosses a passage
       let cuts = null;
       if (pass) {

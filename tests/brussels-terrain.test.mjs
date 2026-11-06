@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { createTerrainSampler, createTerrainSurface, subdivideTerrainTriangle, foundationWallBase, foundationSkirtBottom } from '../js/brussels-terrain.js';
+import { createTerrainSampler, createTerrainSurface, subdivideTerrainTriangle, foundationWallBase, foundationSkirtBottom, terrainEdgeSubdivisionParameters } from '../js/brussels-terrain.js';
 import { MONT_DES_ARTS_ROTATION } from '../js/brussels-frame.js';
 import { terrainLineHeights, pointAt } from '../js/road-network.js';
 
@@ -116,4 +116,13 @@ test('terrain foundation skirts extend only below the podium underside', () => {
   assert.equal(foundationSkirtBottom(-2, -3.1), -3.15);
   assert.equal(foundationSkirtBottom(4, -3.1), -3.15);
   assert.throws(() => foundationSkirtBottom(NaN, -3), /Invalid foundation skirt/);
+});
+
+test('long terrain-graded building edges are subdivided to the configured maximum sample spacing', () => {
+  assert.deepEqual(terrainEdgeSubdivisionParameters(27), [1 / 3, 2 / 3]);
+  assert.deepEqual(terrainEdgeSubdivisionParameters(10), []);
+  assert.deepEqual(terrainEdgeSubdivisionParameters(0), []);
+  assert.deepEqual(terrainEdgeSubdivisionParameters(25, 5), [0.2, 0.4, 0.6, 0.8]);
+  assert.throws(() => terrainEdgeSubdivisionParameters(-1), /Invalid terrain edge/);
+  assert.throws(() => terrainEdgeSubdivisionParameters(10, 0), /Invalid terrain edge/);
 });
