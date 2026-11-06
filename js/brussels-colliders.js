@@ -35,15 +35,16 @@ const montDesArts = [
   { name: 'garage east wall', x: 56.5, z: 0, hx: 0.75, hz: 66, maxY: 0.1 },
   { name: 'garage upper wall', x: 0, z: 66.5, hx: 56, hz: 0.75, maxY: 0.1 },
   { name: 'garage lower wall', x: 0, z: -66.5, hx: 56, hz: 0.75, maxY: 0.1 },
-  // Each terrace retaining wall is split into two wings, leaving a 16 m central stair corridor.
+  // Each terrace retaining wall and coping is represented by a matching wing pair,
+  // leaving an 18 m central stair corridor. Bounds include the wider, taller coping.
   ...Array.from({ length: 8 }, (_, i) => {
     const width = 78 - Math.max(0, i - 5) * 2.5;
-    const wallWidth = width + 2;
+    const copingWidth = width + 2.5;
     const y = 1.1 + (7 - i) * 1.65;
     const z = 43 - i * 12.2 - 12.5 / 2;
-    return splitMontDesArtsWall(wallWidth).map(({ x, halfWidth }, wing) => ({
-      name: `terrace ${i + 1} retaining wall ${wing === 0 ? 'west' : 'east'}`,
-      x, z, hx: halfWidth, hz: 0.5, maxY: y + 0.225
+    return splitMontDesArtsWall(copingWidth).map(({ x, halfWidth }, wing) => ({
+      name: `terrace ${i + 1} retaining wall and coping ${wing === 0 ? 'west' : 'east'}`,
+      x, z, hx: halfWidth, hz: 0.7, maxY: y + 0.48
     }));
   }).flat(),
   // Opaque cultural-building masses. The carillon passage itself stays open between its piers.
