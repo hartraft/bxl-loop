@@ -11,7 +11,7 @@
 //   - weather buttons (Clear / Overcast / Drizzle / Fog) injected next to the time-of-day buttons; a click calls
 //     mainHooks.setWeather(id) if given, else mainHooks.lighting.setWeather(id) + mainHooks.colorGrade.applyWeather(id)
 //   - street plates: white enamel plate, black sans capitals, thin black inset border, the postcode district in red
-//     ("WHITEHALL SW1") and the borough under a rule ("CITY OF WESTMINSTER"), as on real Brussels corners (no Johnston).
+//     ("IXELLES 1050") and the commune under a rule ("IXELLES"), as on real Brussels corners (no Johnston).
 
 import { BRUSSELS_LANDMARKS } from './city-config.js';
 import { postcodeFor } from './brussels-postcodes.js';
