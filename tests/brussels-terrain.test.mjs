@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import { createTerrainSampler, createTerrainSurface, subdivideTerrainTriangle, foundationWallBase, foundationSkirtBottom, terrainEdgeSubdivisionParameters } from '../js/brussels-terrain.js';
 import { MONT_DES_ARTS_ROTATION } from '../js/brussels-frame.js';
-import { terrainLineHeights, pointAt } from '../js/road-network.js';
+import { terrainLineHeights, terrainConformPolyline, pointAt } from '../js/road-network.js';
 
 const metadata = { width: 3, height: 3, cellSize: 10, minX: 100, minZ: 200, noData: -9999 };
 
@@ -125,4 +125,18 @@ test('long terrain-graded building edges are subdivided to the configured maximu
   assert.deepEqual(terrainEdgeSubdivisionParameters(25, 5), [0.2, 0.4, 0.6, 0.8]);
   assert.throws(() => terrainEdgeSubdivisionParameters(-1), /Invalid terrain edge/);
   assert.throws(() => terrainEdgeSubdivisionParameters(10, 0), /Invalid terrain edge/);
+});
+
+test('road terrain profiles insert intermediate DTM samples on long segments', () => {
+  const pts = Float32Array.from([0, 0, 25, 0, 25, 5]);
+  const world = { terrainSurfaceHeight: (x, z) => x * 0.1 + z * 0.2 };
+  const profile = terrainConformPolyline(pts, world, 10);
+  assert.deepEqual(profile.pts, [0, 0, 8.333333333333334, 0, 16.666666666666668, 0, 25, 0, 25, 5]);
+  assert.equal(profile.ys.length, profile.pts.length / 2);
+  assert.deepEqual(Array.from(profile.ys), [0, 0.8333333134651184, 1.6666666269302368, 2.5, 3.5]);
+  for (let i = 2; i < profile.pts.length; i += 2) {
+    assert.ok(Math.hypot(profile.pts[i] - profile.pts[i - 2], profile.pts[i + 1] - profile.pts[i - 1]) <= 10 + 1e-9);
+  }
+  assert.equal(terrainConformPolyline(pts, null), null);
+  assert.throws(() => terrainConformPolyline([0, 0, NaN, 2], world), /Invalid terrain polyline/);
 });
