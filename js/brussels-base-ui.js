@@ -14,10 +14,10 @@
 //     ("WHITEHALL SW1") and the borough under a rule ("CITY OF WESTMINSTER"), as on real Brussels corners (no Johnston).
 
 import { BRUSSELS_LANDMARKS } from './city-config.js';
+import { postcodeFor } from './brussels-postcodes.js';
+export { postcodeFor };
 
 // Brussels postal plate data is isolated so it can be tested without loading the HUD.
-export { postcodeFor } from './brussels-postcodes.js';
-
 // ---------------------------------------------------------------------------------------------------------------------
 // Styles
 // ---------------------------------------------------------------------------------------------------------------------
