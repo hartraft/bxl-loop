@@ -17,6 +17,8 @@ on:
       - "tools/validate-brussels-dtm.py"
       - "tools/requirements-terrain.txt"
       - "tools/validate-brussels-geodata.mjs"
+      - "tools/browser-screenshots.mjs"
+      - "docs/browser-screenshots.md"
       - "tests/brussels-runtime-smoke.mjs"
 
 permissions:
