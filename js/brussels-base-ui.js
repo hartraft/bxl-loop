@@ -125,7 +125,7 @@ export function makeStreetPlate(name, postcode = '', borough = '') {
 
 /**
  * Renders getLocationLabel()'s {primary, secondary} (or its "primary · secondary" text) into the #hud-location element
- * as Brussels plates. Landmarks get a caption over the plate of the street they're on.
+ * as Belgian postcode/commune plates. Unknown areas retain their source label without an invented postcode.
  */
 export function renderLocationPlates(container, label, pos = null) {
   if (!container || !label) return;
@@ -134,16 +134,6 @@ export function renderLocationPlates(container, label, pos = null) {
   if (container.dataset.bxlKey === key) return;
   container.dataset.bxlKey = key;
   const lm = LANDMARK_NAMES.get(lab.primary);
-  if (typeof location !== 'undefined' && new URLSearchParams(location.search).get('city') === 'brussels') {
-    const wrap = el('div', 'bxl-plates');
-    const street = lm ? lab.secondary : lab.primary;
-    const district = lm ? lm.district : lab.secondary;
-    if (lm) wrap.appendChild(el('div', 'bxl-place', lm.name));
-    if (street) wrap.appendChild(makeStreetPlate(street, '', district || 'Brussels'));
-    if (!lm && district && district !== street) wrap.appendChild(el('div', 'bxl-district', district));
-    container.replaceChildren(wrap);
-    return;
-  }
   let street = lab.primary, district = lab.secondary, place = '';
   if (lm) {
     place = lm.name;
