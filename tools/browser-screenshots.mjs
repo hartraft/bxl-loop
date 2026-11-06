@@ -60,12 +60,12 @@ try {
     const overlay = document.getElementById('loading-overlay');
     const canvas = document.querySelector('#canvas-container canvas');
     return !!window.__bxl && !!canvas && overlay?.classList.contains('hidden');
-  }, { timeout: 180000 });
+  }, null, { timeout: 180000 });
 
   await page.waitForFunction(() => {
     const plate = document.querySelector('#hud-location .bxl-plate');
     return !!plate && plate.textContent.trim().length > 0;
-  }, { timeout: 20000 });
+  }, null, { timeout: 20000 });
 
   const capture = async (name) => {
     const file = path.join(outputDir, `${name}.png`);
