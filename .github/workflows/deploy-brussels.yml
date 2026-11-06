@@ -104,6 +104,30 @@ jobs:
             fs.writeFileSync(file, html);
           }
           NODE
+      - name: Install Playwright Chromium for rendered-scene screenshots
+        run: |
+          npm install --no-save playwright
+          npx playwright install --with-deps chromium
+      - name: Start local server for the staged Brussels site
+        run: |
+          python3 -m http.server 4173 --bind 127.0.0.1 --directory _site >/tmp/brussels-browser-server.log 2>&1 &
+          echo $! >/tmp/brussels-browser-server.pid
+          for attempt in $(seq 1 30); do
+            if curl --fail --silent http://127.0.0.1:4173/ >/dev/null; then exit 0; fi
+            sleep 1
+          done
+          cat /tmp/brussels-browser-server.log
+          exit 1
+      - name: Capture rendered Brussels scenes
+        run: node tools/browser-screenshots.mjs --base-url http://127.0.0.1:4173/
+      - name: Upload rendered-scene screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: brussels-browser-screenshots-${{ github.sha }}
+          path: artifacts/browser-screenshots/
+          if-no-files-found: warn
+          retention-days: 14
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
