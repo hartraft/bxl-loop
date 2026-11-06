@@ -1,5 +1,5 @@
 // Brussels-Capital Region postal plate labels. Unknown OSM names are intentionally left blank.
-const normalizePlace = (value) => String(value || '').normalize('NFD').replace(/[\\u0300-\\u036f]/g, '').toLowerCase().trim();
+const normalizePlace = (value) => String(value || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim();
 const DISTRICT_INFO = new Map(Object.entries({
   // Brussels-Capital Region: neighbourhoods and commune names commonly found in OSM.
   'Brussels': ['1000', 'City of Brussels'], 'City of Brussels': ['1000', 'City of Brussels'],
@@ -11,7 +11,7 @@ const DISTRICT_INFO = new Map(Object.entries({
   'Schaerbeek': ['1030', 'Schaerbeek'], 'Schaarbeek': ['1030', 'Schaerbeek'], 'Helmet': ['1030', 'Schaerbeek'],
   'Josaphat': ['1030', 'Schaerbeek'], 'Plasky': ['1030', 'Schaerbeek'], 'Dailly': ['1030', 'Schaerbeek'],
   'Etterbeek': ['1040', 'Etterbeek'], 'Jourdan': ['1040', 'Etterbeek'], 'Cinquantenaire': ['1040', 'Etterbeek'],
-  'Ixelles': ['1050', 'Ixelles'], 'Elsene': ['1050', 'Ixelles'], 'Flagey': ['1050', 'Ixelles'], 'Matonge': ['1050', 'Ixelles'],
+  'Ixelles': ['1050', 'Ixelles'], 'Elsene': ['1050', 'Ixelles'], 'Flagey': ['1050', 'Ixelles'], 'Matonge': ['1050', 'Ixelles'], 'Châtelain': ['1050', 'Ixelles'], 'Chatelain': ['1050', 'Ixelles'],
   'Saint-Gilles': ['1060', 'Saint-Gilles'], 'Sint-Gillis': ['1060', 'Saint-Gilles'], 'Parvis de Saint-Gilles': ['1060', 'Saint-Gilles'],
   'Anderlecht': ['1070', 'Anderlecht'],
   'Molenbeek-Saint-Jean': ['1080', 'Molenbeek-Saint-Jean'], 'Sint-Jans-Molenbeek': ['1080', 'Molenbeek-Saint-Jean'],
