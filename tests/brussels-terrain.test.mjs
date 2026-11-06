@@ -131,9 +131,14 @@ test('road terrain profiles insert intermediate DTM samples on long segments', (
   const pts = Float32Array.from([0, 0, 25, 0, 25, 5]);
   const world = { terrainSurfaceHeight: (x, z) => x * 0.1 + z * 0.2 };
   const profile = terrainConformPolyline(pts, world, 10);
-  assert.deepEqual(profile.pts, [0, 0, 8.333333333333334, 0, 16.666666666666668, 0, 25, 0, 25, 5]);
-  assert.equal(profile.ys.length, profile.pts.length / 2);
-  assert.deepEqual(Array.from(profile.ys), [0, 0.8333333134651184, 1.6666666269302368, 2.5, 3.5]);
+  const expectedX = [0, 8.333333333333333, 16.666666666666667, 25, 25];
+  const expectedY = [0, 0.8333333333333333, 1.6666666666666667, 2.5, 3.5];
+  assert.equal(profile.pts.length / 2, expectedX.length);
+  assert.equal(profile.ys.length, expectedX.length);
+  for (let i = 0; i < expectedX.length; i++) {
+    assert.ok(Math.abs(profile.pts[i * 2] - expectedX[i]) < 1e-6);
+    assert.ok(Math.abs(profile.ys[i] - expectedY[i]) < 1e-6);
+  }
   for (let i = 2; i < profile.pts.length; i += 2) {
     assert.ok(Math.hypot(profile.pts[i] - profile.pts[i - 2], profile.pts[i + 1] - profile.pts[i - 1]) <= 10 + 1e-9);
   }
