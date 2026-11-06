@@ -61,6 +61,31 @@ export function terrainLineHeights(pts, world) {
   return ys;
 }
 
+/**
+ * Insert terrain samples along long road segments. Keeping the road profile at <=10 m
+ * spacing avoids interpolating a single straight grade across several 5 m DTM cells.
+ * Returns null when no terrain surface is active, preserving the legacy flat-world path.
+ */
+export function terrainConformPolyline(pts, world, maxStep = 10) {
+  if (!world || typeof world.terrainSurfaceHeight !== 'function') return null;
+  if (!pts || pts.length < 4 || pts.length % 2 || !Number.isFinite(maxStep) || maxStep <= 0 ||
+      !Array.from(pts).every(Number.isFinite)) throw new TypeError('Invalid terrain polyline');
+  const out = [pts[0], pts[1]];
+  const heights = [world.terrainSurfaceHeight(pts[0], pts[1])];
+  for (let i = 2; i < pts.length; i += 2) {
+    const ax = pts[i - 2], az = pts[i - 1], bx = pts[i], bz = pts[i + 1];
+    const length = Math.hypot(bx - ax, bz - az);
+    const steps = Math.max(1, Math.ceil(length / maxStep));
+    for (let step = 1; step <= steps; step++) {
+      const t = step / steps;
+      const x = ax + (bx - ax) * t, z = az + (bz - az) * t;
+      out.push(x, z);
+      heights.push(world.terrainSurfaceHeight(x, z));
+    }
+  }
+  return { pts: out, ys: Float32Array.from(heights) };
+}
+
 export function segIndex(cum, s) {
   let lo = 0, hi = cum.length - 1;
   if (s <= 0) return 0;
@@ -258,7 +283,9 @@ export function buildLondonRoadNetwork(geo, world = null, opts = {}) {
       for (let i = 0; i < r.pts.length && !any; i += 2) any = inArea(r.pts[i], r.pts[i + 1]);
       if (!any) continue;
     }
-    roads.push({ src: r, pts: Array.from(r.pts), ys: r.deck ? Array.from(r.deck) : (!r.tunnel ? terrainLineHeights(r.pts, world) : null), feat: [] });
+    const terrainProfile = !r.deck && !r.tunnel ? terrainConformPolyline(r.pts, world) : null;
+    roads.push({ src: r, pts: terrainProfile ? terrainProfile.pts : Array.from(r.pts),
+      ys: r.deck ? Array.from(r.deck) : terrainProfile ? terrainProfile.ys : null, feat: [] });
   }
 
   // ---- 2. snap signals / crossings onto the roads (insert vertices where needed) -------------------------------
