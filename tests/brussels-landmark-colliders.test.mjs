@@ -38,16 +38,20 @@ test('Palais de Justice collider layout leaves the principal Place Poelaert stai
   }
 });
 
-test('Mont des Arts terrace retaining walls preserve the central 16 m stair corridor', () => {
+test('Mont des Arts terrace retaining walls preserve the central 18 m stair corridor', () => {
   const anchor = brusselsToWorld(BRUSSELS_LANDMARK_ANCHORS.montDesArts.lat, BRUSSELS_LANDMARK_ANCHORS.montDesArts.lon);
   const colliders = createBrusselsLandmarkColliders('montDesArts', anchor, MONT_DES_ARTS_ROTATION);
-  const corridor = { x: 0, z: 0, hx: 8, hz: 54 };
+  const corridor = { x: 0, z: 0, hx: 9, hz: 54 };
   for (const collider of colliders) {
     assert.equal(overlapsRect(localCollider(collider, anchor, MONT_DES_ARTS_ROTATION), corridor), false,
       'no solid collider may cross the central upper-to-lower garden route');
   }
   const terraceWalls = BRUSSELS_LANDMARK_COLLIDER_LAYOUT.montDesArts.filter(c => c.name.startsWith('terrace'));
   assert.equal(terraceWalls.length, 16, 'eight retaining walls should be split into west/east wings');
+  for (const wing of terraceWalls) {
+    assert.equal(wing.hz, 0.7, 'collider depth must include the 1.4 m coping');
+    assert.ok(Math.abs(Math.abs(wing.x) - wing.hx - 9) < 1e-9, 'collider edge must preserve the 18 m opening');
+  }
 });
 
 test('collider frame transform preserves the shared AABB/OBB convention', () => {
