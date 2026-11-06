@@ -20,6 +20,24 @@ on:
       - "tools/browser-screenshots.mjs"
       - "docs/browser-screenshots.md"
       - "tests/brussels-runtime-smoke.mjs"
+  pull_request:
+    branches: [main]
+    paths:
+      - ".github/workflows/deploy-brussels.yml"
+      - "index.html"
+      - "css/**"
+      - "js/**"
+      - "data/**"
+      - "vendor/**"
+      - "tools/build-brussels-geodata.mjs"
+      - "tools/download-brussels-dtm.py"
+      - "tools/prepare-brussels-terrain.py"
+      - "tools/validate-brussels-dtm.py"
+      - "tools/requirements-terrain.txt"
+      - "tools/validate-brussels-geodata.mjs"
+      - "tools/browser-screenshots.mjs"
+      - "docs/browser-screenshots.md"
+      - "tests/brussels-runtime-smoke.mjs"
 
 permissions:
   contents: read
@@ -35,7 +53,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 45
     environment:
-      name: github-pages
+      name: ${{ github.event_name == 'pull_request' && 'browser-screenshots' || 'github-pages' }}
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - name: Checkout selected branch
@@ -70,6 +88,7 @@ jobs:
       - name: Test generated Brussels geodata contract
         run: node --test tests/geodata-brussels-base.test.mjs
       - name: Configure Pages
+        if: github.event_name != 'pull_request'
         uses: actions/configure-pages@v5
         with:
           enablement: true
@@ -131,13 +150,16 @@ jobs:
           if-no-files-found: warn
           retention-days: 14
       - name: Upload Pages artifact
+        if: github.event_name != 'pull_request'
         uses: actions/upload-pages-artifact@v3
         with:
           path: _site
       - name: Deploy to GitHub Pages
+        if: github.event_name != 'pull_request'
         id: deployment
         uses: actions/deploy-pages@v4
       - name: Verify published site and Brussels assets
+        if: github.event_name != 'pull_request'
         run: |
           base="${{ steps.deployment.outputs.page_url }}"
           curl --fail --silent --show-error --location --retry 5 --retry-delay 5 --retry-connrefused "$base" -o /tmp/index.html
