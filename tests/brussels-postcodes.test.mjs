@@ -13,6 +13,7 @@ test('Brussels neighbourhood labels use Belgian postcodes and their actual commu
 
 test('Brussels postcode lookup is case- and accent-insensitive', () => {
   assert.deepEqual(postcodeFor('SCHAERBEEK'), { postcode: '1030', borough: 'Schaerbeek' });
+  assert.deepEqual(postcodeFor('Châtelain'), { postcode: '1050', borough: 'Ixelles' });
   assert.deepEqual(postcodeFor('Saint-Josse-ten-Noode'), { postcode: '1210', borough: 'Saint-Josse-ten-Noode' });
 });
 
