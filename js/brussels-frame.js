@@ -13,6 +13,9 @@ export const BRUSSELS_FRAME = {
 
 const RAD = Math.PI / 180;
 const phi = BRUSSELS_FRAME.lat0 * RAD;
+// Local +Z is the upper-city end of the Mont des Arts axis (southeast); the garden descends toward -Z (northwest).
+export const MONT_DES_ARTS_ROTATION = Math.PI / 4;
+
 export const BRUSSELS_M_PER_DEG_LAT =
   111132.92 - 559.82 * Math.cos(2 * phi) + 1.175 * Math.cos(4 * phi);
 export const BRUSSELS_M_PER_DEG_LON =
