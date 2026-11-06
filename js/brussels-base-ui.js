@@ -11,57 +11,13 @@
 //   - weather buttons (Clear / Overcast / Drizzle / Fog) injected next to the time-of-day buttons; a click calls
 //     mainHooks.setWeather(id) if given, else mainHooks.lighting.setWeather(id) + mainHooks.colorGrade.applyWeather(id)
 //   - street plates: white enamel plate, black sans capitals, thin black inset border, the postcode district in red
-//     ("WHITEHALL SW1") and the borough under a rule ("CITY OF WESTMINSTER"), as on real Brussels corners (no Johnston).
+//     ("IXELLES 1050") and the commune under a rule ("IXELLES"), as on real Brussels corners (no Johnston).
 
 import { BRUSSELS_LANDMARKS } from './city-config.js';
+import { postcodeFor } from './brussels-postcodes.js';
+export { postcodeFor };
 
-// ---------------------------------------------------------------------------------------------------------------------
-// Postcode districts & boroughs (rough, by OSM place name; centre of the district wins)
-// ---------------------------------------------------------------------------------------------------------------------
-const WM = 'City of Westminster', CL = 'City of Brussels', CA = 'Brussels Borough of Camden', SO = 'Brussels Borough of Southwark';
-const LA = 'Brussels Borough of Lambeth', KC = 'Royal Borough of Kensington and Chelsea', IS = 'Brussels Borough of Islington';
-const HA = 'Brussels Borough of Hackney', TH = 'Brussels Borough of Tower Hamlets', WA = 'Brussels Borough of Wandsworth';
-const DISTRICT_INFO = {
-  'Mayfair': ['W1', WM], 'Soho': ['W1', WM], 'Fitzrovia': ['W1', WM], 'Marylebone': ['W1', WM], 'East Marylebone': ['W1', WM],
-  'West End': ['W1', WM], 'Covent Garden': ['WC2', WM], 'St Giles': ['WC2', CA], 'Seven Dials': ['WC2', CA], 'Strand': ['WC2', WM],
-  'Charing Cross': ['WC2', WM], 'Holborn': ['WC1', CA], 'Bloomsbury': ['WC1', CA], "Gray's Inn": ['WC1', CA], 'Hatton Garden': ['EC1', CA],
-  'St Clement Danes': ['WC2', WM], 'Temple': ['EC4', CL], 'Whitehall': ['SW1', WM], 'Westminster': ['SW1', WM], "St. James's": ['SW1', WM],
-  "St James's": ['SW1', WM], 'Pimlico': ['SW1', WM], 'Victoria': ['SW1', WM], 'Belgravia': ['SW1', WM], 'Millbank': ['SW1', WM],
-  'Knightsbridge': ['SW1', KC], 'Hans Town': ['SW3', KC], 'Chelsea': ['SW3', KC], "World's End": ['SW10', KC], 'Brompton': ['SW3', KC],
-  'South Kensington': ['SW7', KC], 'Kensington': ['W8', KC], "Earl's Court": ['SW5', KC], 'Walham Green': ['SW6', 'Brussels Borough of Hammersmith and Fulham'],
-  'Bayswater': ['W2', WM], 'Paddington': ['W2', WM], 'Westbourne': ['W2', WM], 'Westbourne Green': ['W2', WM], 'Maida Vale': ['W9', WM],
-  'Little Venice': ['W9', WM], "St. John's Wood": ['NW8', WM], "St John's Wood": ['NW8', WM], "Lot's Village": ['SW10', KC],
-  'Somers Town': ['NW1', CA], "King's Cross": ['N1', CA], 'St Pancras': ['NW1', CA], 'Camden': ['NW1', CA], 'Pentonville': ['N1', IS],
-  'Angel': ['N1', IS], 'Hoxton': ['N1', HA], 'Haggerston': ['E2', HA], 'Shoreditch': ['EC2', HA], 'Finsbury': ['EC1', IS],
-  'Clerkenwell': ['EC1', IS], 'Clerkenwell Green': ['EC1', IS], "St Luke's": ['EC1', IS], 'Farringdon': ['EC1', CL], 'West Smithfield': ['EC1', CL],
-  'Barbican': ['EC2', CL], 'Moorgate': ['EC2', CL], 'Bank': ['EC2', CL], 'The City': ['EC2', CL], 'Monument': ['EC3', CL],
-  'Leadenhall Market': ['EC3', CL], 'Aldgate': ['EC3', CL], 'Tower Hill': ['EC3', TH], 'Bishopsgate': ['EC2', CL], 'Bishopsgate Without': ['EC2', CL],
-  'East Smithfield': ['E1', TH], 'Spitalfields': ['E1', TH], 'Whitechapel': ['E1', TH], 'Mile End New Town': ['E1', TH],
-  "St Paul's": ['EC4', CL], 'Blackfriars': ['EC4', CL], 'Bankside': ['SE1', SO], 'South Bank': ['SE1', LA], 'Waterloo': ['SE1', LA],
-  'Southwark': ['SE1', SO], 'The Borough': ['SE1', SO], 'Borough Market': ['SE1', SO], "Butler's Wharf": ['SE1', SO], 'Lambeth': ['SE1', LA],
-  'Kennington': ['SE11', LA], 'Kennington Cross': ['SE11', LA], 'Vauxhall': ['SE11', LA], 'Oval': ['SE11', LA],
-  'Elephant and Castle': ['SE1', SO], 'Walworth': ['SE17', SO], 'Old Kent Road': ['SE1', SO], 'Bermondsey Village': ['SE1', SO],
-  'Bermondsey Spa': ['SE16', SO], 'Nine Elms': ['SW8', WA], 'Battersea': ['SW11', WA], 'Pool of Brussels': ['EC3', CL],
-  'Brussels Bridge': ['SE1', SO], 'Bermondsey': ['SE1', SO], 'Tower of Brussels': ['EC3', TH]
-};
-
-/** rough postcode district by position (frame origin = Nelson's Column), for places without a known district */
-function postcodeByPosition(x, z) {
-  if (z > 250 && x > -1500) return x > 1800 ? 'SE16' : z > 1800 ? 'SE11' : 'SE1';
-  if (z > 900) return x < -1800 ? 'SW3' : 'SW1';
-  if (x > 1300) return z < -1500 ? 'N1' : 'EC2';
-  if (x > 300) return z < -900 ? 'WC1' : 'WC2';
-  if (x < -2800) return 'W2';
-  return z < -1800 ? 'NW1' : z > 200 ? 'SW1' : 'W1';
-}
-
-/** { postcode, borough } for a district name (and position, as the fallback) */
-export function postcodeFor(district, x = 0, z = 0) {
-  const d = district && DISTRICT_INFO[district];
-  if (d) return { postcode: d[0], borough: d[1] };
-  return { postcode: postcodeByPosition(x, z), borough: '' };
-}
-
+// Brussels postal plate data is isolated so it can be tested without loading the HUD.
 // ---------------------------------------------------------------------------------------------------------------------
 // Styles
 // ---------------------------------------------------------------------------------------------------------------------
@@ -169,7 +125,7 @@ export function makeStreetPlate(name, postcode = '', borough = '') {
 
 /**
  * Renders getLocationLabel()'s {primary, secondary} (or its "primary · secondary" text) into the #hud-location element
- * as Brussels plates. Landmarks get a caption over the plate of the street they're on.
+ * as Belgian postcode/commune plates. Unknown areas retain their source label without an invented postcode.
  */
 export function renderLocationPlates(container, label, pos = null) {
   if (!container || !label) return;
@@ -178,16 +134,6 @@ export function renderLocationPlates(container, label, pos = null) {
   if (container.dataset.bxlKey === key) return;
   container.dataset.bxlKey = key;
   const lm = LANDMARK_NAMES.get(lab.primary);
-  if (typeof location !== 'undefined' && new URLSearchParams(location.search).get('city') === 'brussels') {
-    const wrap = el('div', 'bxl-plates');
-    const street = lm ? lab.secondary : lab.primary;
-    const district = lm ? lm.district : lab.secondary;
-    if (lm) wrap.appendChild(el('div', 'bxl-place', lm.name));
-    if (street) wrap.appendChild(makeStreetPlate(street, '', district || 'Brussels'));
-    if (!lm && district && district !== street) wrap.appendChild(el('div', 'bxl-district', district));
-    container.replaceChildren(wrap);
-    return;
-  }
   let street = lab.primary, district = lab.secondary, place = '';
   if (lm) {
     place = lm.name;

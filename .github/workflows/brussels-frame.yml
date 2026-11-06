@@ -39,6 +39,8 @@ jobs:
           node --check js/controllers.js
           node --check js/bus-driver.js
           node --check js/brussels-base-ui.js
+          node --check js/brussels-postcodes.js
+          node --check tests/brussels-postcodes.test.mjs
           node --check js/bxl-geodata.js
           node --check js/brx-geodata.js
           node --check js/road-network.js
@@ -75,4 +77,4 @@ jobs:
         run: ruby -e "require 'yaml'; YAML.load_file('.github/workflows/deploy-brussels.yml')"
       - name: Test Brussels frame and anchors
         run: |
-          node --test tests/brussels-frame.test.mjs tests/brussels-build-frame.test.mjs tests/traffic-side.test.mjs tests/boot.test.cjs tests/module-graph-audit.test.mjs tests/brussels-bus-selection.test.mjs tests/brussels-street-infrastructure.test.mjs tests/brussels-terrain.test.mjs tests/brussels-landmark-colliders.test.mjs
+          node --test tests/brussels-frame.test.mjs tests/brussels-build-frame.test.mjs tests/traffic-side.test.mjs tests/boot.test.cjs tests/module-graph-audit.test.mjs tests/brussels-bus-selection.test.mjs tests/brussels-street-infrastructure.test.mjs tests/brussels-postcodes.test.mjs tests/brussels-terrain.test.mjs tests/brussels-landmark-colliders.test.mjs
