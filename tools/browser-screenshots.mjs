@@ -69,7 +69,9 @@ try {
 
   const capture = async (name) => {
     const file = path.join(outputDir, `${name}.png`);
-    await page.screenshot({ path: file, fullPage: false, animations: 'disabled' });
+    // WebGL canvas compositing can take longer than Playwright's 30s default on CI.
+    // Keep CSS/WebGL animation live so screenshot capture does not wait on animation teardown.
+    await page.screenshot({ path: file, fullPage: false, animations: 'allow', timeout: 120000 });
     const stat = await fs.stat(file);
     if (stat.size < 15000) throw new Error(`Screenshot ${name} looks unexpectedly small (${stat.size} bytes)`);
     captures.push({ name, file: path.relative(process.cwd(), file), bytes: stat.size, viewport: page.viewportSize() });
