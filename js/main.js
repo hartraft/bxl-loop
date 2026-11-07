@@ -758,6 +758,9 @@ async function initApp() {
     // await __bxlGpuIdle() before the next one
     window.__bxlTick = (dt = 1 / 30) => { fakeNow += dt * 1000; tick(fakeNow); };
     window.__bxlGpuIdle = () => (renderer.backend.device ? renderer.backend.device.queue.onSubmittedWorkDone() : Promise.resolve());
+    // Render the initial frame explicitly: capture mode has no animation loop to produce it.
+    // This also lets the normal GPU-idle callback dismiss the loading overlay.
+    window.__bxlTick(1 / 60);
   } else renderer.setAnimationLoop(tick);
 }
 
