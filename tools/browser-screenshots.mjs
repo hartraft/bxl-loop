@@ -66,7 +66,8 @@ try {
   await page.waitForFunction(() => document.getElementById('loading-overlay')?.classList.contains('hidden'), null, { timeout: 60000 });
 
   const settleFrame = async () => page.evaluate(async () => {
-    for (let i = 0; i < 3; i++) {
+    // Advance enough simulation time for camera easing and the 250 ms HUD refresh.
+    for (let i = 0; i < 20; i++) {
       window.__bxlTick(1 / 30);
       await window.__bxlGpuIdle();
     }
