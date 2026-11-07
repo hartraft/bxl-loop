@@ -11,14 +11,27 @@ on:
       - "js/**"
       - "data/**"
       - "vendor/**"
-      - "tools/build-brussels-geodata.mjs"
-      - "tools/download-brussels-dtm.py"
-      - "tools/prepare-brussels-terrain.py"
-      - "tools/validate-brussels-dtm.py"
-      - "tools/requirements-terrain.txt"
-      - "tools/validate-brussels-geodata.mjs"
-      - "tests/brussels-runtime-smoke.mjs"
-
+      - "assets/**"
+      - "models/**"
+      - "textures/**"
+      - "tools/**"
+      - "tests/**"
+      - "docs/browser-screenshots.md"
+  pull_request:
+    branches: [main]
+    paths:
+      - ".github/workflows/deploy-brussels.yml"
+      - "index.html"
+      - "css/**"
+      - "js/**"
+      - "data/**"
+      - "vendor/**"
+      - "assets/**"
+      - "models/**"
+      - "textures/**"
+      - "tools/**"
+      - "tests/**"
+      - "docs/browser-screenshots.md"
 permissions:
   contents: read
   pages: write
@@ -33,7 +46,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 45
     environment:
-      name: github-pages
+      name: ${{ github.event_name == 'pull_request' && 'browser-screenshots' || 'github-pages' }}
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - name: Checkout selected branch
@@ -68,6 +81,7 @@ jobs:
       - name: Test generated Brussels geodata contract
         run: node --test tests/geodata-brussels-base.test.mjs
       - name: Configure Pages
+        if: github.event_name != 'pull_request'
         uses: actions/configure-pages@v5
         with:
           enablement: true
@@ -104,14 +118,41 @@ jobs:
             fs.writeFileSync(file, html);
           }
           NODE
+      - name: Install Playwright Chromium for rendered-scene screenshots
+        run: |
+          npm install --no-save playwright
+          npx playwright install --with-deps chromium
+      - name: Start local server for the staged Brussels site
+        run: |
+          python3 -m http.server 4173 --bind 127.0.0.1 --directory _site >/tmp/brussels-browser-server.log 2>&1 &
+          echo $! >/tmp/brussels-browser-server.pid
+          for attempt in $(seq 1 30); do
+            if curl --fail --silent http://127.0.0.1:4173/ >/dev/null; then exit 0; fi
+            sleep 1
+          done
+          cat /tmp/brussels-browser-server.log
+          exit 1
+      - name: Capture rendered Brussels scenes
+        run: node tools/browser-screenshots.mjs --base-url http://127.0.0.1:4173/
+      - name: Upload rendered-scene screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: brussels-browser-screenshots-${{ github.sha }}
+          path: artifacts/browser-screenshots/
+          if-no-files-found: warn
+          retention-days: 14
       - name: Upload Pages artifact
+        if: github.event_name != 'pull_request'
         uses: actions/upload-pages-artifact@v3
         with:
           path: _site
       - name: Deploy to GitHub Pages
+        if: github.event_name != 'pull_request'
         id: deployment
         uses: actions/deploy-pages@v4
       - name: Verify published site and Brussels assets
+        if: github.event_name != 'pull_request'
         run: |
           base="${{ steps.deployment.outputs.page_url }}"
           curl --fail --silent --show-error --location --retry 5 --retry-delay 5 --retry-connrefused "$base" -o /tmp/index.html
