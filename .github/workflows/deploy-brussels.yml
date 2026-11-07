@@ -16,20 +16,7 @@ on:
       - "textures/**"
       - "tools/**"
       - "tests/**"
-      - "assets/**"
-      - "models/**"
-      - "textures/**"
-      - "tools/**"
-      - "tests/**"
-      - "tools/build-brussels-geodata.mjs"
-      - "tools/download-brussels-dtm.py"
-      - "tools/prepare-brussels-terrain.py"
-      - "tools/validate-brussels-dtm.py"
-      - "tools/requirements-terrain.txt"
-      - "tools/validate-brussels-geodata.mjs"
-      - "tools/browser-screenshots.mjs"
       - "docs/browser-screenshots.md"
-      - "tests/brussels-runtime-smoke.mjs"
   pull_request:
     branches: [main]
     paths:
@@ -39,16 +26,12 @@ on:
       - "js/**"
       - "data/**"
       - "vendor/**"
-      - "tools/build-brussels-geodata.mjs"
-      - "tools/download-brussels-dtm.py"
-      - "tools/prepare-brussels-terrain.py"
-      - "tools/validate-brussels-dtm.py"
-      - "tools/requirements-terrain.txt"
-      - "tools/validate-brussels-geodata.mjs"
-      - "tools/browser-screenshots.mjs"
+      - "assets/**"
+      - "models/**"
+      - "textures/**"
+      - "tools/**"
+      - "tests/**"
       - "docs/browser-screenshots.md"
-      - "tests/brussels-runtime-smoke.mjs"
-
 permissions:
   contents: read
   pages: write
