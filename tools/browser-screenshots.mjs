@@ -53,14 +53,25 @@ try {
   appUrl.searchParams.set('webgl', '');
   appUrl.searchParams.set('lite', '');
   appUrl.searchParams.set('offline', '');
+  appUrl.searchParams.set('capture', '');
 
   console.log(`[browser-scenes] Opening ${appUrl.href}`);
   await page.goto(appUrl.href, { waitUntil: 'domcontentloaded', timeout: 60000 });
   await page.waitForFunction(() => {
-    const overlay = document.getElementById('loading-overlay');
     const canvas = document.querySelector('#canvas-container canvas');
-    return !!window.__bxl && !!canvas && overlay?.classList.contains('hidden');
+    return !!window.__bxl && typeof window.__bxlTick === 'function' &&
+      typeof window.__bxlGpuIdle === 'function' && !!canvas;
   }, null, { timeout: 180000 });
+  await page.evaluate(async () => { await window.__bxlGpuIdle(); });
+  await page.waitForFunction(() => document.getElementById('loading-overlay')?.classList.contains('hidden'), null, { timeout: 60000 });
+
+  const settleFrame = async () => page.evaluate(async () => {
+    for (let i = 0; i < 3; i++) {
+      window.__bxlTick(1 / 30);
+      await window.__bxlGpuIdle();
+    }
+  });
+  await settleFrame();
 
   await page.waitForFunction(() => {
     const plate = document.querySelector('#hud-location .bxl-plate');
@@ -69,9 +80,8 @@ try {
 
   const capture = async (name) => {
     const file = path.join(outputDir, `${name}.png`);
-    // WebGL canvas compositing can take longer than Playwright's 30s default on CI.
-    // Keep CSS/WebGL animation live so screenshot capture does not wait on animation teardown.
-    await page.screenshot({ path: file, fullPage: false, animations: 'allow', timeout: 120000 });
+    // Capture only after deterministic frame stepping and GPU queue completion.
+    await page.screenshot({ path: file, fullPage: false, animations: 'disabled', timeout: 60000 });
     const stat = await fs.stat(file);
     if (stat.size < 15000) throw new Error(`Screenshot ${name} looks unexpectedly small (${stat.size} bytes)`);
     captures.push({ name, file: path.relative(process.cwd(), file), bytes: stat.size, viewport: page.viewportSize() });
@@ -95,7 +105,7 @@ try {
       window.__bxl.teleportTo(destination.x, destination.z, destination.heading);
       window.__bxl.selectCamera('chase', true);
     }, locationId);
-    await page.waitForTimeout(1400);
+    await settleFrame();
     await capture(name);
   }
 
@@ -106,7 +116,7 @@ try {
     window.__bxl.selectCamera('chase', true);
   });
   await page.setViewportSize({ width: 390, height: 844 });
-  await page.waitForTimeout(1200);
+  await settleFrame();
   await capture('brussels-mobile-grand-place');
 
   await fs.writeFile(path.join(outputDir, 'metadata.json'), JSON.stringify({
