@@ -81,12 +81,63 @@ try {
 
   const capture = async (name) => {
     const file = path.join(outputDir, `${name}.png`);
-    // Capture only after deterministic frame stepping and GPU queue completion.
-    await page.screenshot({ path: file, fullPage: false, animations: 'disabled', timeout: 60000 });
+    const canvasFile = path.join(outputDir, `${name}-canvas.png`);
+
+    // Export the WebGL drawing buffer directly. Chromium's compositor screenshot
+    // path can stall on this large SwiftShader scene, even after the GPU queue is idle.
+    const dataUrl = await page.evaluate(() => {
+      const canvas = document.querySelector('#canvas-container canvas');
+      const gl = window.__bxl.renderer.backend.getContext();
+      const attributes = gl?.getContextAttributes();
+      if (!attributes?.preserveDrawingBuffer) {
+        throw new Error(`WebGL drawing buffer is not preserved: ${JSON.stringify(attributes)}`);
+      }
+      return canvas.toDataURL('image/png');
+    });
+    const base64 = dataUrl.match(/^data:image\\/png;base64,(.+)$/)?.[1];
+    if (!base64) throw new Error(`Canvas export for ${name} did not return a PNG data URL`);
+    const canvasBytes = Buffer.from(base64, 'base64');
+    if (canvasBytes.length < 15000) {
+      throw new Error(`Canvas export for ${name} looks unexpectedly small (${canvasBytes.length} bytes)`);
+    }
+    await fs.writeFile(canvasFile, canvasBytes);
+
+    // Replace the live WebGL canvas with its already-rendered bitmap just for the
+    // viewport capture. This preserves the real DOM HUD while avoiding compositor
+    // readback of the software-rendered WebGL surface.
+    await page.evaluate((src) => {
+      const canvas = document.querySelector('#canvas-container canvas');
+      if (!canvas) throw new Error('Rendered canvas disappeared before screenshot');
+      const image = document.createElement('img');
+      image.id = '__bxl_capture_snapshot';
+      image.alt = 'Rendered Brussels scene snapshot';
+      image.src = src;
+      image.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;object-fit:fill;display:block;pointer-events:none;z-index:0';
+      canvas.style.visibility = 'hidden';
+      canvas.parentElement.appendChild(image);
+    }, dataUrl);
+
+    try {
+      await page.screenshot({ path: file, fullPage: false, animations: 'disabled', timeout: 60000 });
+    } finally {
+      await page.evaluate(() => {
+        document.getElementById('__bxl_capture_snapshot')?.remove();
+        const canvas = document.querySelector('#canvas-container canvas');
+        if (canvas) canvas.style.visibility = '';
+      });
+    }
+
     const stat = await fs.stat(file);
     if (stat.size < 15000) throw new Error(`Screenshot ${name} looks unexpectedly small (${stat.size} bytes)`);
-    captures.push({ name, file: path.relative(process.cwd(), file), bytes: stat.size, viewport: page.viewportSize() });
-    console.log(`[browser-scenes] Captured ${name} (${stat.size} bytes)`);
+    captures.push({
+      name,
+      file: path.relative(process.cwd(), file),
+      bytes: stat.size,
+      canvasFile: path.relative(process.cwd(), canvasFile),
+      canvasBytes: canvasBytes.length,
+      viewport: page.viewportSize()
+    });
+    console.log(`[browser-scenes] Captured ${name} (${stat.size} bytes; canvas ${canvasBytes.length} bytes)`);
   };
 
   await capture('brussels-default-street');
@@ -120,7 +171,7 @@ try {
   await settleFrame();
   await capture('brussels-mobile-grand-place');
 
-  await fs.writeFile(path.join(outputDir, 'metadata.json'), JSON.stringify({
+  const metadata = {
     commit: process.env.GITHUB_SHA || null,
     browser: browser.version(),
     renderer: 'three.js WebGL fallback (headless Chromium / SwiftShader)',
@@ -128,12 +179,24 @@ try {
     viewport,
     captures,
     errors
-  }, null, 2) + '\n');
-
+  };
   if (errors.length) {
-    throw new Error(`Browser reported ${errors.length} error(s):\n${JSON.stringify(errors, null, 2)}`);
+    metadata.failure = `Browser reported ${errors.length} error(s)`;
+    await fs.writeFile(path.join(outputDir, 'metadata.json'), JSON.stringify(metadata, null, 2) + '\n');
+    throw new Error(`${metadata.failure}:\n${JSON.stringify(errors, null, 2)}`);
   }
+  await fs.writeFile(path.join(outputDir, 'metadata.json'), JSON.stringify(metadata, null, 2) + '\n');
   console.log(`[browser-scenes] Successfully captured ${captures.length} rendered Brussels views.`);
+} catch (error) {
+  await fs.writeFile(path.join(outputDir, 'metadata.json'), JSON.stringify({
+    commit: process.env.GITHUB_SHA || null,
+    browser: browser.version(),
+    renderer: 'three.js WebGL fallback (headless Chromium / SwiftShader)',
+    captures,
+    errors,
+    failure: { name: error.name, message: error.message, stack: error.stack }
+  }, null, 2) + '\n');
+  throw error;
 } finally {
   await browser.close();
 }
