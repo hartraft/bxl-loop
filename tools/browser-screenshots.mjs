@@ -99,7 +99,8 @@ try {
     // Export the WebGL drawing buffer directly. Chromium's compositor screenshot
     // path can stall on this large SwiftShader scene, even after the GPU queue is idle.
     console.log(`[browser-scenes] Exporting ${name} canvas at ${page.viewportSize().width}x${page.viewportSize().height}`);
-    const dataUrl = await withTimeout(page.evaluate(() => {
+    console.log(`[browser-scenes] Encoding ${name} canvas asynchronously`);
+    const dataUrl = await withTimeout(page.evaluate(async () => {
       const canvas = document.querySelector('#canvas-container canvas');
       const gl = window.__bxl.renderer.backend.getContext();
       const attributes = gl?.getContextAttributes();
@@ -107,9 +108,21 @@ try {
         throw new Error(`WebGL drawing buffer is not preserved: ${JSON.stringify(attributes)}`);
       }
       if (gl.isContextLost()) throw new Error('WebGL context was lost before canvas export');
-      gl.finish();
-      return canvas.toDataURL('image/png');
-    }), 90000, `Canvas export for ${name}`);
+      // Submit pending work without synchronously blocking Chromium on SwiftShader readback.
+      gl.flush();
+      const blob = await new Promise((resolve, reject) => {
+        canvas.toBlob((value) => {
+          if (value) resolve(value);
+          else reject(new Error('Canvas.toBlob returned no PNG data'));
+        }, 'image/png');
+      });
+      const bytes = new Uint8Array(await blob.arrayBuffer());
+      let binary = '';
+      for (let offset = 0; offset < bytes.length; offset += 0x8000) {
+        binary += String.fromCharCode(...bytes.subarray(offset, offset + 0x8000));
+      }
+      return `data:image/png;base64,${btoa(binary)}`;
+    }), 90000, `Canvas blob export for ${name}`);
     console.log(`[browser-scenes] Canvas export ready for ${name} (${dataUrl.length} data URL characters)`);
     const pngPrefix = 'data:image/png;base64,';
     if (!dataUrl.startsWith(pngPrefix)) throw new Error(`Canvas export for ${name} did not return a PNG data URL`);
