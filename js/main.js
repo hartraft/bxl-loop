@@ -76,7 +76,8 @@ async function initApp() {
     if (!captureContext) throw new Error('Unable to create the WebGL2 context for screenshot capture');
     renderer.backend.parameters.context = captureContext;
   }
-  renderer.setPixelRatio(1.0);
+  // Software-rendered CI captures use a smaller drawing buffer, then scale to the documented viewport.
+  renderer.setPixelRatio(CAPTURE_MODE ? 0.75 : 1.0);
   renderer.setSize(window.innerWidth, window.innerHeight);
   renderer.shadowMap.enabled = true;
   renderer.lighting = new ClusteredLighting(256, 32, 28, 48);
