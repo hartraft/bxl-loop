@@ -56,12 +56,26 @@ async function initApp() {
   }
 
   // 1. Initialize Three.js WebGPURenderer with 32-bit float reversedDepthBuffer
+  const CAPTURE_MODE = URL_PARAMS.has('capture');
   const renderer = new THREE.WebGPURenderer({
     antialias: true,
     powerPreference: 'high-performance',
     forceWebGL: URL_PARAMS.has('webgl'),
     reversedDepthBuffer: true
   });
+  if (CAPTURE_MODE) {
+    // Preserve the WebGL drawing buffer only in deterministic screenshot mode so the
+    // browser can export the rendered frame without asking Chromium to read back WebGL.
+    const captureContext = renderer.domElement.getContext('webgl2', {
+      antialias: true,
+      alpha: true,
+      depth: true,
+      stencil: false,
+      preserveDrawingBuffer: true
+    });
+    if (!captureContext) throw new Error('Unable to create the WebGL2 context for screenshot capture');
+    renderer.backend.parameters.context = captureContext;
+  }
   renderer.setPixelRatio(1.0);
   renderer.setSize(window.innerWidth, window.innerHeight);
   renderer.shadowMap.enabled = true;
@@ -660,7 +674,7 @@ async function initApp() {
 
   if (elFps) elFps.textContent = '60';
 
-  const CAPTURE = URL_PARAMS.has('capture');
+  const CAPTURE = CAPTURE_MODE;
   const tick = (now) => {
     const rawDt = (now - lastTime) * 0.001;
     lastTime = now;
