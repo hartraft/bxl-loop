@@ -94,8 +94,9 @@ try {
       }
       return canvas.toDataURL('image/png');
     });
-    const base64 = dataUrl.match(/^data:image\\/png;base64,(.+)$/)?.[1];
-    if (!base64) throw new Error(`Canvas export for ${name} did not return a PNG data URL`);
+    const pngPrefix = 'data:image/png;base64,';
+    if (!dataUrl.startsWith(pngPrefix)) throw new Error(`Canvas export for ${name} did not return a PNG data URL`);
+    const base64 = dataUrl.slice(pngPrefix.length);
     const canvasBytes = Buffer.from(base64, 'base64');
     if (canvasBytes.length < 15000) {
       throw new Error(`Canvas export for ${name} looks unexpectedly small (${canvasBytes.length} bytes)`);
