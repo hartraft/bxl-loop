@@ -74,14 +74,18 @@ try {
   await page.evaluate(async () => { await window.__bxlGpuIdle(); });
   await page.waitForFunction(() => document.getElementById('loading-overlay')?.classList.contains('hidden'), null, { timeout: 60000 });
 
-  const settleFrame = async () => page.evaluate(async () => {
-    // Advance enough simulation time for camera easing and the 250 ms HUD refresh.
-    for (let i = 0; i < 20; i++) {
-      window.__bxlTick(1 / 30);
-      await window.__bxlGpuIdle();
-    }
-  });
-  await settleFrame();
+  const settleFrame = async (label) => {
+    console.log(`[browser-scenes] Settling ${label} camera and HUD`);
+    await withTimeout(page.evaluate(async () => {
+      // 12 maximum-size fixed steps provide 600 ms of camera/HUD settling with fewer
+      // expensive SwiftShader renders than 20 smaller steps.
+      for (let i = 0; i < 12; i++) {
+        window.__bxlTick(0.05);
+        await window.__bxlGpuIdle();
+      }
+    }), 120000, `Frame settling for ${label}`);
+  };
+  await settleFrame('default street');
 
   await page.waitForFunction(() => {
     const plate = document.querySelector('#hud-location .bxl-plate');
@@ -173,7 +177,7 @@ try {
       window.__bxl.teleportTo(destination.x, destination.z, destination.heading);
       window.__bxl.selectCamera('chase', true);
     }, locationId);
-    await settleFrame();
+    await settleFrame(name);
     await capture(name);
   }
 
@@ -184,7 +188,7 @@ try {
     window.__bxl.selectCamera('chase', true);
   });
   await page.setViewportSize({ width: 390, height: 844 });
-  await settleFrame();
+  await settleFrame('mobile Grand-Place');
   await capture('brussels-mobile-grand-place');
 
   const metadata = {
