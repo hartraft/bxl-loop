@@ -12,6 +12,15 @@ const outputDir = path.resolve(arg('--output', 'artifacts/browser-screenshots'))
 const viewport = { width: 1600, height: 900 };
 const errors = [];
 const captures = [];
+const withTimeout = (promise, milliseconds, label) => {
+  let timer;
+  return Promise.race([
+    Promise.resolve(promise),
+    new Promise((_, reject) => {
+      timer = setTimeout(() => reject(new Error(`${label} timed out after ${milliseconds}ms`)), milliseconds);
+    })
+  ]).finally(() => clearTimeout(timer));
+};
 
 await fs.mkdir(outputDir, { recursive: true });
 const browser = await chromium.launch({
@@ -85,15 +94,19 @@ try {
 
     // Export the WebGL drawing buffer directly. Chromium's compositor screenshot
     // path can stall on this large SwiftShader scene, even after the GPU queue is idle.
-    const dataUrl = await page.evaluate(() => {
+    console.log(`[browser-scenes] Exporting ${name} canvas at ${page.viewportSize().width}x${page.viewportSize().height}`);
+    const dataUrl = await withTimeout(page.evaluate(() => {
       const canvas = document.querySelector('#canvas-container canvas');
       const gl = window.__bxl.renderer.backend.getContext();
       const attributes = gl?.getContextAttributes();
       if (!attributes?.preserveDrawingBuffer) {
         throw new Error(`WebGL drawing buffer is not preserved: ${JSON.stringify(attributes)}`);
       }
+      if (gl.isContextLost()) throw new Error('WebGL context was lost before canvas export');
+      gl.finish();
       return canvas.toDataURL('image/png');
-    });
+    }), 90000, `Canvas export for ${name}`);
+    console.log(`[browser-scenes] Canvas export ready for ${name} (${dataUrl.length} data URL characters)`);
     const pngPrefix = 'data:image/png;base64,';
     if (!dataUrl.startsWith(pngPrefix)) throw new Error(`Canvas export for ${name} did not return a PNG data URL`);
     const base64 = dataUrl.slice(pngPrefix.length);
@@ -119,7 +132,9 @@ try {
     }, dataUrl);
 
     try {
+      console.log(`[browser-scenes] Compositing ${name} with the DOM HUD`);
       await page.screenshot({ path: file, fullPage: false, animations: 'disabled', timeout: 60000 });
+      console.log(`[browser-scenes] Viewport screenshot ready for ${name}`);
     } finally {
       await page.evaluate(() => {
         document.getElementById('__bxl_capture_snapshot')?.remove();
