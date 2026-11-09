@@ -171,22 +171,11 @@ try {
       if (gl.isContextLost()) throw new Error('WebGL context was lost before pixel readback');
       const width = canvas.width;
       const height = canvas.height;
-      const sync = gl.fenceSync(gl.SYNC_GPU_COMMANDS_COMPLETE, 0);
-      if (!sync) throw new Error('Unable to create WebGL fence for pixel readback');
-      gl.flush();
-      try {
-        const deadline = performance.now() + 85000;
-        while (true) {
-          const status = gl.clientWaitSync(sync, 0, 0);
-          if (status === gl.ALREADY_SIGNALED || status === gl.CONDITION_SATISFIED) break;
-          if (status === gl.WAIT_FAILED) throw new Error('WebGL fence wait failed before pixel readback');
-          if (performance.now() >= deadline) throw new Error('WebGL fence did not signal within 85 seconds');
-          await new Promise((resolve) => setTimeout(resolve, 10));
-        }
-      } finally {
-        gl.deleteSync(sync);
-      }
+      // A WebGL fence can remain unsignalled indefinitely on headless SwiftShader,
+      // even after the renderer reports its queue idle. readPixels performs the
+      // required synchronization itself; keep it inside the outer Playwright timeout.
       const pixels = new Uint8Array(width * height * 4);
+      gl.flush();
       const previousReadFramebuffer = gl.getParameter(gl.READ_FRAMEBUFFER_BINDING);
       gl.bindFramebuffer(gl.READ_FRAMEBUFFER, null);
       try {
@@ -195,6 +184,9 @@ try {
         gl.bindFramebuffer(gl.READ_FRAMEBUFFER, previousReadFramebuffer);
       }
       const glError = gl.getError();
+      if (glError !== gl.NO_ERROR) {
+        throw new Error('WebGL readPixels failed with error 0x' + glError.toString(16));
+      }
       let binary = '';
       for (let offset = 0; offset < pixels.length; offset += 0x8000) {
         binary += String.fromCharCode(...pixels.subarray(offset, offset + 0x8000));
