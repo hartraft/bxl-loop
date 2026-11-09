@@ -1,6 +1,7 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import process from 'node:process';
+import { deflateSync } from 'node:zlib';
 import { chromium } from 'playwright';
 
 const arg = (name, fallback) => {
@@ -12,6 +13,7 @@ const outputDir = path.resolve(arg('--output', 'artifacts/browser-screenshots'))
 const viewport = { width: 1600, height: 900 };
 const errors = [];
 const captures = [];
+const diagnostics = [];
 const withTimeout = (promise, milliseconds, label) => {
   let timer;
   return Promise.race([
@@ -20,6 +22,51 @@ const withTimeout = (promise, milliseconds, label) => {
       timer = setTimeout(() => reject(new Error(`${label} timed out after ${milliseconds}ms`)), milliseconds);
     })
   ]).finally(() => clearTimeout(timer));
+};
+
+const crcTable = Uint32Array.from({ length: 256 }, (_, value) => {
+  let crc = value;
+  for (let bit = 0; bit < 8; bit++) crc = (crc & 1) ? (0xedb88320 ^ (crc >>> 1)) : (crc >>> 1);
+  return crc >>> 0;
+});
+const crc32 = (buffer) => {
+  let crc = 0xffffffff;
+  for (const byte of buffer) crc = crcTable[(crc ^ byte) & 0xff] ^ (crc >>> 8);
+  return (crc ^ 0xffffffff) >>> 0;
+};
+const pngChunk = (type, data) => {
+  const name = Buffer.from(type, 'ascii');
+  const length = Buffer.alloc(4);
+  length.writeUInt32BE(data.length);
+  const checksum = Buffer.alloc(4);
+  checksum.writeUInt32BE(crc32(Buffer.concat([name, data])));
+  return Buffer.concat([length, name, data, checksum]);
+};
+const encodeRgbaPng = (width, height, pixels) => {
+  const rowBytes = width * 4;
+  if (!width || !height || pixels.length !== rowBytes * height) {
+    throw new Error('Invalid WebGL pixel buffer: ' + width + 'x' + height + ', ' + pixels.length + ' bytes');
+  }
+  const scanlines = Buffer.alloc((rowBytes + 1) * height);
+  for (let y = 0; y < height; y++) {
+    const target = y * (rowBytes + 1);
+    scanlines[target] = 0;
+    pixels.copy(scanlines, target + 1, (height - 1 - y) * rowBytes, (height - y) * rowBytes);
+  }
+  const header = Buffer.alloc(13);
+  header.writeUInt32BE(width, 0);
+  header.writeUInt32BE(height, 4);
+  header[8] = 8;
+  header[9] = 6;
+  header[10] = 0;
+  header[11] = 0;
+  header[12] = 0;
+  return Buffer.concat([
+    Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]),
+    pngChunk('IHDR', header),
+    pngChunk('IDAT', deflateSync(scanlines)),
+    pngChunk('IEND', Buffer.alloc(0))
+  ]);
 };
 
 await fs.mkdir(outputDir, { recursive: true });
@@ -96,46 +143,72 @@ try {
     const file = path.join(outputDir, `${name}.png`);
     const canvasFile = path.join(outputDir, `${name}-canvas.png`);
 
-    // Export the WebGL drawing buffer directly. Chromium's compositor screenshot
-    // path can stall on this large SwiftShader scene, even after the GPU queue is idle.
-    console.log(`[browser-scenes] Exporting ${name} canvas at ${page.viewportSize().width}x${page.viewportSize().height}`);
-    console.log(`[browser-scenes] Encoding ${name} canvas asynchronously`);
-    const dataUrl = await withTimeout(page.evaluate(async () => {
+    // Read the WebGL default framebuffer directly. Chromium's canvas encoders can
+    // stall indefinitely with SwiftShader even after the renderer's GPU queue is idle.
+    const contextInfo = await page.evaluate(() => {
       const canvas = document.querySelector('#canvas-container canvas');
       const gl = window.__bxl.renderer.backend.getContext();
-      const attributes = gl?.getContextAttributes();
-      if (!attributes?.preserveDrawingBuffer) {
-        throw new Error(`WebGL drawing buffer is not preserved: ${JSON.stringify(attributes)}`);
-      }
-      if (gl.isContextLost()) throw new Error('WebGL context was lost before canvas export');
-      // Submit pending work without synchronously blocking Chromium on SwiftShader readback.
+      const debug = gl.getExtension('WEBGL_debug_renderer_info');
+      return {
+        width: canvas.width,
+        height: canvas.height,
+        cssWidth: canvas.clientWidth,
+        cssHeight: canvas.clientHeight,
+        contextAttributes: gl.getContextAttributes(),
+        version: gl.getParameter(gl.VERSION),
+        vendor: gl.getParameter(gl.VENDOR),
+        renderer: gl.getParameter(gl.RENDERER),
+        unmaskedVendor: debug ? gl.getParameter(debug.UNMASKED_VENDOR_WEBGL) : null,
+        unmaskedRenderer: debug ? gl.getParameter(debug.UNMASKED_RENDERER_WEBGL) : null,
+        contextLost: gl.isContextLost()
+      };
+    });
+    diagnostics.push({ name, ...contextInfo });
+    console.log('[browser-scenes] Reading ' + name + ' WebGL framebuffer at ' + contextInfo.width + 'x' + contextInfo.height);
+    const readback = await withTimeout(page.evaluate(async () => {
+      const canvas = document.querySelector('#canvas-container canvas');
+      const gl = window.__bxl.renderer.backend.getContext();
+      if (gl.isContextLost()) throw new Error('WebGL context was lost before pixel readback');
+      const width = canvas.width;
+      const height = canvas.height;
+      const sync = gl.fenceSync(gl.SYNC_GPU_COMMANDS_COMPLETE, 0);
+      if (!sync) throw new Error('Unable to create WebGL fence for pixel readback');
       gl.flush();
-      const blob = await new Promise((resolve, reject) => {
-        canvas.toBlob((value) => {
-          if (value) resolve(value);
-          else reject(new Error('Canvas.toBlob returned no PNG data'));
-        }, 'image/png');
-      });
-      const bytes = new Uint8Array(await blob.arrayBuffer());
-      let binary = '';
-      for (let offset = 0; offset < bytes.length; offset += 0x8000) {
-        binary += String.fromCharCode(...bytes.subarray(offset, offset + 0x8000));
+      try {
+        const deadline = performance.now() + 85000;
+        while (true) {
+          const status = gl.clientWaitSync(sync, 0, 0);
+          if (status === gl.ALREADY_SIGNALED || status === gl.CONDITION_SATISFIED) break;
+          if (status === gl.WAIT_FAILED) throw new Error('WebGL fence wait failed before pixel readback');
+          if (performance.now() >= deadline) throw new Error('WebGL fence did not signal within 85 seconds');
+          await new Promise((resolve) => setTimeout(resolve, 10));
+        }
+      } finally {
+        gl.deleteSync(sync);
       }
-      return `data:image/png;base64,${btoa(binary)}`;
-    }), 90000, `Canvas blob export for ${name}`);
-    console.log(`[browser-scenes] Canvas export ready for ${name} (${dataUrl.length} data URL characters)`);
-    const pngPrefix = 'data:image/png;base64,';
-    if (!dataUrl.startsWith(pngPrefix)) throw new Error(`Canvas export for ${name} did not return a PNG data URL`);
-    const base64 = dataUrl.slice(pngPrefix.length);
-    const canvasBytes = Buffer.from(base64, 'base64');
+      const pixels = new Uint8Array(width * height * 4);
+      const previousReadFramebuffer = gl.getParameter(gl.READ_FRAMEBUFFER_BINDING);
+      gl.bindFramebuffer(gl.READ_FRAMEBUFFER, null);
+      try {
+        gl.readPixels(0, 0, width, height, gl.RGBA, gl.UNSIGNED_BYTE, pixels);
+      } finally {
+        gl.bindFramebuffer(gl.READ_FRAMEBUFFER, previousReadFramebuffer);
+      }
+      const glError = gl.getError();
+      let binary = '';
+      for (let offset = 0; offset < pixels.length; offset += 0x8000) {
+        binary += String.fromCharCode(...pixels.subarray(offset, offset + 0x8000));
+      }
+      return { width, height, rgbaBase64: btoa(binary), glError };
+    }), 90000, 'WebGL pixel readback for ' + name);
+    const rgba = Buffer.from(readback.rgbaBase64, 'base64');
+    const canvasBytes = encodeRgbaPng(readback.width, readback.height, rgba);
+    if (readback.glError !== 0) diagnostics.push({ name, webglError: readback.glError });
     if (canvasBytes.length < 15000) {
-      throw new Error(`Canvas export for ${name} looks unexpectedly small (${canvasBytes.length} bytes)`);
+      throw new Error('WebGL capture for ' + name + ' looks unexpectedly small (' + canvasBytes.length + ' bytes)');
     }
     await fs.writeFile(canvasFile, canvasBytes);
-
-    // Replace the live WebGL canvas with its already-rendered bitmap just for the
-    // viewport capture. This preserves the real DOM HUD while avoiding compositor
-    // readback of the software-rendered WebGL surface.
+    const dataUrl = 'data:image/png;base64,' + canvasBytes.toString('base64');
     await page.evaluate((src) => {
       const canvas = document.querySelector('#canvas-container canvas');
       if (!canvas) throw new Error('Rendered canvas disappeared before screenshot');
@@ -211,6 +284,7 @@ try {
     url: appUrl.href,
     viewport,
     captures,
+    diagnostics,
     errors
   };
   if (errors.length) {
@@ -226,6 +300,7 @@ try {
     browser: browser.version(),
     renderer: 'three.js WebGL fallback (headless Chromium / SwiftShader)',
     captures,
+    diagnostics,
     errors,
     failure: { name: error.name, message: error.message, stack: error.stack }
   }, null, 2) + '\n');
