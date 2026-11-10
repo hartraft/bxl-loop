@@ -79,7 +79,10 @@ async function initApp() {
   // Software-rendered CI captures use a smaller drawing buffer, then scale to the documented viewport.
   renderer.setPixelRatio(CAPTURE_MODE ? 0.75 : 1.0);
   renderer.setSize(window.innerWidth, window.innerHeight);
-  renderer.shadowMap.enabled = true;
+  // Cascaded shadow maps are disproportionately expensive in CPU-backed SwiftShader.
+  // Keep the real geometry, materials, camera and HUD in capture mode, but omit shadows
+  // so the visual-review render can complete reliably. Normal gameplay is unchanged.
+  renderer.shadowMap.enabled = !CAPTURE_MODE;
   renderer.lighting = new ClusteredLighting(256, 32, 28, 48);
   container.appendChild(renderer.domElement);
 
@@ -98,6 +101,10 @@ async function initApp() {
   // 2. Build Scene & Physical Atmospheric Sky / PMREM IBL / 4096x4096 Shadow Lighting
   const scene = new THREE.Scene();
   const lightingSystem = new LightingSystem(scene, renderer);
+  if (CAPTURE_MODE) {
+    lightingSystem.sunLight.castShadow = false;
+    lightingSystem.sunLight.shadow.autoUpdate = false;
+  }
   markInit('lighting');
 
   const status = (t) => { if (loadingStatus) loadingStatus.textContent = t; };
