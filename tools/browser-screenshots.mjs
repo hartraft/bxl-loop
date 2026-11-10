@@ -124,9 +124,10 @@ try {
   const settleFrame = async (label) => {
     console.log(`[browser-scenes] Settling ${label} camera and HUD`);
     await withTimeout(page.evaluate(async () => {
-      // 12 maximum-size fixed steps provide 600 ms of camera/HUD settling with fewer
-      // expensive SwiftShader renders than 20 smaller steps.
-      for (let i = 0; i < 12; i++) {
+      // Teleports snap the camera. Five fixed steps refresh the HUD/location telemetry
+      // without flooding SwiftShader's CPU-backed command queue with redundant frames.
+      // The subsequent readPixels call is the synchronization point for WebGL capture.
+      for (let i = 0; i < 5; i++) {
         window.__bxlTick(0.05);
         await window.__bxlGpuIdle();
       }
