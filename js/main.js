@@ -678,9 +678,7 @@ async function initApp() {
   let elapsed = 0;
   let frameCount = 0;
   let fpsTimer = 0;
-  // Capture mode renders only the current camera frustum. The normal full-city warm-up pass
-  // disables frustum culling and is prohibitively expensive under CPU-backed SwiftShader.
-  let warmedUp = CAPTURE_MODE;
+  let warmedUp = false; // first-frame readiness is still required in capture mode
 
   if (elFps) elFps.textContent = '60';
 
@@ -715,7 +713,7 @@ async function initApp() {
     if (warmedUp) updateSceneCulling(cameraSystem.camera.position); // the warm-up frame draws every chunk
 
     // Render frame via TSL RenderPipeline (SSR + Bloom)
-    if (!warmedUp) {
+    if (!warmedUp && !CAPTURE) {
       // First frame = pipeline warm-up behind the loading screen, for what precompileShaders() can't reach (the shadow
       // map passes): with frustum culling off, every visible material's pipelines compile now instead of stalling the
       // first time the camera turns towards it (one chunk / shadow stand-in per shared pipeline is enough)
