@@ -30,6 +30,9 @@ const browser = await chromium.launch({
     '--enable-webgl',
     '--ignore-gpu-blocklist',
     '--enable-unsafe-swiftshader',
+    // Keep WebGL on SwiftShader but force the page compositor onto its software path.
+    // Chromium's GPU-surface screenshot readback has stalled on this runner.
+    '--disable-gpu-compositing',
     '--use-gl=angle',
     '--use-angle=swiftshader'
   ]
