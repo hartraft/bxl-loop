@@ -118,7 +118,11 @@ try {
     return !!window.__bxl && typeof window.__bxlTick === 'function' &&
       typeof window.__bxlGpuIdle === 'function' && !!canvas;
   }, null, { timeout: 180000 });
-  await page.evaluate(async () => { await window.__bxlGpuIdle(); });
+  await withTimeout(
+    page.evaluate(async () => { await window.__bxlGpuIdle(); }),
+    120000,
+    'Initial WebGL frame completion'
+  );
   await page.waitForFunction(() => document.getElementById('loading-overlay')?.classList.contains('hidden'), null, { timeout: 60000 });
 
   const settleFrame = async (label) => {
@@ -127,10 +131,10 @@ try {
       // Teleports snap the camera. Five fixed steps refresh the HUD/location telemetry
       // without flooding SwiftShader's CPU-backed command queue with redundant frames.
       // The subsequent readPixels call is the synchronization point for WebGL capture.
-      for (let i = 0; i < 5; i++) {
-        window.__bxlTick(0.05);
-        await window.__bxlGpuIdle();
-      }
+      for (let i = 0; i < 5; i++) window.__bxlTick(0.05);
+      // Submit the small fixed-step batch, then synchronize once rather than
+      // waiting between frames (which adds avoidable round-trips in SwiftShader).
+      await window.__bxlGpuIdle();
     }), 120000, `Frame settling for ${label}`);
   };
   await settleFrame('default street');
