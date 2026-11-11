@@ -678,7 +678,9 @@ async function initApp() {
   let elapsed = 0;
   let frameCount = 0;
   let fpsTimer = 0;
-  let warmedUp = false; // see the first frame below
+  // Capture mode renders only the current camera frustum. The normal full-city warm-up pass
+  // disables frustum culling and is prohibitively expensive under CPU-backed SwiftShader.
+  let warmedUp = CAPTURE_MODE;
 
   if (elFps) elFps.textContent = '60';
 
@@ -735,7 +737,10 @@ async function initApp() {
       // The loading screen stays up until the GPU has got through the first frame (and the pipelines its warm-up
       // compiled), i.e. until the city is actually on screen
       const device = renderer.backend.device;
-      Promise.resolve(device && device.queue.onSubmittedWorkDone()).catch(() => {}).then(() => {
+      const gpuWork = CAPTURE
+        ? Promise.resolve().then(() => window.__bxlGpuIdle())
+        : device && device.queue.onSubmittedWorkDone();
+      Promise.resolve(gpuWork).catch(() => {}).then(() => {
         markInit('gpu');
         console.log(`[init] ${initTimings.join(', ')}`);
         initTimings = null;
@@ -779,7 +784,17 @@ async function initApp() {
     // __bxlTick(dt) renders one frame synchronously, so the caller can read the canvas in the same task;
     // await __bxlGpuIdle() before the next one
     window.__bxlTick = (dt = 1 / 30) => { fakeNow += dt * 1000; tick(fakeNow); };
-    window.__bxlGpuIdle = () => (renderer.backend.device ? renderer.backend.device.queue.onSubmittedWorkDone() : Promise.resolve());
+    window.__bxlGpuIdle = () => {
+      const gl = renderer.backend.getContext?.();
+      if (gl && typeof gl.finish === 'function') {
+        // The WebGL backend has no WebGPU queue completion promise. Force the
+        // submitted SwiftShader work to finish before readPixels is attempted.
+        gl.finish();
+        return Promise.resolve();
+      }
+      const queue = renderer.backend.device?.queue;
+      return queue?.onSubmittedWorkDone ? queue.onSubmittedWorkDone() : Promise.resolve();
+    };
     // Render the initial frame explicitly: capture mode has no animation loop to produce it.
     // This also lets the normal GPU-idle callback dismiss the loading overlay.
     window.__bxlTick(1 / 60);
