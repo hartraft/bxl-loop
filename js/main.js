@@ -807,7 +807,9 @@ async function initApp() {
         console.info('[capture-sync] before gl.flush');
         gl.flush();
         console.info('[capture-sync] after gl.flush');
-        return Promise.resolve();
+        // This path is intentionally synchronous: the caller does not need to await
+        // GPU completion because the browser screenshot is the presentation boundary.
+        return;
       }
       const queue = renderer.backend.device?.queue;
       return queue?.onSubmittedWorkDone ? queue.onSubmittedWorkDone() : Promise.resolve();
