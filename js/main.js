@@ -734,18 +734,33 @@ async function initApp() {
       markInit('firstFrame');
       // The loading screen stays up until the GPU has got through the first frame (and the pipelines its warm-up
       // compiled), i.e. until the city is actually on screen
-      const device = renderer.backend.device;
-      const gpuWork = CAPTURE
-        ? Promise.resolve().then(() => window.__bxlGpuIdle())
-        : device && device.queue.onSubmittedWorkDone();
-      Promise.resolve(gpuWork).catch(() => {}).then(() => {
+      const finishFirstFrame = () => {
+        if (CAPTURE) console.info('[capture-sync] completing first-frame initialization');
         markInit('gpu');
         console.log(`[init] ${initTimings.join(', ')}`);
         initTimings = null;
-        if (loadingOverlay) loadingOverlay.classList.add('hidden');
+        if (loadingOverlay) {
+          loadingOverlay.classList.add('hidden');
+          if (CAPTURE) console.info('[capture-sync] loading overlay dismissed');
+        }
         setLoadingProgress(1);
         startBackend();
-      });
+      };
+      if (CAPTURE) {
+        // In forced-WebGL capture mode __bxlGpuIdle only submits with gl.flush(); it
+        // deliberately does not wait for GPU completion because Playwright's screenshot
+        // is the presentation boundary. Complete readiness in this same task rather than
+        // depending on a microtask that can be starved by SwiftShader.
+        const submission = window.__bxlGpuIdle();
+        if (submission && typeof submission.then === 'function') {
+          Promise.resolve(submission).catch(() => {}).then(finishFirstFrame);
+        } else {
+          finishFirstFrame();
+        }
+      } else {
+        const device = renderer.backend.device;
+        Promise.resolve(device && device.queue.onSubmittedWorkDone()).catch(() => {}).then(finishFirstFrame);
+      }
     }
 
     // Telemetry uses wall time, not the clamped simulation step, so slow frames and high-refresh displays report
