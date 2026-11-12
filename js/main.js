@@ -782,20 +782,20 @@ async function initApp() {
     // __bxlTick(dt) renders one frame synchronously, so the caller can read the canvas in the same task;
     // await __bxlGpuIdle() before the next one
     window.__bxlTick = (dt = 1 / 30) => { fakeNow += dt * 1000; tick(fakeNow); };
-    window.__bxlGpuIdle = async () => {
+    window.__bxlGpuIdle = () => {
+      console.info('[capture-sync] entered WebGL frame submission');
       const gl = renderer.backend.getContext?.();
       if (gl && typeof gl.flush === 'function') {
-        // Do not call gl.finish() here: it synchronously blocks the page while
-        // SwiftShader drains the full city frame, which can stall CI indefinitely.
-        // Submit the frame and yield two compositor turns; Playwright's viewport
-        // screenshot is the actual capture/synchronization boundary.
+        // Do not synchronously wait for the full SwiftShader city frame here.
+        // Submit commands and let Playwright's viewport screenshot provide the
+        // presentation boundary; the log markers identify a stalled flush.
+        console.info('[capture-sync] before gl.flush');
         gl.flush();
-        await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
-        return;
+        console.info('[capture-sync] after gl.flush');
+        return Promise.resolve();
       }
       const queue = renderer.backend.device?.queue;
-      if (queue?.onSubmittedWorkDone) await queue.onSubmittedWorkDone();
-      else await new Promise((resolve) => requestAnimationFrame(resolve));
+      return queue?.onSubmittedWorkDone ? queue.onSubmittedWorkDone() : Promise.resolve();
     };
     // Render the initial frame explicitly: capture mode has no animation loop to produce it.
     // This also lets the normal GPU-idle callback dismiss the loading overlay.
