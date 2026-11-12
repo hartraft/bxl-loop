@@ -77,11 +77,11 @@ try {
     return !!window.__bxl && typeof window.__bxlTick === 'function' &&
       typeof window.__bxlGpuIdle === 'function' && !!canvas;
   }, null, { timeout: 180000 });
-  await withTimeout(
-    page.evaluate(async () => { await window.__bxlGpuIdle(); }),
-    120000,
-    'Initial WebGL frame completion'
-  );
+  // The app's first explicit capture-mode tick already calls __bxlGpuIdle()
+  // and hides the loading overlay when that submission callback resolves.
+  // Calling it again from Playwright duplicates the synchronization and can
+  // stall the CDP evaluation even after the first frame was submitted.
+  console.log('[browser-scenes] Capture API ready; waiting for first-frame loading overlay dismissal');
   await page.waitForFunction(() => document.getElementById('loading-overlay')?.classList.contains('hidden'), null, { timeout: 60000 });
 
   const settleFrame = async (label) => {
