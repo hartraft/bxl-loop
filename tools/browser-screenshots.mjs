@@ -49,7 +49,9 @@ try {
 
   page.on('pageerror', (error) => errors.push({ type: 'pageerror', message: error.message }));
   page.on('console', (message) => {
-    if (message.type() === 'error') errors.push({ type: 'console', message: message.text() });
+    const text = message.text();
+    if (message.type() === 'error') errors.push({ type: 'console', message: text });
+    else if (text.startsWith('[capture-sync]')) diagnostics.push({ type: 'capture-sync', message: text });
   });
   page.on('requestfailed', (request) => {
     try {
