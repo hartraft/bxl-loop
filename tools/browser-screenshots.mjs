@@ -78,18 +78,44 @@ try {
       typeof window.__bxlGpuIdle === 'function' && !!canvas;
   }, null, { timeout: 180000 });
   // The app's first explicit capture-mode tick already calls __bxlGpuIdle()
-  // and hides the loading overlay when that submission callback resolves.
-  // Calling it again from Playwright duplicates the synchronization and can
-  // stall the CDP evaluation even after the first frame was submitted.
-  console.log('[browser-scenes] Capture API ready; waiting for first-frame loading overlay dismissal');
-  await page.waitForFunction(() => document.getElementById('loading-overlay')?.classList.contains('hidden'), null, { timeout: 60000 });
+  // and dismisses the loading overlay. Inspect that state directly first:
+  // the previous CI run logged the dismissal but Playwright's default rAF
+  // polling still timed out waiting for the same class change.
+  console.log('[browser-scenes] Capture API ready; inspecting first-frame loading overlay state');
+  const loadingOverlayState = await withTimeout(page.evaluate(() => {
+    const overlay = document.getElementById('loading-overlay');
+    const style = overlay ? getComputedStyle(overlay) : null;
+    return {
+      exists: !!overlay,
+      className: overlay?.className ?? null,
+      hasHiddenClass: !!overlay?.classList.contains('hidden'),
+      display: style?.display ?? null,
+      visibility: style?.visibility ?? null,
+      opacity: style?.opacity ?? null,
+      transitionDuration: style?.transitionDuration ?? null
+    };
+  }), 10000, 'Inspect first-frame loading overlay');
+  diagnostics.push({ type: 'loading-overlay-state', ...loadingOverlayState });
+  console.log(`[browser-scenes] First-frame overlay state: ${JSON.stringify(loadingOverlayState)}`);
+
+  const overlayIsDismissed = (state) => state.hasHiddenClass &&
+    (state.display === 'none' || state.visibility === 'hidden' || Number(state.opacity) <= 0.01);
+  if (!overlayIsDismissed(loadingOverlayState)) {
+    console.log('[browser-scenes] Waiting for loading overlay transition to finish');
+    await page.waitForFunction(() => {
+      const overlay = document.getElementById('loading-overlay');
+      if (!overlay || !overlay.classList.contains('hidden')) return false;
+      const style = getComputedStyle(overlay);
+      return style.display === 'none' || style.visibility === 'hidden' || Number(style.opacity) <= 0.01;
+    }, null, { polling: 100, timeout: 60000 });
+  }
 
   const settleFrame = async (label) => {
     console.log(`[browser-scenes] Settling ${label} camera and HUD`);
     await withTimeout(page.evaluate(async () => {
       // Teleports snap the camera. Five fixed steps refresh the HUD/location telemetry
       // without flooding SwiftShader's CPU-backed command queue with redundant frames.
-      // The subsequent readPixels call is the synchronization point for WebGL capture.
+      // The subsequent browser viewport screenshot is the presentation boundary for capture.
       for (let i = 0; i < 5; i++) window.__bxlTick(0.05);
       // Submit the small fixed-step batch, then synchronize once rather than
       // waiting between frames (which adds avoidable round-trips in SwiftShader).
