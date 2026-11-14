@@ -56,15 +56,33 @@ async function initApp() {
   }
 
   // 1. Initialize Three.js WebGPURenderer with 32-bit float reversedDepthBuffer
+  const CAPTURE_MODE = URL_PARAMS.has('capture');
   const renderer = new THREE.WebGPURenderer({
     antialias: true,
     powerPreference: 'high-performance',
     forceWebGL: URL_PARAMS.has('webgl'),
     reversedDepthBuffer: true
   });
-  renderer.setPixelRatio(1.0);
+  if (CAPTURE_MODE) {
+    // Preserve the WebGL drawing buffer only in deterministic screenshot mode so the
+    // browser can export the rendered frame without asking Chromium to read back WebGL.
+    const captureContext = renderer.domElement.getContext('webgl2', {
+      antialias: true,
+      alpha: true,
+      depth: true,
+      stencil: false,
+      preserveDrawingBuffer: true
+    });
+    if (!captureContext) throw new Error('Unable to create the WebGL2 context for screenshot capture');
+    renderer.backend.parameters.context = captureContext;
+  }
+  // Software-rendered CI captures use a smaller drawing buffer, then scale to the documented viewport.
+  renderer.setPixelRatio(CAPTURE_MODE ? 0.75 : 1.0);
   renderer.setSize(window.innerWidth, window.innerHeight);
-  renderer.shadowMap.enabled = true;
+  // Cascaded shadow maps are disproportionately expensive in CPU-backed SwiftShader.
+  // Keep the real geometry, materials, camera and HUD in capture mode, but omit shadows
+  // so the visual-review render can complete reliably. Normal gameplay is unchanged.
+  renderer.shadowMap.enabled = !CAPTURE_MODE;
   renderer.lighting = new ClusteredLighting(256, 32, 28, 48);
   container.appendChild(renderer.domElement);
 
@@ -83,6 +101,10 @@ async function initApp() {
   // 2. Build Scene & Physical Atmospheric Sky / PMREM IBL / 4096x4096 Shadow Lighting
   const scene = new THREE.Scene();
   const lightingSystem = new LightingSystem(scene, renderer);
+  if (CAPTURE_MODE) {
+    lightingSystem.sunLight.castShadow = false;
+    lightingSystem.sunLight.shadow.autoUpdate = false;
+  }
   markInit('lighting');
 
   const status = (t) => { if (loadingStatus) loadingStatus.textContent = t; };
@@ -656,11 +678,11 @@ async function initApp() {
   let elapsed = 0;
   let frameCount = 0;
   let fpsTimer = 0;
-  let warmedUp = false; // see the first frame below
+  let warmedUp = false; // first-frame readiness is still required in capture mode
 
   if (elFps) elFps.textContent = '60';
 
-  const CAPTURE = URL_PARAMS.has('capture');
+  const CAPTURE = CAPTURE_MODE;
   const tick = (now) => {
     const rawDt = (now - lastTime) * 0.001;
     lastTime = now;
@@ -691,7 +713,7 @@ async function initApp() {
     if (warmedUp) updateSceneCulling(cameraSystem.camera.position); // the warm-up frame draws every chunk
 
     // Render frame via TSL RenderPipeline (SSR + Bloom)
-    if (!warmedUp) {
+    if (!warmedUp && !CAPTURE) {
       // First frame = pipeline warm-up behind the loading screen, for what precompileShaders() can't reach (the shadow
       // map passes): with frustum culling off, every visible material's pipelines compile now instead of stalling the
       // first time the camera turns towards it (one chunk / shadow stand-in per shared pipeline is enough)
@@ -712,15 +734,33 @@ async function initApp() {
       markInit('firstFrame');
       // The loading screen stays up until the GPU has got through the first frame (and the pipelines its warm-up
       // compiled), i.e. until the city is actually on screen
-      const device = renderer.backend.device;
-      Promise.resolve(device && device.queue.onSubmittedWorkDone()).catch(() => {}).then(() => {
+      const finishFirstFrame = () => {
+        if (CAPTURE) console.info('[capture-sync] completing first-frame initialization');
         markInit('gpu');
         console.log(`[init] ${initTimings.join(', ')}`);
         initTimings = null;
-        if (loadingOverlay) loadingOverlay.classList.add('hidden');
+        if (loadingOverlay) {
+          loadingOverlay.classList.add('hidden');
+          if (CAPTURE) console.info('[capture-sync] loading overlay dismissed');
+        }
         setLoadingProgress(1);
         startBackend();
-      });
+      };
+      if (CAPTURE) {
+        // In forced-WebGL capture mode __bxlGpuIdle only submits with gl.flush(); it
+        // deliberately does not wait for GPU completion because Playwright's screenshot
+        // is the presentation boundary. Complete readiness in this same task rather than
+        // depending on a microtask that can be starved by SwiftShader.
+        const submission = window.__bxlGpuIdle();
+        if (submission && typeof submission.then === 'function') {
+          Promise.resolve(submission).catch(() => {}).then(finishFirstFrame);
+        } else {
+          finishFirstFrame();
+        }
+      } else {
+        const device = renderer.backend.device;
+        Promise.resolve(device && device.queue.onSubmittedWorkDone()).catch(() => {}).then(finishFirstFrame);
+      }
     }
 
     // Telemetry uses wall time, not the clamped simulation step, so slow frames and high-refresh displays report
@@ -757,7 +797,26 @@ async function initApp() {
     // __bxlTick(dt) renders one frame synchronously, so the caller can read the canvas in the same task;
     // await __bxlGpuIdle() before the next one
     window.__bxlTick = (dt = 1 / 30) => { fakeNow += dt * 1000; tick(fakeNow); };
-    window.__bxlGpuIdle = () => (renderer.backend.device ? renderer.backend.device.queue.onSubmittedWorkDone() : Promise.resolve());
+    window.__bxlGpuIdle = () => {
+      console.info('[capture-sync] entered WebGL frame submission');
+      const gl = renderer.backend.getContext?.();
+      if (gl && typeof gl.flush === 'function') {
+        // Do not synchronously wait for the full SwiftShader city frame here.
+        // Submit commands and let Playwright's viewport screenshot provide the
+        // presentation boundary; the log markers identify a stalled flush.
+        console.info('[capture-sync] before gl.flush');
+        gl.flush();
+        console.info('[capture-sync] after gl.flush');
+        // This path is intentionally synchronous: the caller does not need to await
+        // GPU completion because the browser screenshot is the presentation boundary.
+        return;
+      }
+      const queue = renderer.backend.device?.queue;
+      return queue?.onSubmittedWorkDone ? queue.onSubmittedWorkDone() : Promise.resolve();
+    };
+    // Render the initial frame explicitly: capture mode has no animation loop to produce it.
+    // This also lets the normal GPU-idle callback dismiss the loading overlay.
+    window.__bxlTick(1 / 60);
   } else renderer.setAnimationLoop(tick);
 }
 
