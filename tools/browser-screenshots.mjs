@@ -48,10 +48,20 @@ try {
   const origin = baseUrl.origin;
 
   page.on('pageerror', (error) => errors.push({ type: 'pageerror', message: error.message }));
+  let firstFrameReadySeen = false;
+  let resolveFirstFrameReady;
+  const firstFrameReady = new Promise((resolve) => { resolveFirstFrameReady = resolve; });
+
   page.on('console', (message) => {
     const text = message.text();
     if (message.type() === 'error') errors.push({ type: 'console', message: text });
-    else if (text.startsWith('[capture-sync]')) diagnostics.push({ type: 'capture-sync', message: text });
+    else if (text.startsWith('[capture-sync]')) {
+      diagnostics.push({ type: 'capture-sync', message: text });
+      if (text === '[capture-sync] loading overlay dismissed') {
+        firstFrameReadySeen = true;
+        resolveFirstFrameReady();
+      }
+    }
   });
   page.on('requestfailed', (request) => {
     try {
@@ -77,38 +87,18 @@ try {
     return !!window.__bxl && typeof window.__bxlTick === 'function' &&
       typeof window.__bxlGpuIdle === 'function' && !!canvas;
   }, null, { timeout: 180000 });
-  // The app's first explicit capture-mode tick already calls __bxlGpuIdle()
-  // and dismisses the loading overlay. Inspect that state directly first:
-  // the previous CI run logged the dismissal but Playwright's default rAF
-  // polling still timed out waiting for the same class change.
-  console.log('[browser-scenes] Capture API ready; inspecting first-frame loading overlay state');
-  const loadingOverlayState = await withTimeout(page.evaluate(() => {
-    const overlay = document.getElementById('loading-overlay');
-    const style = overlay ? getComputedStyle(overlay) : null;
-    return {
-      exists: !!overlay,
-      className: overlay?.className ?? null,
-      hasHiddenClass: !!overlay?.classList.contains('hidden'),
-      display: style?.display ?? null,
-      visibility: style?.visibility ?? null,
-      opacity: style?.opacity ?? null,
-      transitionDuration: style?.transitionDuration ?? null
-    };
-  }), 10000, 'Inspect first-frame loading overlay');
-  diagnostics.push({ type: 'loading-overlay-state', ...loadingOverlayState });
-  console.log(`[browser-scenes] First-frame overlay state: ${JSON.stringify(loadingOverlayState)}`);
-
-  const overlayIsDismissed = (state) => state.hasHiddenClass &&
-    (state.display === 'none' || state.visibility === 'hidden' || Number(state.opacity) <= 0.01);
-  if (!overlayIsDismissed(loadingOverlayState)) {
-    console.log('[browser-scenes] Waiting for loading overlay transition to finish');
-    await page.waitForFunction(() => {
-      const overlay = document.getElementById('loading-overlay');
-      if (!overlay || !overlay.classList.contains('hidden')) return false;
-      const style = getComputedStyle(overlay);
-      return style.display === 'none' || style.visibility === 'hidden' || Number(style.opacity) <= 0.01;
-    }, null, { polling: 100, timeout: 60000 });
+  // The capture-mode first-frame path emits this marker only after it has
+  // added the loading overlay's hidden class. Use the already-observed browser
+  // console event rather than asking the renderer main thread to run another
+  // DOM/computed-style evaluation while SwiftShader is settling.
+  console.log('[browser-scenes] Capture API ready; waiting for first-frame completion marker');
+  if (!firstFrameReadySeen) {
+    await withTimeout(firstFrameReady, 30000, 'Wait for first-frame completion marker');
   }
+  diagnostics.push({ type: 'loading-overlay-state', readiness: 'capture-sync marker observed' });
+  // Give the compositor a short Node-side interval to apply the overlay fade;
+  // this does not depend on page animation-frame polling.
+  await page.waitForTimeout(400);
 
   const settleFrame = async (label) => {
     console.log(`[browser-scenes] Settling ${label} camera and HUD`);
