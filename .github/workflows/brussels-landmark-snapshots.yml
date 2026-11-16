@@ -1,0 +1,49 @@
+name: Brussels landmark snapshots
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "snapshot-grand-place.html"
+      - "js/brussels-landmarks.js"
+      - ".github/workflows/brussels-landmark-snapshots.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  grand-place:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Fetch generated Brussels map assets from the published site
+        run: |
+          mkdir -p data/brussels-build data/brussels-terrain
+          base="https://hartraft.github.io/bxl-loop"
+          for file in brx-geo.json brx-buildings.bin; do
+            curl --fail --location --retry 4 "$base/data/brussels-build/$file" -o "data/brussels-build/$file"
+          done
+          for file in metadata.json heightmap.f32; do
+            curl --fail --location --retry 4 "$base/data/brussels-terrain/$file" -o "data/brussels-terrain/$file"
+          done
+      - name: Install Playwright
+        run: |
+          python -m pip install playwright
+          python -m playwright install --with-deps chromium
+      - name: Capture Grand-Place Town Hall
+        run: |
+          mkdir -p artifacts
+          python -m http.server 4173 > /tmp/snapshot-server.log 2>&1 &
+          SERVER_PID=$!
+          trap 'kill $SERVER_PID' EXIT
+          for i in $(seq 1 30); do curl --fail http://localhost:4173/snapshot-grand-place.html >/dev/null && break || sleep 1; done
+          python tools/shot.py http://localhost:4173/snapshot-grand-place.html artifacts/brussels-grand-place-town-hall.png 12
+      - uses: actions/upload-artifact@v4
+        with:
+          name: brussels-grand-place-town-hall
+          path: artifacts/brussels-grand-place-town-hall.png
+          if-no-files-found: error
+          retention-days: 30
