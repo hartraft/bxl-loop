@@ -46,9 +46,6 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - name: Define weekly Brussels data cache key
-        id: cache-week
-        run: echo "week=$(date -u +%G-%V)" >> "$GITHUB_OUTPUT"
       - name: Restore Brussels source data and generated geodata
         id: brussels-cache
         uses: actions/cache@v4
@@ -58,9 +55,7 @@ jobs:
             tools/data/belgium-latest.osm.pbf
             data/brussels-terrain/
             data/brussels-build/
-          key: brussels-build-v1-${{ hashFiles('tools/**', 'js/brussels-terrain.js') }}-${{ steps.cache-week.outputs.week }}
-          restore-keys: |
-            brussels-build-v1-${{ hashFiles('tools/**', 'js/brussels-terrain.js') }}-
+          key: brussels-build-v1-${{ hashFiles('tools/**', 'js/brussels-terrain.js') }}
       - name: Install terrain generation dependencies
         run: "python -m pip install --only-binary=:all: -r tools/requirements-terrain.txt"
       - name: Download and bake official Brussels DTM
