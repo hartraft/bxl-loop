@@ -168,50 +168,133 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
   }
 
   function townHall(parent) {
+    // Brussels City Hall: a long Brabantine-Gothic frontage with a steep roof and
+    // the deliberately off-centre, open-work tower. Local +Z faces Grand-Place.
     const root = new THREE.Group();
     root.name = 'Brussels Town Hall (Hôtel de Ville)';
     root.position.set(20, 0, 0);
     parent.add(root);
-    const width = 47, height = 25, depth = 14;
-    box(root, width, height, depth, 0, height / 2, -depth / 2, materials.paleStone, 'Town Hall Gothic facade');
-    box(root, width + 1.5, 1.1, depth + 1, 0, 22.8, -depth / 2, materials.gold, 'Town Hall parapet');
-    box(root, width + 2, 1.2, depth + 1, 0, 1, -depth / 2, materials.warmStone, 'Town Hall base');
-    // Tall pointed openings, buttress piers and the strong horizontal gallery rhythm.
-    for (let i = 0; i < 13; i++) {
-      const x = -21 + i * 3.5;
-      box(root, 1.65, 8.2, 0.22, x, 9.2, 0.2, materials.glass, 'Gothic lancet window');
-      box(root, 0.24, 9.1, 0.3, x - 0.95, 9.2, 0.22, materials.gold);
-      box(root, 0.24, 9.1, 0.3, x + 0.95, 9.2, 0.22, materials.gold);
-      box(root, 2.35, 0.28, 0.35, x, 13.9, 0.22, materials.gold);
-      box(root, 1.1, 4.5, 0.3, x, 19, 0.22, materials.glass);
+
+    const width = 48, height = 25, depth = 15;
+    const stone = materials.paleStone;
+    const trim = materials.limestone;
+    const darkStone = materials.warmStone;
+    const roofMat = materials.slate;
+    const glass = materials.glass;
+
+    box(root, width, height, depth, 0, height / 2, -depth / 2, stone, 'Town Hall Gothic main block');
+    box(root, width + 1.8, 1.0, depth + 1.0, 0, 1.0, -depth / 2, darkStone, 'Town Hall stepped stone plinth');
+    box(root, width + 1.0, 0.8, depth + 0.8, 0, height - 0.35, -depth / 2, trim, 'Town Hall upper cornice');
+
+    // Repeated pointed ground-floor arcade: dark recessed openings, piers and pointed heads.
+    const bays = 15, bayW = width / bays;
+    for (let i = 0; i < bays; i++) {
+      const x = -width / 2 + bayW * (i + 0.5);
+      box(root, 1.72, 6.0, 0.24, x, 4.0, 0.19, glass, 'Town Hall recessed Gothic arcade');
+      box(root, 0.34, 7.1, 0.55, x - bayW / 2 + 0.12, 4.1, 0.22, trim, 'Arcade pier');
+      box(root, 0.34, 7.1, 0.55, x + bayW / 2 - 0.12, 4.1, 0.22, trim, 'Arcade pier');
+      // pointed arch head, built from two sloping stone ribs
+      const archL = box(root, 2.05, 0.28, 0.48, x - 0.52, 7.12, 0.22, trim, 'Pointed arcade arch');
+      archL.rotation.z = -0.55;
+      const archR = box(root, 2.05, 0.28, 0.48, x + 0.52, 7.12, 0.22, trim, 'Pointed arcade arch');
+      archR.rotation.z = 0.55;
+      box(root, bayW - 0.55, 0.24, 0.5, x, 7.55, 0.22, darkStone, 'Arcade string course');
     }
-    // The famous asymmetrical, open-work belfry rises from the western portion of the roof.
-    const tower = new THREE.Group();
-    tower.name = 'Town Hall tower and openwork spire';
-    tower.position.set(16, 22, -6);
-    root.add(tower);
-    box(tower, 8.5, 17, 8.5, 0, 8.5, 0, materials.paleStone, 'Town Hall square tower');
-    for (let level = 0; level < 3; level++) {
-      const yy = 3 + level * 5.3;
-      box(tower, 9.4 - level * 0.7, 0.6, 9.4 - level * 0.7, 0, yy, 0, materials.gold, 'Tower string course');
-      for (const sx of [-1, 1]) for (const sz of [-1, 1]) {
-        box(tower, 0.65, 4.2, 0.65, sx * 3.6, yy + 2.4, sz * 3.6, materials.warmStone, 'Tower corner pier');
+
+    // Upper storeys: paired lancets, tracery-like mullions, balconies and strong buttress rhythm.
+    for (let i = 0; i <= bays; i++) {
+      const x = -width / 2 + i * bayW;
+      box(root, 0.48, 17.2, 0.62, x, 15.1, 0.12, trim, 'Gothic facade buttress');
+      box(root, 0.2, 2.2, 0.18, x, 24.0, 0.42, darkStone, 'Facade pinnacle base');
+    }
+    for (let floor = 0; floor < 2; floor++) {
+      const y = floor === 0 ? 12.0 : 19.0;
+      for (let i = 0; i < bays; i++) {
+        const x = -width / 2 + bayW * (i + 0.5);
+        for (const side of [-1, 1]) {
+          box(root, 0.88, 4.2, 0.18, x + side * 0.52, y, 0.25, glass, 'Tall Gothic lancet');
+          box(root, 0.12, 4.55, 0.25, x + side * 0.52, y, 0.1, trim, 'Lancet stone moulding');
+        }
+        box(root, 2.55, 0.22, 0.42, x, y - 2.35, 0.22, darkStone, 'Gothic window sill');
+        box(root, 2.7, 0.25, 0.48, x, y + 2.35, 0.22, trim, 'Gothic window hood');
+        const balcony = box(root, 2.5, 0.22, 0.95, x, y - 2.55, 0.58, trim, 'Stone balcony');
+        balcony.castShadow = true;
       }
     }
-    cylinder(tower, 4.5, 5.5, 5, 0, 20, 0, materials.paleStone, 8);
-    cylinder(tower, 3.8, 4.5, 4, 0, 24, 0, materials.gold, 8);
-    // Open belfry lantern: eight piers and two octagonal rings leave the silhouette visibly open.
-    cylinder(tower, 3.8, 3.8, 0.55, 0, 28.5, 0, materials.gold, 8);
-    for (let i = 0; i < 8; i++) {
-      const angle = (i / 8) * Math.PI * 2;
-      box(tower, 0.42, 9.2, 0.42, Math.cos(angle) * 3.45, 33.2, Math.sin(angle) * 3.45, materials.paleStone, 'Open belfry pier');
+    // A continuous steep slate roof, ridge running along the long axis.
+    const roofHalf = depth / 2 + 0.7, ridgeY = height + 7.8, eaveY = height + 0.6;
+    const roofVertices = new Float32Array([
+      -width/2-1,eaveY,0.6, width/2+1,eaveY,0.6, width/2+1,ridgeY,-depth/2,
+      -width/2-1,eaveY,0.6, width/2+1,ridgeY,-depth/2, -width/2-1,ridgeY,-depth/2,
+      -width/2-1,eaveY,-depth-0.6, width/2+1,ridgeY,-depth/2, width/2+1,eaveY,-depth-0.6,
+      -width/2-1,eaveY,-depth-0.6, -width/2-1,ridgeY,-depth/2, width/2+1,ridgeY,-depth/2
+    ]);
+    const roofGeo = new THREE.BufferGeometry();
+    roofGeo.setAttribute('position', new THREE.BufferAttribute(roofVertices, 3));
+    roofGeo.computeVertexNormals();
+    mesh(root, roofGeo, roofMat, 0, 0, 0, 'Town Hall steep slate roof');
+    box(root, width + 2, 0.45, 0.5, 0, ridgeY, -depth / 2, darkStone, 'Town Hall roof ridge');
+
+    // Dormers and small roof turrets make the skyline read as a Gothic civic palace.
+    for (let i = 0; i < 11; i++) {
+      const x = -width / 2 + 2.8 + i * 4.25;
+      const z = -depth / 2 + (i % 2 ? -3.1 : 3.1);
+      const dormer = new THREE.Group();
+      dormer.position.set(x, height + 2.4, z);
+      root.add(dormer);
+      box(dormer, 1.45, 2.2, 0.7, 0, 0.9, 0, trim, 'Slate roof dormer');
+      box(dormer, 0.9, 1.25, 0.16, 0, 0.9, 0.4, glass, 'Dormer window');
+      const cap = mesh(dormer, new THREE.ConeGeometry(1.0, 1.6, 4), roofMat, 0, 2.8, 0, 'Dormer pointed cap');
+      cap.rotation.y = Math.PI / 4;
     }
-    cylinder(tower, 3.8, 3.8, 0.55, 0, 38, 0, materials.gold, 8);
-    mesh(tower, new THREE.ConeGeometry(3.8, 18, 8), materials.roof, 0, 47, 0, 'Town Hall octagonal spire');
-    cylinder(tower, 0.12, 0.3, 1.8, 0, 56.2, 0, materials.gold, 8);
-    // A small gilded pinnacle/guardian silhouette, visible above the roofline.
-    const finial = mesh(tower, new THREE.SphereGeometry(0.42, 8, 6), materials.gold, 0, 57.4, 0, 'Town Hall gilded finial');
-    finial.scale.set(0.7, 1.6, 0.7);
+    for (const x of [-21, -14, 14, 21]) {
+      const turret = new THREE.Group();
+      turret.position.set(x, height + 4.0, -depth / 2);
+      root.add(turret);
+      box(turret, 1.0, 3.0, 1.0, 0, 1.5, 0, trim, 'Roofline turret');
+      mesh(turret, new THREE.ConeGeometry(1.0, 2.8, 8), roofMat, 0, 4.2, 0, 'Roofline turret spire');
+    }
+
+    // The tower is intentionally asymmetric and integrated into the roof near its west end.
+    const tower = new THREE.Group();
+    tower.name = 'Town Hall asymmetrical Gothic tower';
+    tower.position.set(-8.5, height + 1.0, -depth / 2);
+    root.add(tower);
+    const towerW = 8.2;
+    box(tower, towerW, 22, towerW, 0, 11, 0, stone, 'Tower lower square shaft');
+    for (const y of [3, 8, 13, 18, 22]) {
+      box(tower, towerW + 0.75, 0.42, towerW + 0.75, 0, y, 0, trim, 'Tower projecting string course');
+    }
+    // Narrow lancet recesses on all four faces of the shaft.
+    for (const side of [-1, 1]) {
+      for (const y of [6, 11, 16]) {
+        box(tower, 1.05, 3.1, 0.18, side * 2.45, y, towerW / 2 + 0.1, glass, 'Tower lancet');
+        box(tower, 0.16, 3.45, 0.24, side * 2.45, y, towerW / 2 + 0.02, trim, 'Tower lancet moulding');
+        box(tower, 0.18, 3.1, 1.05, towerW / 2 + 0.1, y, side * 2.45, glass, 'Tower side lancet');
+      }
+    }
+    // Octagonal transition and an open belfry with visible arches rather than a solid cylinder.
+    cylinder(tower, 5.2, 5.8, 4.2, 0, 24.2, 0, trim, 8);
+    cylinder(tower, 4.9, 5.2, 1.0, 0, 26.8, 0, darkStone, 8);
+    for (let i = 0; i < 8; i++) {
+      const a = i * Math.PI / 4;
+      const x = Math.cos(a) * 3.55, z = Math.sin(a) * 3.55;
+      box(tower, 0.42, 8.8, 0.42, x, 31.4, z, trim, 'Open belfry slender pier');
+      const arch = box(tower, 2.5, 0.32, 0.38, Math.cos(a + Math.PI/8) * 2.5, 35.8, Math.sin(a + Math.PI/8) * 2.5, trim, 'Belfry pointed arch rib');
+      arch.rotation.y = -a;
+    }
+    cylinder(tower, 4.1, 4.1, 0.5, 0, 36.0, 0, trim, 8);
+    // Tall, tapering openwork spire with a slender silhouette.
+    mesh(tower, new THREE.ConeGeometry(3.7, 24, 8), roofMat, 0, 48.0, 0, 'Town Hall octagonal spire');
+    cylinder(tower, 0.12, 0.3, 1.8, 0, 60.4, 0, materials.gold, 8);
+    const finial = mesh(tower, new THREE.SphereGeometry(0.38, 10, 8), materials.gold, 0, 61.6, 0, 'Town Hall gilded Saint Michael finial');
+    finial.scale.set(0.65, 1.8, 0.65);
+    // Four small corner pinnacles articulate the tower transition.
+    for (let i = 0; i < 4; i++) {
+      const x = (i & 1 ? 1 : -1) * 4.9, z = (i & 2 ? 1 : -1) * 4.9;
+      cylinder(tower, 0.35, 0.48, 2.4, x, 26.8, z, trim, 8);
+      mesh(tower, new THREE.ConeGeometry(0.55, 2.6, 8), roofMat, x, 29.2, z, 'Tower corner pinnacle');
+    }
   }
 
   function grandPlace(g) {
