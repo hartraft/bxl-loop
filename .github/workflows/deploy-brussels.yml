@@ -46,20 +46,38 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: "3.12"
+      - name: Define weekly Brussels data cache key
+        id: cache-week
+        run: echo "week=$(date -u +%G-%V)" >> "$GITHUB_OUTPUT"
+      - name: Restore Brussels source data and generated geodata
+        id: brussels-cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            /tmp/brussels-dtm-5m.tif
+            tools/data/belgium-latest.osm.pbf
+            data/brussels-terrain/
+            data/brussels-build/
+          key: brussels-build-v1-${{ hashFiles('tools/**', 'js/brussels-terrain.js') }}-${{ steps.cache-week.outputs.week }}
+          restore-keys: |
+            brussels-build-v1-${{ hashFiles('tools/**', 'js/brussels-terrain.js') }}-
       - name: Install terrain generation dependencies
         run: "python -m pip install --only-binary=:all: -r tools/requirements-terrain.txt"
       - name: Download and bake official Brussels DTM
+        if: steps.brussels-cache.outputs.cache-hit != 'true'
         run: |
           python tools/download-brussels-dtm.py --resolution 5 --timeout 600 --output /tmp/brussels-dtm-5m.tif
           python tools/prepare-brussels-terrain.py /tmp/brussels-dtm-5m.tif --resolution 5 --output data/brussels-terrain
           python tools/validate-brussels-dtm.py data/brussels-terrain
       - name: Download Belgium OpenStreetMap extract
+        if: steps.brussels-cache.outputs.cache-hit != 'true'
         run: |
           mkdir -p tools/data
           curl --fail --location --retry 3 --retry-delay 2 \
             https://download.geofabrik.de/europe/belgium-latest.osm.pbf \
             --output tools/data/belgium-latest.osm.pbf
       - name: Build Brussels geodata
+        if: steps.brussels-cache.outputs.cache-hit != 'true'
         run: node --max-old-space-size=6144 tools/build-brussels-geodata.mjs
       - name: Validate generated map
         run: node tools/validate-brussels-geodata.mjs data/brussels-build
