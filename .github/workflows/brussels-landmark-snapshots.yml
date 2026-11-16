@@ -35,6 +35,7 @@ jobs:
           python -m playwright install --with-deps chromium
       - name: Capture Grand-Place Town Hall
         run: |
+          mkdir -p artifacts
           python -m http.server 4173 > /tmp/snapshot-server.log 2>&1 &
           SERVER_PID=$!
           trap 'kill $SERVER_PID' EXIT
