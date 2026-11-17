@@ -14,6 +14,7 @@ const viewport = { width: 1600, height: 900 };
 const errors = [];
 const captures = [];
 const diagnostics = [];
+const decodedImages = new Map();
 const renderer = 'three.js WebGL fallback (headless Chromium / SwiftShader)';
 const withTimeout = (promise, milliseconds, label) => {
   let timer;
@@ -63,7 +64,48 @@ const validatePng = async (file, expectedViewport) => {
     throw new Error(`Screenshot dimensions for ${file} are ${width}x${height}; expected ${expectedViewport.width}x${expectedViewport.height}`);
   }
   if (data.length < 15000) throw new Error(`Screenshot ${file} is suspiciously small (${data.length} bytes)`);
-  return { bytes: data.length, width, height };
+
+  // Decode the actual displayed pixels. A valid-sized PNG can still be only the
+  // loading overlay or a blank canvas, so require a minimum amount of scene detail.
+  const rgb = execFileSync('convert', [file, '-alpha', 'off', '-depth', '8', 'rgb:-'], {
+    maxBuffer: 16 * 1024 * 1024
+  });
+  if (rgb.length !== width * height * 3) {
+    throw new Error(`Screenshot pixel decode for ${file} returned ${rgb.length} bytes; expected ${width * height * 3}`);
+  }
+  let edgeCount = 0;
+  let comparisons = 0;
+  const threshold = 24;
+  for (let y = 0; y < height; y++) {
+    for (let x = 0; x < width; x++) {
+      const offset = (y * width + x) * 3;
+      if (x + 1 < width) {
+        const right = offset + 3;
+        if (Math.max(
+          Math.abs(rgb[offset] - rgb[right]),
+          Math.abs(rgb[offset + 1] - rgb[right + 1]),
+          Math.abs(rgb[offset + 2] - rgb[right + 2])
+        ) > threshold) edgeCount++;
+        comparisons++;
+      }
+      if (y + 1 < height) {
+        const below = offset + width * 3;
+        if (Math.max(
+          Math.abs(rgb[offset] - rgb[below]),
+          Math.abs(rgb[offset + 1] - rgb[below + 1]),
+          Math.abs(rgb[offset + 2] - rgb[below + 2])
+        ) > threshold) edgeCount++;
+        comparisons++;
+      }
+    }
+  }
+  const edgeRatio = edgeCount / comparisons;
+  const minimumEdgeRatio = width < 500 ? 0.02 : 0.01;
+  if (edgeRatio < minimumEdgeRatio) {
+    throw new Error(`Screenshot ${file} has only ${(edgeRatio * 100).toFixed(3)}% edge detail; expected at least ${(minimumEdgeRatio * 100).toFixed(1)}%. The loading overlay or a blank/stale canvas may still be visible.`);
+  }
+  decodedImages.set(path.basename(file, '.png'), rgb);
+  return { bytes: data.length, width, height, edgeRatio: Number(edgeRatio.toFixed(5)) };
 };
 
 await fs.mkdir(outputDir, { recursive: true });
@@ -107,8 +149,8 @@ try {
         if (message.type() === 'error') errors.push({ type: 'console', scene: scene.name, message: text });
         if (text.startsWith('[capture-sync]') || text.startsWith('[capture-settle]')) {
           diagnostics.push({ type: 'browser-console', scene: scene.name, message: text });
-          if (text === '[capture-sync] loading overlay dismissed') {
-            console.log(`[browser-scenes] First frame ready for ${scene.name}`);
+          if (text === '[capture-sync] browser presentation frame completed') {
+            console.log(`[browser-scenes] Browser presentation frame ready for ${scene.name}`);
             resolveFirstFrameReady();
           }
         }
@@ -190,6 +232,38 @@ try {
 
   if (captures.length !== scenes.length || scenes.some((scene) => !captures.some((capture) => capture.name === scene.name))) {
     throw new Error(`Incomplete scene set: captured ${captures.length} of ${scenes.length} required views`);
+  }
+
+  // The five desktop viewpoints must contain materially different pixels. This
+  // catches a stale loading screen or a runner that captured the same camera frame
+  // for every teleport, even when all PNGs have valid dimensions and file sizes.
+  const desktopScenes = scenes.filter((scene) => scene.viewport.width === viewport.width);
+  for (let i = 0; i < desktopScenes.length; i++) {
+    for (let j = i + 1; j < desktopScenes.length; j++) {
+      const first = desktopScenes[i];
+      const second = desktopScenes[j];
+      const a = decodedImages.get(first.name);
+      const b = decodedImages.get(second.name);
+      let changedPixels = 0;
+      const pixels = first.viewport.width * first.viewport.height;
+      for (let offset = 0; offset < a.length; offset += 3) {
+        if (
+          Math.abs(a[offset] - b[offset]) > 8 ||
+          Math.abs(a[offset + 1] - b[offset + 1]) > 8 ||
+          Math.abs(a[offset + 2] - b[offset + 2]) > 8
+        ) changedPixels++;
+      }
+      const changedRatio = changedPixels / pixels;
+      diagnostics.push({
+        type: 'scene-diversity',
+        first: first.name,
+        second: second.name,
+        changedPixelRatio: Number(changedRatio.toFixed(5))
+      });
+      if (changedRatio < 0.005) {
+        throw new Error(`Desktop captures ${first.name} and ${second.name} differ in only ${(changedRatio * 100).toFixed(3)}% of pixels; expected at least 0.5%. A stale or repeated scene may have been captured.`);
+      }
+    }
   }
   await writeMetadata();
   console.log(`[browser-scenes] Successfully captured and validated all ${captures.length} rendered Brussels views.`);
