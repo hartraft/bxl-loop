@@ -10,7 +10,7 @@ const configuredIds = () => {
   const start = config.indexOf('const teleports = [');
   const end = config.indexOf('\n];', start);
   assert.ok(start >= 0 && end > start, 'Brussels teleport configuration exists');
-  return [...config.slice(start, end).matchAll(/^\\s*\\['([^']+)'/gm)].map((match) => match[1]);
+  return [...config.slice(start, end).matchAll(/^\s*\['([^']+)'/gm)].map((match) => match[1]);
 };
 
 test('every Brussels travel destination has a matching UI entry', () => {
@@ -37,7 +37,7 @@ test('travel menu contains Brussels destinations, not inherited London entries',
 
 test('the transport UI routes selected destinations through the shared teleport function', () => {
   const main = read('js/main.js');
-  assert.match(main, /teleportButtons\\.forEach/);
-  assert.match(main, /const loc = TELEPORT_LOCATIONS\\[key\\]/);
-  assert.match(main, /teleportTo\\(loc\\.x, loc\\.z, loc\\.heading\\)/);
+  assert.match(main, /teleportButtons\.forEach/);
+  assert.match(main, /const loc = TELEPORT_LOCATIONS\[key\]/);
+  assert.match(main, /teleportTo\(loc\.x, loc\.z, loc\.heading\)/);
 });
