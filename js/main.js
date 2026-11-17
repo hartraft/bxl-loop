@@ -759,18 +759,22 @@ async function initApp() {
             camera.lookAt(-50, 25, 1100);
             camera.updateMatrixWorld(true);
             renderer.render(scene, camera);
-          } else if (captureLocation) {
-            teleportTo(captureLocation.x, captureLocation.z, captureLocation.heading);
-            // Capture mode has no animation loop; render one frame at the teleported location.
+          } else {
+            if (captureLocation) {
+              teleportTo(captureLocation.x, captureLocation.z, captureLocation.heading);
+            }
+            // Capture mode has no animation loop. Render again after removing the
+            // overlay so the X11 front buffer receives a scene-only frame (including
+            // the default street view, which has no teleport to trigger a second draw).
             window.__bxlTick(0.05, true);
           }
           if (captureLocationId) {
             console.info(`[capture-sync] rendered capture framing for ${captureLocationId}`);
           }
+          // Explicitly submit the final post-overlay frame before waiting for the browser
+          // compositor to present it to the X11 display captured by the runner.
+          window.__bxlGpuIdle();
           console.info('[capture-sync] loading overlay dismissed');
-          // The runner captures the X11 display, not the DOM. Wait for two browser
-          // animation frames so the overlay removal and final WebGL canvas frame have
-          // crossed a real compositor presentation boundary before signalling readiness.
           requestAnimationFrame(() => {
             requestAnimationFrame(() => {
               console.info('[capture-sync] browser presentation frame completed');
