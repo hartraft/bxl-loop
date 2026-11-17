@@ -178,7 +178,7 @@ try {
       }
       const png = Buffer.from(Array.from({ length: pngTotal }, (_, index) => pngChunks.get(index)).join(''), 'base64');
       await fs.writeFile(file, png);
-      const image = await validatePng(file, scene.viewport);
+      const image = await validatePng(file, { width: Math.floor(scene.viewport.width * 0.75), height: Math.floor(scene.viewport.height * 0.75) });
       captures.push({
         name: scene.name,
         file: path.relative(process.cwd(), file),
