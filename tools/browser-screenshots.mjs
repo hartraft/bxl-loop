@@ -140,7 +140,11 @@ try {
       const page = await context.newPage();
       const origin = baseUrl.origin;
       let resolveFirstFrameReady;
-      const firstFrameReady = new Promise((resolve) => { resolveFirstFrameReady = resolve; });
+      let rejectFirstFrameReady;
+      const firstFrameReady = new Promise((resolve, reject) => {
+        resolveFirstFrameReady = resolve;
+        rejectFirstFrameReady = reject;
+      });
 
       page.on('pageerror', (error) => errors.push({ type: 'pageerror', scene: scene.name, message: error.message }));
       page.on('crash', () => errors.push({ type: 'page-crash', scene: scene.name, message: 'Chromium page crashed' }));
@@ -152,6 +156,10 @@ try {
           if (text === '[capture-sync] browser presentation frame completed') {
             console.log(`[browser-scenes] Browser presentation frame ready for ${scene.name}`);
             resolveFirstFrameReady();
+          }
+          const gpuFailure = text.match(/^\\[capture-sync\\] first-frame GPU completion failed: (.+)$/);
+          if (gpuFailure) {
+            rejectFirstFrameReady(new Error(`Capture GPU synchronization failed for ${scene.name}: ${gpuFailure[1]}`));
           }
         }
       });
