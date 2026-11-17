@@ -735,7 +735,7 @@ async function initApp() {
       markInit('firstFrame');
       // The loading screen stays up until the GPU has got through the first frame (and the pipelines its warm-up
       // compiled), i.e. until the city is actually on screen
-      const finishFirstFrame = () => {
+      const finishFirstFrame = async () => {
         if (CAPTURE) console.info('[capture-sync] completing first-frame initialization');
         markInit('gpu');
         console.log(`[init] ${initTimings.join(', ')}`);
@@ -773,7 +773,11 @@ async function initApp() {
           }
           // Explicitly submit the final post-overlay frame before waiting for the browser
           // compositor to present it to the X11 display captured by the runner.
-          window.__bxlGpuIdle();
+          // Wait for the post-overlay scene render to finish on the WebGL device.
+          // gl.flush() only submits commands; two RAF callbacks alone do not prove
+          // that SwiftShader has completed the frame visible to the X11 capture.
+          await window.__bxlGpuIdle();
+          console.info('[capture-sync] final WebGL fence signaled');
           console.info('[capture-sync] loading overlay dismissed');
           requestAnimationFrame(() => {
             requestAnimationFrame(() => {
@@ -791,11 +795,11 @@ async function initApp() {
         // is the presentation boundary. Complete readiness in this same task rather than
         // depending on a microtask that can be starved by SwiftShader.
         const submission = window.__bxlGpuIdle();
-        if (submission && typeof submission.then === 'function') {
-          Promise.resolve(submission).catch(() => {}).then(finishFirstFrame);
-        } else {
-          finishFirstFrame();
-        }
+        Promise.resolve(submission)
+          .then(finishFirstFrame)
+          .catch((error) => {
+            console.error(`[capture-sync] first-frame GPU completion failed: ${error?.message || error}`);
+          });
       } else {
         const device = renderer.backend.device;
         Promise.resolve(device && device.queue.onSubmittedWorkDone()).catch(() => {}).then(finishFirstFrame);
@@ -839,19 +843,51 @@ async function initApp() {
     window.__bxlGpuIdle = () => {
       console.info('[capture-sync] entered WebGL frame submission');
       const gl = renderer.backend.getContext?.();
-      if (gl && typeof gl.flush === 'function') {
-        // Do not synchronously wait for the full SwiftShader city frame here.
-        // Submit commands and let Playwright's viewport screenshot provide the
-        // presentation boundary; the log markers identify a stalled flush.
-        console.info('[capture-sync] before gl.flush');
-        gl.flush();
-        console.info('[capture-sync] after gl.flush');
-        // This path is intentionally synchronous: the caller does not need to await
-        // GPU completion because the browser screenshot is the presentation boundary.
-        return;
+      if (!gl || typeof gl.fenceSync !== 'function' || typeof gl.clientWaitSync !== 'function') {
+        throw new Error('Capture mode requires a WebGL2 context with fence synchronization');
       }
-      const queue = renderer.backend.device?.queue;
-      return queue?.onSubmittedWorkDone ? queue.onSubmittedWorkDone() : Promise.resolve();
+
+      // gl.flush() only submits work. A pair of requestAnimationFrame callbacks can
+      // run while SwiftShader is still processing that work, leaving X11 with the
+      // previous loading-screen surface. A non-blocking WebGL fence gives us an
+      // actual GPU-completion signal without stalling the browser main thread.
+      const fence = gl.fenceSync(gl.SYNC_GPU_COMMANDS_COMPLETE, 0);
+      if (!fence) throw new Error('WebGL fenceSync returned null');
+      gl.flush();
+      console.info('[capture-sync] waiting for WebGL fence');
+
+      return new Promise((resolve, reject) => {
+        const timeoutAt = performance.now() + 90000;
+        const poll = () => {
+          let status;
+          try {
+            status = gl.clientWaitSync(fence, 0, 0);
+          } catch (error) {
+            gl.deleteSync(fence);
+            reject(error);
+            return;
+          }
+
+          if (status === gl.ALREADY_SIGNALED || status === gl.CONDITION_SATISFIED) {
+            gl.deleteSync(fence);
+            console.info('[capture-sync] WebGL fence signaled');
+            resolve();
+            return;
+          }
+          if (status === gl.WAIT_FAILED) {
+            gl.deleteSync(fence);
+            reject(new Error('WebGL clientWaitSync returned WAIT_FAILED'));
+            return;
+          }
+          if (performance.now() >= timeoutAt) {
+            gl.deleteSync(fence);
+            reject(new Error('WebGL fence did not signal within 90000ms'));
+            return;
+          }
+          setTimeout(poll, 16);
+        };
+        poll();
+      });
     };
     // Advance deterministic simulation steps before the first render so HUD
     // telemetry (including the location plate) is populated in the initial frame.
