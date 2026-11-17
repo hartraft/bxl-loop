@@ -740,18 +740,25 @@ async function initApp() {
         console.log(`[init] ${initTimings.join(', ')}`);
         initTimings = null;
         if (loadingOverlay) {
-          loadingOverlay.classList.add('hidden');
+          if (CAPTURE) loadingOverlay.style.display = 'none';
+          else loadingOverlay.classList.add('hidden');
         }
         setLoadingProgress(1);
         if (CAPTURE) {
-          // Defer URL teleports until the initial frame has rendered. Starting directly at
-          // Palais de Justice can stall SwiftShader while the renderer compiles its first view.
+          // Defer URL framing until the first frame has rendered. Palais de Justice has
+          // a dedicated scenic camera that avoids the expensive close-up chase view.
           const captureLocationId = URL_PARAMS.get('tp');
           const captureLocation = captureLocationId && TELEPORT_LOCATIONS[captureLocationId];
-          if (captureLocation) {
+          if (captureLocationId === 'palaisDeJustice') {
+            selectCamera('shard', true);
+          } else if (captureLocation) {
             teleportTo(captureLocation.x, captureLocation.z, captureLocation.heading);
-            // Capture mode has no animation loop; render one frame at the teleported location.
+          }
+          if (captureLocationId) {
+            console.info(`[capture-sync] applying capture framing for ${captureLocationId}`);
+            // Capture mode has no animation loop; render one frame at the selected view.
             window.__bxlTick(0.05, true);
+            console.info(`[capture-sync] rendered capture framing for ${captureLocationId}`);
           }
           console.info('[capture-sync] loading overlay dismissed');
         }
