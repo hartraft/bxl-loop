@@ -35,9 +35,10 @@ const scenes = [
 ];
 
 let browser;
+let browserVersion = null;
 const metadata = () => ({
   commit: process.env.GITHUB_SHA || null,
-  browser: browser?.version() || null,
+  browser: browserVersion,
   renderer,
   viewportPolicy: 'CSS pixels; deviceScaleFactor=1',
   expectedScenes: scenes.map(({ name, locationId, viewport: size }) => ({ name, locationId, viewport: size })),
@@ -85,6 +86,9 @@ try {
         '--window-position=0,0'
       ]
     });
+    // Preserve the version independently of the browser lifecycle: each scene
+    // closes its browser, but the final metadata must still identify the build.
+    browserVersion ??= browser.version();
     const context = await browser.newContext({
       viewport: scene.viewport,
       deviceScaleFactor: 1,
