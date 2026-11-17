@@ -80,7 +80,7 @@ try {
       '--use-gl=angle',
       '--use-angle=swiftshader',
       '--kiosk',
-      '--window-size=1600,900',
+      '--window-size=1600,1000',
       '--window-position=0,0'
     ]
   });
@@ -151,7 +151,7 @@ try {
 
       // Wait outside the page so we do not issue DevTools Runtime commands while the
       // software WebGL renderer is finishing its first submitted frame.
-      await new Promise((resolve) => setTimeout(resolve, 500));
+      await new Promise((resolve) => setTimeout(resolve, 1500));
 
       const file = path.join(outputDir, scene.name + '.png');
       const raw = path.join(outputDir, scene.name + '.xwd');
@@ -162,7 +162,7 @@ try {
       // Capture the actual displayed browser window from Xvfb. This bypasses Chromium's
       // Page.captureScreenshot/WebGL readback path, which fails on SwiftShader surfaces.
       execFileSync('xwd', ['-root', '-silent', '-out', raw], { timeout: 15000 });
-      execFileSync('convert', [raw, '-crop', `${scene.viewport.width}x${scene.viewport.height}+0+0`, '+repage', file], { timeout: 30000 });
+      execFileSync('convert', [raw, '-crop', `${scene.viewport.width}x${scene.viewport.height}+0+85`, '+repage', file], { timeout: 30000 });
       await fs.rm(raw, { force: true });
       const image = await validatePng(file, scene.viewport);
       captures.push({
