@@ -1,6 +1,5 @@
 import * as THREE from 'three/webgpu';
-
-const IS_BRUSSELS = typeof location !== 'undefined' && new URLSearchParams(location.search).get('city') === 'brussels';
+import { IS_BRUSSELS } from './city-identity.js';
 
 // js/cameras.js
 // Multi-camera system supporting Third-Person Chase (with mouse/touch orbit + zoom),

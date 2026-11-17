@@ -10,3 +10,6 @@ export const TELEPORT_LOCATIONS = city.TELEPORT_LOCATIONS;
 export const getLocationLabel = city.getLocationLabel;
 export const getLocationText = city.getLocationText;
 export const isTypingInField = city.isTypingInField;
+
+// Stable runtime identity; never infer the active city from the URL.
+export { CITY_NAME, IS_BRUSSELS, TRAFFIC_SIDE } from './city-identity.js';

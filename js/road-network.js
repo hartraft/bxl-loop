@@ -13,14 +13,18 @@
 //   - turns prefer the kerb-side lane (left in left-hand traffic, right in right-hand traffic), straight on from any,
 //   - each connector knows which others it geometrically conflicts with (paths closer than CONFLICT_GAP),
 //     and a priority (road rank, roundabout circulation > entry, straight > left > right) for giving way.
-// Roundabouts are oneway ways in OSM order, which is clockwise for UK roundabouts.
+// Roundabouts follow the OSM oneway direction; Belgian traffic circulates counter-clockwise.
 // Traffic signals (GEO.signals + signal-controlled crossings) are clustered into junction *controllers*; each
 // controlled approach (a link ending at a signal node, heading into the cluster) belongs to a *phase* by its axis,
-// and every controller cycles phase by phase with the UK sequence red → red+amber → green → amber → red, plus a
+// and every controller cycles phase by phase with the Belgian sequence red → red+amber → green → amber → red, plus a
 // pedestrian (all-red) stage where it has signal crossings. Zebra crossings are nodes too (vehicles give way to
-// people on them). Bus stops sit on kerb lanes. Speeds come from `maxspeed` (mph). y follows bridge `deck` arrays.
+// people on them). Bus stops sit on kerb lanes. Speeds come from the baked `maxspeed` values in mph. y follows bridge `deck` arrays.
 //
 // See INTEGRATION.md "Workstream G" for the API (route(), nearestLane(), aspect(), …).
+
+import { TRAFFIC_SIDE } from './city-identity.js';
+export { TRAFFIC_SIDE };
+const RIGHT_HAND_TRAFFIC = TRAFFIC_SIDE === 'right';
 
 const MPH = 0.44704;
 const CONFLICT_GAP = 2.25; // connector centre paths closer than this (m) conflict (cars 1.8 m, buses 2.5 m only on >= 2.9 m lanes)
@@ -32,9 +36,6 @@ const DRIVE_KINDS = new Set(['motorway', 'trunk', 'primary', 'secondary', 'terti
 const SERVICE_OK = new Set(['', 'alley', 'bus', 'link']);
 const RANK = { motorway: 7, trunk: 6, primary: 5, secondary: 4, tertiary: 3, unclassified: 2, residential: 2, living_street: 1, service: 0 };
 const DEFAULT_MPH = { motorway: 50, trunk: 30, primary: 20, secondary: 20, tertiary: 20, unclassified: 20, residential: 20, living_street: 10, service: 10 };
-const RIGHT_HAND_TRAFFIC = (typeof process !== 'undefined' && process.env?.CITY === 'brussels') ||
-  (typeof location !== 'undefined' && new URLSearchParams(location.search).get('city') === 'brussels');
-export const TRAFFIC_SIDE = RIGHT_HAND_TRAFFIC ? 'right' : 'left';
 
 const TURN_RANK = RIGHT_HAND_TRAFFIC ? { S: 3, R: 2, L: 1, U: 0 } : { S: 3, L: 2, R: 1, U: 0 };
 
