@@ -3,7 +3,7 @@ name: Deploy Brussels Loop to GitHub Pages
 on:
   workflow_dispatch:
   push:
-    branches: [main, "feat/*"]
+    branches: [main]
     paths:
       - ".github/workflows/deploy-brussels.yml"
       - ".github/workflows/brussels-landmark-snapshots.yml"
