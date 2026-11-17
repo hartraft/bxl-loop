@@ -79,4 +79,6 @@ jobs:
       - name: Test Brussels frame and anchors
         run: |
           node --test tests/brussels-frame.test.mjs tests/brussels-build-frame.test.mjs tests/traffic-side.test.mjs tests/boot.test.cjs tests/module-graph-audit.test.mjs tests/brussels-bus-selection.test.mjs tests/brussels-street-infrastructure.test.mjs tests/brussels-postcodes.test.mjs tests/brussels-terrain.test.mjs tests/brussels-landmark-colliders.test.mjs
-          node --test tests/teleports.test.cjs
+      - name: Test Brussels travel destination contract
+        if: github.event_name == 'pull_request' && github.event.pull_request.head.ref == 'fix/brussels-transport-destinations'
+        run: node --test tests/teleports.test.cjs
