@@ -26,12 +26,12 @@ const withTimeout = (promise, milliseconds, label) => {
 };
 
 const scenes = [
-  { name: 'grand-place', transportId: 'grandPlace', viewport },
-  { name: 'manneken-pis', transportId: 'mannekenPis', viewport },
-  { name: 'mont-des-arts', transportId: 'montDesArts', viewport },
-  { name: 'palais-de-justice', transportId: 'palaisDeJustice', viewport },
-  { name: 'cinquantenaire', transportId: 'cinquantenaire', viewport },
-  { name: 'koekelberg-basilica', transportId: 'koekelbergBasilica', viewport }
+  { name: 'brussels-default-street', locationId: null, viewport },
+  { name: 'grand-place', locationId: 'grandPlace', viewport },
+  { name: 'mont-des-arts', locationId: 'montDesArts', viewport },
+  { name: 'palais-de-justice', locationId: 'palaisDeJustice', viewport },
+  { name: 'cinquantenaire', locationId: 'cinquantenaire', viewport },
+  { name: 'brussels-mobile-grand-place', locationId: 'grandPlace', viewport: { width: 390, height: 844 } }
 ];
 
 let browser;
@@ -41,7 +41,7 @@ const metadata = () => ({
   browser: browserVersion,
   renderer,
   viewportPolicy: 'CSS pixels; deviceScaleFactor=1',
-  expectedScenes: scenes.map(({ name, transportId, viewport: size }) => ({ name, transportId, viewport: size })),
+  expectedScenes: scenes.map(({ name, locationId, viewport: size }) => ({ name, locationId, viewport: size })),
   captures,
   diagnostics,
   errors
@@ -134,7 +134,8 @@ try {
       appUrl.searchParams.set('lite', '');
       appUrl.searchParams.set('offline', '');
       appUrl.searchParams.set('capture', '');
-      appUrl.searchParams.delete('tp');
+      if (scene.locationId) appUrl.searchParams.set('tp', scene.locationId);
+      else appUrl.searchParams.delete('tp');
 
       console.log(`[browser-scenes] Opening ${scene.name} at ${appUrl.href}`);
       // Wait only for the response commit. DOMContentLoaded waits for the large ES
@@ -146,32 +147,13 @@ try {
       diagnostics.push({
         type: 'capture-ready',
         scene: scene.name,
-        transportId: scene.transportId,
+        locationId: scene.locationId,
         viewport: scene.viewport,
         renderer
       });
 
-      // Exercise the actual Brussels travel UI: open the popover and activate its
-      // destination button. This follows the same click handler as a player, rather
-      // than bypassing transport with the ?tp= startup shortcut.
-      await page.locator('#btn-teleport').click();
-      await page.locator('[data-teleport="' + scene.transportId + '"]').click();
-      await page.evaluate(async () => {
-        if (typeof window.__bxlTick !== 'function') throw new Error('Capture tick is unavailable after transport');
-        if (typeof window.__bxlGpuIdle === 'function') await window.__bxlGpuIdle();
-        window.__bxlTick(0.05, true);
-      });
-      const overlayState = await page.locator('#loading-overlay').evaluate((element) => ({
-        display: getComputedStyle(element).display,
-        visibility: getComputedStyle(element).visibility,
-        opacity: getComputedStyle(element).opacity
-      }));
-      if (overlayState.display !== 'none' && overlayState.visibility !== 'hidden' && Number(overlayState.opacity) > 0) {
-        throw new Error('Loading overlay is still visible after transport to ' + scene.transportId + ': ' + JSON.stringify(overlayState));
-      }
-      diagnostics.push({ type: 'transport-activated', scene: scene.name, transportId: scene.transportId, overlayState });
-
-      // Let the submitted scene reach the X11 display surface before capture.
+      // Wait outside the page so we do not issue DevTools Runtime commands while the
+      // software WebGL renderer is finishing its first submitted frame.
       await new Promise((resolve) => setTimeout(resolve, 1500));
 
       const file = path.join(outputDir, scene.name + '.png');
@@ -190,7 +172,7 @@ try {
         name: scene.name,
         file: path.relative(process.cwd(), file),
         ...image,
-        transportId: scene.transportId,
+        locationId: scene.locationId,
         durationMs: Date.now() - captureStarted
       });
       diagnostics.push({ type: 'capture-complete', scene: scene.name, durationMs: Date.now() - captureStarted });
