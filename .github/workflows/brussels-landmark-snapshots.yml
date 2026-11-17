@@ -6,9 +6,16 @@ on:
       - "snapshot-grand-place.html"
       - "js/brussels-landmarks.js"
       - ".github/workflows/brussels-landmark-snapshots.yml"
+  push:
+    branches: [main]
+    paths:
+      - "snapshot-grand-place.html"
+      - "js/brussels-landmark-snapshots.yml"
+      - "js/brussels-landmarks.js"
+      - ".github/workflows/brussels-landmark-snapshots.yml"
   workflow_dispatch:
 permissions:
-  contents: read
+  contents: write
   actions: read
 jobs:
   grand-place:
@@ -16,6 +23,8 @@ jobs:
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
       - uses: actions/setup-node@v4
         with:
           node-version: 22
@@ -35,15 +44,22 @@ jobs:
           python -m playwright install --with-deps chromium
       - name: Capture Grand-Place Town Hall
         run: |
-          mkdir -p artifacts
+          mkdir -p artifacts snapshots
           python -m http.server 4173 > /tmp/snapshot-server.log 2>&1 &
           SERVER_PID=$!
           trap 'kill $SERVER_PID' EXIT
           for i in $(seq 1 30); do curl --fail http://localhost:4173/snapshot-grand-place.html >/dev/null && break || sleep 1; done
           python tools/shot.py http://localhost:4173/snapshot-grand-place.html artifacts/brussels-grand-place-town-hall.png 12
+          cp artifacts/brussels-grand-place-town-hall.png snapshots/grand-place-town-hall.png
       - uses: actions/upload-artifact@v4
         with:
           name: brussels-grand-place-town-hall
           path: artifacts/brussels-grand-place-town-hall.png
           if-no-files-found: error
           retention-days: 30
+      - name: Publish PNG to the repository for GitHub Pages
+        if: (github.event_name == 'push' && github.ref == 'refs/heads/main') || (github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main')
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "chore(snapshots): publish Grand-Place Town Hall PNG"
+          file_pattern: snapshots/grand-place-town-hall.png
