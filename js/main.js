@@ -57,15 +57,16 @@ async function initApp() {
 
   // 1. Initialize Three.js WebGPURenderer with 32-bit float reversedDepthBuffer
   const CAPTURE_MODE = URL_PARAMS.has('capture');
+  const FORCE_WEBGL_CAPTURE = CAPTURE_MODE && URL_PARAMS.has('webgl');
   const renderer = new THREE.WebGPURenderer({
     antialias: true,
     powerPreference: 'high-performance',
     forceWebGL: URL_PARAMS.has('webgl'),
     reversedDepthBuffer: true
   });
-  if (CAPTURE_MODE) {
-    // Preserve the WebGL drawing buffer only in deterministic screenshot mode so the
-    // browser can export the rendered frame without asking Chromium to read back WebGL.
+  if (FORCE_WEBGL_CAPTURE) {
+    // Acquire WebGL explicitly only when capture mode also forces the WebGL fallback.
+    // Do not lock the canvas before WebGPURenderer can select WebGPU in other capture runs.
     const captureContext = renderer.domElement.getContext('webgl2', {
       antialias: true,
       alpha: true,
@@ -77,7 +78,7 @@ async function initApp() {
     renderer.backend.parameters.context = captureContext;
   }
   // Software-rendered CI captures use a smaller drawing buffer, then scale to the documented viewport.
-  renderer.setPixelRatio(CAPTURE_MODE ? 0.75 : 1.0);
+  renderer.setPixelRatio(FORCE_WEBGL_CAPTURE ? 0.75 : 1.0);
   renderer.setSize(window.innerWidth, window.innerHeight);
   // Cascaded shadow maps are disproportionately expensive in CPU-backed SwiftShader.
   // Keep the real geometry, materials, camera and HUD in capture mode, but omit shadows
@@ -740,7 +741,7 @@ async function initApp() {
         console.log(`[init] ${initTimings.join(', ')}`);
         initTimings = null;
         if (loadingOverlay) {
-          if (CAPTURE) loadingOverlay.style.display = 'none';
+          if (CAPTURE) loadingOverlay.remove();
           else loadingOverlay.classList.add('hidden');
         }
         setLoadingProgress(1);
@@ -767,6 +768,14 @@ async function initApp() {
             console.info(`[capture-sync] rendered capture framing for ${captureLocationId}`);
           }
           console.info('[capture-sync] loading overlay dismissed');
+          // The runner captures the X11 display, not the DOM. Wait for two browser
+          // animation frames so the overlay removal and final WebGL canvas frame have
+          // crossed a real compositor presentation boundary before signalling readiness.
+          requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+              console.info('[capture-sync] browser presentation frame completed');
+            });
+          });
         }
         // Browser screenshot captures run fully offline; do not open the first-play
         // driver-name modal or start persistence/autosave in CI.
