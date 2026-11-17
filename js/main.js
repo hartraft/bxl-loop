@@ -855,51 +855,18 @@ async function initApp() {
     window.__bxlGpuIdle = () => {
       console.info('[capture-sync] entered WebGL frame submission');
       const gl = renderer.backend.getContext?.();
-      if (!gl || typeof gl.fenceSync !== 'function' || typeof gl.clientWaitSync !== 'function') {
-        throw new Error('Capture mode requires a WebGL2 context with fence synchronization');
+      if (!gl || typeof gl.finish !== 'function') {
+        throw new Error('Capture mode requires a WebGL context with finish synchronization');
       }
 
-      // gl.flush() only submits work. A pair of requestAnimationFrame callbacks can
-      // run while SwiftShader is still processing that work, leaving X11 with the
-      // previous loading-screen surface. A non-blocking WebGL fence gives us an
-      // actual GPU-completion signal without stalling the browser main thread.
-      const fence = gl.fenceSync(gl.SYNC_GPU_COMMANDS_COMPLETE, 0);
-      if (!fence) throw new Error('WebGL fenceSync returned null');
+      // SwiftShader's WebGL sync objects can report WAIT_FAILED even when the
+      // context remains usable. In this CPU-rendered CI-only path, finish() is the
+      // reliable completion boundary: it blocks until submitted rendering is done.
       gl.flush();
-      console.info('[capture-sync] waiting for WebGL fence');
-
-      return new Promise((resolve, reject) => {
-        const timeoutAt = performance.now() + 90000;
-        const poll = () => {
-          let status;
-          try {
-            status = gl.clientWaitSync(fence, 0, 0);
-          } catch (error) {
-            gl.deleteSync(fence);
-            reject(error);
-            return;
-          }
-
-          if (status === gl.ALREADY_SIGNALED || status === gl.CONDITION_SATISFIED) {
-            gl.deleteSync(fence);
-            console.info('[capture-sync] WebGL fence signaled');
-            resolve();
-            return;
-          }
-          if (status === gl.WAIT_FAILED) {
-            gl.deleteSync(fence);
-            reject(new Error('WebGL clientWaitSync returned WAIT_FAILED'));
-            return;
-          }
-          if (performance.now() >= timeoutAt) {
-            gl.deleteSync(fence);
-            reject(new Error('WebGL fence did not signal within 90000ms'));
-            return;
-          }
-          setTimeout(poll, 16);
-        };
-        poll();
-      });
+      gl.finish();
+      if (gl.isContextLost?.()) throw new Error('WebGL context was lost during capture rendering');
+      console.info('[capture-sync] WebGL finish completed');
+      return Promise.resolve();
     };
     // Advance deterministic simulation steps before the first render so HUD
     // telemetry (including the location plate) is populated in the initial frame.
