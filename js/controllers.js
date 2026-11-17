@@ -1,11 +1,11 @@
 import * as THREE from 'three/webgpu';
+import { IS_BRUSSELS } from './city-identity.js';
 import { WORLD_BOUNDS, toWorld } from './geo-frame.js';
 import { cityUniforms, createContactShadowMaterial } from './tsl-materials.js';
 import { PersonCrowd, PersonRig } from './pedestrians.js';
 import { HEADLIGHTS, SEARCHLIGHT, beamScaleForGlow, createVehicleHeadlight, placeVehicleHeadlight, createSearchlight } from './vehicle-lights.js';
 import { blackCab, rideCar, doubleDecker, hireBike, policeHeli, riverBoat, createVehicleUniforms, setVehicleNightFromGlow } from './london-vehicles.js';
 import { brusselsBus } from './brussels-bus.js';
-const IS_BRUSSELS = typeof location !== 'undefined' && new URLSearchParams(location.search).get('city') === 'brussels';
 const makeBusModel = (opts = {}) => IS_BRUSSELS ? brusselsBus(opts) : doubleDecker(opts);
 
 // js/controllers.js — London Loop player controllers (Workstream C)
@@ -28,7 +28,7 @@ export const MODE_INFO = {
   cyclist: { label: 'Hire Bike', topSpeedMph: 24, hints: [[['W', 'S'], 'Pedal / Brake'], [['A', 'D'], 'Steer'], [['Shift'], 'Sprint']] },
   helicopter: { label: 'Police Helicopter', topSpeedMph: 145, hints: [[['W', 'S'], 'Pitch'], [['A', 'D'], 'Yaw'], [['Space', 'E'], 'Climb'], [['Q', 'C'], 'Descend'], [['L'], 'Searchlight']] },
   boat: { label: 'River Bus', topSpeedMph: 34, hints: [[['W', 'S'], 'Throttle / Astern'], [['A', 'D'], 'Helm'], [['Shift'], 'Boost']] },
-  bus: { label: typeof location !== 'undefined' && new URLSearchParams(location.search).get('city') === 'brussels' ? 'STIB/MIVB Bus' : 'London Bus', topSpeedMph: 34, hints: [[['W', 'S'], 'Drive / Brake'], [['A', 'D'], 'Steer'], [['Space'], 'Parking brake'], [['Shift'], 'Put your foot down']] }
+  bus: { label: IS_BRUSSELS ? 'STIB/MIVB Bus' : 'London Bus', topSpeedMph: 34, hints: [[['W', 'S'], 'Drive / Brake'], [['A', 'D'], 'Steer'], [['Space'], 'Parking brake'], [['Shift'], 'Put your foot down']] }
 };
 
 /**

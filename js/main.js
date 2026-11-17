@@ -4,6 +4,7 @@ import { ssr } from 'three/addons/tsl/display/SSRNode.js';
 import { createPostProcessing } from './post-processing.js';
 import { ClusteredLighting } from 'three/addons/lighting/ClusteredLighting.js';
 import { GEO } from './brx-geodata.js';
+import { CITY_NAME } from './city-identity.js';
 import { WORLD, getLocationLabel, isTypingInField, TELEPORT_LOCATIONS } from './city-config.js';
 import { cityUniforms } from './tsl-materials.js';
 import { buildBrusselsCity } from './brussels-base-city.js';
@@ -34,7 +35,6 @@ import { BRUSSELS_LANDMARKS } from './city-config.js';
 
 const URL_PARAMS = new URLSearchParams(location.search);
 const LITE = URL_PARAMS.has('lite'); // ?lite: no SSR / smaller shadow work for slower machines
-const CITY_NAME = 'Brussels';
 const CITY_WATER = 'the canal and ponds';
 if (CITY_NAME === 'Brussels') document.title = 'Brussels Loop';
 

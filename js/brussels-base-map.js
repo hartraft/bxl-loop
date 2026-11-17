@@ -21,9 +21,9 @@
 import { GEO } from './brx-geodata.js';
 import { WORLD, BRUSSELS_LANDMARKS, getLocationLabel, isTypingInField, WORLD_BOUNDS } from './city-config.js';
 import { toWorld } from './geo-frame.js';
+import { IS_BRUSSELS } from './city-identity.js';
 
 const FONT = 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, sans-serif';
-const IS_BRUSSELS = typeof location !== 'undefined' && new URLSearchParams(location.search).get('city') === 'brussels';
 const MIN_ZOOM = 0.06; // full map, CSS px per metre (all of Zone 1)
 const MAX_ZOOM = 6.0;
 const RADAR_SCALE = 0.62; // radar CSS px per metre at street level (~460 m across)

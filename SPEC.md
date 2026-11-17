@@ -11,7 +11,7 @@ three.js WebGPURenderer + TSL (r186, vendored in `vendor/three/`, no CDN).
   module (create DOM in JS, inject a `<style>` block) and document what main.js must call in your section of
   `INTEGRATION.md` (append-only, one section per workstream).
 - **1 unit = 1 m. Frame = `js/geo-frame.js`** (origin Nelson's Column, +x east, +z south, +y up). Use `toWorld(lat, lon)`.
-- **Drive on the LEFT.** UK cars are right-hand drive. Roundabouts go clockwise.
+- **Drive on the RIGHT.** Belgian vehicles are left-hand drive. Roundabouts circulate counter-clockwise; follow the OSM oneway direction.
 - **No real brand marks.** No TfL roundel, no Uber/Santander/National Express logos, no Johnston font. Generic but
   unmistakably Brussels (red buses, black cabs, red phone boxes, pillar boxes, zebra crossings with Belisha beacons).
   The ride-hail mode is our own fictional app **"RideBXL"** (the user asked for "Uber" — ours is an Uber-style app, not branded Uber).

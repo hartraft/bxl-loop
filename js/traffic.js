@@ -1,12 +1,12 @@
 import * as THREE from 'three/webgpu';
 import { texture, uv, attribute, float, uniform } from 'three/tsl';
 import { GEO, WORLD, BRUSSELS_LANDMARKS } from './city-config.js';
+import { IS_BRUSSELS } from './city-identity.js';
 import { buildLondonRoadNetwork, ASPECT_NAMES } from './road-network.js';
 import { createTrafficSim, VEHICLE_TYPES } from './traffic-sim.js';
 import { VEHICLE_FACTORIES, VEHICLE_UNIFORMS, CAR_COLOURS, getInstanceParts, createVehicleUniforms } from './brussels-base-vehicles.js';
 import { brusselsBus } from './brussels-bus.js';
 import { createBusPlanner, loadBusRoutes } from './life/bus-routes.js';
-const IS_BRUSSELS = typeof location !== 'undefined' && new URLSearchParams(location.search).get('city') === 'brussels';
 import { toWorld } from './geo-frame.js';
 import { HEADLIGHTS, createVehicleHeadlight, placeVehicleHeadlight } from './vehicle-lights.js';
 import { createContactShadowMaterial } from './tsl-materials.js';
