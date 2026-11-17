@@ -1,4 +1,5 @@
 // Brussels transport destinations are generated from the active Brussels world data.
+// Keep this UI contract test in the Brussels frame-check workflow.
 const assert = require('node:assert/strict');
 const { readFileSync } = require('node:fs');
 const { join } = require('node:path');
