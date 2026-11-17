@@ -1,6 +1,7 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import process from 'node:process';
+import { execFileSync } from 'node:child_process';
 import { chromium } from 'playwright';
 
 const arg = (name, fallback) => {
@@ -67,7 +68,7 @@ const validatePng = async (file, expectedViewport) => {
 await fs.mkdir(outputDir, { recursive: true });
 try {
   browser = await chromium.launch({
-    headless: true,
+    headless: false,
     timeout: 30000,
     args: [
       '--enable-webgl',
@@ -77,7 +78,10 @@ try {
       // enabled. Disabling GPU compositing caused Playwright's screenshot readback to
       // hang after the WebGL frame had rendered.
       '--use-gl=angle',
-      '--use-angle=swiftshader'
+      '--use-angle=swiftshader',
+      '--kiosk',
+      '--window-size=1600,900',
+      '--window-position=0,0'
     ]
   });
 
@@ -93,23 +97,11 @@ try {
       let firstFrameReadySeen = false;
       let resolveFirstFrameReady;
       const firstFrameReady = new Promise((resolve) => { resolveFirstFrameReady = resolve; });
-      let pngTotal = 0;
-      const pngChunks = new Map();
-      let resolvePng;
-      const pngReady = new Promise((resolve) => { resolvePng = resolve; });
 
       page.on('pageerror', (error) => errors.push({ type: 'pageerror', scene: scene.name, message: error.message }));
       page.on('crash', () => errors.push({ type: 'page-crash', scene: scene.name, message: 'Chromium page crashed' }));
       page.on('console', (message) => {
         const text = message.text();
-        const pngMatch = text.match(/^\[capture-png\](\d+)\/(\d+):([A-Za-z0-9+/=]+)$/);
-        if (pngMatch) {
-          const index = Number(pngMatch[1]);
-          pngTotal = Number(pngMatch[2]);
-          pngChunks.set(index, pngMatch[3]);
-          if (pngChunks.size === pngTotal) resolvePng();
-          return;
-        }
         if (message.type() === 'error') errors.push({ type: 'console', scene: scene.name, message: text });
         if (text.startsWith('[capture-sync]') || text.startsWith('[capture-settle]')) {
           diagnostics.push({ type: 'browser-console', scene: scene.name, message: text });
@@ -169,16 +161,17 @@ try {
       await new Promise((resolve) => setTimeout(resolve, 500));
 
       const file = path.join(outputDir, scene.name + '.png');
+      const raw = path.join(outputDir, scene.name + '.xwd');
       await fs.rm(file, { force: true });
-      console.log(`[browser-scenes] Exporting preserved WebGL frame for ${scene.name}`);
+      await fs.rm(raw, { force: true });
+      console.log(`[browser-scenes] Capturing ${scene.name} from the X11 display surface`);
       const captureStarted = Date.now();
-      await withTimeout(pngReady, 30000, `Wait for WebGL PNG export for ${scene.name}`);
-      if (!pngTotal || pngChunks.size !== pngTotal) {
-        throw new Error(`Incomplete WebGL PNG export for ${scene.name}: received ${pngChunks.size} of ${pngTotal} chunks`);
-      }
-      const png = Buffer.from(Array.from({ length: pngTotal }, (_, index) => pngChunks.get(index)).join(''), 'base64');
-      await fs.writeFile(file, png);
-      const image = await validatePng(file, { width: Math.floor(scene.viewport.width * 0.75), height: Math.floor(scene.viewport.height * 0.75) });
+      // Capture the actual displayed browser window from Xvfb. This bypasses Chromium's
+      // Page.captureScreenshot/WebGL readback path, which fails on SwiftShader surfaces.
+      execFileSync('xwd', ['-root', '-silent', '-out', raw], { timeout: 15000 });
+      execFileSync('convert', [raw, '-crop', `${scene.viewport.width}x${scene.viewport.height}+0+0`, '+repage', file], { timeout: 30000 });
+      await fs.rm(raw, { force: true });
+      const image = await validatePng(file, scene.viewport);
       captures.push({
         name: scene.name,
         file: path.relative(process.cwd(), file),
@@ -188,7 +181,7 @@ try {
       });
       diagnostics.push({ type: 'capture-complete', scene: scene.name, durationMs: Date.now() - captureStarted });
       await writeMetadata();
-      console.log(`[browser-scenes] Captured WebGL scene ${scene.name} (${image.width}x${image.height}, ${image.bytes} bytes)`);
+      console.log(`[browser-scenes] Captured scene ${scene.name} (${image.width}x${image.height}, ${image.bytes} bytes)`);
     } finally {
       await context.close();
     }
