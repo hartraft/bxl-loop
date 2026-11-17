@@ -29,7 +29,7 @@ const scenes = [
   { name: 'grand-place', transportId: 'grandPlace', viewport },
   { name: 'manneken-pis', transportId: 'mannekenPis', viewport },
   { name: 'mont-des-arts', transportId: 'montDesArts', viewport },
-  { name: 'palace-of-justice', transportId: 'palaisDeJustice', viewport },
+  { name: 'palais-de-justice', transportId: 'palaisDeJustice', viewport },
   { name: 'cinquantenaire', transportId: 'cinquantenaire', viewport },
   { name: 'koekelberg-basilica', transportId: 'koekelbergBasilica', viewport }
 ];
