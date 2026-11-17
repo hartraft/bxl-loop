@@ -202,22 +202,77 @@ try {
         renderer
       });
 
-      // Wait outside the page so we do not issue DevTools Runtime commands while the
-      // software WebGL renderer is finishing its first submitted frame.
-      await new Promise((resolve) => setTimeout(resolve, 1500));
+      // Check the application state independently of its console readiness marker.
+      // A prior CI run logged "overlay dismissed" while the X11 front buffer still
+      // contained the 99% loader. Fail with useful DOM diagnostics if that regresses.
+      const pageState = await page.evaluate(() => {
+        const overlay = document.getElementById('loading-overlay');
+        const canvas = document.querySelector('#canvas-container canvas');
+        const rect = canvas?.getBoundingClientRect();
+        return {
+          readyState: document.readyState,
+          overlayPresent: Boolean(overlay),
+          overlayVisible: Boolean(overlay && getComputedStyle(overlay).display !== 'none' && getComputedStyle(overlay).visibility !== 'hidden' && Number(getComputedStyle(overlay).opacity) > 0),
+          canvasPresent: Boolean(canvas),
+          canvasSize: canvas ? { width: canvas.width, height: canvas.height } : null,
+          canvasRect: rect ? { x: rect.x, y: rect.y, width: rect.width, height: rect.height } : null
+        };
+      });
+      diagnostics.push({ type: 'page-state-before-capture', scene: scene.name, ...pageState });
+      if (pageState.overlayPresent || pageState.overlayVisible || !pageState.canvasPresent) {
+        throw new Error(`Application is not visually ready for ${scene.name}: ${JSON.stringify(pageState)}`);
+      }
+
+      // Invalidate the compositor after the WebGL frame and overlay removal. The
+      // screenshot API captures the browser viewport (DOM + WebGL canvas) directly;
+      // X11 remains a fallback for Chromium builds whose WebGL readback path fails.
+      await page.evaluate(async () => {
+        window.dispatchEvent(new Event('resize'));
+        const canvas = document.querySelector('#canvas-container canvas');
+        if (canvas) {
+          canvas.style.willChange = 'transform';
+          canvas.style.transform = 'translateZ(0)';
+          await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+          canvas.style.transform = '';
+          canvas.style.willChange = '';
+        } else {
+          await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+        }
+      });
+      await new Promise((resolve) => setTimeout(resolve, 500));
 
       const file = path.join(outputDir, scene.name + '.png');
+      const cdpFile = path.join(outputDir, scene.name + '.browser.png');
       const raw = path.join(outputDir, scene.name + '.xwd');
       await fs.rm(file, { force: true });
+      await fs.rm(cdpFile, { force: true });
       await fs.rm(raw, { force: true });
-      console.log(`[browser-scenes] Capturing ${scene.name} from the X11 display surface`);
       const captureStarted = Date.now();
-      // Capture the actual displayed browser window from Xvfb. This bypasses Chromium's
-      // Page.captureScreenshot/WebGL readback path, which fails on SwiftShader surfaces.
-      execFileSync('xwd', ['-root', '-silent', '-out', raw], { timeout: 15000 });
-      execFileSync('convert', [raw, '-crop', `${scene.viewport.width}x${scene.viewport.height}+0+85`, '+repage', file], { timeout: 30000 });
-      await fs.rm(raw, { force: true });
-      const image = await validatePng(file, scene.viewport);
+      let image;
+      let browserCaptureError = null;
+      console.log(`[browser-scenes] Capturing ${scene.name} from the browser viewport`);
+      try {
+        await page.screenshot({ path: cdpFile, type: 'png', fullPage: false, animations: 'disabled', timeout: 30000 });
+        image = await validatePng(cdpFile, scene.viewport);
+        await fs.rename(cdpFile, file);
+        diagnostics.push({ type: 'capture-method', scene: scene.name, method: 'playwright-viewport' });
+      } catch (error) {
+        browserCaptureError = error.message;
+        await fs.rm(cdpFile, { force: true });
+        console.warn(`[browser-scenes] Browser viewport capture failed for ${scene.name}: ${browserCaptureError}`);
+      }
+      if (!image) {
+        console.log(`[browser-scenes] Falling back to X11 display capture for ${scene.name}`);
+        execFileSync('xwd', ['-root', '-silent', '-out', raw], { timeout: 15000 });
+        execFileSync('convert', [raw, '-crop', `${scene.viewport.width}x${scene.viewport.height}+0+85`, '+repage', file], { timeout: 30000 });
+        await fs.rm(raw, { force: true });
+        try {
+          image = await validatePng(file, scene.viewport);
+          diagnostics.push({ type: 'capture-method', scene: scene.name, method: 'x11-display', browserCaptureError });
+        } catch (x11Error) {
+          throw new Error(`Both screenshot methods failed for ${scene.name}. Browser viewport: ${browserCaptureError || 'not attempted'}. X11: ${x11Error.message}`);
+        }
+      }
       captures.push({
         name: scene.name,
         file: path.relative(process.cwd(), file),
