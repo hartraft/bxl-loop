@@ -6,6 +6,9 @@ on:
     branches: [main, "feat/*"]
     paths:
       - ".github/workflows/deploy-brussels.yml"
+      - ".github/workflows/brussels-landmark-snapshots.yml"
+      - "snapshot-grand-place.html"
+      - "tools/shot.py"
       - "index.html"
       - "css/**"
       - "js/**"
@@ -117,6 +120,21 @@ jobs:
             fs.writeFileSync(file, html);
           }
           NODE
+      - name: Install Playwright for published landmark snapshot
+        run: |
+          python -m pip install playwright
+          python -m playwright install --with-deps chromium
+      - name: Render the Grand-Place Town Hall PNG into the Pages site
+        run: |
+          mkdir -p _site/snapshots
+          python -m http.server 4173 --directory _site > /tmp/pages-snapshot-server.log 2>&1 &
+          SERVER_PID=$!
+          trap 'kill $SERVER_PID' EXIT
+          for i in $(seq 1 30); do
+            curl --fail http://localhost:4173/snapshot-grand-place.html >/dev/null && break || sleep 1
+          done
+          python tools/shot.py http://localhost:4173/snapshot-grand-place.html _site/snapshots/grand-place-town-hall.png 12
+          test -s _site/snapshots/grand-place-town-hall.png
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
