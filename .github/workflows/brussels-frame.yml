@@ -3,7 +3,7 @@ name: Brussels frame checks
 
 on:
   push:
-    branches: [main, "feat/*"]
+    branches: [main]
   pull_request:
     branches: [main]
 
@@ -39,6 +39,7 @@ jobs:
           node --check js/controllers.js
           node --check js/bus-driver.js
           node --check js/brussels-base-ui.js
+          node --check tools/browser-screenshots.mjs
           node --check js/brussels-postcodes.js
           node --check tests/brussels-postcodes.test.mjs
           node --check js/bxl-geodata.js
