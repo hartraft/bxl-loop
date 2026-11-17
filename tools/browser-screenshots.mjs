@@ -94,7 +94,6 @@ try {
     try {
       const page = await context.newPage();
       const origin = baseUrl.origin;
-      let firstFrameReadySeen = false;
       let resolveFirstFrameReady;
       const firstFrameReady = new Promise((resolve) => { resolveFirstFrameReady = resolve; });
 
@@ -106,7 +105,7 @@ try {
         if (text.startsWith('[capture-sync]') || text.startsWith('[capture-settle]')) {
           diagnostics.push({ type: 'browser-console', scene: scene.name, message: text });
           if (text === '[capture-sync] loading overlay dismissed') {
-            firstFrameReadySeen = true;
+            console.log(`[browser-scenes] First frame ready for ${scene.name}`);
             resolveFirstFrameReady();
           }
         }
@@ -136,18 +135,12 @@ try {
       else appUrl.searchParams.delete('tp');
 
       console.log(`[browser-scenes] Opening ${scene.name} at ${appUrl.href}`);
-      await page.goto(appUrl.href, { waitUntil: 'domcontentloaded', timeout: 60000 });
-      await page.waitForFunction(() => {
-        const canvas = document.querySelector('#canvas-container canvas');
-        return !!window.__bxl && typeof window.__bxlTick === 'function' &&
-          typeof window.__bxlGpuIdle === 'function' && !!canvas &&
-          canvas.width > 0 && canvas.height > 0;
-      }, null, { timeout: 180000 });
-
-      console.log(`[browser-scenes] Capture API ready for ${scene.name}; waiting for first-frame completion`);
-      if (!firstFrameReadySeen) {
-        await withTimeout(firstFrameReady, 30000, `Wait for first-frame completion for ${scene.name}`);
-      }
+      // Wait only for the response commit. DOMContentLoaded waits for the large ES
+      // module graph and can be held up by WebGL initialization in CI; the app's own
+      // first-frame signal below is the meaningful readiness condition.
+      await page.goto(appUrl.href, { waitUntil: 'commit', timeout: 60000 });
+      console.log(`[browser-scenes] Navigation committed for ${scene.name}; waiting for app first frame`);
+      await withTimeout(firstFrameReady, 240000, `Wait for first-frame completion for ${scene.name}`);
       diagnostics.push({
         type: 'capture-ready',
         scene: scene.name,
