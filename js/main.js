@@ -86,6 +86,11 @@ async function initApp() {
   renderer.shadowMap.enabled = !CAPTURE_MODE;
   renderer.lighting = new ClusteredLighting(256, 32, 28, 48);
   container.appendChild(renderer.domElement);
+  if (CAPTURE_MODE && FORCE_WEBGL_CAPTURE) {
+    renderer.domElement.addEventListener('webglcontextlost', (event) => {
+      console.error(`[capture-sync] WebGL context lost: ${event.statusMessage || 'no status message'}`);
+    });
+  }
 
   // Start-up phase timings (logged once as "[init] ...") to keep load-time regressions traceable
   let initTimings = [];
@@ -729,7 +734,14 @@ async function initApp() {
       for (const o of culled) o.frustumCulled = true;
       markInit('warmup');
     }
-    if (renderFrame) renderPipeline.render();
+    if (renderFrame) {
+      // The full TSL pipeline (MRT + SSR + bloom) is disproportionately fragile
+      // on Chromium's CPU-backed SwiftShader device. Capture screenshots need the
+      // real city geometry/materials and HUD, not the expensive post-processing
+      // chain, so render the scene directly in CI capture mode.
+      if (CAPTURE) renderer.render(scene, cameraSystem.camera);
+      else renderPipeline.render();
+    }
     if (!warmedUp && renderFrame) {
       warmedUp = true;
       markInit('firstFrame');
