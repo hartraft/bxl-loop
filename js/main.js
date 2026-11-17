@@ -77,7 +77,7 @@ async function initApp() {
     renderer.backend.parameters.context = captureContext;
   }
   // Software-rendered CI captures use a smaller drawing buffer, then scale to the documented viewport.
-  renderer.setPixelRatio(1.0);
+  renderer.setPixelRatio(CAPTURE_MODE ? 0.75 : 1.0);
   renderer.setSize(window.innerWidth, window.innerHeight);
   // Cascaded shadow maps are disproportionately expensive in CPU-backed SwiftShader.
   // Keep the real geometry, materials, camera and HUD in capture mode, but omit shadows
