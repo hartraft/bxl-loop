@@ -4,12 +4,12 @@ The GitHub Pages deployment workflow captures the built Brussels site's WebGL dr
 
 ## What is captured
 
-- Desktop default street-level view (1600 × 900)
+- Desktop default street-level view (1600 × 900 CSS viewport; 1200 × 675 PNG)
 - Grand-Place
 - Mont des Arts
 - Palais de Justice / Place Poelaert
 - Cinquantenaire
-- Mobile Grand-Place view (390 × 844)
+- Mobile Grand-Place view (390 × 844 CSS viewport; 292 × 633 PNG)
 
 The runner uses the same built HTML, JavaScript, generated map data and terrain assets that are staged for Pages. It drives the existing in-game teleport API rather than relying on screen-coordinate clicks.
 
@@ -17,7 +17,7 @@ The runner uses the same built HTML, JavaScript, generated map data and terrain 
 
 Each successful or failed screenshot step attempts to upload a `brussels-browser-screenshots-<commit-sha>` artifact containing PNGs and `metadata.json`. Open the corresponding GitHub Actions run and download the artifact to inspect the rendered views. The metadata records the commit, Chromium version, viewport, renderer and captured files.
 
-The CI browser uses three.js' WebGL fallback with SwiftShader. Capture mode preserves the WebGL drawing buffer and disables expensive dynamic shadows only for CI. The runner exports the rendered scene canvas as PNG through chunked browser-console messages; this avoids Chromium's `Page.captureScreenshot` failure on the software-rendered WebGL surface. These PNGs show the 3D scene (not the HTML HUD). The real city geometry, materials, camera, lighting and post-processing are exercised. Normal users continue to get the default WebGPU renderer.
+The CI browser uses three.js' WebGL fallback with SwiftShader at a 0.75 drawing-buffer scale to keep CPU rendering bounded. Capture mode preserves the WebGL drawing buffer and disables expensive dynamic shadows only for CI. The runner exports the rendered scene canvas as PNG through chunked browser-console messages; this avoids Chromium's `Page.captureScreenshot` failure on the software-rendered WebGL surface. These PNGs show the 3D scene (not the HTML HUD). The real city geometry, materials, camera, lighting and post-processing are exercised. Normal users continue to get the default WebGPU renderer.
 
 ## Run locally
 
