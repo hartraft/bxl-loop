@@ -150,7 +150,7 @@ jobs:
           cat /tmp/brussels-browser-server.log
           exit 1
       - name: Capture rendered Brussels scenes
-        run: xvfb-run --auto-servernum --server-args='-screen 0 1600x900x24 -ac +extension GLX +render -noreset' node tools/browser-screenshots.mjs --base-url http://127.0.0.1:4173/
+        run: xvfb-run --auto-servernum --server-args='-screen 0 1600x1000x24 -ac +extension GLX +render -noreset' node tools/browser-screenshots.mjs --base-url http://127.0.0.1:4173/
       - name: Upload rendered-scene screenshots
         if: always()
         uses: actions/upload-artifact@v4
