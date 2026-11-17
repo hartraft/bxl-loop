@@ -17,7 +17,7 @@ The runner uses the same built HTML, JavaScript, generated map data and terrain 
 
 Each successful or failed screenshot step attempts to upload a `brussels-browser-screenshots-<commit-sha>` artifact containing PNGs and `metadata.json`. Open the corresponding GitHub Actions run and download the artifact to inspect the rendered views. The metadata records the commit, Chromium version, viewport, renderer and captured files.
 
-The CI browser uses three.js' WebGL fallback with SwiftShader at a 0.75 drawing-buffer scale to keep CPU rendering bounded. Capture mode disables expensive dynamic shadows only for CI. The runner captures the Xvfb display with `xwd` and crops it with ImageMagick, bypassing Chromium's failing `Page.captureScreenshot` path. This preserves both the 3D scene and HTML HUD. The real city geometry, materials, camera, lighting, post-processing and HUD are exercised. Normal users continue to get the default WebGPU renderer.
+The CI browser uses three.js' WebGL fallback with SwiftShader at a 0.75 drawing-buffer scale to keep CPU rendering bounded. Capture mode disables expensive dynamic shadows only for CI. The runner captures the Xvfb display with `xwd` and crops away the browser toolbar with ImageMagick, bypassing Chromium's failing `Page.captureScreenshot` path. It waits for the first rendered frame and any requested teleport before capture, preserving both the 3D scene and HTML HUD. The real city geometry, materials, camera, lighting, post-processing and HUD are exercised. Normal users continue to get the default WebGPU renderer.
 
 ## Run locally
 
