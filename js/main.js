@@ -749,26 +749,7 @@ async function initApp() {
           // cannot reliably capture this large SwiftShader surface via Page.captureScreenshot.
           // Chunk the data URL over console events so the Node runner can write the PNG
           // without another DevTools Runtime call while the renderer is active.
-          // toBlob performs the WebGL readback asynchronously; toDataURL can block
-          // Chromium's renderer thread indefinitely with SwiftShader on large city frames.
-          renderer.domElement.toBlob((blob) => {
-            if (!blob) {
-              console.error('[capture-png] WebGL canvas export returned an empty blob');
-              return;
-            }
-            const reader = new FileReader();
-            reader.onerror = () => console.error('[capture-png] Unable to read exported PNG blob');
-            reader.onload = () => {
-              const dataUrl = String(reader.result);
-              const base64 = dataUrl.slice('data:image/png;base64,'.length);
-              const chunkSize = 128 * 1024;
-              const total = Math.ceil(base64.length / chunkSize);
-              for (let index = 0; index < total; index++) {
-                console.info(`[capture-png]${index}/${total}:${base64.slice(index * chunkSize, (index + 1) * chunkSize)}`);
-              }
-            };
-            reader.readAsDataURL(blob);
-          }, 'image/png');
+
         }
         // Browser screenshot captures run fully offline; do not open the first-play
         // driver-name modal or start persistence/autosave in CI.
