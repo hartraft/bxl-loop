@@ -750,14 +750,20 @@ async function initApp() {
           const captureLocationId = URL_PARAMS.get('tp');
           const captureLocation = captureLocationId && TELEPORT_LOCATIONS[captureLocationId];
           if (captureLocationId === 'palaisDeJustice') {
-            selectCamera('shard', true);
+            // Use the existing Palace of Justice scenic camera, but render it directly.
+            // The full chase-camera/post-processing pass is disproportionately expensive here
+            // under SwiftShader and can prevent the first-frame signal from completing.
+            const camera = cameraSystem.camera;
+            camera.position.set(350, 145, 1300);
+            camera.lookAt(-50, 25, 1100);
+            camera.updateMatrixWorld(true);
+            renderer.render(scene, camera);
           } else if (captureLocation) {
             teleportTo(captureLocation.x, captureLocation.z, captureLocation.heading);
+            // Capture mode has no animation loop; render one frame at the teleported location.
+            window.__bxlTick(0.05, true);
           }
           if (captureLocationId) {
-            console.info(`[capture-sync] applying capture framing for ${captureLocationId}`);
-            // Capture mode has no animation loop; render one frame at the selected view.
-            window.__bxlTick(0.05, true);
             console.info(`[capture-sync] rendered capture framing for ${captureLocationId}`);
           }
           console.info('[capture-sync] loading overlay dismissed');
