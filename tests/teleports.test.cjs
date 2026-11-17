@@ -22,16 +22,20 @@ test('every Brussels travel destination has a matching UI entry', () => {
 
 test('travel menu contains Brussels destinations, not inherited London entries', () => {
   const html = read('index.html');
+  const menuStart = html.indexOf('<!-- Brussels transport / teleport destinations -->');
+  const menuEnd = html.indexOf('<!-- Bottom-Left:', menuStart);
+  assert.ok(menuStart >= 0 && menuEnd > menuStart, 'Brussels travel menu section exists');
+  const menu = html.slice(menuStart, menuEnd);
   for (const londonName of [
     'Big Ben', 'Tower Bridge', 'Buckingham Palace', 'Trafalgar Square',
     'Piccadilly Circus', 'Battersea', 'King&#x27;s Cross', 'Paddington',
     'Oxford Circus', 'Covent Garden', 'Camden', 'Borough Market', 'Soho',
     'Westminster', 'South Bank', 'Ludgate Hill', 'The Mall'
   ]) {
-    assert.equal(html.includes(londonName), false, 'stale destination text: ' + londonName);
+    assert.equal(menu.includes(londonName), false, 'stale destination text: ' + londonName);
   }
   for (const brusselsName of ['Grand-Place', 'Manneken Pis', 'Mont des Arts', 'Palace of Justice', 'Cinquantenaire Park', 'Koekelberg Basilica']) {
-    assert.ok(html.includes(brusselsName), 'missing Brussels destination: ' + brusselsName);
+    assert.ok(menu.includes(brusselsName), 'missing Brussels destination: ' + brusselsName);
   }
 });
 
