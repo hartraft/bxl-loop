@@ -1,3 +1,4 @@
+// Brussels transport destinations are generated from the active Brussels world data.
 const assert = require('node:assert/strict');
 const { readFileSync } = require('node:fs');
 const { join } = require('node:path');
