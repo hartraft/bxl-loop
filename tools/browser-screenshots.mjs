@@ -157,7 +157,7 @@ try {
             console.log(`[browser-scenes] Browser presentation frame ready for ${scene.name}`);
             resolveFirstFrameReady();
           }
-          const gpuFailure = text.match(/^\\[capture-sync\\] first-frame GPU completion failed: (.+)$/);
+          const gpuFailure = text.match(/^\[capture-sync\] first-frame GPU completion failed: (.+)$/);
           if (gpuFailure) {
             rejectFirstFrameReady(new Error(`Capture GPU synchronization failed for ${scene.name}: ${gpuFailure[1]}`));
           }
