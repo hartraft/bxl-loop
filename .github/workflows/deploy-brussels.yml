@@ -18,6 +18,7 @@ on:
       - "tools/requirements-terrain.txt"
       - "tools/validate-brussels-geodata.mjs"
       - "tests/brussels-runtime-smoke.mjs"
+      - "snapshots/**"
 
 permissions:
   contents: read
