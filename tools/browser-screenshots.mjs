@@ -67,25 +67,24 @@ const validatePng = async (file, expectedViewport) => {
 
 await fs.mkdir(outputDir, { recursive: true });
 try {
-  browser = await chromium.launch({
-    headless: false,
-    timeout: 30000,
-    args: [
-      '--enable-webgl',
-      '--ignore-gpu-blocklist',
-      '--enable-unsafe-swiftshader',
-      // Keep the WebGL renderer on SwiftShader, but leave Chromium's normal compositor
-      // enabled. Disabling GPU compositing caused Playwright's screenshot readback to
-      // hang after the WebGL frame had rendered.
-      '--use-gl=angle',
-      '--use-angle=swiftshader',
-      '--kiosk',
-      '--window-size=1600,1000',
-      '--window-position=0,0'
-    ]
-  });
-
   for (const scene of scenes) {
+    // Give every scene a fresh Chromium/SwiftShader process. Reusing one browser
+    // across the six heavy WebGL builds leaks software-renderer resources on CI;
+    // later pages can stall before their first frame despite identical scene setup.
+    browser = await chromium.launch({
+      headless: false,
+      timeout: 30000,
+      args: [
+        '--enable-webgl',
+        '--ignore-gpu-blocklist',
+        '--enable-unsafe-swiftshader',
+        '--use-gl=angle',
+        '--use-angle=swiftshader',
+        '--kiosk',
+        '--window-size=1600,1000',
+        '--window-position=0,0'
+      ]
+    });
     const context = await browser.newContext({
       viewport: scene.viewport,
       deviceScaleFactor: 1,
@@ -177,6 +176,10 @@ try {
       console.log(`[browser-scenes] Captured scene ${scene.name} (${image.width}x${image.height}, ${image.bytes} bytes)`);
     } finally {
       await context.close();
+      if (browser) {
+        await browser.close();
+        browser = null;
+      }
     }
     if (errors.length) throw new Error(`Browser reported ${errors.length} error(s) after ${scene.name}:\n${JSON.stringify(errors, null, 2)}`);
   }
