@@ -552,7 +552,7 @@ async function initApp() {
   selectCamera('chase', true);
   selectTime(URL_PARAMS.get('time') || 'golden');
   if (URL_PARAMS.get('weather')) setWeather(URL_PARAMS.get('weather'));
-  if (URL_PARAMS.get('tp') && TELEPORT_LOCATIONS[URL_PARAMS.get('tp')]) {
+  if (!CAPTURE_MODE && URL_PARAMS.get('tp') && TELEPORT_LOCATIONS[URL_PARAMS.get('tp')]) {
     const loc = TELEPORT_LOCATIONS[URL_PARAMS.get('tp')];
     teleportTo(loc.x, loc.z, loc.heading);
   }
@@ -741,15 +741,19 @@ async function initApp() {
         initTimings = null;
         if (loadingOverlay) {
           loadingOverlay.classList.add('hidden');
-          if (CAPTURE) console.info('[capture-sync] loading overlay dismissed');
         }
         setLoadingProgress(1);
         if (CAPTURE) {
-          // Export the preserved WebGL drawing buffer directly. Chromium's compositor
-          // cannot reliably capture this large SwiftShader surface via Page.captureScreenshot.
-          // Chunk the data URL over console events so the Node runner can write the PNG
-          // without another DevTools Runtime call while the renderer is active.
-
+          // Defer URL teleports until the initial frame has rendered. Starting directly at
+          // Palais de Justice can stall SwiftShader while the renderer compiles its first view.
+          const captureLocationId = URL_PARAMS.get('tp');
+          const captureLocation = captureLocationId && TELEPORT_LOCATIONS[captureLocationId];
+          if (captureLocation) {
+            teleportTo(captureLocation.x, captureLocation.z, captureLocation.heading);
+            // Capture mode has no animation loop; render one frame at the teleported location.
+            window.__bxlTick(0.05, true);
+          }
+          console.info('[capture-sync] loading overlay dismissed');
         }
         // Browser screenshot captures run fully offline; do not open the first-play
         // driver-name modal or start persistence/autosave in CI.
