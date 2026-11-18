@@ -81,7 +81,9 @@ jobs:
         if: steps.brussels-cache.outputs.cache-hit != 'true'
         run: |
           mkdir -p tools/data
-          curl --fail --location --retry 3 --retry-delay 2 \
+          curl --fail --location \
+            --retry 10 --retry-connrefused --retry-delay 5 --retry-max-time 300 \
+            --connect-timeout 30 --max-time 900 \
             https://download.geofabrik.de/europe/belgium-latest.osm.pbf \
             --output tools/data/belgium-latest.osm.pbf
       - name: Build Brussels geodata
