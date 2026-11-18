@@ -65,14 +65,16 @@ const validatePng = async (file, expectedViewport) => {
   }
   if (data.length < 15000) throw new Error(`Screenshot ${file} is suspiciously small (${data.length} bytes)`);
 
-  // Decode the actual displayed pixels. A valid-sized PNG can still be only the
-  // loading overlay or a blank canvas, so require a minimum amount of scene detail.
+  // Validate the pixels a reviewer will actually see, not WebGL's raw back buffer.
+  // Direct gl.readPixels() on the WebGPURenderer fallback can race its compositor
+  // and has caused SwiftShader device loss after the app's first-frame marker.
   const rgb = execFileSync('convert', [file, '-alpha', 'off', '-depth', '8', 'rgb:-'], {
     maxBuffer: 16 * 1024 * 1024
   });
   if (rgb.length !== width * height * 3) {
     throw new Error(`Screenshot pixel decode for ${file} returned ${rgb.length} bytes; expected ${width * height * 3}`);
   }
+
   let edgeCount = 0;
   let comparisons = 0;
   const threshold = 24;
@@ -104,8 +106,59 @@ const validatePng = async (file, expectedViewport) => {
   if (edgeRatio < minimumEdgeRatio) {
     throw new Error(`Screenshot ${file} has only ${(edgeRatio * 100).toFixed(3)}% edge detail; expected at least ${(minimumEdgeRatio * 100).toFixed(1)}%. The loading overlay or a blank/stale canvas may still be visible.`);
   }
+
+  // Exclude the outer HUD/touch controls and check the central 76% of the
+  // screenshot, where the actual 3D scene should be visible.
+  const left = Math.floor(width * 0.12);
+  const right = Math.ceil(width * 0.88);
+  const top = Math.floor(height * 0.12);
+  const bottom = Math.ceil(height * 0.88);
+  let regionNonBlack = 0;
+  let regionEdges = 0;
+  let regionComparisons = 0;
+  const regionColors = new Set();
+  for (let y = top; y < bottom; y++) {
+    for (let x = left; x < right; x++) {
+      const offset = (y * width + x) * 3;
+      const r = rgb[offset], g = rgb[offset + 1], b = rgb[offset + 2];
+      if (Math.max(r, g, b) > 16) regionNonBlack++;
+      regionColors.add(((r >> 4) << 8) | ((g >> 4) << 4) | (b >> 4));
+      if (x + 1 < right) {
+        const adjacent = offset + 3;
+        if (Math.max(
+          Math.abs(r - rgb[adjacent]),
+          Math.abs(g - rgb[adjacent + 1]),
+          Math.abs(b - rgb[adjacent + 2])
+        ) > threshold) regionEdges++;
+        regionComparisons++;
+      }
+      if (y + 1 < bottom) {
+        const adjacent = offset + width * 3;
+        if (Math.max(
+          Math.abs(r - rgb[adjacent]),
+          Math.abs(g - rgb[adjacent + 1]),
+          Math.abs(b - rgb[adjacent + 2])
+        ) > threshold) regionEdges++;
+        regionComparisons++;
+      }
+    }
+  }
+  const regionPixels = (right - left) * (bottom - top);
+  const sceneRegion = {
+    x: left,
+    y: top,
+    width: right - left,
+    height: bottom - top,
+    nonBlackRatio: Number((regionNonBlack / regionPixels).toFixed(4)),
+    colorBuckets: regionColors.size,
+    edgeRatio: Number((regionEdges / regionComparisons).toFixed(5))
+  };
+  if (sceneRegion.nonBlackRatio < 0.08 || sceneRegion.colorBuckets < 24 || sceneRegion.edgeRatio < 0.003) {
+    throw new Error(`Screenshot ${file} does not contain a sufficiently detailed 3D scene in the central viewport: ${JSON.stringify(sceneRegion)}`);
+  }
+
   decodedImages.set(path.basename(file, '.png'), rgb);
-  return { bytes: data.length, width, height, edgeRatio: Number(edgeRatio.toFixed(5)) };
+  return { bytes: data.length, width, height, edgeRatio: Number(edgeRatio.toFixed(5)), sceneRegion };
 };
 
 await fs.mkdir(outputDir, { recursive: true });
@@ -202,64 +255,34 @@ try {
         renderer
       });
 
-      // Check the application state independently of its console readiness marker.
-      // A prior CI run logged "overlay dismissed" while the X11 front buffer still
-      // contained the 99% loader. Fail with useful DOM diagnostics if that regresses.
+      // Inspect the DOM independently of the console readiness marker. Do not
+      // query the WebGL context or call readPixels() here: the browser viewport
+      // screenshot is the user-visible output and is validated directly below.
       const pageState = await page.evaluate(() => {
         const overlay = document.getElementById('loading-overlay');
         const canvas = document.querySelector('#canvas-container canvas');
         const rect = canvas?.getBoundingClientRect();
-        let canvasPixels = null;
-        if (canvas) {
-          const gl = canvas.getContext('webgl2');
-          if (gl && !gl.isContextLost()) {
-            const sampleWidth = Math.min(160, canvas.width);
-            const sampleHeight = Math.min(120, canvas.height);
-            const pixels = new Uint8Array(sampleWidth * sampleHeight * 4);
-            gl.readPixels(
-              Math.floor((canvas.width - sampleWidth) / 2),
-              Math.floor((canvas.height - sampleHeight) / 2),
-              sampleWidth,
-              sampleHeight,
-              gl.RGBA,
-              gl.UNSIGNED_BYTE,
-              pixels
-            );
-            let nonBlack = 0;
-            const colors = new Set();
-            for (let i = 0; i < pixels.length; i += 4) {
-              const r = pixels[i], g = pixels[i + 1], b = pixels[i + 2];
-              if (Math.max(r, g, b) > 12) nonBlack++;
-              colors.add((r >> 3) + ',' + (g >> 3) + ',' + (b >> 3));
-            }
-            canvasPixels = {
-              sampleWidth,
-              sampleHeight,
-              nonBlackRatio: Number((nonBlack / (sampleWidth * sampleHeight)).toFixed(4)),
-              colorBuckets: colors.size,
-              contextLost: gl.isContextLost()
-            };
-          } else {
-            canvasPixels = { contextAvailable: Boolean(gl), contextLost: Boolean(gl?.isContextLost()) };
-          }
-        }
+        const overlayStyle = overlay ? getComputedStyle(overlay) : null;
         return {
           readyState: document.readyState,
           overlayPresent: Boolean(overlay),
-          overlayVisible: Boolean(overlay && getComputedStyle(overlay).display !== 'none' && getComputedStyle(overlay).visibility !== 'hidden' && Number(getComputedStyle(overlay).opacity) > 0),
+          overlayVisible: Boolean(overlay && overlayStyle &&
+            overlayStyle.display !== 'none' &&
+            overlayStyle.visibility !== 'hidden' &&
+            Number(overlayStyle.opacity) > 0),
           canvasPresent: Boolean(canvas),
           canvasSize: canvas ? { width: canvas.width, height: canvas.height } : null,
-          canvasRect: rect ? { x: rect.x, y: rect.y, width: rect.width, height: rect.height } : null,
-          canvasPixels
+          canvasRect: rect ? { x: rect.x, y: rect.y, width: rect.width, height: rect.height } : null
         };
       });
       diagnostics.push({ type: 'page-state-before-capture', scene: scene.name, ...pageState });
       if (pageState.overlayPresent || pageState.overlayVisible || !pageState.canvasPresent) {
         throw new Error(`Application is not visually ready for ${scene.name}: ${JSON.stringify(pageState)}`);
       }
-      if (!pageState.canvasPixels || pageState.canvasPixels.contextLost ||
-          pageState.canvasPixels.nonBlackRatio < 0.05 || pageState.canvasPixels.colorBuckets < 32) {
-        throw new Error(`3D canvas is blank or under-rendered for ${scene.name}: ${JSON.stringify(pageState.canvasPixels)}`);
+      if (!pageState.canvasRect ||
+          pageState.canvasRect.width < scene.viewport.width * 0.95 ||
+          pageState.canvasRect.height < scene.viewport.height * 0.95) {
+        throw new Error(`3D canvas does not fill the expected viewport for ${scene.name}: ${JSON.stringify(pageState.canvasRect)}`);
       }
 
       // Invalidate the compositor after the WebGL frame and overlay removal. The
