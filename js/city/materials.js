@@ -13,11 +13,12 @@
 //             uv    vec2      pavements: x = metres along the kerb, y = metres from the kerb edge
 import * as THREE from 'three/webgpu';
 import {
-  Fn, float, vec2, vec3, vec4, color, uniform, attribute, texture, positionWorld, normalWorld, normalWorldGeometry,
+  Fn, float, vec2, vec3, vec4, color, uniform, attribute, texture, positionWorld, normalWorld, normalWorldGeometry, screenUV,
   cameraPosition, uv, time, sin, cos, abs, floor, fract, mod, min, max, clamp, mix, step, smoothstep, dot, length,
   normalize, reflect, pow, fwidth, exp, transformNormalToView
 } from 'three/tsl';
 import { cityUniforms, hash2D, noise2D, filteredPulse, bumpNormal, evaluateApartmentInterior } from '../tsl-materials.js';
+import { roadReflectionTarget, roadReflectionEnabled } from '../road-reflections.js';
 
 export { SURF, STYLE } from './materials-shared.js';
 
@@ -523,6 +524,17 @@ export function createAsphaltMaterial() {
   col = mix(col, coverCol, cover).mul(mix(float(1.0), float(0.62), wet.mul(0.6).add(puddle.mul(0.4))));
   mat.colorNode = col.mul(mix(float(1.0), float(0.93), n2));
   mat.roughnessNode = mix(mix(float(0.92), float(0.55), wet), float(0.08), puddle);
+  // Subtle planar reflections strengthen as the asphalt gets wetter; puddles carry the clearest image.
+  // The reflection is rendered separately from the SSR/TSL post graph to avoid attachment feedback.
+  mat.emissiveNode = Fn(() => {
+    const distortion = vec2(
+      noise2D(P.mul(0.045)).sub(0.5),
+      noise2D(P.mul(0.045).add(19.7)).sub(0.5)
+    ).mul(wet).mul(0.0025);
+    const reflected = texture(roadReflectionTarget.texture, screenUV.flipX().add(distortion));
+    const strength = wet.mul(float(0.018).add(puddle.mul(0.16)));
+    return reflected.rgb.mul(strength).mul(roadReflectionEnabled);
+  })();
   _asphalt = mat;
   return mat;
 }

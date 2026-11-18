@@ -7,6 +7,7 @@ import { GEO } from './brx-geodata.js';
 import { CITY_NAME } from './city-identity.js';
 import { WORLD, getLocationLabel, isTypingInField, TELEPORT_LOCATIONS } from './city-config.js';
 import { cityUniforms } from './tsl-materials.js';
+import { createRoadReflections } from './road-reflections.js';
 import { buildBrusselsCity } from './brussels-base-city.js';
 import { buildEdgeBarriers } from './city/edge-barriers.js';
 import { WORLD_BOUNDS } from './geo-frame.js';
@@ -151,6 +152,9 @@ async function initApp() {
   ].filter(Boolean);
   setupSceneCulling(scene, cullingRoots, lightingSystem.sunLight.shadow);
   markInit('culling');
+
+  // Wet-road planar reflections are a separate, low-resolution pass (not part of the SSR RenderPipeline).
+  const roadReflections = createRoadReflections(scene, renderer, { enabled: !LITE, surfaceHeight: city.surfaceHeight, fallbackSurfaceHeight: WORLD.terrainSurfaceHeight });
 
   // Small InstancedMeshes (<= 1000 instances) keep their matrices in uniform buffers that three.js
   // re-uploads on every draw of every pass (~2.5 MB/frame with the shadow cascades, stalling the GPU queue).
@@ -689,6 +693,7 @@ async function initApp() {
     lightingSystem.update(cameraSystem.currentPos);
     mapSystem.update();
     if (warmedUp) updateSceneCulling(cameraSystem.camera.position); // the warm-up frame draws every chunk
+    roadReflections.update(renderer, cameraSystem.camera, cityUniforms.uRoadWetness.value);
 
     // Render frame via TSL RenderPipeline (SSR + Bloom)
     if (!warmedUp) {
