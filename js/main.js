@@ -194,6 +194,8 @@ async function initApp() {
   // attachments. Keeping those extra PassNode textures in the target while dropping
   // their MRT outputs made Three.js' MRTNode build incomplete under SwiftShader.
   let renderPipeline;
+  let scenePass = null;
+  let sceneMRT = null;
   // Post-processing is omitted during screenshots; normal gameplay assigns both passes below.
   let ssrPass = null;
   let colorGrade = null;
@@ -202,11 +204,11 @@ async function initApp() {
     renderPipeline = new THREE.RenderPipeline(renderer, capturePass.getTextureNode('output'));
   } else {
     // Normal gameplay keeps the full multi-render-target scene pass and post-processing.
-    const scenePass = pass(scene, cameraSystem.camera);
+    scenePass = pass(scene, cameraSystem.camera);
     // The multisampled colour attachments (output, normal, metalRough) only need resolving, never storing.
     scenePass.renderTarget.storeMultisampledColorBuffer = false;
     const ssrFade = smoothstep(360.0, 180.0, positionView.z.negate());
-    const sceneMRT = mrt({
+    sceneMRT = mrt({
       output: output,
       normal: normalView,
       metalRough: vec2(metalness.mul(ssrFade), roughness)
@@ -629,8 +631,12 @@ async function initApp() {
       job.push(o);
     });
 
-    renderer.setRenderTarget(scenePass.renderTarget);
-    renderer.setMRT(sceneMRT);
+    // Only the full gameplay pipeline has the depth/normal/metalness MRT target.
+    // Capture mode compiles the single-colour pass without a separate scene target.
+    if (scenePass) {
+      renderer.setRenderTarget(scenePass.renderTarget);
+      renderer.setMRT(sceneMRT);
+    }
     const compile = async (object) => {
       // Each compile starts in a task of its own: compileAsync() keeps one precompilation state on the renderer,
       // which must not be mid-step for two of them in the same microtask checkpoint
@@ -655,7 +661,7 @@ async function initApp() {
       }
     };
     await Promise.all(Array.from({ length: COMPILE_POOL }, worker));
-    renderer.setMRT(null);
+    if (scenePass) renderer.setMRT(null);
     renderer.setRenderTarget(null);
     for (const o of culled) o.frustumCulled = true;
     if (rainMesh) rainMesh.visible = rainWasVisible;
