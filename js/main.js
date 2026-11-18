@@ -194,6 +194,9 @@ async function initApp() {
   // attachments. Keeping those extra PassNode textures in the target while dropping
   // their MRT outputs made Three.js' MRTNode build incomplete under SwiftShader.
   let renderPipeline;
+  // Post-processing is omitted during screenshots; normal gameplay assigns both passes below.
+  let ssrPass = null;
+  let colorGrade = null;
   if (CAPTURE_MODE) {
     const capturePass = pass(scene, cameraSystem.camera, { samples: 0 });
     renderPipeline = new THREE.RenderPipeline(renderer, capturePass.getTextureNode('output'));
@@ -217,7 +220,7 @@ async function initApp() {
     const scenePassNormal = scenePass.getTextureNode('normal');
     const scenePassMetalRough = scenePass.getTextureNode('metalRough');
 
-    const ssrPass = ssr(scenePassColor, scenePassDepth, scenePassNormal, {
+    ssrPass = ssr(scenePassColor, scenePassDepth, scenePassNormal, {
       metalnessNode: scenePassMetalRough.r,
       roughnessNode: scenePassMetalRough.g,
       camera: cameraSystem.camera
@@ -231,7 +234,7 @@ async function initApp() {
     ssrPass.screenEdgeFadeBlack = true;
 
     if (LITE) ssrPass.intensity.value = 0;
-    const colorGrade = createPostProcessing(renderer, scenePassColor, ssrPass);
+    colorGrade = createPostProcessing(renderer, scenePassColor, ssrPass);
     renderPipeline = new THREE.RenderPipeline(renderer, colorGrade.outputNode);
   }
 
@@ -333,7 +336,7 @@ async function initApp() {
 
   function selectTime(timeId) {
     lightingSystem.applyPreset(timeId);
-    colorGrade.applyPreset(lightingSystem.activePresetId);
+    colorGrade?.applyPreset(lightingSystem.activePresetId);
     timeButtons.forEach((btn) => {
       btn.classList.toggle('active', btn.getAttribute('data-time') === timeId);
     });
@@ -416,7 +419,7 @@ async function initApp() {
       onWeather: (id) => {
         currentWeather = id;
         const p = lightingSystem.getWeatherParams ? lightingSystem.getWeatherParams() : null;
-        if (p && !LITE) ssrPass.intensity.value = p.ssr;
+        if (p && !LITE && ssrPass) ssrPass.intensity.value = p.ssr;
         if (trafficSystem.setRain) trafficSystem.setRain(id === 'drizzle');
       }
     }
@@ -425,7 +428,7 @@ async function initApp() {
   if (trafficSystem.setRain) trafficSystem.setRain(currentWeather === 'drizzle');
   function setWeather(id) {
     if (lightingSystem.setWeather) lightingSystem.setWeather(id);
-    if (colorGrade.applyWeather) colorGrade.applyWeather(id);
+    if (colorGrade?.applyWeather) colorGrade.applyWeather(id);
     if (hud.setActiveWeather) hud.setActiveWeather(id);
     currentWeather = id;
     if (trafficSystem.setRain) trafficSystem.setRain(id === 'drizzle');
