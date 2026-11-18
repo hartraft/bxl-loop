@@ -59,8 +59,11 @@ async function initApp() {
   const CAPTURE_MODE = URL_PARAMS.has('capture');
   const FORCE_WEBGL_CAPTURE = CAPTURE_MODE && URL_PARAMS.has('webgl');
   const renderer = new THREE.WebGPURenderer({
-    antialias: true,
-    powerPreference: 'high-performance',
+    // SwiftShader is a CPU renderer; disabling MSAA and preferring its low-power
+    // path reduces the chance of losing the WebGL device while compiling/drawing
+    // the full Brussels scene. Interactive gameplay keeps the original settings.
+    antialias: !FORCE_WEBGL_CAPTURE,
+    powerPreference: FORCE_WEBGL_CAPTURE ? 'low-power' : 'high-performance',
     forceWebGL: URL_PARAMS.has('webgl'),
     reversedDepthBuffer: true
   });
@@ -68,7 +71,7 @@ async function initApp() {
     // Acquire WebGL explicitly only when capture mode also forces the WebGL fallback.
     // Do not lock the canvas before WebGPURenderer can select WebGPU in other capture runs.
     const captureContext = renderer.domElement.getContext('webgl2', {
-      antialias: true,
+      antialias: false,
       alpha: true,
       depth: true,
       stencil: false,
@@ -78,7 +81,7 @@ async function initApp() {
     renderer.backend.parameters.context = captureContext;
   }
   // Software-rendered CI captures use a smaller drawing buffer, then scale to the documented viewport.
-  renderer.setPixelRatio(FORCE_WEBGL_CAPTURE ? 0.75 : 1.0);
+  renderer.setPixelRatio(FORCE_WEBGL_CAPTURE ? 0.5 : 1.0);
   renderer.setSize(window.innerWidth, window.innerHeight);
   // Cascaded shadow maps are disproportionately expensive in CPU-backed SwiftShader.
   // Keep the real geometry, materials, camera and HUD in capture mode, but omit shadows
