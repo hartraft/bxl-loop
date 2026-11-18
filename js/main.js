@@ -200,8 +200,14 @@ async function initApp() {
   let ssrPass = null;
   let colorGrade = null;
   if (CAPTURE_MODE) {
-    const capturePass = pass(scene, cameraSystem.camera, { samples: 0 });
-    renderPipeline = new THREE.RenderPipeline(renderer, capturePass.getTextureNode('output'));
+    // Render straight to the browser's default framebuffer. The normal scene
+    // is a full-resolution TSL pass into a HalfFloat render target followed by
+    // a fullscreen copy; that extra offscreen target can exhaust or lose the
+    // SwiftShader WebGL context. Screenshots need the same scene geometry,
+    // materials and camera, but not the offscreen post-processing chain.
+    renderPipeline = {
+      render: () => renderer.render(scene, cameraSystem.camera)
+    };
   } else {
     // Normal gameplay keeps the full multi-render-target scene pass and post-processing.
     scenePass = pass(scene, cameraSystem.camera);
