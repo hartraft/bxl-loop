@@ -196,6 +196,12 @@ async function initApp() {
   // them spares the GPU writing 3 x 4 samples per pixel to memory every frame (transient, memoryless attachments where
   // the browser supports them). The multisampled depth stays stored: SSR reads it.
   scenePass.renderTarget.storeMultisampledColorBuffer = false;
+  if (CAPTURE_MODE) {
+    // SwiftShader has no practical need for MSAA in this review-only path.
+    // A single-sample target avoids resolving/discarding transient multisample attachments.
+    scenePass.renderTarget.samples = 0;
+    scenePass.renderTarget.storeMultisampledColorBuffer = true;
+  }
   const ssrFade = smoothstep(360.0, 180.0, positionView.z.negate());
   const sceneMRT = mrt({
     output: output,
@@ -204,7 +210,10 @@ async function initApp() {
   });
   sceneMRT.setBlendMode('normal', new THREE.BlendMode(THREE.MaterialBlending));
   sceneMRT.setBlendMode('metalRough', new THREE.BlendMode(THREE.MaterialBlending));
-  scenePass.setMRT(sceneMRT);
+  // SSR uses the extra normal/metalness buffers during normal gameplay. The
+  // capture pipeline outputs only scene colour, so omit MRT attachments under
+  // SwiftShader to keep the software-rendered frame small and robust.
+  if (!CAPTURE_MODE) scenePass.setMRT(sceneMRT);
 
   const scenePassColor = scenePass.getTextureNode('output');
   const scenePassDepth = scenePass.getTextureNode('depth');
