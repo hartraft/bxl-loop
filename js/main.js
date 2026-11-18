@@ -189,56 +189,51 @@ async function initApp() {
     }
   });
 
-  // 5. TSL RenderPipeline with Half-Res Screen Space Reflections (SSRNode), Bloom & Filmic Toning
-  //    SSR skips pixels with zero metalness, so fading it out with distance spares the far facades
-  const scenePass = pass(scene, cameraSystem.camera);
-  // The multisampled colour attachments (output, normal, metalRough) only need resolving, never storing: discarding
-  // them spares the GPU writing 3 x 4 samples per pixel to memory every frame (transient, memoryless attachments where
-  // the browser supports them). The multisampled depth stays stored: SSR reads it.
-  scenePass.renderTarget.storeMultisampledColorBuffer = false;
+  // 5. Render pipeline. The screenshot runner uses a minimal single-colour pass:
+  // it needs the same scene and materials, but not SSR's depth/normal/metalness
+  // attachments. Keeping those extra PassNode textures in the target while dropping
+  // their MRT outputs made Three.js' MRTNode build incomplete under SwiftShader.
+  let renderPipeline;
   if (CAPTURE_MODE) {
-    // SwiftShader has no practical need for MSAA in this review-only path.
-    // A single-sample target avoids resolving/discarding transient multisample attachments.
-    scenePass.renderTarget.samples = 0;
-    scenePass.renderTarget.storeMultisampledColorBuffer = true;
+    const capturePass = pass(scene, cameraSystem.camera, { samples: 0 });
+    renderPipeline = new THREE.RenderPipeline(renderer, capturePass.getTextureNode('output'));
+  } else {
+    // Normal gameplay keeps the full multi-render-target scene pass and post-processing.
+    const scenePass = pass(scene, cameraSystem.camera);
+    // The multisampled colour attachments (output, normal, metalRough) only need resolving, never storing.
+    scenePass.renderTarget.storeMultisampledColorBuffer = false;
+    const ssrFade = smoothstep(360.0, 180.0, positionView.z.negate());
+    const sceneMRT = mrt({
+      output: output,
+      normal: normalView,
+      metalRough: vec2(metalness.mul(ssrFade), roughness)
+    });
+    sceneMRT.setBlendMode('normal', new THREE.BlendMode(THREE.MaterialBlending));
+    sceneMRT.setBlendMode('metalRough', new THREE.BlendMode(THREE.MaterialBlending));
+    scenePass.setMRT(sceneMRT);
+
+    const scenePassColor = scenePass.getTextureNode('output');
+    const scenePassDepth = scenePass.getTextureNode('depth');
+    const scenePassNormal = scenePass.getTextureNode('normal');
+    const scenePassMetalRough = scenePass.getTextureNode('metalRough');
+
+    const ssrPass = ssr(scenePassColor, scenePassDepth, scenePassNormal, {
+      metalnessNode: scenePassMetalRough.r,
+      roughnessNode: scenePassMetalRough.g,
+      camera: cameraSystem.camera
+    });
+    ssrPass.resolutionScale = 0.5;
+    ssrPass.blurQuality = 1;
+    ssrPass.maxDistance.value = 42;
+    ssrPass.thickness.value = 0.85;
+    ssrPass.quality.value = 0.35;
+    ssrPass.intensity.value = 0.50;
+    ssrPass.screenEdgeFadeBlack = true;
+
+    if (LITE) ssrPass.intensity.value = 0;
+    const colorGrade = createPostProcessing(renderer, scenePassColor, ssrPass);
+    renderPipeline = new THREE.RenderPipeline(renderer, colorGrade.outputNode);
   }
-  const ssrFade = smoothstep(360.0, 180.0, positionView.z.negate());
-  const sceneMRT = mrt({
-    output: output,
-    normal: normalView,
-    metalRough: vec2(metalness.mul(ssrFade), roughness)
-  });
-  sceneMRT.setBlendMode('normal', new THREE.BlendMode(THREE.MaterialBlending));
-  sceneMRT.setBlendMode('metalRough', new THREE.BlendMode(THREE.MaterialBlending));
-  // SSR uses the extra normal/metalness buffers during normal gameplay. The
-  // capture pipeline outputs only scene colour, so omit MRT attachments under
-  // SwiftShader to keep the software-rendered frame small and robust.
-  if (!CAPTURE_MODE) scenePass.setMRT(sceneMRT);
-
-  const scenePassColor = scenePass.getTextureNode('output');
-  const scenePassDepth = scenePass.getTextureNode('depth');
-  const scenePassNormal = scenePass.getTextureNode('normal');
-  const scenePassMetalRough = scenePass.getTextureNode('metalRough');
-
-  const ssrPass = ssr(scenePassColor, scenePassDepth, scenePassNormal, {
-    metalnessNode: scenePassMetalRough.r,
-    roughnessNode: scenePassMetalRough.g,
-    camera: cameraSystem.camera
-  });
-  ssrPass.resolutionScale = 0.5;
-  ssrPass.blurQuality = 1;
-  ssrPass.maxDistance.value = 42;
-  ssrPass.thickness.value = 0.85;
-  ssrPass.quality.value = 0.35;
-  ssrPass.intensity.value = 0.50;
-  ssrPass.screenEdgeFadeBlack = true;
-
-  if (LITE) ssrPass.intensity.value = 0;
-  const colorGrade = createPostProcessing(renderer, scenePassColor, ssrPass);
-  // In capture mode, keep the real scene pass and its TSL material output, but bypass
-  // SSR/bloom/color grading. Calling renderer.render() directly skips the pass graph
-  // that these node materials are compiled against and produced a black SwiftShader canvas.
-  const renderPipeline = new THREE.RenderPipeline(renderer, CAPTURE_MODE ? scenePassColor : colorGrade.outputNode);
 
   // 6. Wire UI Controls (Strictly using safe DOM APIs: textContent, classList, addEventListener)
   const modeButtons = document.querySelectorAll('[data-mode]');
