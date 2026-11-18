@@ -226,7 +226,10 @@ async function initApp() {
 
   if (LITE) ssrPass.intensity.value = 0;
   const colorGrade = createPostProcessing(renderer, scenePassColor, ssrPass);
-  const renderPipeline = new THREE.RenderPipeline(renderer, colorGrade.outputNode);
+  // In capture mode, keep the real scene pass and its TSL material output, but bypass
+  // SSR/bloom/color grading. Calling renderer.render() directly skips the pass graph
+  // that these node materials are compiled against and produced a black SwiftShader canvas.
+  const renderPipeline = new THREE.RenderPipeline(renderer, CAPTURE_MODE ? scenePassColor : colorGrade.outputNode);
 
   // 6. Wire UI Controls (Strictly using safe DOM APIs: textContent, classList, addEventListener)
   const modeButtons = document.querySelectorAll('[data-mode]');
@@ -735,12 +738,7 @@ async function initApp() {
       markInit('warmup');
     }
     if (renderFrame) {
-      // The full TSL pipeline (MRT + SSR + bloom) is disproportionately fragile
-      // on Chromium's CPU-backed SwiftShader device. Capture screenshots need the
-      // real city geometry/materials and HUD, not the expensive post-processing
-      // chain, so render the scene directly in CI capture mode.
-      if (CAPTURE) renderer.render(scene, cameraSystem.camera);
-      else renderPipeline.render();
+      renderPipeline.render();
     }
     if (!warmedUp && renderFrame) {
       warmedUp = true;
@@ -763,14 +761,13 @@ async function initApp() {
           const captureLocationId = URL_PARAMS.get('tp');
           const captureLocation = captureLocationId && TELEPORT_LOCATIONS[captureLocationId];
           if (captureLocationId === 'palaisDeJustice') {
-            // Use the existing Palace of Justice scenic camera, but render it directly.
-            // The full chase-camera/post-processing pass is disproportionately expensive here
-            // under SwiftShader and can prevent the first-frame signal from completing.
+            // Keep the scenic camera, but route it through the capture-only scene pass
+            // so TSL output, tone mapping and the canvas target use the same path as gameplay.
             const camera = cameraSystem.camera;
             camera.position.set(350, 145, 1300);
             camera.lookAt(-50, 25, 1100);
             camera.updateMatrixWorld(true);
-            renderer.render(scene, camera);
+            renderPipeline.render();
           } else {
             if (captureLocation) {
               teleportTo(captureLocation.x, captureLocation.z, captureLocation.heading);
