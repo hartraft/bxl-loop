@@ -46,7 +46,7 @@ function hasExcludedGroundMaterial(object) {
  * uniform is active. The ground-level surfaces themselves are omitted from
  * the mirror pass to avoid reflecting road markings and the mirror plane.
  */
-export function createRoadReflections(scene, renderer, { enabled = true } = {}) {
+export function createRoadReflections(scene, renderer, { enabled = true, surfaceHeight = null, fallbackSurfaceHeight = null } = {}) {
   const mirrorCamera = new THREE.PerspectiveCamera();
   const excluded = [];
   scene.traverse((object) => {
@@ -64,14 +64,32 @@ export function createRoadReflections(scene, renderer, { enabled = true } = {}) 
   roadReflectionEnabled.value = 0;
 
   function update(activeRenderer, camera, wetness = 1) {
-    if (!active || failed || wetness <= 0.01 || !camera) return;
+    if (!active || failed || !camera) return;
+    if (wetness <= 0.01) {
+      roadReflectionEnabled.value = 0;
+      roadReflectionEnabled.needsUpdate = true;
+      return;
+    }
     frame += 1;
     if (frame % frameSkip !== 0) return;
 
     camera.updateMatrixWorld();
     _cameraPosition.setFromMatrixPosition(camera.matrixWorld);
-    // The first pass targets the street-level plane; elevated cameras below it cannot produce a useful mirror.
-    if (_cameraPosition.y <= 0.05) return;
+    // Follow the local road/sidewalk height so the mirror tracks the optional Brussels DTM
+    // and raised bridge approaches instead of assuming the entire city is at y=0.
+    _planePoint.set(_cameraPosition.x, 0, _cameraPosition.z);
+    const sampledHeight = surfaceHeight?.(_planePoint.x, _planePoint.z);
+    const fallbackHeight = fallbackSurfaceHeight?.(_planePoint.x, _planePoint.z);
+    _planePoint.y = Number.isFinite(sampledHeight)
+      ? sampledHeight
+      : Number.isFinite(fallbackHeight) ? fallbackHeight : 0;
+    // A camera at/below the local surface cannot produce a useful mirror. Clear the
+    // enable uniform as well, otherwise the last valid view remains frozen in asphalt.
+    if (_cameraPosition.y <= _planePoint.y + 0.05) {
+      roadReflectionEnabled.value = 0;
+      roadReflectionEnabled.needsUpdate = true;
+      return;
+    }
 
     activeRenderer.getDrawingBufferSize(_size);
     const width = Math.max(1, Math.round(_size.x * resolutionScale));
