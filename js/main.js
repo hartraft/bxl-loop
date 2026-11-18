@@ -154,7 +154,7 @@ async function initApp() {
   markInit('culling');
 
   // Wet-road planar reflections are a separate, low-resolution pass (not part of the SSR RenderPipeline).
-  const roadReflections = createRoadReflections(scene, renderer, { enabled: !LITE });
+  const roadReflections = createRoadReflections(scene, renderer, { enabled: !LITE, surfaceHeight: city.surfaceHeight, fallbackSurfaceHeight: WORLD.terrainSurfaceHeight });
 
   // Small InstancedMeshes (<= 1000 instances) keep their matrices in uniform buffers that three.js
   // re-uploads on every draw of every pass (~2.5 MB/frame with the shadow cascades, stalling the GPU queue).
