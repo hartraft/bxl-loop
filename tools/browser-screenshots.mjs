@@ -209,18 +209,57 @@ try {
         const overlay = document.getElementById('loading-overlay');
         const canvas = document.querySelector('#canvas-container canvas');
         const rect = canvas?.getBoundingClientRect();
+        let canvasPixels = null;
+        if (canvas) {
+          const gl = canvas.getContext('webgl2');
+          if (gl && !gl.isContextLost()) {
+            const sampleWidth = Math.min(160, canvas.width);
+            const sampleHeight = Math.min(120, canvas.height);
+            const pixels = new Uint8Array(sampleWidth * sampleHeight * 4);
+            gl.readPixels(
+              Math.floor((canvas.width - sampleWidth) / 2),
+              Math.floor((canvas.height - sampleHeight) / 2),
+              sampleWidth,
+              sampleHeight,
+              gl.RGBA,
+              gl.UNSIGNED_BYTE,
+              pixels
+            );
+            let nonBlack = 0;
+            const colors = new Set();
+            for (let i = 0; i < pixels.length; i += 4) {
+              const r = pixels[i], g = pixels[i + 1], b = pixels[i + 2];
+              if (Math.max(r, g, b) > 12) nonBlack++;
+              colors.add((r >> 3) + ',' + (g >> 3) + ',' + (b >> 3));
+            }
+            canvasPixels = {
+              sampleWidth,
+              sampleHeight,
+              nonBlackRatio: Number((nonBlack / (sampleWidth * sampleHeight)).toFixed(4)),
+              colorBuckets: colors.size,
+              contextLost: gl.isContextLost()
+            };
+          } else {
+            canvasPixels = { contextAvailable: Boolean(gl), contextLost: Boolean(gl?.isContextLost()) };
+          }
+        }
         return {
           readyState: document.readyState,
           overlayPresent: Boolean(overlay),
           overlayVisible: Boolean(overlay && getComputedStyle(overlay).display !== 'none' && getComputedStyle(overlay).visibility !== 'hidden' && Number(getComputedStyle(overlay).opacity) > 0),
           canvasPresent: Boolean(canvas),
           canvasSize: canvas ? { width: canvas.width, height: canvas.height } : null,
-          canvasRect: rect ? { x: rect.x, y: rect.y, width: rect.width, height: rect.height } : null
+          canvasRect: rect ? { x: rect.x, y: rect.y, width: rect.width, height: rect.height } : null,
+          canvasPixels
         };
       });
       diagnostics.push({ type: 'page-state-before-capture', scene: scene.name, ...pageState });
       if (pageState.overlayPresent || pageState.overlayVisible || !pageState.canvasPresent) {
         throw new Error(`Application is not visually ready for ${scene.name}: ${JSON.stringify(pageState)}`);
+      }
+      if (!pageState.canvasPixels || pageState.canvasPixels.contextLost ||
+          pageState.canvasPixels.nonBlackRatio < 0.05 || pageState.canvasPixels.colorBuckets < 32) {
+        throw new Error(`3D canvas is blank or under-rendered for ${scene.name}: ${JSON.stringify(pageState.canvasPixels)}`);
       }
 
       // Invalidate the compositor after the WebGL frame and overlay removal. The
