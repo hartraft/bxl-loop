@@ -710,7 +710,7 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     box(flag, 0.08, 1.65, 0.08, 0, 0, 0, shadow, 'Flag staff');
     for (let i = 0; i < 3; i++) {
       const flagMat = new THREE.MeshStandardMaterial({ color: [0x171717, 0xf2d02e, 0xe12b2b][i], roughness: 0.9 });
-      box(flag, 0.08, 1.1, 0.025, 0.16, 0, 0, flagMat, 'Belgian flag stripe');
+      box(flag, 0.28, 1.1, 0.04, (i - 1) * 0.28, 0, 0, flagMat, 'Belgian flag stripe');
     }
     g.add(flag);
 
