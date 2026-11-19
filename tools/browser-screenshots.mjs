@@ -160,6 +160,21 @@ for (const scene of scenes) {
       console.log(`[brussels-capture] Loading ${scene.name}`);
       await page.goto(appUrl.href, { waitUntil: 'commit', timeout: 60000 });
       await page.waitForFunction(() => window.__bxlCaptureReady === true, null, { timeout: 360000 });
+      if (scene.viewport.width < 500) {
+        // A narrow viewport alone does not make a desktop Chromium context a
+        // touch-first device. Send one harmless touch pointer event so the app's
+        // hybrid-device detection enables the real touch HUD before capture.
+        await page.evaluate(() => {
+          document.dispatchEvent(new PointerEvent('pointerdown', {
+            pointerId: 99, pointerType: 'touch', isPrimary: true,
+            button: 0, buttons: 1, bubbles: true
+          }));
+        });
+        await page.waitForFunction(() =>
+          document.body.classList.contains('touch-enabled') &&
+          document.getElementById('touch-controls')?.hidden === false
+        );
+      }
       const state = await page.evaluate(async (locationId) => {
         const result = await window.__bxlCaptureScene(locationId);
         const canvas = document.querySelector('#canvas-container canvas');
@@ -171,12 +186,16 @@ for (const scene of scenes) {
           canvasWidth: canvas?.width ?? null,
           canvasHeight: canvas?.height ?? null,
           canvasRect: rect ? { width: rect.width, height: rect.height } : null,
-          loadingOverlayPresent: Boolean(overlay)
+          loadingOverlayPresent: Boolean(overlay),
+          touchControlsVisible: document.getElementById('touch-controls')?.hidden === false
         };
       }, scene.locationId);
       metadata.diagnostics.push({ scene: scene.name, pageState: state });
       if (!state.canvasPresent || state.loadingOverlayPresent) {
         throw new Error(`App did not reach a clean rendered state: ${JSON.stringify(state)}`);
+      }
+      if (scene.viewport.width < 500 && !state.touchControlsVisible) {
+        throw new Error('Mobile capture did not enable the touch-specific HUD controls');
       }
       if (!state.canvasRect ||
           state.canvasRect.width < scene.viewport.width * 0.95 ||
