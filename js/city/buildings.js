@@ -4,7 +4,7 @@
 // roofs geometry and one glass curtain-wall geometry per tile) and one OBB collider per building (split for big
 // concave footprints). Pure geometry: materials are attached by js/london-city.js.
 import { BUILDING_KINDS, MATERIALS, ROOFS } from '../brx-geodata.js';
-import { foundationWallBase, terrainEdgeSubdivisionParameters } from '../brussels-terrain.js';
+import { foundationWallBase, terrainEdgeSubdivisionParameters, terrainFootprintMinimum } from '../brussels-terrain.js';
 import { SURF, STYLE } from './materials-shared.js';
 import {
   GeoBuilder, TileBuckets, EdgeHash, hash01, ringArea, ringBox, pointInRing, minAreaRect, obbCollider, clipHalfPlane, triangulate
@@ -363,9 +363,9 @@ export function buildBuildingGeometry(geo, ctx, inRegion) {
     const terrainAt = ctx.world?.terrainSurfaceHeight || (() => 0);
     const terrainY = terrainAt(cx, cz);
     const nRing = ring.length / 2;
-    let minTerrainY = Infinity;
-    for (let k = 0; k < nRing; k++) minTerrainY = Math.min(minTerrainY, terrainAt(ring[k * 2], ring[k * 2 + 1]));
-    if (!Number.isFinite(minTerrainY)) minTerrainY = 0;
+    // Colliders must reach the lowest point along the full perimeter, not just OSM
+    // vertices: long edges can cross a terrain hollow between two equal-height corners.
+    const minTerrainY = terrainFootprintMinimum(terrainAt, ring, 10) ?? 0;
     const flagsBase = style + (shop ? 8 : 0) + (mansardBand && !pieces ? 32 : 0);
     const matCode = isGlass ? mat : mat;
     const panelW = isGlass ? 1.5 : bayW;
