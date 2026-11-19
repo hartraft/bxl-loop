@@ -43,16 +43,22 @@ When the optional grid is present, the current terrain-aware geometry path provi
 - Landmark roots and world ground-height queries use the scene-relative terrain surface.
 - Mapped and scattered trees, park benches and pedestrian-street bollards use the shared ground-height query; kerbside street furniture continues to use the terrain-aware pavement strips.
 
-This is a staged integration, not yet approval to publish the DTM asset. Foundation wall bases now conform to sampled terrain along each footprint edge, but broad podiums and complex large-building interiors may still need explicit plinths or retaining structures. Water levels and embankments need a separate hydrographic datum decision, and all secondary details must be checked against the terrain. The public build remains flat because the generated DTM files are not committed.
+This is a staged integration. The validated DTM is generated and published by the Pages deployment workflow. Building wall bases are subdivided to <=10 m along ground-level footprint edges, and the Palais de Justice and Mont des Arts podiums have sampled retaining skirts. Building colliders now sample the complete footprint perimeter at <=10 m intervals (including between OSM corners) so their lower bounds cannot float over a terrain hollow. This does not replace rendered review of entrances, arcades, passages, podiums and terrace transitions.
 
-## Validation gate before publishing the terrain asset
+## Remaining validation gates for terrain completeness
 
 1. Confirm the GeoTIFF opens as a numeric raster and its CRS is correct.
 2. Confirm its vertical reference is Belgian zero-D / Uccle orthometric height; do not infer this from the horizontal CRS.
 3. Check nodata percentage, min/max and coverage. Values must be plausible for Brussels and the file must cover Grand-Place, Mont des Arts, Parc de Bruxelles / Royal Palace, Palais de Justice and Cinquantenaire.
 4. Record sampled elevations at those locations and along the Grand-Place → Mont des Arts → Parc Royal route. Inspect the climb profile for axis/sign mistakes and abrupt discontinuities.
-5. Grade large building foundations and resolve water / embankment heights before adding the generated asset to the public Pages build.
+5. Visually verify large building foundations, entrances, arcades, podiums and retaining walls against the already-published terrain.
 6. Establish the canal / river water-surface elevation in the same Belgian vertical datum before changing WATER_LEVEL. Port of Brussels publishes variable canal depths (2.5–5.8 m by section), not an absolute water-surface altitude; Flowbru is the authoritative next data source for surface-water level observations, but a suitable canal station and its vertical reference must be confirmed. Do not derive water-surface Y from depth alone.
-7. Render and visually inspect the city, especially Grand-Place, Mont des Arts, Place Poelaert, the canal banks, bridges and the transition at the DTM coverage edge.
+7. Render and visually inspect the city, especially Grand-Place, Mont des Arts, Place Poelaert, the canal banks, bridges and the transition at the DTM coverage edge. Capture repeatable screenshots and inspect them; a passing build is not a substitute for visual review.
 
-The runtime still falls back to the existing flat ground if the optional asset is absent. Keep the generated grid out of Git and Pages until the remaining integration and rendered review are complete.
+The runtime still falls back to the existing flat ground if the optional asset is absent. The public Pages build includes the generated grid. Keep the water surface and quay geometry on their existing conservative scene levels until a canal-specific absolute water level with a documented datum is verified; do not infer it from channel depth or from a sensor whose reference elevation is missing.
+
+## Hydrographic datum decision (2026-11-19)
+
+Hydria reports that FLOWBRU has 25 stations measuring surface-water level/flow and five-minute telemetry, but the public network summary does not identify a canal station with a published absolute level and vertical reference: https://hydria.be/flowbru/. The FLOWBRU Senne Buda station (N02) reports a calculated Senne level in mDNG, but it is on the Senne at the regional boundary, not the Brussels–Charleroi canal: https://hydria.be/wp-content/uploads/2024/09/N02-Senne-Buda.pdf. The available Percke sheet publishes an absolute basin level, but that is a stormwater basin in Uccle, not surface water in the canal: https://hydria.be/wp-content/uploads/2025/06/C14-DO21-BO-Percke.pdf.
+
+Therefore neither is a valid calibration for the canal. Keep the current Brussels water plane and quay tops unchanged until Hydria confirms a canal/lock/bief gauge, its surveyed sensor zero in mDNG, and the conversion to the DTM's Belgian zero-D reference. HIC water-level data are explicitly referenced to 0 m TAW, but that does not establish that an arbitrary HIC station represents the Brussels canal: https://hicws.vlaanderen.be/.

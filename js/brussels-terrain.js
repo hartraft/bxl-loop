@@ -23,6 +23,36 @@ export function terrainEdgeSubdivisionParameters(length, maxStep = 10) {
   return Array.from({ length: segments - 1 }, (_, i) => (i + 1) / segments);
 }
 
+/**
+ * Lowest terrain sample along a building footprint perimeter.
+ * Sampling every edge at <= maxStep catches shallow valleys between OSM corners,
+ * which must also be reflected in the building collider's lower bound.
+ */
+export function terrainFootprintMinimum(sampleHeight, ring, maxStep = 10) {
+  if (typeof sampleHeight !== 'function' || !ring || ring.length < 6 || ring.length % 2 ||
+      !finite(maxStep) || maxStep <= 0) {
+    throw new TypeError('Invalid terrain footprint');
+  }
+  for (let i = 0; i < ring.length; i++) {
+    if (!finite(ring[i])) throw new TypeError('Invalid terrain footprint');
+  }
+  let minimum = Infinity;
+  const count = ring.length / 2;
+  for (let i = 0; i < count; i++) {
+    const j = (i + 1) % count;
+    const x0 = ring[i * 2], z0 = ring[i * 2 + 1];
+    const x1 = ring[j * 2], z1 = ring[j * 2 + 1];
+    const length = Math.hypot(x1 - x0, z1 - z0);
+    const segments = Math.max(1, Math.ceil(length / maxStep));
+    for (let step = 0; step <= segments; step++) {
+      const f = step / segments;
+      const height = sampleHeight(x0 + (x1 - x0) * f, z0 + (z1 - z0) * f);
+      if (finite(height)) minimum = Math.min(minimum, height);
+    }
+  }
+  return minimum === Infinity ? null : minimum;
+}
+
 export function createTerrainSampler(metadata, values) {
   const { width, height, cellSize, minX, minZ, noData = -9999 } = metadata || {};
   if (!Number.isInteger(width) || width < 2 || !Number.isInteger(height) || height < 2 ||
