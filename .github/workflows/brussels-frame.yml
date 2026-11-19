@@ -29,6 +29,7 @@ jobs:
           node --check js/brussels-landmarks.js
           node --check js/brussels-base-landmarks.js
           node --check js/main.js
+          node --check tools/browser-screenshots.mjs
           node --check js/road-reflections.js
           node --check js/city/materials.js
           node --check js/cameras.js
