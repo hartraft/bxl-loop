@@ -689,22 +689,26 @@ async function initApp() {
     const dt = Math.min(Math.max(rawDt, 0.001), 0.05);
     elapsed += dt;
 
-    // Update 3rd-person controllers, camera, signals, traffic & vehicle collisions, building LODs, and dynamic shadow focus
-    gamepadControls.update(dt);
-    controllerManager.update(dt, elapsed);
+    // Interactive simulation is unnecessary for a still capture. Keeping it out
+    // of the software-rendered path avoids spending CPU on traffic, pedestrians,
+    // vehicle physics and audio while the scene is being composed.
+    if (!CAPTURE) {
+      gamepadControls.update(dt);
+      controllerManager.update(dt, elapsed);
+      ridebxl.update(dt);
+      busDriver.update(dt);
+      trafficSystem.update(
+        dt,
+        elapsed,
+        cameraSystem.currentPos,
+        controllerManager.getActiveEntity(),
+        controllerManager.activeMode,
+        cameraSystem.camera
+      );
+      life.update(dt, { camera: cameraSystem.camera, entity: controllerManager.getActiveEntity(), mode: controllerManager.activeMode, peds: trafficSystem.peds, night: VEHICLE_UNIFORMS.night.value });
+      audio.update(dt, cameraSystem.camera);
+    }
     cameraSystem.update(dt, elapsed);
-    ridebxl.update(dt);
-    busDriver.update(dt);
-    trafficSystem.update(
-      dt,
-      elapsed,
-      cameraSystem.currentPos,
-      controllerManager.getActiveEntity(),
-      controllerManager.activeMode,
-      cameraSystem.camera
-    );
-    life.update(dt, { camera: cameraSystem.camera, entity: controllerManager.getActiveEntity(), mode: controllerManager.activeMode, peds: trafficSystem.peds, night: VEHICLE_UNIFORMS.night.value });
-    audio.update(dt, cameraSystem.camera);
     city.update(dt, cameraSystem.camera);
     landmarks.update(dt);
     edgeBarriers.update(elapsed, VEHICLE_UNIFORMS.night.value);
