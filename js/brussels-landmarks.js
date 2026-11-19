@@ -506,7 +506,7 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     const stone = new THREE.MeshStandardMaterial({ color: 0xd9d1c4, roughness: 0.88 });
     const ashlar = new THREE.MeshStandardMaterial({ color: 0xc8beae, roughness: 0.9 });
     const moulding = new THREE.MeshStandardMaterial({ color: 0xe2dacc, roughness: 0.84 });
-    const roof = new THREE.MeshStandardMaterial({ color: 0x41494a, roughness: 0.94 });
+    const roof = new THREE.MeshStandardMaterial({ color: 0x596260, roughness: 0.92 });
     const roofEdge = new THREE.MeshStandardMaterial({ color: 0x30393a, roughness: 0.9 });
     const glass = new THREE.MeshStandardMaterial({ color: 0x273b43, roughness: 0.34, metalness: 0.12 });
     const bronze = new THREE.MeshStandardMaterial({ color: 0x74664d, metalness: 0.48, roughness: 0.58 });
@@ -678,11 +678,6 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     // The real central roof is a high, square drum and a broad flattened dome,
     // with two rows of oculi on each face and a rooftop balustrade.
     box(g, 17.5, 4.6, 17.5, 0, 27.2, -1, stone, 'Central dome drum');
-    // North-facing clock on the drum, with a pale dial and dark hands.
-    mesh(g, new THREE.TorusGeometry(1.05, 0.14, 10, 32), moulding, 0, 27.3, 8.0, 'Dome clock surround');
-    mesh(g, new THREE.CircleGeometry(0.94, 32), stone, 0, 27.3, 8.08, 'Dome clock face');
-    box(g, 0.09, 0.72, 0.05, 0, 27.55, 8.14, bronze, 'Dome clock minute hand');
-    box(g, 0.48, 0.08, 0.05, -0.16, 27.22, 8.14, bronze, 'Dome clock hour hand');
     for (const face of [-1, 1]) {
       const z = -1 + face * 8.9;
       for (const y of [26.4, 28.4]) {
@@ -695,6 +690,11 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     }
     box(g, 18.5, 0.48, 18.5, 0, 29.55, -1, ashlar, 'Dome base cornice');
     mesh(g, new THREE.SphereGeometry(9.0, 40, 24, 0, Math.PI * 2, 0, Math.PI / 2), roof, 0, 29.6, -1, 'Royal Palace flattened dome');
+    // The clock sits on the north face of the dome above the pediment, not hidden behind it.
+    mesh(g, new THREE.TorusGeometry(1.05, 0.14, 10, 32), moulding, 0, 34.2, 6.95, 'Dome clock surround');
+    mesh(g, new THREE.CircleGeometry(0.94, 32), stone, 0, 34.2, 7.03, 'Dome clock face');
+    box(g, 0.09, 0.72, 0.05, 0, 34.45, 7.09, bronze, 'Dome clock minute hand');
+    box(g, 0.48, 0.08, 0.05, -0.16, 34.12, 7.09, bronze, 'Dome clock hour hand');
     box(g, 13.5, 0.38, 13.5, 0, 37.8, -1, ashlar, 'Dome crown balustrade base');
     for (let i = 0; i < 24; i++) {
       const a = i * Math.PI * 2 / 24;
