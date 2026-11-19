@@ -30,8 +30,11 @@ export function terrainEdgeSubdivisionParameters(length, maxStep = 10) {
  */
 export function terrainFootprintMinimum(sampleHeight, ring, maxStep = 10) {
   if (typeof sampleHeight !== 'function' || !ring || ring.length < 6 || ring.length % 2 ||
-      !finite(maxStep) || maxStep <= 0 || !Array.from(ring).every(finite)) {
+      !finite(maxStep) || maxStep <= 0) {
     throw new TypeError('Invalid terrain footprint');
+  }
+  for (let i = 0; i < ring.length; i++) {
+    if (!finite(ring[i])) throw new TypeError('Invalid terrain footprint');
   }
   let minimum = Infinity;
   const count = ring.length / 2;
