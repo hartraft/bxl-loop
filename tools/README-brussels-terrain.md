@@ -45,15 +45,15 @@ When the optional grid is present, the current terrain-aware geometry path provi
 
 This is a staged integration. The validated DTM is generated and published by the Pages deployment workflow. Building wall bases are subdivided to <=10 m along ground-level footprint edges, and the Palais de Justice and Mont des Arts podiums have sampled retaining skirts. Building colliders now sample the complete footprint perimeter at <=10 m intervals (including between OSM corners) so their lower bounds cannot float over a terrain hollow. This does not replace rendered review of entrances, arcades, passages, podiums and terrace transitions.
 
-## Validation gate before publishing the terrain asset
+## Remaining validation gates for terrain completeness
 
 1. Confirm the GeoTIFF opens as a numeric raster and its CRS is correct.
 2. Confirm its vertical reference is Belgian zero-D / Uccle orthometric height; do not infer this from the horizontal CRS.
 3. Check nodata percentage, min/max and coverage. Values must be plausible for Brussels and the file must cover Grand-Place, Mont des Arts, Parc de Bruxelles / Royal Palace, Palais de Justice and Cinquantenaire.
 4. Record sampled elevations at those locations and along the Grand-Place → Mont des Arts → Parc Royal route. Inspect the climb profile for axis/sign mistakes and abrupt discontinuities.
-5. Grade large building foundations and resolve water / embankment heights before adding the generated asset to the public Pages build.
+5. Visually verify large building foundations, entrances, arcades, podiums and retaining walls against the already-published terrain.
 6. Establish the canal / river water-surface elevation in the same Belgian vertical datum before changing WATER_LEVEL. Port of Brussels publishes variable canal depths (2.5–5.8 m by section), not an absolute water-surface altitude; Flowbru is the authoritative next data source for surface-water level observations, but a suitable canal station and its vertical reference must be confirmed. Do not derive water-surface Y from depth alone.
-7. Render and visually inspect the city, especially Grand-Place, Mont des Arts, Place Poelaert, the canal banks, bridges and the transition at the DTM coverage edge.
+7. Render and visually inspect the city, especially Grand-Place, Mont des Arts, Place Poelaert, the canal banks, bridges and the transition at the DTM coverage edge. Capture repeatable screenshots and inspect them; a passing build is not a substitute for visual review.
 
 The runtime still falls back to the existing flat ground if the optional asset is absent. The public Pages build includes the generated grid. Keep the water surface and quay geometry on their existing conservative scene levels until a canal-specific absolute water level with a documented datum is verified; do not infer it from channel depth or from a sensor whose reference elevation is missing.
 
