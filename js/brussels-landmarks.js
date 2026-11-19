@@ -522,39 +522,39 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       box(g, wingW + 1.0, 0.38, wingD + 0.9, x, 7.45, facadeZ, moulding, 'Wing first string course');
       box(g, wingW + 1.0, 0.34, wingD + 0.9, x, 13.65, facadeZ, moulding, 'Wing second string course');
 
-      for (let i = 0; i < 13; i++) {
-        const bx = x - 18 + i * 3;
+      for (let i = 0; i < 9; i++) {
+        const bx = x - 18 + i * 4.5;
         // Ground-floor arcades: broad rusticated piers and round-headed openings.
-        box(g, 1.72, 4.25, 0.28, bx, 3.25, facadeZ + 0.1, shadow, 'Wing ground-floor arched opening');
-        mesh(g, new THREE.TorusGeometry(0.86, 0.14, 8, 20, Math.PI), moulding, bx, 5.36, facadeZ + 0.12, 'Wing arcade arch ring');
-        box(g, 2.0, 0.25, 0.4, bx, 5.4, facadeZ + 0.14, ashlar, 'Wing arcade impost');
+        box(g, 2.35, 4.25, 0.28, bx, 3.25, facadeZ + 0.1, shadow, 'Wing ground-floor arched opening');
+        mesh(g, new THREE.TorusGeometry(1.18, 0.14, 8, 20, Math.PI), moulding, bx, 5.36, facadeZ + 0.12, 'Wing arcade arch ring');
+        box(g, 2.55, 0.25, 0.4, bx, 5.4, facadeZ + 0.14, ashlar, 'Wing arcade impost');
         // Voussoir-like joints on the arch rings give the openings a stone-cut edge.
         for (let k = 0; k < 7; k++) {
           const a = Math.PI * (0.08 + k * 0.14);
-          box(g, 0.12, 0.34, 0.12, bx + Math.cos(a) * 0.86, 5.35 + Math.sin(a) * 0.86, facadeZ + 0.27, ashlar, 'Wing arcade voussoir joint');
+          box(g, 0.12, 0.34, 0.12, bx + Math.cos(a) * 1.18, 5.35 + Math.sin(a) * 1.18, facadeZ + 0.27, ashlar, 'Wing arcade voussoir joint');
         }
 
         // Piano nobile: tall French windows with proper stone surrounds.
         for (const [floorY, winH] of [[9.9, 3.55], [16.0, 3.0]]) {
-          box(g, 1.62, winH, 0.2, bx, floorY, facadeZ + 0.1, glass, 'Wing French window');
-          box(g, 1.92, 0.2, 0.38, bx, floorY - winH / 2 - 0.12, facadeZ + 0.2, moulding, 'Wing window sill');
-          box(g, 1.92, 0.2, 0.38, bx, floorY + winH / 2 + 0.12, facadeZ + 0.2, moulding, 'Wing window lintel');
-          box(g, 0.14, winH + 0.34, 0.3, bx - 0.94, floorY, facadeZ + 0.2, ashlar, 'Wing window jamb');
-          box(g, 0.14, winH + 0.34, 0.3, bx + 0.94, floorY, facadeZ + 0.2, ashlar, 'Wing window jamb');
+          box(g, 1.95, winH, 0.2, bx, floorY, facadeZ + 0.1, glass, 'Wing French window');
+          box(g, 2.25, 0.2, 0.38, bx, floorY - winH / 2 - 0.12, facadeZ + 0.2, moulding, 'Wing window sill');
+          box(g, 2.25, 0.2, 0.38, bx, floorY + winH / 2 + 0.12, facadeZ + 0.2, moulding, 'Wing window lintel');
+          box(g, 0.14, winH + 0.34, 0.3, bx - 1.1, floorY, facadeZ + 0.2, ashlar, 'Wing window jamb');
+          box(g, 0.14, winH + 0.34, 0.3, bx + 1.1, floorY, facadeZ + 0.2, ashlar, 'Wing window jamb');
         }
 
         // Delicate iron balconettes recur along the piano nobile, not every opening.
         if (i % 2 === 0) {
-          box(g, 1.9, 0.12, 0.58, bx, 7.92, facadeZ + 0.62, bronze, 'Wing balcony rail');
-          for (let k = 0; k < 7; k++) {
-            box(g, 0.045, 0.5, 0.055, bx - 0.78 + k * 0.26, 8.16, facadeZ + 0.84, bronze, 'Wing balcony baluster');
+          box(g, 2.2, 0.12, 0.58, bx, 7.92, facadeZ + 0.62, bronze, 'Wing balcony rail');
+          for (let k = 0; k < 9; k++) {
+            box(g, 0.045, 0.5, 0.055, bx - 0.94 + k * 0.235, 8.16, facadeZ + 0.84, bronze, 'Wing balcony baluster');
           }
         }
       }
 
       // Subtle vertical divisions every third bay and a continuous attic balustrade.
-      for (let i = 0; i <= 4; i++) {
-        const px = x - 19.2 + i * 9.6;
+      for (let i = 0; i <= 3; i++) {
+        const px = x - 19.2 + i * 12.8;
         box(g, 0.28, 19.2, 0.42, px, 10.2, facadeZ + 0.12, ashlar, 'Wing bay pilaster');
       }
       box(g, wingW + 1.5, 0.75, wingD + 1.1, x, 20.75, -1.5, ashlar, 'Wing main cornice');
@@ -571,8 +571,10 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       mesh(g, mansardGeo, roof, x, 0, -1.5, 'Wing sloping slate mansard');
       for (let i = 0; i < 7; i++) {
         const bx = x - 16.5 + i * 5.5;
-        box(g, 1.15, 1.35, 0.75, bx, 23.15, 7.0, stone, 'Wing dormer');
-        mesh(g, new THREE.ConeGeometry(0.9, 0.75, 4), roofEdge, bx, 24.2, 7.0, 'Wing dormer cap');
+        const oval = mesh(g, new THREE.TorusGeometry(0.72, 0.11, 8, 24), moulding, bx, 22.95, facadeZ + 0.45, 'Wing oval oeil-de-boeuf surround');
+        oval.scale.set(1.35, 0.78, 1);
+        const pane = mesh(g, new THREE.CircleGeometry(0.66, 24), glass, bx, 22.95, facadeZ + 0.42, 'Wing oval roof window');
+        pane.scale.set(1.35, 0.78, 1);
       }
       for (let i = 0; i < 27; i++) {
         const bx = x - 19 + i * 1.46;
@@ -596,21 +598,23 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       box(g, 0.28, 5.9, 0.62, x + 1.58, 3.55, centralFace + 0.2, ashlar, 'Central arcade pier');
     }
 
-    // Six genuinely colossal Corinthian-order columns rise from the arcade roof
-    // through the piano nobile to the portico entablature.
+    // Six pairs of colossal Corinthian columns rise from the arcade roof. The
+    // rear row is slightly offset in depth so it reads in three-quarter views.
     for (let i = 0; i < 6; i++) {
       const x = -12.5 + i * 5;
-      cylinder(g, 0.74, 0.9, 13.0, x, 14.7, centralFace + 1.35, stone, 32);
-      cylinder(g, 1.02, 1.02, 0.48, x, 8.35, centralFace + 1.35, ashlar, 24);
-      cylinder(g, 1.02, 1.02, 0.44, x, 21.2, centralFace + 1.35, ashlar, 24);
-      // Corinthian capital: abacus and four restrained corner volutes.
-      box(g, 2.0, 0.34, 1.85, x, 21.55, centralFace + 1.35, moulding, 'Corinthian column abacus');
-      for (const dx of [-0.68, 0.68]) {
-        for (const dz of [-0.56, 0.56]) {
-          mesh(g, new THREE.SphereGeometry(0.24, 10, 8), ashlar, x + dx, 21.48, centralFace + 1.35 + dz, 'Corinthian capital volute');
+      for (const z of [centralFace + 0.95, centralFace + 2.55]) {
+        cylinder(g, 0.74, 0.9, 13.0, x, 14.7, z, stone, 32);
+        cylinder(g, 1.02, 1.02, 0.48, x, 8.35, z, ashlar, 24);
+        cylinder(g, 1.02, 1.02, 0.44, x, 21.2, z, ashlar, 24);
+        // Corinthian capital: abacus and four restrained corner volutes.
+        box(g, 2.0, 0.34, 1.85, x, 21.55, z, moulding, 'Corinthian column abacus');
+        for (const dx of [-0.68, 0.68]) {
+          for (const dz of [-0.56, 0.56]) {
+            mesh(g, new THREE.SphereGeometry(0.24, 10, 8), ashlar, x + dx, 21.48, z + dz, 'Corinthian capital volute');
+          }
         }
+        cylinder(g, 1.18, 1.18, 0.24, x, 8.08, z, ashlar, 24);
       }
-      cylinder(g, 1.18, 1.18, 0.24, x, 8.08, centralFace + 1.35, ashlar, 24);
     }
 
     // Five tall glazed doors/windows sit behind the colonnade, not as a row of
