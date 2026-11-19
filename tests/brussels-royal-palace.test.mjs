@@ -14,11 +14,12 @@ testCase('Royal Palace north façade follows the documented five-arch, six-colum
   assert.match(palace, /for \(let i = 0; i < 6; i\+\+\)/);
   assert.match(palace, /Central open entrance arch/);
   assert.match(palace, /Corinthian capital volute/);
+  assert.match(palace, /for \(const z of \[centralFace \+ 0\.95, centralFace \+ 2\.55\]\)/);
   assert.match(palace, /Central piano nobile French door/);
 });
 
-testCase('Royal Palace wings retain thirteen bays and three horizontal registers', () => {
-  assert.match(palace, /for \(let i = 0; i < 13; i\+\+\)/);
+testCase('Royal Palace wings retain nine bays and three horizontal registers', () => {
+  assert.match(palace, /for \(let i = 0; i < 9; i\+\+\)/);
   assert.match(palace, /Wing ground-floor arched opening/);
   assert.match(palace, /Wing French window/);
   assert.match(palace, /Wing first string course/);
