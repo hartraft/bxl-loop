@@ -115,7 +115,9 @@ for (const scene of scenes) {
         '--ignore-gpu-blocklist',
         '--enable-unsafe-swiftshader',
         '--use-gl=angle',
-        '--use-angle=swiftshader',
+        // This is the explicit WebGL fallback path; `swiftshader` selects the
+        // OpenGL ES driver path and is not the intended backend for forced WebGL.
+        '--use-angle=swiftshader-webgl',
         '--disable-dev-shm-usage',
         '--kiosk',
         '--window-size=1600,1000',
