@@ -88,7 +88,7 @@ jobs:
   # Pull-request-only visual validation. Kept inside this established workflow so
   # GitHub runs it for this PR before a new workflow file has reached main.
   rendered-scenes:
-    if: github.event_name == 'pull_request'
+    if: github.event_name == 'pull_request' || github.ref == 'refs/heads/feat/issue-34-rendered-screenshots'
     runs-on: ubuntu-latest
     timeout-minutes: 60
     steps:
