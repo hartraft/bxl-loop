@@ -71,6 +71,11 @@ async function initApp() {
   renderer.shadowMap.enabled = !CAPTURE_MODE;
   renderer.lighting = new ClusteredLighting(256, 32, 28, 48);
   container.appendChild(renderer.domElement);
+  if (CAPTURE_MODE) {
+    renderer.domElement.addEventListener('webglcontextlost', (event) => {
+      console.error(`[bxl-capture] WebGL context lost: ${event.statusMessage || 'unknown reason'}`);
+    });
+  }
 
   // Start-up phase timings (logged once as "[init] ...") to keep load-time regressions traceable
   let initTimings = [];
