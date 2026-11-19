@@ -10,7 +10,7 @@ const palace = source.slice(start, end);
 
 testCase('Royal Palace north façade follows the documented five-arch, six-pair column composition', () => {
   assert.match(palace, /Five open, full-height entrance arches/);
-  assert.match(palace, /Six genuinely colossal Corinthian-order columns/);
+  assert.match(palace, /Six pairs of colossal Corinthian columns/);
   assert.match(palace, /for \(let i = 0; i < 6; i\+\+\)/);
   assert.match(palace, /Central open entrance arch/);
   assert.match(palace, /Corinthian capital volute/);
