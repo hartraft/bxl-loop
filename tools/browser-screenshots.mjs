@@ -108,7 +108,7 @@ for (const scene of scenes) {
   try {
     await fs.rm(file, { force: true });
     browser = await chromium.launch({
-      headless: true,
+      headless: false,
       timeout: 30000,
       args: [
         '--enable-webgl',
@@ -116,7 +116,10 @@ for (const scene of scenes) {
         '--enable-unsafe-swiftshader',
         '--use-gl=angle',
         '--use-angle=swiftshader',
-        '--disable-dev-shm-usage'
+        '--disable-dev-shm-usage',
+        '--kiosk',
+        '--window-size=1600,1000',
+        '--window-position=0,0'
       ]
     });
     metadata.browser ||= browser.version();
@@ -177,14 +180,30 @@ for (const scene of scenes) {
         throw new Error(`3D canvas does not fill the viewport: ${JSON.stringify(state.canvasRect)}`);
       }
 
-      await page.screenshot({
-        path: file,
-        type: 'png',
-        fullPage: false,
-        animations: 'disabled',
-        timeout: 60000
-      });
-      const image = await validatePng(file, scene.viewport);
+      let image;
+      let browserCaptureError = null;
+      try {
+        await page.screenshot({
+          path: file,
+          type: 'png',
+          fullPage: false,
+          animations: 'disabled',
+          timeout: 60000
+        });
+        image = await validatePng(file, scene.viewport);
+        metadata.diagnostics.push({ scene: scene.name, captureMethod: 'playwright-viewport' });
+      } catch (error) {
+        browserCaptureError = error.message;
+        await fs.rm(file, { force: true });
+        // Chromium's DevTools screenshot path can fail independently of the
+        // rendered WebGL front buffer. Fall back to the actual Xvfb display.
+        const raw = path.join(outputDir, scene.name + '.xwd');
+        execFileSync('xwd', ['-root', '-silent', '-out', raw], { timeout: 15000 });
+        execFileSync('convert', [raw, '-crop', `${scene.viewport.width}x${scene.viewport.height}+0+0`, '+repage', file], { timeout: 30000 });
+        await fs.rm(raw, { force: true });
+        image = await validatePng(file, scene.viewport);
+        metadata.diagnostics.push({ scene: scene.name, captureMethod: 'x11-display', browserCaptureError });
+      }
       if (errors.length) throw new Error(`Browser emitted errors: ${JSON.stringify(errors)}`);
       metadata.captures.push({
         name: scene.name,
