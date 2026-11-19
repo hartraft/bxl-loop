@@ -500,136 +500,210 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     // The upper-to-lower central view corridor is deliberately free of tall planting and buildings.
   });
   addLandmark('royalPalace', (g) => {
-    // Palais Royal: the long, pale Euville-stone north front facing Parc de Bruxelles.
-    // The model is deliberately composed as the real accreted palace: central corps de logis,
-    // two long wings and slightly projecting terminal pavilions, rather than one generic block.
-    const stone = new THREE.MeshStandardMaterial({ color: 0xd8d0c2, roughness: 0.86 });
-    const ashlar = new THREE.MeshStandardMaterial({ color: 0xc7bdad, roughness: 0.9 });
-    const roof = new THREE.MeshStandardMaterial({ color: 0x343a3a, roughness: 0.92 });
-    const shadow = new THREE.MeshStandardMaterial({ color: 0x303a3c, roughness: 0.8 });
-    const bronze = new THREE.MeshStandardMaterial({ color: 0x796c53, metalness: 0.35, roughness: 0.72 });
-    const facadeZ = 8;
+    // North façade after Henri Maquet's 1904–09 Beaux-Arts reconstruction.
+    // Keep the measured hierarchy legible at city scale: 13-bay wings, rusticated
+    // arcade level, piano nobile, upper register, central six-column portico and dome.
+    const stone = new THREE.MeshStandardMaterial({ color: 0xd9d1c4, roughness: 0.88 });
+    const ashlar = new THREE.MeshStandardMaterial({ color: 0xc8beae, roughness: 0.9 });
+    const moulding = new THREE.MeshStandardMaterial({ color: 0xe2dacc, roughness: 0.84 });
+    const roof = new THREE.MeshStandardMaterial({ color: 0x41494a, roughness: 0.94 });
+    const roofEdge = new THREE.MeshStandardMaterial({ color: 0x30393a, roughness: 0.9 });
+    const glass = new THREE.MeshStandardMaterial({ color: 0x273b43, roughness: 0.34, metalness: 0.12 });
+    const bronze = new THREE.MeshStandardMaterial({ color: 0x74664d, metalness: 0.48, roughness: 0.58 });
+    const shadow = new THREE.MeshStandardMaterial({ color: 0x303638, roughness: 0.84 });
+    const facadeZ = 8.15;
     const wingW = 39, wingH = 20.5, wingD = 19;
     const wingXs = [-42, 42];
+
+    // The two long wings each have thirteen narrow bays over three registers.
     for (const x of wingXs) {
-      box(g, wingW, wingH, wingD, x, wingH / 2, -1.5, stone, 'Royal Palace long wing');
-      // Rusticated piano nobile base with evenly spaced arched ground-floor openings.
-      box(g, wingW + 0.5, 1.1, wingD + 0.4, x, 0.55, -1.5, ashlar, 'Palace rusticated plinth');
-      for (let i = 0; i < 7; i++) {
-        const bx = x - 16.5 + i * 5.5;
-        box(g, 2.6, 5.2, 0.22, bx, 3.4, facadeZ + 0.1, shadow, 'Ground-floor arched opening');
-        mesh(g, new THREE.TorusGeometry(1.3, 0.16, 6, 16, Math.PI), stone, bx, 6.0, facadeZ + 0.1, 'Arcade voussoir');
-        box(g, 3.7, 0.3, 0.45, bx, 6.15, facadeZ + 0.12, ashlar, 'Arcade impost');
-      }
-      // Two upper storeys: aligned French windows, stone surrounds, sill courses and cornices.
-      for (let floor = 0; floor < 2; floor++) {
-        const y = floor === 0 ? 10.1 : 16.0;
-        for (let i = 0; i < 7; i++) {
-          const bx = x - 16.5 + i * 5.5;
-          box(g, 2.05, 3.45, 0.18, bx, y, facadeZ + 0.13, shadow, 'Palace tall sash window');
-          box(g, 2.45, 0.22, 0.3, bx, y - 1.95, facadeZ + 0.22, ashlar, 'Window sill');
-          box(g, 2.45, 0.2, 0.3, bx, y + 1.9, facadeZ + 0.22, ashlar, 'Window lintel');
-          box(g, 0.16, 3.75, 0.24, bx - 1.2, y, facadeZ + 0.22, ashlar, 'Window jamb');
-          box(g, 0.16, 3.75, 0.24, bx + 1.2, y, facadeZ + 0.22, ashlar, 'Window jamb');
+      box(g, wingW, wingH, wingD, x, wingH / 2, -1.5, stone, 'Royal Palace thirteen-bay wing');
+      box(g, wingW + 0.8, 1.2, wingD + 0.8, x, 0.6, -1.5, ashlar, 'Wing rusticated plinth');
+      box(g, wingW + 1.0, 0.38, wingD + 0.9, x, 7.45, facadeZ, moulding, 'Wing first string course');
+      box(g, wingW + 1.0, 0.34, wingD + 0.9, x, 13.65, facadeZ, moulding, 'Wing second string course');
+
+      for (let i = 0; i < 13; i++) {
+        const bx = x - 18 + i * 3;
+        // Ground-floor arcades: broad rusticated piers and round-headed openings.
+        box(g, 1.72, 4.25, 0.28, bx, 3.25, facadeZ + 0.1, shadow, 'Wing ground-floor arched opening');
+        mesh(g, new THREE.TorusGeometry(0.86, 0.14, 8, 20, Math.PI), moulding, bx, 5.36, facadeZ + 0.12, 'Wing arcade arch ring');
+        box(g, 2.0, 0.25, 0.4, bx, 5.4, facadeZ + 0.14, ashlar, 'Wing arcade impost');
+        // Voussoir-like joints on the arch rings give the openings a stone-cut edge.
+        for (let k = 0; k < 7; k++) {
+          const a = Math.PI * (0.08 + k * 0.14);
+          box(g, 0.12, 0.34, 0.12, bx + Math.cos(a) * 0.86, 5.35 + Math.sin(a) * 0.86, facadeZ + 0.27, ashlar, 'Wing arcade voussoir joint');
+        }
+
+        // Piano nobile: tall French windows with proper stone surrounds.
+        for (const [floorY, winH] of [[9.9, 3.55], [16.0, 3.0]]) {
+          box(g, 1.62, winH, 0.2, bx, floorY, facadeZ + 0.1, glass, 'Wing French window');
+          box(g, 1.92, 0.2, 0.38, bx, floorY - winH / 2 - 0.12, facadeZ + 0.2, moulding, 'Wing window sill');
+          box(g, 1.92, 0.2, 0.38, bx, floorY + winH / 2 + 0.12, facadeZ + 0.2, moulding, 'Wing window lintel');
+          box(g, 0.14, winH + 0.34, 0.3, bx - 0.94, floorY, facadeZ + 0.2, ashlar, 'Wing window jamb');
+          box(g, 0.14, winH + 0.34, 0.3, bx + 0.94, floorY, facadeZ + 0.2, ashlar, 'Wing window jamb');
+        }
+
+        // Delicate iron balconettes recur along the piano nobile, not every opening.
+        if (i % 2 === 0) {
+          box(g, 1.9, 0.12, 0.58, bx, 7.92, facadeZ + 0.62, bronze, 'Wing balcony rail');
+          for (let k = 0; k < 7; k++) {
+            box(g, 0.045, 0.5, 0.055, bx - 0.78 + k * 0.26, 8.16, facadeZ + 0.84, bronze, 'Wing balcony baluster');
+          }
         }
       }
-      box(g, wingW + 1.8, 0.8, wingD + 1, x, 20.6, -1.5, ashlar, 'Palace continuous entablature');
-      box(g, wingW + 1.2, 1.3, wingD + 0.8, x, 21.6, -1.5, roof, 'Palace mansard roof');
-      // Dormers punctuate the slate roof.
-      for (let i = 0; i < 5; i++) {
-        const bx = x - 15 + i * 7.5;
-        box(g, 1.7, 1.8, 1.2, bx, 22.7, 4.5, stone, 'Palace roof dormer');
-        mesh(g, new THREE.ConeGeometry(1.2, 1.1, 4), roof, bx, 24.0, 4.5, 'Dormer cap');
+
+      // Subtle vertical divisions every third bay and a continuous attic balustrade.
+      for (let i = 0; i <= 4; i++) {
+        const px = x - 19.2 + i * 9.6;
+        box(g, 0.28, 19.2, 0.42, px, 10.2, facadeZ + 0.12, ashlar, 'Wing bay pilaster');
+      }
+      box(g, wingW + 1.5, 0.75, wingD + 1.1, x, 20.75, -1.5, ashlar, 'Wing main cornice');
+      box(g, wingW + 1.0, 0.7, wingD + 0.8, x, 21.55, -1.5, roof, 'Wing mansard lower slope');
+      // A shallow sloped front roof face, rather than a flat rectangular roof cap.
+      const mansard = new THREE.Shape();
+      mansard.moveTo(-wingW / 2, 0);
+      mansard.lineTo(wingW / 2, 0);
+      mansard.lineTo(wingW / 2 - 2.0, 2.4);
+      mansard.lineTo(-wingW / 2 + 2.0, 2.4);
+      mansard.closePath();
+      const mansardGeo = new THREE.ExtrudeGeometry(mansard, { depth: 17, bevelEnabled: false });
+      mansardGeo.translate(0, 22.0, -10.0);
+      mesh(g, mansardGeo, roof, x, 0, -1.5, 'Wing sloping slate mansard');
+      for (let i = 0; i < 7; i++) {
+        const bx = x - 16.5 + i * 5.5;
+        box(g, 1.15, 1.35, 0.75, bx, 23.15, 7.0, stone, 'Wing dormer');
+        mesh(g, new THREE.ConeGeometry(0.9, 0.75, 4), roofEdge, bx, 24.2, 7.0, 'Wing dormer cap');
+      }
+      for (let i = 0; i < 27; i++) {
+        const bx = x - 19 + i * 1.46;
+        box(g, 0.28, 0.72, 0.28, bx, 22.0, facadeZ + 0.35, ashlar, 'Wing attic baluster');
       }
     }
-    // Central projecting avant-corps, the ceremonial focus of the façade.
-    // The central masonry block projects 2 m farther forward than the wings;
-    // keep its architectural details in front of that actual wall plane.
-    const centralFace = 10.35;
-    box(g, 34, 22.5, 22, 0, 11.25, -1, stone, 'Palace central corps de logis');
-    box(g, 35, 1.4, 22.8, 0, 1.0, -1, ashlar, 'Central rusticated base');
-    box(g, 35.5, 0.8, 0.55, 0, 2.0, centralFace, ashlar, 'Central base upper string course');
 
-    // Five arched entrance bays: dark recesses, voussoirs, imposts and projecting keystones.
+    // Central corps de logis projects slightly forward from the wings.
+    const centralFace = 10.0;
+    box(g, 34, 24, 22, 0, 12, -1, stone, 'Palace central corps de logis');
+    box(g, 35.5, 1.35, 22.8, 0, 0.95, -1, ashlar, 'Central rusticated base');
+    box(g, 35.5, 0.42, 0.65, 0, 7.45, centralFace + 0.12, moulding, 'Central arcade impost course');
+
+    // Five open, full-height entrance arches in the rusticated ground storey.
     for (let i = 0; i < 5; i++) {
       const x = -10 + i * 5;
-      box(g, 2.45, 5.3, 0.28, x, 3.8, centralFace, shadow, 'Central ceremonial arcade recess');
-      mesh(g, new THREE.TorusGeometry(1.23, 0.2, 8, 24, Math.PI), ashlar, x, 6.45, centralFace + 0.12, 'Central arcade voussoir');
-      box(g, 3.2, 0.34, 0.62, x, 6.55, centralFace + 0.12, ashlar, 'Central arcade impost');
-      box(g, 0.32, 5.9, 0.62, x - 1.52, 3.9, centralFace + 0.1, ashlar, 'Arcade pier');
-      box(g, 0.32, 5.9, 0.62, x + 1.52, 3.9, centralFace + 0.1, ashlar, 'Arcade pier');
-      box(g, 0.5, 0.65, 0.72, x, 6.95, centralFace + 0.12, stone, 'Arcade projecting keystone');
+      box(g, 2.55, 5.0, 0.24, x, 3.45, centralFace + 0.12, shadow, 'Central open entrance arch');
+      mesh(g, new THREE.TorusGeometry(1.28, 0.2, 10, 28, Math.PI), moulding, x, 5.95, centralFace + 0.24, 'Central entrance voussoirs');
+      box(g, 3.0, 0.32, 0.55, x, 6.0, centralFace + 0.24, ashlar, 'Central arch impost');
+      box(g, 0.28, 5.9, 0.62, x - 1.58, 3.55, centralFace + 0.2, ashlar, 'Central arcade pier');
+      box(g, 0.28, 5.9, 0.62, x + 1.58, 3.55, centralFace + 0.2, ashlar, 'Central arcade pier');
     }
 
-    // Six monumental columns stand proud of the façade, framing the piano nobile.
+    // Six genuinely colossal Corinthian-order columns rise from the arcade roof
+    // through the piano nobile to the portico entablature.
     for (let i = 0; i < 6; i++) {
       const x = -12.5 + i * 5;
-      cylinder(g, 0.72, 0.82, 9.1, x, 12.5, centralFace + 0.9, stone, 24);
-      cylinder(g, 0.95, 0.95, 0.45, x, 8.0, centralFace + 0.9, ashlar, 24);
-      cylinder(g, 0.95, 0.95, 0.5, x, 17.0, centralFace + 0.9, ashlar, 24);
-      cylinder(g, 1.08, 1.08, 0.42, x, 17.45, centralFace + 0.9, ashlar, 24);
-      cylinder(g, 0.12, 0.12, 0.35, x, 17.75, centralFace + 0.9, bronze, 12);
+      cylinder(g, 0.74, 0.9, 13.0, x, 14.7, centralFace + 1.35, stone, 32);
+      cylinder(g, 1.02, 1.02, 0.48, x, 8.35, centralFace + 1.35, ashlar, 24);
+      cylinder(g, 1.02, 1.02, 0.44, x, 21.2, centralFace + 1.35, ashlar, 24);
+      // Corinthian capital: abacus and four restrained corner volutes.
+      box(g, 2.0, 0.34, 1.85, x, 21.55, centralFace + 1.35, moulding, 'Corinthian column abacus');
+      for (const dx of [-0.68, 0.68]) {
+        for (const dz of [-0.56, 0.56]) {
+          mesh(g, new THREE.SphereGeometry(0.24, 10, 8), ashlar, x + dx, 21.48, centralFace + 1.35 + dz, 'Corinthian capital volute');
+        }
+      }
+      cylinder(g, 1.18, 1.18, 0.24, x, 8.08, centralFace + 1.35, ashlar, 24);
     }
 
-    // The piano nobile is articulated with tall French windows, dressed surrounds,
-    // projecting sills and shallow balustraded balconies rather than dark flat slots.
-    for (let i = 0; i < 7; i++) {
-      const x = -14 + i * 4.65;
-      box(g, 2.0, 3.35, 0.22, x, 19.0, centralFace + 0.08, shadow, 'Palace central piano nobile window');
-      box(g, 2.45, 0.22, 0.42, x, 17.15, centralFace + 0.25, ashlar, 'Central window sill');
-      box(g, 2.45, 0.22, 0.42, x, 20.85, centralFace + 0.25, ashlar, 'Central window lintel');
-      box(g, 0.18, 3.7, 0.35, x - 1.22, 19.0, centralFace + 0.24, ashlar, 'Central window jamb');
-      box(g, 0.18, 3.7, 0.35, x + 1.22, 19.0, centralFace + 0.24, ashlar, 'Central window jamb');
-      box(g, 2.55, 0.16, 0.95, x, 17.25, centralFace + 0.65, bronze, 'Central French window balcony rail');
-      for (let k = 0; k < 9; k++) {
-        box(g, 0.055, 0.48, 0.07, x - 1.12 + k * 0.28, 17.55, centralFace + 0.98, bronze, 'Balcony iron baluster');
+    // Five tall glazed doors/windows sit behind the colonnade, not as a row of
+    // unrelated dark slots on the upper wall.
+    for (let i = 0; i < 5; i++) {
+      const x = -10 + i * 5;
+      box(g, 2.65, 6.6, 0.18, x, 14.6, centralFace + 0.16, glass, 'Central piano nobile French door');
+      box(g, 2.95, 0.22, 0.42, x, 11.15, centralFace + 0.28, moulding, 'Central French door sill');
+      box(g, 2.95, 0.22, 0.42, x, 18.05, centralFace + 0.28, moulding, 'Central French door lintel');
+      box(g, 0.16, 6.85, 0.32, x - 1.52, 14.6, centralFace + 0.28, ashlar, 'Central French door jamb');
+      box(g, 0.16, 6.85, 0.32, x + 1.52, 14.6, centralFace + 0.28, ashlar, 'Central French door jamb');
+      box(g, 3.0, 0.14, 0.9, x, 11.45, centralFace + 0.72, bronze, 'Central portico balcony rail');
+      for (let k = 0; k < 11; k++) {
+        box(g, 0.045, 0.55, 0.055, x - 1.32 + k * 0.264, 11.72, centralFace + 1.0, bronze, 'Central portico baluster');
       }
     }
-    // Broad engaged pilasters visually tie the central pavilion into the two wings.
-    for (const x of [-16.5, -11.0, 11.0, 16.5]) {
-      box(g, 0.72, 15.8, 0.72, x, 11.0, centralFace + 0.35, ashlar, 'Central avant-corps pilaster');
-      box(g, 1.15, 0.65, 0.95, x, 3.5, centralFace + 0.35, ashlar, 'Pilaster base');
-      box(g, 1.15, 0.7, 0.95, x, 18.9, centralFace + 0.35, ashlar, 'Pilaster capital');
+
+    // Central attic: five smaller windows, sculpted panels and a continuous balustrade.
+    box(g, 36.5, 1.0, 23.5, 0, 22.9, -1, ashlar, 'Central entablature');
+    for (let i = 0; i < 5; i++) {
+      const x = -12 + i * 6;
+      box(g, 1.55, 1.55, 0.18, x, 24.15, centralFace + 0.12, glass, 'Central attic window');
+      box(g, 1.9, 0.18, 0.34, x, 23.25, centralFace + 0.25, moulding, 'Attic window sill');
+      box(g, 1.9, 0.18, 0.34, x, 25.05, centralFace + 0.25, moulding, 'Attic window lintel');
+      box(g, 3.6, 1.15, 0.18, x, 26.35, centralFace + 0.14, ashlar, 'Sculpted attic panel');
     }
 
-    // Classical entablature and the triangular pediment visible in the reference elevation.
-    box(g, 37, 1.15, 24, 0, 22.8, -1, ashlar, 'Palace central entablature');
-    box(g, 38, 0.65, 24.5, 0, 23.7, -1, stone, 'Palace central attic balustrade');
-    for (let i = 0; i < 25; i++) {
-      const x = -18 + i * 1.5;
-      box(g, 0.42, 1.0, 0.42, x, 24.5, centralFace + 0.2, ashlar, 'Balustrade baluster');
-    }
+    // Monumental triangular pediment, with an inset tympanum and a simple relief group.
     const pediment = new THREE.Shape();
-    pediment.moveTo(-10.5, 0);
-    pediment.lineTo(0, 5.2);
-    pediment.lineTo(10.5, 0);
+    pediment.moveTo(-11.5, 0);
+    pediment.lineTo(11.5, 0);
+    pediment.lineTo(0, 5.8);
     pediment.closePath();
-    mesh(g, new THREE.ShapeGeometry(pediment), ashlar, 0, 23.9, centralFace + 0.18, 'Palace central triangular pediment');
-    box(g, 22.0, 0.42, 0.72, 0, 23.95, centralFace + 0.2, stone, 'Pediment lower moulding');
-    box(g, 22.0, 0.36, 0.72, 0, 29.05, centralFace + 0.2, stone, 'Pediment apex moulding');
-
-    // Roof pavilion and restrained shallow dome; retain the palace's low classical skyline.
-    box(g, 11, 3.0, 11, 0, 25.4, -1, roof, 'Palace central roof pavilion');
-    box(g, 9.5, 0.45, 9.5, 0, 27.1, -1, ashlar, 'Dome cornice');
-    mesh(g, new THREE.SphereGeometry(4.4, 24, 12, 0, Math.PI * 2, 0, Math.PI / 2), roof, 0, 27.0, -1, 'Palace shallow dome');
-    for (let i = 0; i < 4; i++) {
-      const a = i * Math.PI / 2;
-      cylinder(g, 0.72, 0.72, 0.22, Math.sin(a) * 3.5, 29.3, -1 + Math.cos(a) * 3.5, ashlar, 16);
+    mesh(g, new THREE.ShapeGeometry(pediment), ashlar, 0, 23.55, centralFace + 0.18, 'Palace sculpted triangular pediment');
+    box(g, 23.5, 0.42, 0.8, 0, 23.55, centralFace + 0.2, moulding, 'Pediment lower moulding');
+    box(g, 0.55, 5.8, 0.55, -11.5, 26.45, centralFace + 0.2, moulding, 'Pediment left raking cornice');
+    box(g, 0.55, 5.8, 0.55, 11.5, 26.45, centralFace + 0.2, moulding, 'Pediment right raking cornice');
+    // Allegorical centre and flanking relief figures are deliberately low-relief silhouettes.
+    mesh(g, new THREE.SphereGeometry(0.95, 16, 12), moulding, 0, 26.0, centralFace + 0.48, 'Belgium allegory relief');
+    for (const x of [-4.2, -2.7, 2.7, 4.2]) {
+      mesh(g, new THREE.SphereGeometry(0.52, 12, 10), moulding, x, 25.1 + (Math.abs(x) < 3 ? 0.35 : 0), centralFace + 0.5, 'Pediment allegorical relief');
     }
-    cylinder(g, 0.16, 0.2, 1.2, 0, 31.0, -1, bronze, 12);
-    cylinder(g, 0.08, 0.08, 2.2, 0, 32.4, -1, bronze, 8);
-    // Terminal pavilions and the ceremonial forecourt railing.
+
+    // The real central roof is a high, square drum and a broad flattened dome,
+    // with two rows of oculi on each face and a rooftop balustrade.
+    box(g, 17.5, 4.6, 17.5, 0, 27.2, -1, stone, 'Central dome drum');
+    for (const face of [-1, 1]) {
+      const z = -1 + face * 8.9;
+      for (const y of [26.4, 28.4]) {
+        for (let i = 0; i < 3; i++) {
+          const x = -5.4 + i * 5.4;
+          mesh(g, new THREE.TorusGeometry(0.62, 0.12, 8, 20), moulding, x, y, z + face * 0.08, 'Dome drum oculus surround');
+          mesh(g, new THREE.CircleGeometry(0.52, 20), glass, x, y, z + face * 0.1, 'Dome drum oculus');
+        }
+      }
+    }
+    box(g, 18.5, 0.48, 18.5, 0, 29.55, -1, ashlar, 'Dome base cornice');
+    mesh(g, new THREE.SphereGeometry(9.0, 40, 24, 0, Math.PI * 2, 0, Math.PI / 2), roof, 0, 29.6, -1, 'Royal Palace flattened dome');
+    box(g, 13.5, 0.38, 13.5, 0, 37.8, -1, ashlar, 'Dome crown balustrade base');
+    for (let i = 0; i < 24; i++) {
+      const a = i * Math.PI * 2 / 24;
+      box(g, 0.32, 0.78, 0.32, Math.cos(a) * 6.55, 38.35, -1 + Math.sin(a) * 6.55, ashlar, 'Dome crown baluster');
+    }
+    box(g, 5.0, 0.65, 5.0, 0, 38.2, -1, ashlar, 'Dome lantern base');
+    cylinder(g, 1.35, 1.55, 1.5, 0, 39.3, -1, stone, 24);
+    cylinder(g, 0.8, 1.25, 1.2, 0, 40.65, -1, roof, 24);
+    // Flag mast and Belgian tricolour, kept small enough not to dominate the silhouette.
+    cylinder(g, 0.07, 0.07, 5.2, 0, 43.85, -1, bronze, 10);
+    const flag = new THREE.Group();
+    flag.position.set(0.08, 45.7, -1);
+    box(flag, 0.08, 1.65, 0.08, 0, 0, 0, shadow, 'Flag staff');
+    for (let i = 0; i < 3; i++) {
+      const flagMat = new THREE.MeshStandardMaterial({ color: [0x171717, 0xf2d02e, 0xe12b2b][i], roughness: 0.9 });
+      box(flag, 0.08, 1.1, 0.025, 0.16, 0, 0, flagMat, 'Belgian flag stripe');
+    }
+    g.add(flag);
+
+    // Terminal pavilions close the long façade; each has a pavilion roof and a stronger
+    // corner risalit, while the iron-and-stone forecourt boundary stays visually light.
     for (const x of [-65, 65]) {
       box(g, 8, 23, 21, x, 11.5, -1, stone, 'Palace terminal pavilion');
-      box(g, 9.5, 1, 22, x, 23.2, -1, ashlar, 'Pavilion cornice');
-      box(g, 9, 1.4, 21, x, 24.3, -1, roof, 'Pavilion roof');
-      for (const dx of [-2.5, 0, 2.5]) box(g, 1.5, 4, 0.2, x + dx, 14, facadeZ + 0.1, shadow, 'Pavilion window');
+      box(g, 9.5, 0.9, 22, x, 23.25, -1, moulding, 'Terminal pavilion cornice');
+      mesh(g, new THREE.ConeGeometry(6.6, 2.0, 4), roof, x, 25.0, -1, 'Terminal pavilion pavilion roof');
+      for (const dx of [-2.5, 0, 2.5]) {
+        box(g, 1.55, 4.4, 0.22, x + dx, 14.0, facadeZ + 0.1, glass, 'Terminal pavilion window');
+      }
     }
-    for (let x = -58; x <= 58; x += 4) {
-      cylinder(g, 0.12, 0.16, 1.15, x, 0.58, 14, ashlar, 8);
+    for (let x = -58; x <= 58; x += 2.4) {
+      cylinder(g, 0.1, 0.14, 1.1, x, 0.55, 14, ashlar, 8);
+      if (x < 57.9) box(g, 2.4, 0.07, 0.07, x + 1.2, 0.9, 14, bronze, 'Forecourt railing');
     }
   });
-  addLandmark('cathedral', (g) => {
+    addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');
     box(g, 30, 1, 46, 0, 13, 0, materials.roof);
     for (const x of [-10, 10]) {
