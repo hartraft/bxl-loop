@@ -14,7 +14,7 @@ testCase('Royal Palace north façade follows the documented five-arch, six-pair 
   assert.match(palace, /for \(let i = 0; i < 6; i\+\+\)/);
   assert.match(palace, /Central open entrance arch/);
   assert.match(palace, /Corinthian capital volute/);
-  assert.match(palace, /for \(const z of \[centralFace \+ 0\.95, centralFace \+ 2\.55\]\)/);
+  assert.match(palace, /for \(const z of \[centralFace \+ 1\.15, centralFace \+ 3\.45\]\)/);
   assert.match(palace, /Central piano nobile French door/);
 });
 
