@@ -193,6 +193,11 @@ jobs:
         run: |
           npm install --no-save playwright
           npx playwright install --with-deps chromium
+      - name: Install ImageMagick for screenshot pixel validation
+        if: steps.capture-runner.outputs.present == 'true'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y imagemagick
       - name: Start the staged site
         if: steps.capture-runner.outputs.present == 'true'
         run: |
