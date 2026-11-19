@@ -801,7 +801,17 @@ async function initApp() {
         teleportTo(location.x, location.z, location.heading);
       }
       for (let i = 0; i < 4; i++) window.__bxlTick(0.05, false);
-      window.__bxlTick(0.05, true);
+      if (locationId === 'palaisDeJustice') {
+        // A scenic camera is needed to show the Palais' monumental façade and
+        // Place Poelaert together; a player-height chase view crops the building.
+        const camera = cameraSystem.camera;
+        camera.position.set(350, 145, 1300);
+        camera.lookAt(-50, 25, 1100);
+        camera.updateMatrixWorld(true);
+        renderPipeline.render();
+      } else {
+        window.__bxlTick(0.05, true);
+      }
       await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
       return { locationId, canvas: Boolean(document.querySelector('#canvas-container canvas')) };
     };
