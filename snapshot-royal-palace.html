@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Brussels — Royal Palace north façade snapshot</title>
+<style>
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#b9c9d6}
+canvas{display:block;width:100%;height:100%}
+#caption{position:fixed;left:24px;bottom:20px;padding:10px 14px;background:#17212ddd;color:#fff;font:14px/1.4 system-ui,sans-serif;letter-spacing:.02em}
+</style>
+<script type="importmap">{"imports":{"three":"./vendor/three/build/three.webgpu.js","three/webgpu":"./vendor/three/build/three.webgpu.js","three/tsl":"./vendor/three/build/three.tsl.js","three/addons/":"./vendor/three/examples/jsm/"}}</script>
+</head>
+<body>
+<div id="caption">BRUSSELS · ROYAL PALACE · PALAIS ROYAL</div>
+<script type="module">
+import * as THREE from 'three/webgpu';
+import { buildBrusselsLandmarks } from './js/brussels-landmarks.js';
+const renderer = new THREE.WebGPURenderer({antialias:true,forceWebGL:true});
+renderer.setPixelRatio(Math.min(devicePixelRatio,1.5));
+renderer.setSize(innerWidth,innerHeight);
+renderer.toneMapping=THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure=1.05;
+document.body.appendChild(renderer.domElement);
+await renderer.init();
+const scene=new THREE.Scene();
+scene.background=new THREE.Color(0xb9c9d6);
+scene.fog=new THREE.Fog(0xb9c9d6,180,520);
+scene.add(new THREE.HemisphereLight(0xe7f1ff,0x756451,2.0));
+const sun=new THREE.DirectionalLight(0xffe0b4,3.2);
+sun.position.set(-70,110,90); scene.add(sun);
+const landmarks=buildBrusselsLandmarks(scene);
+const target=landmarks.landmarks.royalPalace.group;
+const bounds=new THREE.Box3().setFromObject(target);
+const size=bounds.getSize(new THREE.Vector3());
+const centre=bounds.getCenter(new THREE.Vector3());
+const camera=new THREE.PerspectiveCamera(34,innerWidth/innerHeight,0.1,1500);
+// North-facing, slightly elevated elevation view: show the full symmetrical façade,
+// central portico and mansard roof without hiding the entrance behind the forecourt.
+camera.position.set(centre.x+10,centre.y+Math.max(36,size.y*.82),centre.z+Math.max(190,size.z*2.4));
+camera.lookAt(centre.x,centre.y+size.y*.34,centre.z);
+renderer.setAnimationLoop(()=>renderer.render(scene,camera));
+window.__snapshotReady=true;
+addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight)});
+</script>
+</body></html>
