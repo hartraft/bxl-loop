@@ -32,6 +32,7 @@ jobs:
           node --check js/brussels-landmarks.js
           node --check js/brussels-base-landmarks.js
           node --check js/main.js
+          node --check js/lighting.js
           if [ -f tools/browser-screenshots.mjs ]; then
             node --check tools/browser-screenshots.mjs
           else
