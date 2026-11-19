@@ -184,13 +184,13 @@ async function initApp() {
   if (CAPTURE_MODE) {
     renderPipeline = { render: () => renderer.render(scene, cameraSystem.camera) };
   } else {
-  const scenePass = pass(scene, cameraSystem.camera);
+  scenePass = pass(scene, cameraSystem.camera);
   // The multisampled colour attachments (output, normal, metalRough) only need resolving, never storing: discarding
   // them spares the GPU writing 3 x 4 samples per pixel to memory every frame (transient, memoryless attachments where
   // the browser supports them). The multisampled depth stays stored: SSR reads it.
   scenePass.renderTarget.storeMultisampledColorBuffer = false;
   const ssrFade = smoothstep(360.0, 180.0, positionView.z.negate());
-  const sceneMRT = mrt({
+  sceneMRT = mrt({
     output: output,
     normal: normalView,
     metalRough: vec2(metalness.mul(ssrFade), roughness)
