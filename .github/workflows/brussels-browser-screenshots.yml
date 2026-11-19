@@ -15,6 +15,7 @@ on:
       - "textures/**"
       - "tools/**"
       - "tests/**"
+      - "docs/browser-screenshots.md"
   workflow_dispatch:
 
 permissions:
