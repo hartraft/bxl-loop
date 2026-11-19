@@ -119,8 +119,8 @@ test('terrain foundation skirts extend only below the podium underside', () => {
 });
 
 test('building collider foundation minimum samples between footprint corners', () => {
-  const ring = Float64Array.from([0, 0, 30, 0, 30, 20, 0, 20]);
-  const height = (x, z) => (z === 0 ? -5 * Math.sin(Math.PI * x / 30) ** 2 : 0);
+  const ring = Float64Array.from([0, 0, 20, 0, 20, 20, 0, 20]);
+  const height = (x, z) => (z === 0 ? -5 * Math.sin(Math.PI * x / 20) ** 2 : 0);
   assert.equal(terrainFootprintMinimum(height, ring, 10), -5);
   assert.equal(terrainFootprintMinimum(() => null, ring, 10), null);
   assert.throws(() => terrainFootprintMinimum(height, [0, 0, 1], 10), /Invalid terrain footprint/);
