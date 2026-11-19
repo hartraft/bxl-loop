@@ -7,6 +7,9 @@ on:
   pull_request:
     branches: [main]
 
+permissions:
+  contents: read
+
 jobs:
   frame:
     runs-on: ubuntu-latest
@@ -29,6 +32,12 @@ jobs:
           node --check js/brussels-landmarks.js
           node --check js/brussels-base-landmarks.js
           node --check js/main.js
+          node --check js/lighting.js
+          if [ -f tools/browser-screenshots.mjs ]; then
+            node --check tools/browser-screenshots.mjs
+          else
+            echo 'Capture runner is supplied by the implementation PR; skipping this check here.'
+          fi
           node --check js/road-reflections.js
           node --check js/city/materials.js
           node --check js/cameras.js
@@ -80,3 +89,135 @@ jobs:
       - name: Test Brussels frame and anchors
         run: |
           node --test tests/brussels-frame.test.mjs tests/brussels-build-frame.test.mjs tests/traffic-side.test.mjs tests/boot.test.cjs tests/module-graph-audit.test.mjs tests/brussels-bus-selection.test.mjs tests/brussels-street-infrastructure.test.mjs tests/brussels-postcodes.test.mjs tests/brussels-terrain.test.mjs tests/brussels-landmark-colliders.test.mjs
+
+  # Pull-request-only visual validation. No Pages/OIDC credentials are granted to this job.
+  # Kept inside this established workflow so
+  # GitHub runs it for this PR before a new workflow file has reached main.
+  rendered-scenes:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - name: Check out the pull request source
+        uses: actions/checkout@v4
+      - name: Check whether this PR includes the screenshot runner
+        id: capture-runner
+        run: |
+          if test -f tools/browser-screenshots.mjs; then
+            echo "present=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "present=false" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Set up Node.js
+        if: steps.capture-runner.outputs.present == 'true'
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Set up Python for Brussels terrain generation
+        if: steps.capture-runner.outputs.present == 'true'
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Restore Brussels source data and generated assets
+        if: steps.capture-runner.outputs.present == 'true'
+        id: brussels-cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            /tmp/brussels-dtm-5m.tif
+            tools/data/belgium-latest.osm.pbf
+            data/brussels-terrain/
+            data/brussels-build/
+          key: brussels-build-v1-${{ hashFiles('tools/**', '!tools/browser-screenshots.mjs', 'js/brussels-terrain.js') }}
+      - name: Install terrain generation dependencies
+        if: steps.capture-runner.outputs.present == 'true'
+        run: python -m pip install --only-binary=:all: -r tools/requirements-terrain.txt
+      - name: Download and validate the official Brussels DTM
+        if: steps.capture-runner.outputs.present == 'true' && steps.brussels-cache.outputs.cache-hit != 'true'
+        run: |
+          python tools/download-brussels-dtm.py --resolution 5 --timeout 600 --output /tmp/brussels-dtm-5m.tif
+          python tools/prepare-brussels-terrain.py /tmp/brussels-dtm-5m.tif --resolution 5 --output data/brussels-terrain
+          python tools/validate-brussels-dtm.py data/brussels-terrain
+      - name: Download the Belgium OpenStreetMap extract
+        if: steps.capture-runner.outputs.present == 'true' && steps.brussels-cache.outputs.cache-hit != 'true'
+        run: |
+          mkdir -p tools/data
+          curl --fail --location --retry 10 --retry-connrefused --retry-delay 5 --retry-max-time 300 --connect-timeout 30 --max-time 900 \
+            https://download.geofabrik.de/europe/belgium-latest.osm.pbf \
+            --output tools/data/belgium-latest.osm.pbf
+      - name: Build Brussels geodata
+        if: steps.capture-runner.outputs.present == 'true' && steps.brussels-cache.outputs.cache-hit != 'true'
+        run: node --max-old-space-size=6144 tools/build-brussels-geodata.mjs
+      - name: Validate generated Brussels geodata
+        if: steps.capture-runner.outputs.present == 'true'
+        run: |
+          node tools/validate-brussels-geodata.mjs data/brussels-build
+          node --test tests/geodata-brussels-base.test.mjs
+      - name: Smoke-test the Brussels runtime
+        if: steps.capture-runner.outputs.present == 'true'
+        run: node tests/brussels-runtime-smoke.mjs
+      - name: Stage the same static site and generated terrain used by Pages
+        if: steps.capture-runner.outputs.present == 'true'
+        run: |
+          mkdir -p _site
+          rsync -a \
+            --exclude='.git/' \
+            --exclude='.github/' \
+            --exclude='_site/' \
+            --exclude='tools/' \
+            --exclude='tests/' \
+            --exclude='data/brussels-build/' \
+            --exclude='BRUSSELS-PORT.md' \
+            --exclude='*.md' \
+            ./ _site/
+          mkdir -p _site/data/brussels-build
+          cp data/brussels-build/brx-geo.json data/brussels-build/brx-buildings.bin _site/data/brussels-build/
+          mkdir -p _site/data/brussels-terrain
+          cp data/brussels-terrain/metadata.json data/brussels-terrain/heightmap.f32 _site/data/brussels-terrain/
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const file = '_site/index.html';
+          let html = fs.readFileSync(file, 'utf8');
+          const redirect = `<script>
+          if (!new URLSearchParams(location.search).has('city')) {
+            const url = new URL(location.href);
+            url.searchParams.set('city', 'brussels');
+            location.replace(url.href);
+          }
+          </script>`;
+          if (!html.includes("url.searchParams.set('city', 'brussels')")) {
+            html = html.replace('<head>', '<head>\n  ' + redirect);
+            fs.writeFileSync(file, html);
+          }
+          NODE
+      - name: Install Playwright Chromium
+        if: steps.capture-runner.outputs.present == 'true'
+        run: |
+          npm install --no-save playwright
+          npx playwright install --with-deps chromium
+      - name: Install ImageMagick for screenshot pixel validation
+        if: steps.capture-runner.outputs.present == 'true'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y imagemagick x11-apps xvfb
+      - name: Start the staged site
+        if: steps.capture-runner.outputs.present == 'true'
+        run: |
+          python3 -m http.server 4173 --bind 127.0.0.1 --directory _site >/tmp/brussels-browser-server.log 2>&1 &
+          for attempt in $(seq 1 60); do
+            if curl --fail --silent http://127.0.0.1:4173/ >/dev/null; then exit 0; fi
+            sleep 1
+          done
+          cat /tmp/brussels-browser-server.log
+          exit 1
+      - name: Capture and validate all six rendered Brussels views
+        if: steps.capture-runner.outputs.present == 'true'
+        run: xvfb-run --auto-servernum --server-args='-screen 0 1600x1000x24 -ac +extension GLX +render -noreset' node tools/browser-screenshots.mjs --base-url http://127.0.0.1:4173/
+      - name: Upload screenshots and diagnostics, including partial failures
+        if: always() && steps.capture-runner.outputs.present == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: brussels-rendered-scenes-${{ github.sha }}-attempt-${{ github.run_attempt }}
+          path: artifacts/browser-screenshots/
+          if-no-files-found: error
+          retention-days: 14
