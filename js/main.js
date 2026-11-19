@@ -64,7 +64,9 @@ async function initApp() {
     antialias: !CAPTURE_MODE,
     powerPreference: CAPTURE_MODE ? 'low-power' : 'high-performance',
     forceWebGL: URL_PARAMS.has('webgl'),
-    reversedDepthBuffer: true
+    // SwiftShader's WebGL path does not reliably expose clip-control reversed depth;
+    // use the conventional depth buffer for deterministic CI captures.
+    reversedDepthBuffer: !CAPTURE_MODE
   });
   if (CAPTURE_MODE) {
     // Keep the same filmic output transform as gameplay even though capture mode
