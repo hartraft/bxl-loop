@@ -35,6 +35,7 @@ import { BRUSSELS_LANDMARKS } from './city-config.js';
 // Main entry point for Brussels Loop (Zone 1 at 1:1 from OpenStreetMap) in three.js WebGPURenderer & TSL (vendored r186)
 
 const URL_PARAMS = new URLSearchParams(location.search);
+const CAPTURE_MODE = URL_PARAMS.has('capture');
 const LITE = URL_PARAMS.has('lite'); // ?lite: no SSR / smaller shadow work for slower machines
 const CITY_WATER = 'the canal and ponds';
 if (CITY_NAME === 'Brussels') document.title = 'Brussels Loop';
@@ -58,14 +59,16 @@ async function initApp() {
 
   // 1. Initialize Three.js WebGPURenderer with 32-bit float reversedDepthBuffer
   const renderer = new THREE.WebGPURenderer({
-    antialias: true,
-    powerPreference: 'high-performance',
+    // The capture runner uses a bounded software-rendered frame; gameplay keeps
+    // the normal WebGPU/MSAA path and full-resolution drawing buffer.
+    antialias: !CAPTURE_MODE,
+    powerPreference: CAPTURE_MODE ? 'low-power' : 'high-performance',
     forceWebGL: URL_PARAMS.has('webgl'),
     reversedDepthBuffer: true
   });
-  renderer.setPixelRatio(1.0);
+  renderer.setPixelRatio(CAPTURE_MODE ? 0.5 : 1.0);
   renderer.setSize(window.innerWidth, window.innerHeight);
-  renderer.shadowMap.enabled = true;
+  renderer.shadowMap.enabled = !CAPTURE_MODE;
   renderer.lighting = new ClusteredLighting(256, 32, 28, 48);
   container.appendChild(renderer.domElement);
 
@@ -84,6 +87,11 @@ async function initApp() {
   // 2. Build Scene & Physical Atmospheric Sky / PMREM IBL / 4096x4096 Shadow Lighting
   const scene = new THREE.Scene();
   const lightingSystem = new LightingSystem(scene, renderer);
+  if (CAPTURE_MODE) {
+    // Avoid allocating/updating the large cascaded shadow maps on SwiftShader.
+    lightingSystem.sunLight.castShadow = false;
+    lightingSystem.sunLight.shadow.autoUpdate = false;
+  }
   markInit('lighting');
 
   const status = (t) => { if (loadingStatus) loadingStatus.textContent = t; };
@@ -165,8 +173,17 @@ async function initApp() {
     }
   });
 
-  // 5. TSL RenderPipeline with Half-Res Screen Space Reflections (SSRNode), Bloom & Filmic Toning
-  //    SSR skips pixels with zero metalness, so fading it out with distance spares the far facades
+  // 5. Render pipeline. Browser captures render the actual scene directly to
+  // the canvas: no multi-target SSR/Bloom intermediates or high-memory float
+  // attachments. Normal gameplay retains the complete post-processing pipeline.
+  let renderPipeline;
+  let scenePass = null;
+  let sceneMRT = null;
+  let ssrPass = null;
+  let colorGrade = null;
+  if (CAPTURE_MODE) {
+    renderPipeline = { render: () => renderer.render(scene, cameraSystem.camera) };
+  } else {
   const scenePass = pass(scene, cameraSystem.camera);
   // The multisampled colour attachments (output, normal, metalRough) only need resolving, never storing: discarding
   // them spares the GPU writing 3 x 4 samples per pixel to memory every frame (transient, memoryless attachments where
@@ -187,7 +204,7 @@ async function initApp() {
   const scenePassNormal = scenePass.getTextureNode('normal');
   const scenePassMetalRough = scenePass.getTextureNode('metalRough');
 
-  const ssrPass = ssr(scenePassColor, scenePassDepth, scenePassNormal, {
+  ssrPass = ssr(scenePassColor, scenePassDepth, scenePassNormal, {
     metalnessNode: scenePassMetalRough.r,
     roughnessNode: scenePassMetalRough.g,
     camera: cameraSystem.camera
@@ -201,8 +218,9 @@ async function initApp() {
   ssrPass.screenEdgeFadeBlack = true;
 
   if (LITE) ssrPass.intensity.value = 0;
-  const colorGrade = createPostProcessing(renderer, scenePassColor, ssrPass);
-  const renderPipeline = new THREE.RenderPipeline(renderer, colorGrade.outputNode);
+  colorGrade = createPostProcessing(renderer, scenePassColor, ssrPass);
+  renderPipeline = new THREE.RenderPipeline(renderer, colorGrade.outputNode);
+  }
 
   // 6. Wire UI Controls (Strictly using safe DOM APIs: textContent, classList, addEventListener)
   const modeButtons = document.querySelectorAll('[data-mode]');
@@ -302,7 +320,7 @@ async function initApp() {
 
   function selectTime(timeId) {
     lightingSystem.applyPreset(timeId);
-    colorGrade.applyPreset(lightingSystem.activePresetId);
+    colorGrade?.applyPreset(lightingSystem.activePresetId);
     timeButtons.forEach((btn) => {
       btn.classList.toggle('active', btn.getAttribute('data-time') === timeId);
     });
@@ -385,7 +403,7 @@ async function initApp() {
       onWeather: (id) => {
         currentWeather = id;
         const p = lightingSystem.getWeatherParams ? lightingSystem.getWeatherParams() : null;
-        if (p && !LITE) ssrPass.intensity.value = p.ssr;
+        if (p && !LITE && ssrPass) ssrPass.intensity.value = p.ssr;
         if (trafficSystem.setRain) trafficSystem.setRain(id === 'drizzle');
       }
     }
@@ -534,7 +552,7 @@ async function initApp() {
   selectCamera('chase', true);
   selectTime(URL_PARAMS.get('time') || 'golden');
   if (URL_PARAMS.get('weather')) setWeather(URL_PARAMS.get('weather'));
-  if (URL_PARAMS.get('tp') && TELEPORT_LOCATIONS[URL_PARAMS.get('tp')]) {
+  if (!CAPTURE_MODE && URL_PARAMS.get('tp') && TELEPORT_LOCATIONS[URL_PARAMS.get('tp')]) {
     const loc = TELEPORT_LOCATIONS[URL_PARAMS.get('tp')];
     teleportTo(loc.x, loc.z, loc.heading);
   }
@@ -627,7 +645,7 @@ async function initApp() {
     if (rainMesh) rainMesh.visible = rainWasVisible;
   }
 
-  await precompileShaders();
+  if (!CAPTURE_MODE) await precompileShaders();
   markInit('compile');
 
   // Supabase: driver profile, saved position / mode / time / weather, autosave (after the loading screen)
@@ -664,8 +682,8 @@ async function initApp() {
 
   if (elFps) elFps.textContent = '60';
 
-  const CAPTURE = URL_PARAMS.has('capture');
-  const tick = (now) => {
+  const CAPTURE = CAPTURE_MODE;
+  const tick = (now, renderFrame = true) => {
     const rawDt = (now - lastTime) * 0.001;
     lastTime = now;
     const dt = Math.min(Math.max(rawDt, 0.001), 0.05);
@@ -693,10 +711,10 @@ async function initApp() {
     lightingSystem.update(cameraSystem.currentPos);
     mapSystem.update();
     if (warmedUp) updateSceneCulling(cameraSystem.camera.position); // the warm-up frame draws every chunk
-    roadReflections.update(renderer, cameraSystem.camera, cityUniforms.uRoadWetness.value);
+    if (!CAPTURE) roadReflections.update(renderer, cameraSystem.camera, cityUniforms.uRoadWetness.value);
 
     // Render frame via TSL RenderPipeline (SSR + Bloom)
-    if (!warmedUp) {
+    if (!warmedUp && !CAPTURE) {
       // First frame = pipeline warm-up behind the loading screen, for what precompileShaders() can't reach (the shadow
       // map passes): with frustum culling off, every visible material's pipelines compile now instead of stalling the
       // first time the camera turns towards it (one chunk / shadow stand-in per shared pipeline is enough)
@@ -711,21 +729,29 @@ async function initApp() {
       for (const o of culled) o.frustumCulled = true;
       markInit('warmup');
     }
-    renderPipeline.render();
+    if (renderFrame) renderPipeline.render();
     if (!warmedUp) {
       warmedUp = true;
       markInit('firstFrame');
       // The loading screen stays up until the GPU has got through the first frame (and the pipelines its warm-up
       // compiled), i.e. until the city is actually on screen
-      const device = renderer.backend.device;
-      Promise.resolve(device && device.queue.onSubmittedWorkDone()).catch(() => {}).then(() => {
+      const finishFirstFrame = () => {
         markInit('gpu');
         console.log(`[init] ${initTimings.join(', ')}`);
         initTimings = null;
-        if (loadingOverlay) loadingOverlay.classList.add('hidden');
+        if (loadingOverlay) {
+          if (CAPTURE) loadingOverlay.remove();
+          else loadingOverlay.classList.add('hidden');
+        }
         setLoadingProgress(1);
-        startBackend();
-      });
+        if (!CAPTURE) startBackend();
+        else console.info('[bxl-capture] first scene frame rendered');
+      };
+      if (CAPTURE) finishFirstFrame();
+      else {
+        const device = renderer.backend.device;
+        Promise.resolve(device && device.queue.onSubmittedWorkDone()).catch(() => {}).then(finishFirstFrame);
+      }
     }
 
     // Telemetry uses wall time, not the clamped simulation step, so slow frames and high-refresh displays report
@@ -756,13 +782,29 @@ async function initApp() {
     }
   };
   if (CAPTURE) {
-    // ?capture: frame-by-frame recording with a fixed time step (tools/capture)
+    // Fixed-step capture API: each requested view is rendered explicitly, with no
+    // continuously running simulation competing for SwiftShader resources.
     let fakeNow = performance.now();
     lastTime = fakeNow;
-    // __bxlTick(dt) renders one frame synchronously, so the caller can read the canvas in the same task;
-    // await __bxlGpuIdle() before the next one
-    window.__bxlTick = (dt = 1 / 30) => { fakeNow += dt * 1000; tick(fakeNow); };
-    window.__bxlGpuIdle = () => (renderer.backend.device ? renderer.backend.device.queue.onSubmittedWorkDone() : Promise.resolve());
+    window.__bxlTick = (dt = 1 / 30, render = true) => {
+      fakeNow += dt * 1000;
+      tick(fakeNow, render);
+    };
+    window.__bxlCaptureScene = async (locationId = null) => {
+      if (locationId) {
+        const location = TELEPORT_LOCATIONS[locationId];
+        if (!location) throw new Error(`Unknown Brussels capture location: ${locationId}`);
+        teleportTo(location.x, location.z, location.heading);
+      }
+      for (let i = 0; i < 4; i++) window.__bxlTick(0.05, false);
+      window.__bxlTick(0.05, true);
+      await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+      return { locationId, canvas: Boolean(document.querySelector('#canvas-container canvas')) };
+    };
+    for (let i = 0; i < 5; i++) window.__bxlTick(0.05, i === 4);
+    await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+    window.__bxlCaptureReady = true;
+    console.info('[bxl-capture] ready');
   } else renderer.setAnimationLoop(tick);
 }
 
