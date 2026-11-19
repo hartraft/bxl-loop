@@ -725,7 +725,9 @@ async function initApp() {
     edgeBarriers.update(elapsed, VEHICLE_UNIFORMS.night.value);
     lightingSystem.update(cameraSystem.currentPos);
     mapSystem.update();
-    if (warmedUp) updateSceneCulling(cameraSystem.camera.position); // the warm-up frame draws every chunk
+    // Capture mode skips the gameplay shader-prewarm sweep, so it must cull before its very first draw.
+    // Drawing every city chunk in SwiftShader can exhaust the software WebGL device before the first screenshot.
+    if (warmedUp || CAPTURE) updateSceneCulling(cameraSystem.camera.position);
     if (!CAPTURE) roadReflections.update(renderer, cameraSystem.camera, cityUniforms.uRoadWetness.value);
 
     // Render frame via TSL RenderPipeline (SSR + Bloom)
@@ -822,6 +824,9 @@ async function initApp() {
         camera.position.set(350, 145, 1300);
         camera.lookAt(-50, 25, 1100);
         camera.updateMatrixWorld(true);
+        // This scenic composition moves the camera away from the vehicle; refresh spatial culling
+        // for the actual capture camera rather than retaining the chase-camera visibility set.
+        updateSceneCulling(camera.position);
         renderPipeline.render();
       } else {
         window.__bxlTick(0.05, true);
