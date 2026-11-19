@@ -4,6 +4,7 @@ on:
     branches: [main]
     paths:
       - "snapshot-grand-place.html"
+      - "snapshot-royal-palace.html"
       - "js/brussels-landmarks.js"
       - ".github/workflows/brussels-landmark-snapshots.yml"
   workflow_dispatch:
