@@ -17,6 +17,8 @@ The capture runner launches a fresh Chromium process for each view, uses the app
 
 Each run uploads `metadata.json` and every PNG completed before a failure. Metadata records the commit, Chromium version, renderer path, expected scenes, viewport dimensions, image hashes, browser diagnostics and per-scene failures. The runner rejects missing scenes, invalid or undersized PNGs, incorrect dimensions, browser errors, a missing canvas/loading overlay, repeated desktop images, and black/near-empty central viewports (checked using decoded pixel colour and edge detail).
 
+The workflow is wired into the main-branch PR checks so the implementation is exercised with the same workflow definition that future Brussels PRs will use.
+
 These are review captures, not pixel-diff baselines. A passing workflow proves that all six browser captures were produced and passed basic integrity checks; it does not replace a human visual review of landmark framing, terrain alignment, 3D scene detail and the mobile HUD.
 
 ## Local reproduction
