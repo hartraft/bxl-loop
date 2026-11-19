@@ -31,6 +31,7 @@ testCase('Royal Palace centre has a sculpted pediment, domed drum and Belgian fl
   assert.match(palace, /Palace sculpted triangular pediment/);
   assert.match(palace, /Dome drum oculus/);
   assert.match(palace, /Royal Palace flattened dome/);
+  assert.match(palace, /Dome clock face/);
   assert.match(palace, /Belgian flag stripe/);
 });
 
