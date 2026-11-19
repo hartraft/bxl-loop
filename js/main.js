@@ -66,6 +66,12 @@ async function initApp() {
     forceWebGL: URL_PARAMS.has('webgl'),
     reversedDepthBuffer: true
   });
+  if (CAPTURE_MODE) {
+    // Keep the same filmic output transform as gameplay even though capture mode
+    // bypasses the SSR/Bloom colour-grade render pipeline.
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = 0.98; // golden-time look used by the capture suite
+  }
   renderer.setPixelRatio(CAPTURE_MODE ? 0.5 : 1.0);
   renderer.setSize(window.innerWidth, window.innerHeight);
   renderer.shadowMap.enabled = !CAPTURE_MODE;
