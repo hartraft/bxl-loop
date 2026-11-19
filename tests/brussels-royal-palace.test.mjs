@@ -8,7 +8,7 @@ const end = source.indexOf("addLandmark('cathedral'", start);
 assert.ok(start >= 0 && end > start, 'Royal Palace landmark builder must exist');
 const palace = source.slice(start, end);
 
-testCase('Royal Palace north façade follows the documented five-arch, six-column composition', () => {
+testCase('Royal Palace north façade follows the documented five-arch, six-pair column composition', () => {
   assert.match(palace, /Five open, full-height entrance arches/);
   assert.match(palace, /Six genuinely colossal Corinthian-order columns/);
   assert.match(palace, /for \(let i = 0; i < 6; i\+\+\)/);
