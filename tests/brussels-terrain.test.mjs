@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { createTerrainSampler, createTerrainSurface, subdivideTerrainTriangle, foundationWallBase, foundationSkirtBottom, terrainEdgeSubdivisionParameters } from '../js/brussels-terrain.js';
+import { createTerrainSampler, createTerrainSurface, subdivideTerrainTriangle, foundationWallBase, foundationSkirtBottom, terrainEdgeSubdivisionParameters, terrainFootprintMinimum } from '../js/brussels-terrain.js';
 import { MONT_DES_ARTS_ROTATION } from '../js/brussels-frame.js';
 import { terrainLineHeights, terrainConformPolyline, pointAt } from '../js/road-network.js';
 
@@ -116,6 +116,15 @@ test('terrain foundation skirts extend only below the podium underside', () => {
   assert.equal(foundationSkirtBottom(-2, -3.1), -3.15);
   assert.equal(foundationSkirtBottom(4, -3.1), -3.15);
   assert.throws(() => foundationSkirtBottom(NaN, -3), /Invalid foundation skirt/);
+});
+
+test('building collider foundation minimum samples between footprint corners', () => {
+  const ring = Float64Array.from([0, 0, 30, 0, 30, 20, 0, 20]);
+  const height = (x, z) => (z === 0 ? -5 * Math.sin(Math.PI * x / 30) ** 2 : 0);
+  assert.equal(terrainFootprintMinimum(height, ring, 10), -5);
+  assert.equal(terrainFootprintMinimum(() => null, ring, 10), null);
+  assert.throws(() => terrainFootprintMinimum(height, [0, 0, 1], 10), /Invalid terrain footprint/);
+  assert.throws(() => terrainFootprintMinimum(height, ring, 0), /Invalid terrain footprint/);
 });
 
 test('long terrain-graded building edges are subdivided to the configured maximum sample spacing', () => {
