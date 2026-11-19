@@ -608,23 +608,23 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     // rear row is slightly offset in depth so it reads in three-quarter views.
     for (let i = 0; i < 6; i++) {
       const x = -12.5 + i * 5;
-      for (const z of [centralFace + 1.15, centralFace + 3.45]) {
-        cylinder(g, 0.92, 1.08, 13.6, x, 14.95, z, stone, 40);
-        cylinder(g, 1.2, 1.2, 0.5, x, 8.35, z, ashlar, 32);
-        cylinder(g, 1.18, 1.18, 0.48, x, 21.55, z, ashlar, 32);
-        // Corinthian capital: a broader abacus, paired volutes and leaf-like bosses.
-        box(g, 2.35, 0.42, 2.05, x, 21.9, z, moulding, 'Corinthian column abacus');
-        for (const dx of [-0.78, 0.78]) {
-          for (const dz of [-0.66, 0.66]) {
-            mesh(g, new THREE.SphereGeometry(0.3, 12, 10), ashlar, x + dx, 21.78, z + dz, 'Corinthian capital volute');
+      for (const z of [centralFace + 1.55, centralFace + 4.1]) {
+        cylinder(g, 1.12, 1.3, 13.8, x, 14.95, z, stone, 40);
+        cylinder(g, 1.42, 1.42, 0.58, x, 8.35, z, ashlar, 32);
+        cylinder(g, 1.38, 1.38, 0.55, x, 21.55, z, ashlar, 32);
+        // Strongly articulated Corinthian capital: abacus, paired volutes and leaf bosses.
+        box(g, 2.8, 0.5, 2.45, x, 21.98, z, moulding, 'Corinthian column abacus');
+        for (const dx of [-0.92, 0.92]) {
+          for (const dz of [-0.78, 0.78]) {
+            mesh(g, new THREE.SphereGeometry(0.36, 12, 10), ashlar, x + dx, 21.82, z + dz, 'Corinthian capital volute');
           }
         }
-        for (let leaf = 0; leaf < 8; leaf++) {
-          const a = leaf * Math.PI / 4;
-          const boss = mesh(g, new THREE.SphereGeometry(0.18, 10, 8), moulding, x + Math.cos(a) * 0.72, 21.45, z + Math.sin(a) * 0.72, 'Corinthian capital leaf');
-          boss.scale.set(0.75, 1.6, 0.75);
+        for (let leaf = 0; leaf < 10; leaf++) {
+          const a = leaf * Math.PI / 5;
+          const boss = mesh(g, new THREE.SphereGeometry(0.22, 10, 8), moulding, x + Math.cos(a) * 0.86, 21.45, z + Math.sin(a) * 0.86, 'Corinthian capital leaf');
+          boss.scale.set(0.72, 1.8, 0.72);
         }
-        cylinder(g, 1.3, 1.3, 0.3, x, 8.05, z, ashlar, 32);
+        cylinder(g, 1.52, 1.52, 0.34, x, 8.02, z, ashlar, 32);
       }
     }
 
@@ -666,14 +666,23 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     const rightRake = box(g, 0.58, 13.0, 0.9, 5.75, 26.45, centralFace + 0.42, moulding, 'Pediment right raking cornice');
     rightRake.rotation.z = Math.atan2(11.5, 5.8);
     // Allegorical centre and flanking relief figures are deliberately low-relief silhouettes.
-    mesh(g, new THREE.SphereGeometry(0.95, 16, 12), moulding, 0, 26.0, centralFace + 0.48, 'Belgium allegory relief');
-    for (const x of [-4.2, -2.7, 2.7, 4.2]) {
-      mesh(g, new THREE.SphereGeometry(0.52, 12, 10), moulding, x, 25.1 + (Math.abs(x) < 3 ? 0.35 : 0), centralFace + 0.5, 'Pediment allegorical relief');
+    mesh(g, new THREE.SphereGeometry(0.72, 16, 12), moulding, 0, 26.45, centralFace + 0.72, 'Belgium allegory relief head');
+    cylinder(g, 0.62, 0.9, 1.8, 0, 25.15, centralFace + 0.72, moulding, 16);
+    for (const [x, y] of [[-5.0, 24.8], [-3.4, 25.2], [3.4, 25.2], [5.0, 24.8]]) {
+      mesh(g, new THREE.SphereGeometry(0.48, 12, 10), moulding, x, y + 0.9, centralFace + 0.72, 'Pediment allegorical figure head');
+      cylinder(g, 0.42, 0.62, 1.5, x, y, centralFace + 0.72, moulding, 12);
+      const arm = box(g, 0.24, 1.55, 0.28, x + (x < 0 ? 0.72 : -0.72), y + 0.8, centralFace + 0.72, moulding, 'Pediment allegorical figure arm');
+      arm.rotation.z = x < 0 ? -0.45 : 0.45;
     }
 
     // The real central roof is a high, square drum and a broad flattened dome,
     // with two rows of oculi on each face and a rooftop balustrade.
     box(g, 17.5, 4.6, 17.5, 0, 27.2, -1, stone, 'Central dome drum');
+    // North-facing clock on the drum, with a pale dial and dark hands.
+    mesh(g, new THREE.TorusGeometry(1.05, 0.14, 10, 32), moulding, 0, 27.3, 8.0, 'Dome clock surround');
+    mesh(g, new THREE.CircleGeometry(0.94, 32), stone, 0, 27.3, 8.08, 'Dome clock face');
+    box(g, 0.09, 0.72, 0.05, 0, 27.55, 8.14, bronze, 'Dome clock minute hand');
+    box(g, 0.48, 0.08, 0.05, -0.16, 27.22, 8.14, bronze, 'Dome clock hour hand');
     for (const face of [-1, 1]) {
       const z = -1 + face * 8.9;
       for (const y of [26.4, 28.4]) {
