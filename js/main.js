@@ -72,7 +72,11 @@ async function initApp() {
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
     renderer.toneMappingExposure = 0.98; // golden-time look used by the capture suite
   }
-  renderer.setPixelRatio(CAPTURE_MODE ? 0.5 : 1.0);
+  // Bound SwiftShader's software framebuffer on large desktop viewports. The final
+  // screenshots retain their requested CSS dimensions; the mobile and desktop
+  // captures now render roughly the same number of pixels on the software device.
+  const capturePixelRatio = Math.min(0.5, 420 / Math.max(window.innerWidth, window.innerHeight));
+  renderer.setPixelRatio(CAPTURE_MODE ? capturePixelRatio : 1.0);
   renderer.setSize(window.innerWidth, window.innerHeight);
   renderer.shadowMap.enabled = !CAPTURE_MODE;
   renderer.lighting = new ClusteredLighting(256, 32, 28, 48);
