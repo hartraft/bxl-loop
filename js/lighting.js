@@ -263,9 +263,10 @@ function createRain(count = 7000) {
 }
 
 class LightingSystem {
-  constructor(scene, renderer = null) {
+  constructor(scene, renderer = null, { captureMode = false } = {}) {
     this.scene = scene;
     this.renderer = renderer;
+    this.captureMode = captureMode;
     this.activePresetId = 'golden';
     this.weather = 'clear';
     this.weatherListeners = [];
@@ -314,7 +315,8 @@ class LightingSystem {
     }
     this.scene.add(this.sky);
 
-    this.pmremGenerator = renderer ? new THREE.PMREMGenerator(renderer) : null;
+    // A still capture does not need the expensive PMREM environment bake; the sky dome and direct lights remain.
+    this.pmremGenerator = renderer && !this.captureMode ? new THREE.PMREMGenerator(renderer) : null;
     this.envScene = new THREE.Scene();
     this.envRenderTarget = null;
 
@@ -475,7 +477,7 @@ class LightingSystem {
     setCity('uCanyonBounce', (u) => { u.value = p.canyonBounce * lerp(1, 0.75, oc); });
 
     this.scene.environmentIntensity = p.envIntensity * lerp(1, 1.15, oc);
-    this.bakeEnvironmentMap();
+    if (!this.captureMode) this.bakeEnvironmentMap();
   }
 
   update(focusPos) {
