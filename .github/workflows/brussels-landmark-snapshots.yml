@@ -41,9 +41,19 @@ jobs:
           trap 'kill $SERVER_PID' EXIT
           for i in $(seq 1 30); do curl --fail http://localhost:4173/snapshot-grand-place.html >/dev/null && break || sleep 1; done
           python tools/shot.py http://localhost:4173/snapshot-grand-place.html artifacts/brussels-grand-place-town-hall.png 12
+      - name: Capture Royal Palace north façade
+        run: |
+          mkdir -p artifacts
+          python -m http.server 4173 > /tmp/snapshot-server.log 2>&1 &
+          SERVER_PID=$!
+          trap 'kill $SERVER_PID' EXIT
+          for i in $(seq 1 30); do curl --fail http://localhost:4173/snapshot-royal-palace.html >/dev/null && break || sleep 1; done
+          python tools/shot.py http://localhost:4173/snapshot-royal-palace.html artifacts/brussels-royal-palace.png 12
       - uses: actions/upload-artifact@v4
         with:
-          name: brussels-grand-place-town-hall
-          path: artifacts/brussels-grand-place-town-hall.png
+          name: brussels-landmark-elevations
+          path: |
+            artifacts/brussels-grand-place-town-hall.png
+            artifacts/brussels-royal-palace.png
           if-no-files-found: error
           retention-days: 30
