@@ -36,5 +36,5 @@ testCase('Royal Palace centre has a sculpted pediment, domed drum and Belgian fl
 
 testCase('Royal Palace snapshot camera faces the north façade (world -Z after the palace's π rotation)', () => {
   const snapshot = readFileSync(new URL('../snapshot-royal-palace.html', import.meta.url), 'utf8');
-  assert.match(snapshot, /camera\.position\.set\(centre\.x,.*centre\.z\+Math\.max/);
+  assert.match(snapshot, /camera\.position\.set\(centre\.x\+10,.*centre\.z-Math\.max/);
 });
