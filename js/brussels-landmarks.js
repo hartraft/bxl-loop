@@ -525,7 +525,10 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       for (let i = 0; i < 9; i++) {
         const bx = x - 18 + i * 4.5;
         // Ground-floor arcades: broad rusticated piers and round-headed openings.
-        box(g, 2.35, 4.25, 0.28, bx, 3.25, facadeZ + 0.1, shadow, 'Wing ground-floor arched opening');
+        const wingArch = new THREE.Shape();
+        wingArch.moveTo(-1.16, 0); wingArch.lineTo(1.16, 0); wingArch.lineTo(1.16, 3.75);
+        wingArch.absarc(0, 3.75, 1.16, 0, Math.PI, false); wingArch.lineTo(-1.16, 0); wingArch.closePath();
+        mesh(g, new THREE.ShapeGeometry(wingArch), shadow, bx, 1.1, facadeZ + 0.18, 'Wing ground-floor arched opening');
         mesh(g, new THREE.TorusGeometry(1.18, 0.14, 8, 20, Math.PI), moulding, bx, 5.36, facadeZ + 0.12, 'Wing arcade arch ring');
         box(g, 2.55, 0.25, 0.4, bx, 5.4, facadeZ + 0.14, ashlar, 'Wing arcade impost');
         // Voussoir-like joints on the arch rings give the openings a stone-cut edge.
@@ -591,7 +594,10 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     // Five open, full-height entrance arches in the rusticated ground storey.
     for (let i = 0; i < 5; i++) {
       const x = -10 + i * 5;
-      box(g, 2.55, 5.0, 0.24, x, 3.45, centralFace + 0.12, shadow, 'Central open entrance arch');
+      const entranceArch = new THREE.Shape();
+      entranceArch.moveTo(-1.28, 0); entranceArch.lineTo(1.28, 0); entranceArch.lineTo(1.28, 3.65);
+      entranceArch.absarc(0, 3.65, 1.28, 0, Math.PI, false); entranceArch.lineTo(-1.28, 0); entranceArch.closePath();
+      mesh(g, new THREE.ShapeGeometry(entranceArch), shadow, x, 0.95, centralFace + 0.22, 'Central open entrance arch');
       mesh(g, new THREE.TorusGeometry(1.28, 0.2, 10, 28, Math.PI), moulding, x, 5.95, centralFace + 0.24, 'Central entrance voussoirs');
       box(g, 3.0, 0.32, 0.55, x, 6.0, centralFace + 0.24, ashlar, 'Central arch impost');
       box(g, 0.28, 5.9, 0.62, x - 1.58, 3.55, centralFace + 0.2, ashlar, 'Central arcade pier');
@@ -602,18 +608,23 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     // rear row is slightly offset in depth so it reads in three-quarter views.
     for (let i = 0; i < 6; i++) {
       const x = -12.5 + i * 5;
-      for (const z of [centralFace + 0.95, centralFace + 2.55]) {
-        cylinder(g, 0.74, 0.9, 13.0, x, 14.7, z, stone, 32);
-        cylinder(g, 1.02, 1.02, 0.48, x, 8.35, z, ashlar, 24);
-        cylinder(g, 1.02, 1.02, 0.44, x, 21.2, z, ashlar, 24);
-        // Corinthian capital: abacus and four restrained corner volutes.
-        box(g, 2.0, 0.34, 1.85, x, 21.55, z, moulding, 'Corinthian column abacus');
-        for (const dx of [-0.68, 0.68]) {
-          for (const dz of [-0.56, 0.56]) {
-            mesh(g, new THREE.SphereGeometry(0.24, 10, 8), ashlar, x + dx, 21.48, z + dz, 'Corinthian capital volute');
+      for (const z of [centralFace + 1.15, centralFace + 3.45]) {
+        cylinder(g, 0.92, 1.08, 13.6, x, 14.95, z, stone, 40);
+        cylinder(g, 1.2, 1.2, 0.5, x, 8.35, z, ashlar, 32);
+        cylinder(g, 1.18, 1.18, 0.48, x, 21.55, z, ashlar, 32);
+        // Corinthian capital: a broader abacus, paired volutes and leaf-like bosses.
+        box(g, 2.35, 0.42, 2.05, x, 21.9, z, moulding, 'Corinthian column abacus');
+        for (const dx of [-0.78, 0.78]) {
+          for (const dz of [-0.66, 0.66]) {
+            mesh(g, new THREE.SphereGeometry(0.3, 12, 10), ashlar, x + dx, 21.78, z + dz, 'Corinthian capital volute');
           }
         }
-        cylinder(g, 1.18, 1.18, 0.24, x, 8.08, z, ashlar, 24);
+        for (let leaf = 0; leaf < 8; leaf++) {
+          const a = leaf * Math.PI / 4;
+          const boss = mesh(g, new THREE.SphereGeometry(0.18, 10, 8), moulding, x + Math.cos(a) * 0.72, 21.45, z + Math.sin(a) * 0.72, 'Corinthian capital leaf');
+          boss.scale.set(0.75, 1.6, 0.75);
+        }
+        cylinder(g, 1.3, 1.3, 0.3, x, 8.05, z, ashlar, 32);
       }
     }
 
@@ -649,9 +660,11 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     pediment.lineTo(0, 5.8);
     pediment.closePath();
     mesh(g, new THREE.ShapeGeometry(pediment), ashlar, 0, 23.55, centralFace + 0.18, 'Palace sculpted triangular pediment');
-    box(g, 23.5, 0.42, 0.8, 0, 23.55, centralFace + 0.2, moulding, 'Pediment lower moulding');
-    box(g, 0.55, 5.8, 0.55, -11.5, 26.45, centralFace + 0.2, moulding, 'Pediment left raking cornice');
-    box(g, 0.55, 5.8, 0.55, 11.5, 26.45, centralFace + 0.2, moulding, 'Pediment right raking cornice');
+    box(g, 23.5, 0.5, 1.0, 0, 23.55, centralFace + 0.38, moulding, 'Pediment lower moulding');
+    const leftRake = box(g, 0.58, 13.0, 0.9, -5.75, 26.45, centralFace + 0.42, moulding, 'Pediment left raking cornice');
+    leftRake.rotation.z = -Math.atan2(11.5, 5.8);
+    const rightRake = box(g, 0.58, 13.0, 0.9, 5.75, 26.45, centralFace + 0.42, moulding, 'Pediment right raking cornice');
+    rightRake.rotation.z = Math.atan2(11.5, 5.8);
     // Allegorical centre and flanking relief figures are deliberately low-relief silhouettes.
     mesh(g, new THREE.SphereGeometry(0.95, 16, 12), moulding, 0, 26.0, centralFace + 0.48, 'Belgium allegory relief');
     for (const x of [-4.2, -2.7, 2.7, 4.2]) {
