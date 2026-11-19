@@ -543,35 +543,72 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       }
     }
     // Central projecting avant-corps, the ceremonial focus of the façade.
+    // The central masonry block projects 2 m farther forward than the wings;
+    // keep its architectural details in front of that actual wall plane.
+    const centralFace = 10.35;
     box(g, 34, 22.5, 22, 0, 11.25, -1, stone, 'Palace central corps de logis');
     box(g, 35, 1.4, 22.8, 0, 1.0, -1, ashlar, 'Central rusticated base');
-    // Five open arcades at ground level.
+    box(g, 35.5, 0.8, 0.55, 0, 2.0, centralFace, ashlar, 'Central base upper string course');
+
+    // Five arched entrance bays: dark recesses, voussoirs, imposts and projecting keystones.
     for (let i = 0; i < 5; i++) {
       const x = -10 + i * 5;
-      box(g, 2.6, 5.6, 0.32, x, 3.8, facadeZ + 0.35, shadow, 'Central ceremonial arcade');
-      mesh(g, new THREE.TorusGeometry(1.3, 0.19, 8, 20, Math.PI), ashlar, x, 6.5, facadeZ + 0.35, 'Central arcade arch');
-      box(g, 3.4, 0.35, 0.5, x, 6.65, facadeZ + 0.35, ashlar, 'Arcade impost');
+      box(g, 2.45, 5.3, 0.28, x, 3.8, centralFace, shadow, 'Central ceremonial arcade recess');
+      mesh(g, new THREE.TorusGeometry(1.23, 0.2, 8, 24, Math.PI), ashlar, x, 6.45, centralFace + 0.12, 'Central arcade voussoir');
+      box(g, 3.2, 0.34, 0.62, x, 6.55, centralFace + 0.12, ashlar, 'Central arcade impost');
+      box(g, 0.32, 5.9, 0.62, x - 1.52, 3.9, centralFace + 0.1, ashlar, 'Arcade pier');
+      box(g, 0.32, 5.9, 0.62, x + 1.52, 3.9, centralFace + 0.1, ashlar, 'Arcade pier');
+      box(g, 0.5, 0.65, 0.72, x, 6.95, centralFace + 0.12, stone, 'Arcade projecting keystone');
     }
-    // Six monumental columns above the arcade.
+
+    // Six monumental columns stand proud of the façade, framing the piano nobile.
     for (let i = 0; i < 6; i++) {
       const x = -12.5 + i * 5;
-      cylinder(g, 0.72, 0.82, 9.1, x, 12.5, facadeZ + 0.9, stone, 20);
-      cylinder(g, 0.95, 0.95, 0.45, x, 8.0, facadeZ + 0.9, ashlar, 20);
-      cylinder(g, 0.95, 0.95, 0.5, x, 17.0, facadeZ + 0.9, ashlar, 20);
-      cylinder(g, 0.12, 0.12, 0.35, x, 17.5, facadeZ + 0.9, bronze, 12);
+      cylinder(g, 0.72, 0.82, 9.1, x, 12.5, centralFace + 0.9, stone, 24);
+      cylinder(g, 0.95, 0.95, 0.45, x, 8.0, centralFace + 0.9, ashlar, 24);
+      cylinder(g, 0.95, 0.95, 0.5, x, 17.0, centralFace + 0.9, ashlar, 24);
+      cylinder(g, 1.08, 1.08, 0.42, x, 17.45, centralFace + 0.9, ashlar, 24);
+      cylinder(g, 0.12, 0.12, 0.35, x, 17.75, centralFace + 0.9, bronze, 12);
     }
-    // Upper ceremonial windows and the deep classical entablature.
+
+    // The piano nobile is articulated with tall French windows, dressed surrounds,
+    // projecting sills and shallow balustraded balconies rather than dark flat slots.
     for (let i = 0; i < 7; i++) {
       const x = -14 + i * 4.65;
-      box(g, 2.0, 3.2, 0.18, x, 19.2, facadeZ + 0.25, shadow, 'Palace piano nobile window');
+      box(g, 2.0, 3.35, 0.22, x, 19.0, centralFace + 0.08, shadow, 'Palace central piano nobile window');
+      box(g, 2.45, 0.22, 0.42, x, 17.15, centralFace + 0.25, ashlar, 'Central window sill');
+      box(g, 2.45, 0.22, 0.42, x, 20.85, centralFace + 0.25, ashlar, 'Central window lintel');
+      box(g, 0.18, 3.7, 0.35, x - 1.22, 19.0, centralFace + 0.24, ashlar, 'Central window jamb');
+      box(g, 0.18, 3.7, 0.35, x + 1.22, 19.0, centralFace + 0.24, ashlar, 'Central window jamb');
+      box(g, 2.55, 0.16, 0.95, x, 17.25, centralFace + 0.65, bronze, 'Central French window balcony rail');
+      for (let k = 0; k < 9; k++) {
+        box(g, 0.055, 0.48, 0.07, x - 1.12 + k * 0.28, 17.55, centralFace + 0.98, bronze, 'Balcony iron baluster');
+      }
     }
+    // Broad engaged pilasters visually tie the central pavilion into the two wings.
+    for (const x of [-16.5, -11.0, 11.0, 16.5]) {
+      box(g, 0.72, 15.8, 0.72, x, 11.0, centralFace + 0.35, ashlar, 'Central avant-corps pilaster');
+      box(g, 1.15, 0.65, 0.95, x, 3.5, centralFace + 0.35, ashlar, 'Pilaster base');
+      box(g, 1.15, 0.7, 0.95, x, 18.9, centralFace + 0.35, ashlar, 'Pilaster capital');
+    }
+
+    // Classical entablature and the triangular pediment visible in the reference elevation.
     box(g, 37, 1.15, 24, 0, 22.8, -1, ashlar, 'Palace central entablature');
-    box(g, 38, 0.65, 24.5, 0, 23.7, -1, stone, 'Palace attic balustrade');
+    box(g, 38, 0.65, 24.5, 0, 23.7, -1, stone, 'Palace central attic balustrade');
     for (let i = 0; i < 25; i++) {
       const x = -18 + i * 1.5;
-      box(g, 0.42, 1.0, 0.42, x, 24.5, facadeZ + 0.2, ashlar, 'Balustrade baluster');
+      box(g, 0.42, 1.0, 0.42, x, 24.5, centralFace + 0.2, ashlar, 'Balustrade baluster');
     }
-    // The restrained square-plan central roof pavilion and shallow dome; not an oversized fantasy cupola.
+    const pediment = new THREE.Shape();
+    pediment.moveTo(-10.5, 0);
+    pediment.lineTo(0, 5.2);
+    pediment.lineTo(10.5, 0);
+    pediment.closePath();
+    mesh(g, new THREE.ShapeGeometry(pediment), ashlar, 0, 23.9, centralFace + 0.18, 'Palace central triangular pediment');
+    box(g, 22.0, 0.42, 0.72, 0, 23.95, centralFace + 0.2, stone, 'Pediment lower moulding');
+    box(g, 22.0, 0.36, 0.72, 0, 29.05, centralFace + 0.2, stone, 'Pediment apex moulding');
+
+    // Roof pavilion and restrained shallow dome; retain the palace's low classical skyline.
     box(g, 11, 3.0, 11, 0, 25.4, -1, roof, 'Palace central roof pavilion');
     box(g, 9.5, 0.45, 9.5, 0, 27.1, -1, ashlar, 'Dome cornice');
     mesh(g, new THREE.SphereGeometry(4.4, 24, 12, 0, Math.PI * 2, 0, Math.PI / 2), roof, 0, 27.0, -1, 'Palace shallow dome');
@@ -580,6 +617,7 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       cylinder(g, 0.72, 0.72, 0.22, Math.sin(a) * 3.5, 29.3, -1 + Math.cos(a) * 3.5, ashlar, 16);
     }
     cylinder(g, 0.16, 0.2, 1.2, 0, 31.0, -1, bronze, 12);
+    cylinder(g, 0.08, 0.08, 2.2, 0, 32.4, -1, bronze, 8);
     // Terminal pavilions and the ceremonial forecourt railing.
     for (const x of [-65, 65]) {
       box(g, 8, 23, 21, x, 11.5, -1, stone, 'Palace terminal pavilion');
