@@ -90,7 +90,8 @@ jobs:
         run: |
           node --test tests/brussels-frame.test.mjs tests/brussels-build-frame.test.mjs tests/traffic-side.test.mjs tests/boot.test.cjs tests/module-graph-audit.test.mjs tests/brussels-bus-selection.test.mjs tests/brussels-street-infrastructure.test.mjs tests/brussels-postcodes.test.mjs tests/brussels-terrain.test.mjs tests/brussels-landmark-colliders.test.mjs
 
-  # Pull-request-only visual validation. Kept inside this established workflow so
+  # Pull-request-only visual validation. No Pages/OIDC credentials are granted to this job.
+  # Kept inside this established workflow so
   # GitHub runs it for this PR before a new workflow file has reached main.
   rendered-scenes:
     if: github.event_name == 'pull_request'
