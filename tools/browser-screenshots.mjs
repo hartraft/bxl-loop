@@ -126,6 +126,8 @@ for (const scene of scenes) {
     const context = await browser.newContext({
       viewport: scene.viewport,
       deviceScaleFactor: 1,
+      isMobile: scene.viewport.width < 500,
+      hasTouch: scene.viewport.width < 500,
       reducedMotion: 'reduce'
     });
     try {
