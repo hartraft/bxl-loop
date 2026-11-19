@@ -412,7 +412,7 @@ async function initApp() {
   if (trafficSystem.setRain) trafficSystem.setRain(currentWeather === 'drizzle');
   function setWeather(id) {
     if (lightingSystem.setWeather) lightingSystem.setWeather(id);
-    if (colorGrade.applyWeather) colorGrade.applyWeather(id);
+    if (colorGrade?.applyWeather) colorGrade.applyWeather(id);
     if (hud.setActiveWeather) hud.setActiveWeather(id);
     currentWeather = id;
     if (trafficSystem.setRain) trafficSystem.setRain(id === 'drizzle');
