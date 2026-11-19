@@ -91,7 +91,7 @@ async function initApp() {
 
   // 2. Build Scene & Physical Atmospheric Sky / PMREM IBL / 4096x4096 Shadow Lighting
   const scene = new THREE.Scene();
-  const lightingSystem = new LightingSystem(scene, renderer);
+  const lightingSystem = new LightingSystem(scene, renderer, { captureMode: CAPTURE_MODE });
   if (CAPTURE_MODE) {
     // Avoid allocating/updating the large cascaded shadow maps on SwiftShader.
     lightingSystem.sunLight.castShadow = false;
