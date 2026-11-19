@@ -8,19 +8,34 @@ const end = source.indexOf("addLandmark('cathedral'", start);
 assert.ok(start >= 0 && end > start, 'Royal Palace landmark builder must exist');
 const palace = source.slice(start, end);
 
-testCase('Royal Palace central façade details sit in front of its masonry wall', () => {
-  const face = palace.match(/const centralFace = ([0-9.]+);/);
-  assert.ok(face, 'central façade plane is explicitly defined');
-  const centralWallFront = -1 + 22 / 2;
-  assert.ok(Number(face[1]) > centralWallFront + 0.2,
-    'central windows, arcade and columns must project beyond the central corps de logis wall');
-  assert.match(palace, /Central ceremonial arcade recess/);
-  assert.match(palace, /Palace central piano nobile window/);
-  assert.match(palace, /Central avant-corps pilaster/);
+testCase('Royal Palace north façade follows the documented five-arch, six-pair column composition', () => {
+  assert.match(palace, /Five open, full-height entrance arches/);
+  assert.match(palace, /Six pairs of colossal Corinthian columns/);
+  assert.match(palace, /for \(let i = 0; i < 6; i\+\+\)/);
+  assert.match(palace, /Central open entrance arch/);
+  assert.match(palace, /Corinthian capital volute/);
+  assert.match(palace, /for \(const z of \[centralFace \+ 1\.55, centralFace \+ 4\.1\]\)/);
+  assert.match(palace, /Central piano nobile French door/);
 });
 
-testCase('Royal Palace central pavilion has a classical pediment and restrained roofline', () => {
-  assert.match(palace, /Palace central triangular pediment/);
-  assert.match(palace, /Palace shallow dome/);
-  assert.match(palace, /Palace central roof pavilion/);
+testCase('Royal Palace wings retain nine bays and three horizontal registers', () => {
+  assert.match(palace, /for \(let i = 0; i < 9; i\+\+\)/);
+  assert.match(palace, /Wing ground-floor arched opening/);
+  assert.match(palace, /Wing French window/);
+  assert.match(palace, /Wing first string course/);
+  assert.match(palace, /Wing second string course/);
+  assert.match(palace, /Wing sloping slate mansard/);
+});
+
+testCase('Royal Palace centre has a sculpted pediment, domed drum and Belgian flag', () => {
+  assert.match(palace, /Palace sculpted triangular pediment/);
+  assert.match(palace, /Dome drum oculus/);
+  assert.match(palace, /Royal Palace flattened dome/);
+  assert.match(palace, /Dome clock face/);
+  assert.match(palace, /Belgian flag stripe/);
+});
+
+testCase("Royal Palace snapshot camera faces the north façade (world -Z after the palace rotation)", () => {
+  const snapshot = readFileSync(new URL('../snapshot-royal-palace.html', import.meta.url), 'utf8');
+  assert.match(snapshot, /camera\.position\.set\(centre\.x\+[^,]+,.*centre\.z-Math\.max/);
 });
