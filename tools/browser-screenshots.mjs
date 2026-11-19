@@ -1,6 +1,7 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import crypto from 'node:crypto';
+import { execFileSync } from 'node:child_process';
 import { chromium } from 'playwright';
 
 const arg = (name, fallback) => {
@@ -44,11 +45,58 @@ const validatePng = async (file, viewport) => {
     throw new Error(`Screenshot is ${width}x${height}; expected ${viewport.width}x${viewport.height}`);
   }
   if (bytes.length < 12000) throw new Error(`Screenshot is suspiciously small (${bytes.length} bytes)`);
+
+  // Inspect the pixels reviewers will see. File size and a valid PNG header alone
+  // let a black WebGL viewport with a bright HUD pass; the central scene region
+  // must contain real colour variation and edge detail.
+  const rgb = execFileSync('convert', [file, '-alpha', 'off', '-depth', '8', 'rgb:-'], {
+    maxBuffer: 16 * 1024 * 1024
+  });
+  if (rgb.length !== width * height * 3) {
+    throw new Error(`Decoded ${rgb.length} RGB bytes; expected ${width * height * 3}`);
+  }
+  const left = Math.floor(width * 0.12);
+  const right = Math.ceil(width * 0.88);
+  const top = Math.floor(height * 0.12);
+  const bottom = Math.ceil(height * 0.88);
+  let nonBlack = 0;
+  let edgeCount = 0;
+  let comparisons = 0;
+  const colours = new Set();
+  const threshold = 24;
+  for (let y = top; y < bottom; y++) {
+    for (let x = left; x < right; x++) {
+      const offset = (y * width + x) * 3;
+      const red = rgb[offset], green = rgb[offset + 1], blue = rgb[offset + 2];
+      if (Math.max(red, green, blue) > 16) nonBlack++;
+      colours.add(((red >> 4) << 8) | ((green >> 4) << 4) | (blue >> 4));
+      if (x + 1 < right) {
+        const adjacent = offset + 3;
+        if (Math.max(Math.abs(red - rgb[adjacent]), Math.abs(green - rgb[adjacent + 1]), Math.abs(blue - rgb[adjacent + 2])) > threshold) edgeCount++;
+        comparisons++;
+      }
+      if (y + 1 < bottom) {
+        const adjacent = offset + width * 3;
+        if (Math.max(Math.abs(red - rgb[adjacent]), Math.abs(green - rgb[adjacent + 1]), Math.abs(blue - rgb[adjacent + 2])) > threshold) edgeCount++;
+        comparisons++;
+      }
+    }
+  }
+  const regionPixels = (right - left) * (bottom - top);
+  const sceneRegion = {
+    nonBlackRatio: Number((nonBlack / regionPixels).toFixed(4)),
+    colourBuckets: colours.size,
+    edgeRatio: Number((edgeCount / comparisons).toFixed(5))
+  };
+  if (sceneRegion.nonBlackRatio < 0.08 || sceneRegion.colourBuckets < 24 || sceneRegion.edgeRatio < 0.003) {
+    throw new Error(`Central 3D viewport appears blank or under-rendered: ${JSON.stringify(sceneRegion)}`);
+  }
   return {
     width,
     height,
     bytes: bytes.length,
-    sha256: crypto.createHash('sha256').update(bytes).digest('hex')
+    sha256: crypto.createHash('sha256').update(bytes).digest('hex'),
+    sceneRegion
   };
 };
 
