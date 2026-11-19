@@ -34,9 +34,9 @@ const bounds=new THREE.Box3().setFromObject(target);
 const size=bounds.getSize(new THREE.Vector3());
 const centre=bounds.getCenter(new THREE.Vector3());
 const camera=new THREE.PerspectiveCamera(34,innerWidth/innerHeight,0.1,1500);
-// North-facing, slightly elevated elevation view: show the full symmetrical façade,
+// North-facing, slightly elevated elevation view. The palace anchor rotates local +Z through π, so the north façade is world -Z; show the full symmetrical façade,
 // central portico and mansard roof without hiding the entrance behind the forecourt.
-camera.position.set(centre.x,centre.y+Math.max(36,size.y*.82),centre.z+Math.max(190,size.z*2.4));
+camera.position.set(centre.x+10,centre.y+Math.max(36,size.y*.82),centre.z-Math.max(190,size.z*2.4));
 camera.lookAt(centre.x,centre.y+size.y*.38,centre.z);
 renderer.setAnimationLoop(()=>renderer.render(scene,camera));
 window.__snapshotReady=true;
