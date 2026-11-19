@@ -807,6 +807,9 @@ async function initApp() {
       }
       for (let i = 0; i < 4; i++) window.__bxlTick(0.05, false);
       if (locationId === 'palaisDeJustice') {
+        // Advance one more fixed step so the HUD reflects this location before
+        // replacing the chase camera with the wide landmark composition.
+        window.__bxlTick(0.05, false);
         // A scenic camera is needed to show the Palais' monumental façade and
         // Place Poelaert together; a player-height chase view crops the building.
         const camera = cameraSystem.camera;
