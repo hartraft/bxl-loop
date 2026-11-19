@@ -197,7 +197,7 @@ jobs:
         if: steps.capture-runner.outputs.present == 'true'
         run: |
           sudo apt-get update
-          sudo apt-get install -y imagemagick
+          sudo apt-get install -y imagemagick x11-apps xvfb
       - name: Start the staged site
         if: steps.capture-runner.outputs.present == 'true'
         run: |
@@ -210,7 +210,7 @@ jobs:
           exit 1
       - name: Capture and validate all six rendered Brussels views
         if: steps.capture-runner.outputs.present == 'true'
-        run: node tools/browser-screenshots.mjs --base-url http://127.0.0.1:4173/
+        run: xvfb-run --auto-servernum --server-args='-screen 0 1600x1000x24 -ac +extension GLX +render -noreset' node tools/browser-screenshots.mjs --base-url http://127.0.0.1:4173/
       - name: Upload screenshots and diagnostics, including partial failures
         if: always() && steps.capture-runner.outputs.present == 'true'
         uses: actions/upload-artifact@v4
