@@ -3,7 +3,7 @@ name: Brussels frame checks
 
 on:
   push:
-    branches: [main, "feat/*"]
+    branches: [main, "feat/*", "fix/*", "improve/*"]
   pull_request:
     branches: [main]
 
