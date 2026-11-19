@@ -4,6 +4,7 @@ on:
     branches: [main]
     paths:
       - "snapshot-grand-place.html"
+      - "snapshot-royal-palace.html"
       - "js/brussels-landmarks.js"
       - ".github/workflows/brussels-landmark-snapshots.yml"
   workflow_dispatch:
@@ -29,6 +30,10 @@ jobs:
           for file in metadata.json heightmap.f32; do
             curl --fail --location --retry 4 "$base/data/brussels-terrain/$file" -o "data/brussels-terrain/$file"
           done
+      - name: Check landmark source syntax and Royal Palace façade geometry
+        run: |
+          node --check js/brussels-landmarks.js
+          node --test tests/brussels-royal-palace.test.mjs tests/brussels-landmark-colliders.test.mjs
       - name: Install Playwright
         run: |
           python -m pip install playwright
@@ -41,9 +46,19 @@ jobs:
           trap 'kill $SERVER_PID' EXIT
           for i in $(seq 1 30); do curl --fail http://localhost:4173/snapshot-grand-place.html >/dev/null && break || sleep 1; done
           python tools/shot.py http://localhost:4173/snapshot-grand-place.html artifacts/brussels-grand-place-town-hall.png 12
+      - name: Capture Royal Palace north façade
+        run: |
+          mkdir -p artifacts
+          python -m http.server 4173 > /tmp/snapshot-server.log 2>&1 &
+          SERVER_PID=$!
+          trap 'kill $SERVER_PID' EXIT
+          for i in $(seq 1 30); do curl --fail http://localhost:4173/snapshot-royal-palace.html >/dev/null && break || sleep 1; done
+          python tools/shot.py http://localhost:4173/snapshot-royal-palace.html artifacts/brussels-royal-palace.png 12
       - uses: actions/upload-artifact@v4
         with:
-          name: brussels-grand-place-town-hall
-          path: artifacts/brussels-grand-place-town-hall.png
+          name: brussels-landmark-elevations
+          path: |
+            artifacts/brussels-grand-place-town-hall.png
+            artifacts/brussels-royal-palace.png
           if-no-files-found: error
           retention-days: 30
