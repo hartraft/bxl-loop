@@ -74,10 +74,10 @@ async function initApp() {
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
     renderer.toneMappingExposure = 0.98; // golden-time look used by the capture suite
   }
-  // Bound SwiftShader's software framebuffer on large desktop viewports. The final
-  // screenshots retain their requested CSS dimensions; the mobile and desktop
-  // captures now render roughly the same number of pixels on the software device.
-  const capturePixelRatio = Math.min(0.5, 420 / Math.max(window.innerWidth, window.innerHeight));
+  // Keep enough backing resolution to review geometry while bounding SwiftShader
+  // to an 800 px long edge. The 1600x900 desktop captures render at 800x450;
+  // the 390x844 mobile view retains a 0.75 pixel ratio.
+  const capturePixelRatio = Math.min(0.75, 800 / Math.max(window.innerWidth, window.innerHeight));
   renderer.setPixelRatio(CAPTURE_MODE ? capturePixelRatio : 1.0);
   renderer.setSize(window.innerWidth, window.innerHeight);
   renderer.shadowMap.enabled = !CAPTURE_MODE;
