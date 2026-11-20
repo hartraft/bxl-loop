@@ -194,6 +194,18 @@ for (const scene of scenes) {
       if (!state.canvasPresent || state.loadingOverlayPresent) {
         throw new Error(`App did not reach a clean rendered state: ${JSON.stringify(state)}`);
       }
+      // A CSS-sized PNG can still be a heavily upscaled low-resolution WebGL
+      // buffer. Require at least half linear resolution on desktop and 70% on mobile.
+      const minBackingScale = scene.viewport.width < 500 ? 0.7 : 0.5;
+      if (state.canvasWidth < Math.ceil(scene.viewport.width * minBackingScale) ||
+          state.canvasHeight < Math.ceil(scene.viewport.height * minBackingScale)) {
+        throw new Error(`3D drawing buffer is too small for review: ${JSON.stringify({
+          width: state.canvasWidth,
+          height: state.canvasHeight,
+          viewport: scene.viewport,
+          minBackingScale
+        })}`);
+      }
       if (scene.viewport.width < 500 && !state.touchControlsVisible) {
         throw new Error('Mobile capture did not enable the touch-specific HUD controls');
       }
