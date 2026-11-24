@@ -1976,3 +1976,7 @@ testCase('mid rails run between the wing balcony balusters', () => {
 testCase('jambs frame the Academy Palace portico door', () => {
   assert.match(palace, /'Academy portico door jamb'/);
 });
+
+testCase('lintels crown the portico door side lights', () => {
+  assert.match(palace, /'Portico side light lintel'/);
+});

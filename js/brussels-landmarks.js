@@ -4082,6 +4082,11 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     for (const side of wingXs) {
       box(g, wingW, 0.05, 0.05, side, 7.7, facadeZ + 0.84, bronze, 'Wing balcony mid rail');
     }
+
+    // Lintels crown the portico door side lights.
+    for (const side of [-1, 1]) {
+      box(g, 1.5, 0.2, 0.4, side * 3.3, 18.0, centralFace + 0.3, moulding, 'Portico side light lintel');
+    }
   });
   addLandmark('palaceSurroundings', (g) => {
     // Real-world sources: en/fr Wikipedia (Royal Palace of Brussels, Brussels Park, Place des Palais,
