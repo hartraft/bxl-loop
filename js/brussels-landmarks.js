@@ -2894,6 +2894,16 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       box(g, 0.9, 1.1, 0.9, Math.cos(ba) * 17.6, 1.05, 150 + Math.sin(ba) * 17.6, materials.paleStone, 'Pond emperor bust pedestal');
       mesh(g, new THREE.SphereGeometry(0.42, 10, 8), materials.paleStone, Math.cos(ba) * 17.6, 2.0, 150 + Math.sin(ba) * 17.6, 'Park Roman emperor bust');
     }
+    // The Academy Palace garden is also grilled to the east, toward the palace (inventory 30098).
+    const aeGrille = new THREE.InstancedMesh(new THREE.BoxGeometry(0.08, 2.6, 0.08), materials.dark, 30);
+    const aed = new THREE.Object3D();
+    let aei = 0;
+    for (let az = 8; az <= 64; az += 2.2) {
+      aed.position.set(-135.5, 1.3, az); aed.rotation.y = 0; aed.updateMatrix();
+      aeGrille.setMatrixAt(aei++, aed.matrix);
+    }
+    aeGrille.count = aei; aeGrille.name = 'Academy garden east grille'; g.add(aeGrille);
+    box(g, 0.3, 0.12, 57, -135.5, 2.66, 36, materials.dark, 'Academy garden east grille rail');
   });
     addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');

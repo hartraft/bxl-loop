@@ -877,3 +877,9 @@ testCase('busts of Roman emperors ring the main pond of the park', () => {
   assert.match(palace, /'Park Roman emperor bust'/);
   assert.match(palace, /for \(let bk = 0; bk < 8; bk\+\+\)/);
 });
+
+testCase('a grille closes the Academy Palace garden to the east toward the palace', () => {
+  assert.match(palace, /grilled to the east/);
+  assert.match(palace, /'Academy garden east grille'/);
+  assert.match(palace, /aeGrille\.count = aei/);
+});
