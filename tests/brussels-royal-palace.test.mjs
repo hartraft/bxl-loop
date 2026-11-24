@@ -35,6 +35,18 @@ testCase('Royal Palace centre has a sculpted pediment, domed drum and Belgian fl
   assert.match(palace, /Belgian flag stripe/);
 });
 
+testCase('the front garden is enclosed by gilded railings with three gates on the parterre axes', () => {
+  assert.match(palace, /grilles, portails et balustrades dor/);
+  assert.match(palace, /'Garden enclosure stone plinth'/);
+  assert.match(palace, /'Gilded garden railing top rail'/);
+  assert.match(palace, /'Gilded garden railing mid rail'/);
+  assert.match(palace, /for \(const gx of \[0, -38, 38\]\)/);
+  assert.match(palace, /'Gilded gate stone pier'/);
+  assert.match(palace, /'Gate pier gilded urn'/);
+  assert.match(palace, /'Gilded garden gate leaf'/);
+  assert.match(palace, /'Gilded gate baluster'/);
+});
+
 testCase('the front garden holds the real three sunken parterres (central on the portico axis, two lateral)', () => {
   assert.match(palace, /trois parterres/);
   assert.match(palace, /'Sunken parterre retaining edge'/);
