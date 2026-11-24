@@ -4221,6 +4221,21 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     for (let s = 0; s < 3; s++) {
       box(g, 6, 0.25, 0.9, 0, 0.9 - s * 0.25, 164.5 + s * 0.9, materials.paleStone, 'Main pond access step');
     }
+    // The Place du Trône was enclosed in 1868-69 by a monumental fence with an entrance to
+    // the palace park, to Balat's 1867 design (heritage inventory 10001113).
+    box(g, 70, 0.5, 0.5, -120, 0.25, -46, materials.paleStone, 'Place du Trône fence base');
+    const trFence = new THREE.InstancedMesh(new THREE.BoxGeometry(0.1, 2.2, 0.1), materials.dark, 40);
+    const trd2 = new THREE.Object3D();
+    let tri3 = 0;
+    for (let fx = -155; fx <= -85; fx += 2) {
+      trd2.position.set(fx, 1.35, -46); trd2.rotation.y = 0; trd2.updateMatrix();
+      trFence.setMatrixAt(tri3++, trd2.matrix);
+    }
+    trFence.count = tri3; trFence.name = 'Place du Trône monumental fence'; g.add(trFence);
+    box(g, 70, 0.14, 0.4, -120, 2.5, -46, materials.dark, 'Place du Trône fence top rail');
+    for (const gx of [-124, -116]) {
+      box(g, 1.4, 3.4, 0.6, gx, 1.7, -46, materials.paleStone, 'Palace park entrance gate pier');
+    }
   });
     addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');

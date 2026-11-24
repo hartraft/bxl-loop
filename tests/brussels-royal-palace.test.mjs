@@ -1099,3 +1099,9 @@ testCase('stone edging kerbs flank the park central avenue', () => {
 testCase('stone access steps lead down to the main pond rim on the axis', () => {
   assert.match(palace, /'Main pond access step'/);
 });
+
+testCase('the 1868-69 monumental fence encloses Place du Trône with a palace-park gate', () => {
+  assert.match(palace, /'Place du Trône monumental fence'/);
+  assert.match(palace, /'Palace park entrance gate pier'/);
+  assert.match(palace, /trFence\.count = tri3/);
+});
