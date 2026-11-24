@@ -3712,6 +3712,15 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
 
     // The gilded garden railing in front of the palace stands on a stone plinth.
     box(g, 68, 0.22, 0.5, 0, 0.11, 14, ashlar, 'Gilded garden railing plinth');
+
+    // Attic bases and capitals ring each fluted portico column shaft.
+    for (let i = 0; i < 6; i++) {
+      const x = -12.5 + i * 5;
+      for (const z of [centralFace + 1.55, centralFace + 4.1]) {
+        cylinder(g, 1.5, 1.6, 0.7, x, 8.55, z, ashlar).name = 'Portico column base';
+        cylinder(g, 1.55, 1.45, 0.7, x, 21.5, z, moulding).name = 'Portico column capital';
+      }
+    }
   });
   addLandmark('palaceSurroundings', (g) => {
     // Real-world sources: en/fr Wikipedia (Royal Palace of Brussels, Brussels Park, Place des Palais,

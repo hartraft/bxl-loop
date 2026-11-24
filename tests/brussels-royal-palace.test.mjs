@@ -1222,3 +1222,8 @@ testCase('lanterns crown the piers of the park south gate on the palace axis', (
   assert.match(palace, /'Park south gate lantern'/);
   assert.match(palace, /'Park south gate lantern glass'/);
 });
+
+testCase('attic bases and capitals ring all twelve portico column shafts', () => {
+  assert.match(palace, /'Portico column base'/);
+  assert.match(palace, /'Portico column capital'/);
+});
