@@ -1940,3 +1940,7 @@ testCase('jambs frame the Palace of the Nation east wing door', () => {
 testCase('brackets carry the wing balcony flower boxes', () => {
   assert.match(palace, /'Wing flower box bracket'/);
 });
+
+testCase('stone sills sit under the Royal Stables arched windows', () => {
+  assert.match(palace, /'Royal Stables window sill'/);
+});

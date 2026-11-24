@@ -5345,6 +5345,11 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     for (const side of [-1, 1]) {
       box(g, 0.3, 6.0, 0.35, 70 + side * 1.8, 3.0, 406.8, materials.warmStone, 'Palace of the Nation east wing door jamb');
     }
+
+    // Stone sills sit under the Royal Stables arched windows.
+    for (let i = 0; i < 5; i++) {
+      box(g, 2.8, 0.18, 0.3, -70 - 16 + i * 8, 3.4, -73.0, materials.warmStone, 'Royal Stables window sill');
+    }
   });
     addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');
