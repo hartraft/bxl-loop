@@ -467,3 +467,10 @@ testCase('the Hôtel Belle-Vue (BELvue museum) closes the west end of the Place 
   assert.match(palace, /'BELvue pavilion roof'/);
   assert.match(palace, /'BELvue piano nobile window'/);
 });
+
+testCase('the Place des Palais sett paving spans the full 350 m width of the square', () => {
+  assert.match(palace, /70 x 350 m and entirely paved/);
+  assert.match(palace, /'Place des Palais west sett field'/);
+  assert.match(palace, /'Place des Palais full-width sett paving'/);
+  assert.match(palace, /setts2\.count = si2/);
+});

@@ -2364,6 +2364,27 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       box(g, 2.0, 3.2, 0.2, wx, 7.5, 22.1, materials.glass, 'BELvue ground window');
       box(g, 2.0, 3.6, 0.2, wx, 20, 22.1, materials.glass, 'BELvue attic window');
     }
+    // The square is 70 x 350 m and entirely paved: extend the blue-stone sett fields to the
+    // full width beyond the palace apron, up to the Academy Palace and the BELvue.
+    box(g, 90, 0.3, 44, -130, -0.15, 36, materials.pavingEdge, 'Place des Palais west sett field');
+    box(g, 90, 0.3, 44, 130, -0.15, 36, materials.pavingEdge, 'Place des Palais east sett field');
+    const sett2Geo = new THREE.BoxGeometry(0.9, 0.07, 0.9);
+    const setts2 = new THREE.InstancedMesh(sett2Geo, materials.pavingB, 30 * 44 * 2);
+    const sd2 = new THREE.Object3D();
+    let si2 = 0;
+    for (const side of [-1, 1]) {
+      for (let row = 0; row < 44; row++) {
+        for (let col = 0; col < 30; col++) {
+          sd2.position.set(side * (86 + col * 2.9 + (row % 2) * 0.3), -0.02, 15 + row * 0.95);
+          sd2.updateMatrix();
+          setts2.setMatrixAt(si2++, sd2.matrix);
+        }
+      }
+    }
+    setts2.count = si2;
+    setts2.name = 'Place des Palais full-width sett paving';
+    setts2.receiveShadow = true;
+    g.add(setts2);
   });
     addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');
