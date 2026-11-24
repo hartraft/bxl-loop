@@ -685,3 +685,15 @@ test('square paving detail: calepinage joints, street-mouth sett patches, tactil
   assert.ok(square.includes('uplights.count = ul'));
   assert.ok(square.includes('glowGlass, 24'));
 });
+
+test('Town Hall: hipped dormer pediments, balcony balusters, corner-turret lancet slits, spire-base pinnacles (rounds 97-100)', () => {
+  assert.ok(square.includes('Hipped dormer pediments'));
+  assert.ok(square.includes('dormerPeds.count = 11'));
+  assert.ok(square.includes('Upper-storey balcony balusters'));
+  assert.ok(square.includes('balconyBalusters.count = bb'));
+  assert.ok(square.includes('Corner turret lancet slits'));
+  assert.ok(square.includes('turretSlits.count = ts'));
+  assert.ok(square.includes('Spire base parapet ring'));
+  assert.ok(square.includes('Spire base pinnacles'));
+  assert.ok(square.includes('spireBasePins.count = 8'));
+});

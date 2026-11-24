@@ -1026,6 +1026,24 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     lancetOculi.name = 'Lancet pair oculus (quatrefoil tracery)';
     lancetKeystones.name = 'Lancet keystone';
     root.add(lancetMullions, lancetOculi, lancetKeystones);
+    // Balusters along the front of every upper-storey stone balcony — the real balconies
+    // are balustraded, not open slabs.
+    const balconyBalusters = new THREE.InstancedMesh(new THREE.BoxGeometry(0.12, 0.5, 0.12), trim, bays * 2 * 5);
+    let bb = 0;
+    for (let floor = 0; floor < 2; floor++) {
+      const y = floor === 0 ? 12.5 : 20.0;
+      for (let i = 0; i < bays; i++) {
+        const x = -width / 2 + bayW * (i + 0.5);
+        for (let k = 0; k < 5; k++) {
+          facadeDummy.position.set(x - 1.0 + k * 0.5, y - 2.38, 1.02);
+          facadeDummy.updateMatrix();
+          balconyBalusters.setMatrixAt(bb++, facadeDummy.matrix);
+        }
+      }
+    }
+    balconyBalusters.count = bb;
+    balconyBalusters.name = 'Upper-storey balcony balusters';
+    root.add(balconyBalusters);
     // Statues in niches above the ground-floor arcade arch heads as well — the real
     // facade carries nearly three hundred figures on every level.
     for (let i = 0; i < bays; i++) {
@@ -1109,7 +1127,23 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       const cap = mesh(dormer, new THREE.ConeGeometry(1.0, 1.6, 4), roofMat, 0, 2.8, 0, 'Dormer pointed cap');
       cap.rotation.y = Math.PI / 4;
     }
+    // Small triangular pediments crown each hipped roof dormer, as on the real saddleback roof.
+    const dormerPedShape = new THREE.Shape();
+    dormerPedShape.moveTo(-0.8, 0); dormerPedShape.lineTo(0, 0.55); dormerPedShape.lineTo(0.8, 0); dormerPedShape.closePath();
+    const dormerPeds = new THREE.InstancedMesh(new THREE.ShapeGeometry(dormerPedShape), trim, 11);
+    for (let i = 0; i < 11; i++) {
+      pinDummy.position.set(-width / 2 + 2.8 + i * 4.25, height + 4.35, -depth / 2 + (i % 2 ? -3.1 : 3.1));
+      pinDummy.updateMatrix();
+      dormerPeds.setMatrixAt(i, pinDummy.matrix);
+    }
+    dormerPeds.count = 11;
+    dormerPeds.name = 'Hipped dormer pediments';
+    root.add(dormerPeds);
     // Both wings terminate in corner turrets that rise the full facade height, above the roofline.
+    // Narrow lancet slits pierce both corner turret shafts, as on the real turrets.
+    const turretSlits = new THREE.InstancedMesh(new THREE.BoxGeometry(0.3, 3.2, 0.14), glass, 8);
+    const tsd = new THREE.Object3D();
+    let ts = 0;
     for (const side of [-1, 1]) {
       const turret = new THREE.Group();
       turret.position.set(side * (width / 2 - 2.2), 0, -depth / 2);
@@ -1118,7 +1152,15 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       shaft.name = 'Facade corner turret';
       mesh(turret, new THREE.ConeGeometry(1.9, 7, 8), roofMat, 0, height + 10.5, 0, 'Facade corner turret spire');
       mesh(turret, new THREE.SphereGeometry(0.24, 8, 6), materials.gold, 0, height + 14.3, 0, 'Facade corner turret gilded finial');
+      for (let s = 0; s < 4; s++) {
+        tsd.position.set(side * (width / 2 - 2.2), 8 + s * 7, 1.45);
+        tsd.updateMatrix();
+        turretSlits.setMatrixAt(ts++, tsd.matrix);
+      }
     }
+    turretSlits.count = ts;
+    turretSlits.name = 'Corner turret lancet slits';
+    root.add(turretSlits);
 
     // The off-centre tower rises from the ground-level portal to the real 96 m: square
     // shaft, gallery above the roofline, three-tier openwork octagonal lantern with corner
@@ -1268,6 +1310,20 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       cylinder(tower, 4.75, 4.75, 0.55, 0, y0 + 6.25, 0, trim, 8).name = 'Lantern openwork parapet';
     }
     cylinder(tower, 4.2, 4.6, 0.9, 0, 80.6, 0, trim, 8).name = 'Lantern crown';
+    // Parapet ring at the spire base with eight crocketed pinnacles around it, as on the
+    // real openwork spire's foot.
+    cylinder(tower, 4.0, 4.0, 0.7, 0, 81.3, 0, trim, 8).name = 'Spire base parapet ring';
+    const spireBasePins = new THREE.InstancedMesh(new THREE.ConeGeometry(0.22, 1.4, 6), trim, 8);
+    const spd = new THREE.Object3D();
+    for (let i = 0; i < 8; i++) {
+      const a = i * Math.PI / 4 + Math.PI / 8;
+      spd.position.set(Math.cos(a) * 4.0, 82.1, Math.sin(a) * 4.0);
+      spd.updateMatrix();
+      spireBasePins.setMatrixAt(i, spd.matrix);
+    }
+    spireBasePins.count = 8;
+    spireBasePins.name = 'Spire base pinnacles';
+    tower.add(spireBasePins);
     // Louver slats inside each belfry opening and the great bell in the middle tier —
     // the real openwork lantern houses the tower bells behind wooden louvers.
     const louvers = new THREE.InstancedMesh(new THREE.BoxGeometry(2.2, 0.12, 0.3), trim, 24);
