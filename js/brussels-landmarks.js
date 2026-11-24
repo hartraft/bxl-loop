@@ -2654,6 +2654,10 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     for (let i = 0; i < 4; i++) {
       box(g, 2.4, 5.5, 0.2, 34 - 9 + i * 6, 8, 433.1, materials.glass, 'Law Street 16 window');
     }
+    // In 1769 the States of Brabant proposed a statue of Prince Charles Alexander of Lorraine,
+    // placed before the levelled ruins of the Coudenberg palace — the park's founding monument.
+    box(g, 4, 3.4, 4, -30, 1.7, 300, materials.paleStone, 'Charles of Lorraine statue pedestal');
+    mesh(g, new THREE.SphereGeometry(0.9, 12, 10), materials.paleStone, -30, 5.2, 300, 'Charles of Lorraine statue figure');
   });
     addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');

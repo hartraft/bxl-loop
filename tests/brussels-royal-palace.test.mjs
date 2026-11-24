@@ -654,3 +654,9 @@ testCase('16 rue de la Loi beside the Palace of the Nation is the Prime Minister
   assert.match(palace, /'16 rue de la Loi Prime Minister seat'/);
   assert.match(palace, /'Law Street 16 window'/);
 });
+
+testCase('the 1769 statue of Prince Charles Alexander of Lorraine stands in the park', () => {
+  assert.match(palace, /statue of Prince Charles Alexander of Lorraine/);
+  assert.match(palace, /'Charles of Lorraine statue pedestal'/);
+  assert.match(palace, /'Charles of Lorraine statue figure'/);
+});
