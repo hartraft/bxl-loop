@@ -1439,3 +1439,7 @@ testCase('stone sills sit under each BELvue attic window', () => {
 testCase('small caps crown the posts of the gilded garden railing', () => {
   assert.match(palace, /'Garden railing post cap'/);
 });
+
+testCase('stone lintels crown the Palace of the Nation wing windows', () => {
+  assert.match(palace, /'Palace of the Nation wing window lintel'/);
+});
