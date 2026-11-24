@@ -5805,6 +5805,9 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     for (let s = 0; s < 3; s++) {
       box(g, 0.9, 0.25, 6, -16.8 - s * 0.9, 0.9 - s * 0.25, 150, materials.paleStone, 'Main pond west access step');
     }
+
+    // A sett ring borders the axis medallion at the centre of the Place des Palais.
+    cylinder(g, 4.6, 4.6, 0.12, 0, 0.06, 36, materials.pavingEdge, 24).name = 'Square axis medallion ring';
   });
     addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');

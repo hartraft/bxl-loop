@@ -2305,3 +2305,7 @@ testCase('stone steps lead down to the main pond rim on its west side', () => {
 testCase('border posts mark the start of the central garden walk', () => {
   assert.match(palace, /'Garden walk border post'/);
 });
+
+testCase('a sett ring borders the axis medallion of the Place des Palais', () => {
+  assert.match(palace, /'Square axis medallion ring'/);
+});
