@@ -77,6 +77,14 @@ testCase('the central corps carries a dormered slate mansard roof (toiture à lu
   assert.match(palace, /for \(let i = 0; i < 3; i\+\+\)/);
 });
 
+testCase('second-floor wing windows carry a keystone and garland swag', () => {
+  assert.match(palace, /keystone and garland/);
+  assert.match(palace, /if \(floorY === 16\.0\)/);
+  assert.match(palace, /'Second-floor window keystone'/);
+  assert.match(palace, /'Second-floor garland swag'/);
+  assert.match(palace, /gsw\.rotation\.z = Math\.PI/);
+});
+
 testCase('chimney stacks with stone caps rise from the wing slate roofs', () => {
   assert.match(palace, /Chimney stacks/);
   assert.match(palace, /'Palace roof chimney stacks'/);

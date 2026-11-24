@@ -1486,6 +1486,12 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
           box(g, 2.25, 0.2, 0.38, bx, floorY + winH / 2 + 0.12, facadeZ + 0.2, moulding, 'Wing window lintel');
           box(g, 0.14, winH + 0.34, 0.3, bx - 1.1, floorY, facadeZ + 0.2, ashlar, 'Wing window jamb');
           box(g, 0.14, winH + 0.34, 0.3, bx + 1.1, floorY, facadeZ + 0.2, ashlar, 'Wing window jamb');
+          // Second-floor windows are crowned with keystone and garland (heritage: "rectangulaire, à clé et guirlande").
+          if (floorY === 16.0) {
+            box(g, 0.24, 0.42, 0.2, bx, floorY + winH / 2 + 0.34, facadeZ + 0.24, ashlar, 'Second-floor window keystone');
+            const gsw = mesh(g, new THREE.TorusGeometry(0.5, 0.06, 6, 14, Math.PI), ashlar, bx, floorY - winH / 2 - 0.5, facadeZ + 0.24, 'Second-floor garland swag');
+            gsw.rotation.z = Math.PI;
+          }
         }
 
         // EVERY piano nobile opening has its iron balconette, set within Suys'
