@@ -2360,6 +2360,12 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       rib.rotation.y = ra;
       rib.rotation.z = Math.PI / 2;
     }
+
+    // A moulded cornice band runs at the foot of each wing mansard, where the roof meets
+    // the wall — the mansard's base cornice.
+    for (const x of wingXs) {
+      box(g, wingW + 1.2, 0.5, 0.7, x, 20.6, facadeZ + 0.4, moulding, 'Wing mansard base cornice');
+    }
   });
   addLandmark('palaceSurroundings', (g) => {
     // Brussels Park (Parc de Bruxelles): the rectangular 13.1 ha neoclassical park north of the

@@ -770,3 +770,8 @@ testCase('a lighter paved vista carpet runs from the portico to the park north g
   assert.match(palace, /central axis vista/);
   assert.match(palace, /'Place des Palais central axis vista'/);
 });
+
+testCase('a moulded base cornice runs at the foot of each wing mansard', () => {
+  assert.match(palace, /mansard's base cornice/);
+  assert.match(palace, /'Wing mansard base cornice'/);
+});
