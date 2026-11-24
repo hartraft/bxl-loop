@@ -1105,6 +1105,19 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     pierCapitals.count = pc;
     pierCapitals.name = 'Arcade pier capitals';
     root.add(pierCapitals);
+    // Cross-vault ribs spring over every ground-arcade bay — the real arcade is vaulted.
+    const vaultRibs = new THREE.InstancedMesh(new THREE.BoxGeometry(2.6, 0.14, 0.18), trim, bays);
+    for (let i = 0; i < bays; i++) {
+      const x = -width / 2 + bayW * (i + 0.5);
+      vd.position.set(x, 7.35, 0.3);
+      vd.rotation.z = (i % 2 ? -1 : 1) * 0.42;
+      vd.updateMatrix();
+      vaultRibs.setMatrixAt(i, vd.matrix);
+      vd.rotation.z = 0;
+    }
+    vaultRibs.count = bays;
+    vaultRibs.name = 'Arcade cross-vault ribs';
+    root.add(vaultRibs);
     // A stone balcony connects the two wings across the facade above the arcade, on a row of
     // balusters — as on the real elevation.
     box(root, width + 1.2, 0.4, 1.3, 0, 8.7, 0.55, trim, 'Wing-connecting balcony');
@@ -1236,6 +1249,30 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     balconyBalusters.count = bb;
     balconyBalusters.name = 'Upper-storey balcony balusters';
     root.add(balconyBalusters);
+    // Label stops terminate every lancet hood mould, and dripstones hang under each sill —
+    // both standard Brabantine-Gothic details of the real facade.
+    const labelStops = new THREE.InstancedMesh(new THREE.BoxGeometry(0.2, 0.34, 0.3), darkStone, bays * 4);
+    const dripstones = new THREE.InstancedMesh(new THREE.ConeGeometry(0.09, 0.3, 6), darkStone, bays * 2);
+    let ls = 0, ds = 0;
+    for (let floor = 0; floor < 2; floor++) {
+      const y = floor === 0 ? 12.5 : 20.0;
+      for (let i = 0; i < bays; i++) {
+        const x = -width / 2 + bayW * (i + 0.5);
+        for (const side of [-1, 1]) {
+          facadeDummy.position.set(x + side * 1.38, y + 2.45, 0.3);
+          facadeDummy.updateMatrix();
+          labelStops.setMatrixAt(ls++, facadeDummy.matrix);
+        }
+        facadeDummy.position.set(x, y - 2.52, 0.3);
+        facadeDummy.updateMatrix();
+        dripstones.setMatrixAt(ds++, facadeDummy.matrix);
+      }
+    }
+    labelStops.count = ls;
+    dripstones.count = ds;
+    labelStops.name = 'Lancet hood label stops';
+    dripstones.name = 'Window sill dripstones';
+    root.add(labelStops, dripstones);
     // Statues in niches above the ground-floor arcade arch heads as well — the real
     // facade carries nearly three hundred figures on every level.
     for (let i = 0; i < bays; i++) {
@@ -1253,6 +1290,65 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     facadeStatues.name = 'Town Hall gilded facade statues';
     facadeNiches.castShadow = facadeStatues.castShadow = true;
     root.add(facadeNiches, facadeStatues);
+    // Dark recessed back panels behind every statue niche, plinth blocks under the figures,
+    // and small canopy hoods with crocket balls over the upper-floor niches — the real
+    // facade's niches are deep, canopied and plinthed.
+    const nicheBacks = new THREE.InstancedMesh(new THREE.BoxGeometry(0.8, 2.7, 0.1), materials.dark, 40);
+    const statuePlinths = new THREE.InstancedMesh(new THREE.BoxGeometry(0.4, 0.22, 0.2), darkStone, 40);
+    const nicheHoods = new THREE.InstancedMesh(new THREE.ShapeGeometry(canopyShape), trim, 16);
+    const hoodCrochets = new THREE.InstancedMesh(new THREE.SphereGeometry(0.07, 6, 5), materials.gold, 16);
+    let nb = 0, nh = 0;
+    for (let floor = 0; floor < 2; floor++) {
+      const y = floor === 0 ? 12.5 : 20.0;
+      for (let i = 1; i <= bays; i += 2) {
+        const x = -width / 2 + i * bayW;
+        facadeDummy.position.set(x, y - 0.05, 0.12);
+        facadeDummy.updateMatrix();
+        nicheBacks.setMatrixAt(nb, facadeDummy.matrix);
+        facadeDummy.position.set(x, y - 1.42, 0.28);
+        facadeDummy.updateMatrix();
+        statuePlinths.setMatrixAt(nb++, facadeDummy.matrix);
+        facadeDummy.position.set(x, y + 1.45, 0.22);
+        facadeDummy.updateMatrix();
+        nicheHoods.setMatrixAt(nh, facadeDummy.matrix);
+        facadeDummy.position.set(x, y + 1.72, 0.24);
+        facadeDummy.updateMatrix();
+        hoodCrochets.setMatrixAt(nh++, facadeDummy.matrix);
+      }
+    }
+    for (let i = 0; i < bays; i++) {
+      const x = -width / 2 + bayW * (i + 0.5);
+      facadeDummy.position.set(x, 8.95, 0.12);
+      facadeDummy.updateMatrix();
+      nicheBacks.setMatrixAt(nb, facadeDummy.matrix);
+      facadeDummy.position.set(x, 8.32, 0.28);
+      facadeDummy.updateMatrix();
+      statuePlinths.setMatrixAt(nb++, facadeDummy.matrix);
+    }
+    nicheBacks.count = statuePlinths.count = nb;
+    nicheHoods.count = hoodCrochets.count = nh;
+    nicheBacks.name = 'Statue niche back panels';
+    statuePlinths.name = 'Statue plinth blocks';
+    nicheHoods.name = 'Upper niche canopy hoods';
+    hoodCrochets.name = 'Niche hood crocket balls';
+    root.add(nicheBacks, statuePlinths, nicheHoods, hoodCrochets);
+    // Documented ground-floor figures beside the tower base: prophets, David and Solomon and
+    // an Annunciation group flank the portal on the real elevation.
+    const baseFigures = new THREE.InstancedMesh(new THREE.BoxGeometry(0.26, 1.2, 0.14), materials.gold, 4);
+    const baseFigHeads = new THREE.InstancedMesh(new THREE.SphereGeometry(0.15, 8, 6), materials.gold, 4);
+    for (let i = 0; i < 4; i++) {
+      const x = towerX + (i - 1.5) * 5.2;
+      facadeDummy.position.set(x, 4.4, 0.32);
+      facadeDummy.updateMatrix();
+      baseFigures.setMatrixAt(i, facadeDummy.matrix);
+      facadeDummy.position.set(x, 5.15, 0.34);
+      facadeDummy.updateMatrix();
+      baseFigHeads.setMatrixAt(i, facadeDummy.matrix);
+    }
+    baseFigures.count = baseFigHeads.count = 4;
+    baseFigures.name = 'Ground-floor prophet/David/Solomon figures';
+    baseFigHeads.name = 'Ground-floor figure heads';
+    root.add(baseFigures, baseFigHeads);
     // Gargoyles: projecting spouts on the buttresses — the real facade is covered in them.
     const facadeGargoyles = new THREE.InstancedMesh(new THREE.BoxGeometry(0.3, 0.5, 0.7), darkStone, bays * 2);
     const gd = new THREE.Object3D();
@@ -1390,6 +1486,17 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     for (const y of [9, 19, 29, 39, 49]) {
       box(tower, towerW + 0.8, 0.5, towerW + 0.8, 0, y, 0, trim, 'Tower projecting string course');
     }
+    // Drip moulds under each projecting tower string course shed water off the shaft.
+    const stringDrips = new THREE.InstancedMesh(new THREE.BoxGeometry(towerW + 0.9, 0.08, towerW + 0.9), darkStone, 5);
+    const stdd = new THREE.Object3D();
+    for (let i = 0; i < 5; i++) {
+      stdd.position.set(0, [9, 19, 29, 39, 49][i] - 0.29, 0);
+      stdd.updateMatrix();
+      stringDrips.setMatrixAt(i, stdd.matrix);
+    }
+    stringDrips.count = 5;
+    stringDrips.name = 'Tower string-course drip moulds';
+    tower.add(stringDrips);
     // The square shaft is chained with oversized stone quoins at its four corners.
     const tqRows = Math.floor(54 / 4.5);
     const towerQuoins = new THREE.InstancedMesh(new THREE.BoxGeometry(0.42, 0.9, 0.42), trim, tqRows * 4);

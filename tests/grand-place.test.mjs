@@ -803,3 +803,20 @@ test('rounds 137-140: arcade pier capitals, Broodhuis impost blocks, parapet fin
   assert.ok(square.includes('King’s House standard-bearer lances'));
   assert.ok(square.includes('lances.count = 6'));
 });
+
+test('rounds 141-148: Town Hall arcade vault ribs, hood label stops, sill dripstones, niche backs/plinths/hoods, base figures, string-course drips', () => {
+  assert.ok(square.includes('Arcade cross-vault ribs'));
+  assert.ok(square.includes('vaultRibs.count = bays'));
+  assert.ok(square.includes('Lancet hood label stops'));
+  assert.ok(square.includes('labelStops.count = ls'));
+  assert.ok(square.includes('Window sill dripstones'));
+  assert.ok(square.includes('dripstones.count = ds'));
+  assert.ok(square.includes('Statue niche back panels'));
+  assert.ok(square.includes('nicheBacks.count = statuePlinths.count = nb'));
+  assert.ok(square.includes('Upper niche canopy hoods'));
+  assert.ok(square.includes('nicheHoods.count = hoodCrochets.count = nh'));
+  assert.ok(square.includes('Ground-floor prophet/David/Solomon figures'));
+  assert.ok(square.includes('baseFigures.count = baseFigHeads.count = 4'));
+  assert.ok(square.includes('Tower string-course drip moulds'));
+  assert.ok(square.includes('stringDrips.count = 5'));
+});
