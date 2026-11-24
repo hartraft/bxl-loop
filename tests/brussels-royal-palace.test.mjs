@@ -68,6 +68,14 @@ testCase('the front garden holds the real three sunken parterres (central on the
   assert.match(palace, /\{ x: 38, w: 34, z: 12\.4, d: 2\.6 \}/);
 });
 
+testCase('a continuous stone balustrade runs along the whole roofline (central corps + pavilions)', () => {
+  assert.match(palace, /balustrade terminale/);
+  assert.match(palace, /'Palace roofline balusters'/);
+  assert.match(palace, /roofBalusters\.count = ri/);
+  assert.match(palace, /'Central roofline balustrade rail'/);
+  assert.match(palace, /'Pavilion roofline balustrade rail'/);
+});
+
 testCase('every ground-floor arcade — wings, central corps and pavilions — is crowned with a keystone', () => {
   assert.match(palace, /somm/); // heritage: "arcades cintrées, sommées d'une clé"
   assert.match(palace, /'Wing arcade keystone'/);
