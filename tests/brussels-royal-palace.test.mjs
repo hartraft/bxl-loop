@@ -765,3 +765,8 @@ testCase('flower beds ring the main pond of Brussels Park', () => {
   assert.match(palace, /'Park pond flower bed'/);
   assert.match(palace, /'Park pond flower planting'/);
 });
+
+testCase('a lighter paved vista carpet runs from the portico to the park north gate', () => {
+  assert.match(palace, /central axis vista/);
+  assert.match(palace, /'Place des Palais central axis vista'/);
+});

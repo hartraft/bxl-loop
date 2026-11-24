@@ -2776,6 +2776,9 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       box(g, 6, 0.22, 3.2, fx, 0.11, 150, materials.green, 'Park pond flower bed');
       box(g, 5.4, 0.1, 2.6, fx, 0.24, 150, new THREE.MeshStandardMaterial({ color: 0xb06a5a, roughness: 0.95 }), 'Park pond flower planting');
     }
+    // The vista axis from the palace portico to the park's north gate is a lighter paved
+    // carpet laid over the setts — the palace-Parliament sightline on the square.
+    box(g, 10, 0.1, 46, 0, 0.02, 36, materials.pavingA, 'Place des Palais central axis vista');
   });
     addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');
