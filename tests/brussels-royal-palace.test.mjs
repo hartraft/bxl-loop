@@ -1411,3 +1411,7 @@ testCase('flower boxes with plantings line the wing balconies', () => {
   assert.match(palace, /'Wing balcony flower box'/);
   assert.match(palace, /'Wing balcony flower box planting'/);
 });
+
+testCase('stone sills sit under each Palace of the Nation facade window', () => {
+  assert.match(palace, /'Palace of the Nation window sill'/);
+});

@@ -4680,6 +4680,11 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       apBoss.setMatrixAt(apBi++, apBd.matrix);
     }
     apBoss.count = apBi; apBoss.name = 'Academy Palace ground bossage'; g.add(apBoss);
+
+    // Stone sills sit under each Palace of the Nation facade window.
+    for (let i = 0; i < 7; i++) {
+      box(g, 2.8, 0.2, 0.35, -22.5 + i * 9, 7.9, 403.0, materials.warmStone, 'Palace of the Nation window sill');
+    }
   });
     addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');
