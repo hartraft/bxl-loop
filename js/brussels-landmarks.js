@@ -5397,6 +5397,9 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     for (const side of [-1, 1]) {
       box(g, 0.3, 7, 0.35, -168 + side * 2.0, 3.5, 20.8, materials.warmStone, 'Academy portico door jamb');
     }
+
+    // A tympanum panel fills the Royal Stables gatehouse pediment.
+    box(g, 7, 1.4, 0.1, -70, 16.5, -68.98, materials.paleStone, 'Royal Stables pediment tympanum');
   });
     addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');
