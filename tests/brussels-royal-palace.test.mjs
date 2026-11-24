@@ -1277,3 +1277,7 @@ testCase('steps climb from the garden walk up to the portico stylobate', () => {
 testCase('low walls close the east and west sides of the Academy garden', () => {
   assert.match(palace, /'Academy garden side wall'/);
 });
+
+testCase('abacus blocks sit atop each portico column capital', () => {
+  assert.match(palace, /'Portico column abacus'/);
+});

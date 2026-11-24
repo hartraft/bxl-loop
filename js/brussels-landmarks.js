@@ -3751,6 +3751,14 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     for (let s = 0; s < 2; s++) {
       box(g, 32, 0.25, 0.8, 0, 0.125 + s * 0.25, centralFace + 8.6 - s * 0.6, ashlar, 'Portico stylobate step');
     }
+
+    // Square abacus blocks sit atop each portico column capital under the architrave.
+    for (let i = 0; i < 6; i++) {
+      const x = -12.5 + i * 5;
+      for (const z of [centralFace + 1.55, centralFace + 4.1]) {
+        box(g, 2.6, 0.35, 2.6, x, 22.0, z, moulding, 'Portico column abacus');
+      }
+    }
   });
   addLandmark('palaceSurroundings', (g) => {
     // Real-world sources: en/fr Wikipedia (Royal Palace of Brussels, Brussels Park, Place des Palais,
