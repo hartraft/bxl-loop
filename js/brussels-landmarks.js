@@ -4137,6 +4137,9 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
 
     // A sill bar closes the foot of the portico door fanlight.
     box(g, 3.4, 0.06, 0.15, 0, 7.85, centralFace + 0.28, moulding, 'Fanlight sill bar');
+
+    // A contrasting sett line runs down the centre of the garden walk.
+    box(g, 0.3, 0.06, 3.2, 0, 0.09, 12.4, moulding, 'Garden walk centre sett line');
   });
   addLandmark('palaceSurroundings', (g) => {
     // Real-world sources: en/fr Wikipedia (Royal Palace of Brussels, Brussels Park, Place des Palais,

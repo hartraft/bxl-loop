@@ -2090,3 +2090,7 @@ testCase('a gate opens in the Royal Stables courtyard wall', () => {
 testCase('keystones crown the BELvue attic windows', () => {
   assert.match(palace, /'BELvue attic window keystone'/);
 });
+
+testCase('a contrasting sett line runs down the centre of the garden walk', () => {
+  assert.match(palace, /'Garden walk centre sett line'/);
+});
