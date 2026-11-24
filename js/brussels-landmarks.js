@@ -7592,6 +7592,127 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     }
     // Round 220: register colliders for the three premetro kiosks so vehicles stop at them.
     // (Collider layout entries themselves live in js/brussels-colliders.js — see that file.)
+    // Round 231: quoin chains at the 1949 tower's corners.
+    {
+      const q = new THREE.InstancedMesh(new THREE.BoxGeometry(0.5, 1.1, 0.5), materials.warmStone, 2 * 16);
+      const dummy = new THREE.Object3D();
+      let n = 0;
+      for (const sx of [-1, 1]) for (let r = 0; r < 16; r++) {
+        dummy.position.set(-70 + sx * 7.2, 2 + r * 2.2, 88);
+        dummy.updateMatrix();
+        q.setMatrixAt(n++, dummy.matrix);
+      }
+      q.count = n;
+      q.name = '1949 tower corner quoins (chaines d\'angle de la tour)';
+      q.castShadow = true;
+      g.add(q);
+    }
+    // Round 232: ground-floor shopfronts on the 1884-85 blocks (rez-de-chaussee commerciaux).
+    {
+      const shops = new THREE.InstancedMesh(new THREE.BoxGeometry(48, 3.4, 0.4), materials.glass, 2);
+      const dummy = new THREE.Object3D();
+      for (let i = 0; i < 2; i++) {
+        dummy.position.set((i === 0 ? -1 : 1) * 30, 1.7, 116.25);
+        dummy.updateMatrix();
+        shops.setMatrixAt(i, dummy.matrix);
+      }
+      shops.count = 2;
+      shops.name = '1884-85 blocks ground-floor shopfronts';
+      shops.castShadow = true;
+      g.add(shops);
+    }
+    // Round 233: the Cafe de la Bourse has a glazed ground-floor band under the awning.
+    box(g, 26, 3.2, 0.4, 34, 1.6, 138.25, materials.glass, 'Cafe de la Bourse ground-floor glazing');
+    // Round 234: the Ancienne Belgique gets an entrance canopy and a marquee band.
+    {
+      box(g, 8, 0.2, 3, -34, 5.2, 150.6, materials.dark, 'Ancienne Belgique entrance canopy (marquise)');
+      box(g, 24, 1.2, 0.5, -34, 20, 150.4, materials.enamelBlue, 'Ancienne Belgique marquee band');
+    }
+    // Round 235: cornices + window surrounds on the boulevard facade rows.
+    {
+      const cornices = new THREE.InstancedMesh(new THREE.BoxGeometry(17, 0.9, 15), materials.warmStone, 8);
+      const dummy = new THREE.Object3D();
+      for (let i = 0; i < 4; i++) {
+        dummy.position.set(-30 + i * 20, 20.4, 142);
+        dummy.updateMatrix();
+        cornices.setMatrixAt(i, dummy.matrix);
+        dummy.position.set(28 + i * 19, 19.4, 100);
+        dummy.updateMatrix();
+        cornices.setMatrixAt(4 + i, dummy.matrix);
+      }
+      cornices.count = 8;
+      cornices.name = 'Boulevard facade row cornices';
+      cornices.castShadow = true;
+      g.add(cornices);
+    }
+    // Round 236: cornices + quoins on the rue Auguste Orts facades (vers 1885).
+    {
+      const cornices = new THREE.InstancedMesh(new THREE.BoxGeometry(10.6, 0.7, 0.9), materials.warmStone, 5);
+      const dummy = new THREE.Object3D();
+      for (let i = 0; i < 5; i++) {
+        dummy.position.set(-58 - i * 11, 20.3, 62 - i * 9);
+        dummy.rotation.set(0, 0.5, 0);
+        dummy.updateMatrix();
+        cornices.setMatrixAt(i, dummy.matrix);
+      }
+      cornices.count = 5;
+      cornices.name = 'Rue Orts facade cornices (corniches)';
+      cornices.castShadow = true;
+      g.add(cornices);
+    }
+    // Round 237: shopfronts at ground level of the square edge facade rows.
+    {
+      const shops = new THREE.InstancedMesh(new THREE.BoxGeometry(9, 3, 0.4), materials.glass, 6);
+      const dummy = new THREE.Object3D();
+      for (let i = 0; i < 3; i++) {
+        dummy.position.set(69.4, 1.5, 60 + i * 22);
+        dummy.updateMatrix();
+        shops.setMatrixAt(i, dummy.matrix);
+        dummy.position.set(-69.4, 1.5, 60 + i * 22);
+        dummy.updateMatrix();
+        shops.setMatrixAt(3 + i, dummy.matrix);
+      }
+      shops.count = 6;
+      shops.name = 'Square edge shopfronts (vitrines rez-de-chaussee)';
+      g.add(shops);
+    }
+    // Round 238: flowering plants in the boulevard planters (fleurissement des bacs).
+    {
+      const flowers = new THREE.InstancedMesh(new THREE.SphereGeometry(0.22, 6, 5), materials.canvas, 12 * 3);
+      const dummy = new THREE.Object3D();
+      let n = 0;
+      for (let i = 0; i < 12; i++) for (let k = 0; k < 3; k++) {
+        dummy.position.set(-77 + i * 14 + (k - 1) * 1.6, 1.15, 118.5 + (k - 1) * 0.5);
+        dummy.updateMatrix();
+        flowers.setMatrixAt(n++, dummy.matrix);
+      }
+      flowers.count = n;
+      flowers.name = 'Planter flowers (fleurs des bacs)';
+      flowers.castShadow = true;
+      g.add(flowers);
+    }
+    // Round 239: four benches face the Bourse across the square by the water mirror.
+    {
+      const seats = new THREE.InstancedMesh(new THREE.BoxGeometry(2.2, 0.09, 0.6), materials.warmStone, 4);
+      const dummy = new THREE.Object3D();
+      for (let i = 0; i < 4; i++) {
+        dummy.position.set(-46 + i * 4, 0.5, 74);
+        dummy.updateMatrix();
+        seats.setMatrixAt(i, dummy.matrix);
+      }
+      seats.count = 4;
+      seats.name = 'Benches facing the Bourse by the water mirror (bancs face a la Bourse)';
+      seats.castShadow = true;
+      g.add(seats);
+    }
+    // Round 240: the stop shelter gets a bench and a timetable case.
+    {
+      const stop = g.children.find((c) => c.name && c.name.startsWith('Stop sign Bourse - Beurs'));
+      if (stop) {
+        box(stop, 2.6, 0.09, 0.5, 2.2, 0.45, 0, materials.warmStone, 'shelter bench (banc de l\'abri)');
+        box(stop, 1.0, 1.4, 0.08, 2.2, 1.4, -0.8, materials.glass, 'timetable case (fiche horaire)');
+      }
+    }
     // __SURROUNDINGS_ROUNDS__
   });
 

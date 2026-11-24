@@ -749,4 +749,27 @@ testCase('rounds 226-230: tympanum inner frame, ogee cyma, front pilasters, down
   assert.ok(!bourse.includes("'placeholder'"), 'no placeholder meshes left');
 });
 
+testCase('rounds 231-234: 1949 tower quoins, 1884-85 shopfronts, Cafe glazing, AB canopy + marquee', () => {
+  assert.match(surroundings, /'1949 tower corner quoins/);
+  assert.match(surroundings, /q\.count = n/);
+  assert.match(surroundings, /'1884-85 blocks ground-floor shopfronts'/);
+  assert.match(surroundings, /shops\.count = 2/);
+  assert.match(surroundings, /'Cafe de la Bourse ground-floor glazing'/);
+  assert.match(surroundings, /'Ancienne Belgique entrance canopy \(marquise\)'/);
+  assert.match(surroundings, /'Ancienne Belgique marquee band'/);
+});
+
+testCase('rounds 235-240: boulevard cornices, rue Orts cornices, square shopfronts, planter flowers, mirror benches, shelter bench + timetable', () => {
+  assert.match(surroundings, /'Boulevard facade row cornices'/);
+  assert.match(surroundings, /cornices\.count = 8/);
+  assert.match(surroundings, /'Rue Orts facade cornices \(corniches\)'/);
+  assert.match(surroundings, /'Square edge shopfronts \(vitrines rez-de-chaussee\)'/);
+  assert.match(surroundings, /'Planter flowers \(fleurs des bacs\)'/);
+  assert.match(surroundings, /flowers\.count = n/);
+  assert.match(surroundings, /'Benches facing the Bourse by the water mirror/);
+  assert.match(surroundings, /seats\.count = 4/);
+  assert.match(surroundings, /'shelter bench/);
+  assert.match(surroundings, /'timetable case \(fiche horaire\)'/);
+});
+
 // __MORE_BOURSE_TESTS__
