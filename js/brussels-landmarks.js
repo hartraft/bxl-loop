@@ -4361,6 +4361,19 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     }
     apBal.count = abi; apBal.name = 'Academy Palace attic baluster'; g.add(apBal);
     box(g, 66, 0.1, 0.4, -168, 22.15, 36, materials.warmStone, 'Academy Palace attic balustrade rail');
+
+    // The BELvue ground floor is bossaged, with rusticated blocks flanking the entrance.
+    const bossMesh = new THREE.InstancedMesh(new THREE.BoxGeometry(1.7, 1.6, 0.14), materials.warmStone, 40);
+    const bossDum = new THREE.Object3D();
+    let bossIdx = 0;
+    for (const by of [2.0, 4.4]) {
+      for (let bx = 150.5; bx <= 185.5; bx += 3) {
+        if (Math.abs(bx - 168) < 3.2) continue;
+        bossDum.position.set(bx, by, 21.95); bossDum.rotation.y = 0; bossDum.updateMatrix();
+        bossMesh.setMatrixAt(bossIdx++, bossDum.matrix);
+      }
+    }
+    bossMesh.count = bossIdx; bossMesh.name = 'BELvue ground floor bossage'; g.add(bossMesh);
   });
     addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');

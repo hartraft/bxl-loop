@@ -1190,3 +1190,8 @@ testCase('console brackets carry the central portico balcony from the facade', (
 testCase('console brackets carry the wing first-floor balconies', () => {
   assert.match(palace, /'Wing balcony console'/);
 });
+
+testCase('the BELvue ground floor is bossaged with rusticated blocks', () => {
+  assert.match(palace, /'BELvue ground floor bossage'/);
+  assert.match(palace, /bossMesh.count = bossIdx/);
+});
