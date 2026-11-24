@@ -865,3 +865,9 @@ testCase('the BELvue roof carries a small balustraded terrace', () => {
   assert.match(palace, /'BELvue roof terrace balustrade'/);
   assert.match(palace, /bvBal\.count = bvi/);
 });
+
+testCase('the central garden gate is crowned by a pediment and gilded urn', () => {
+  assert.match(palace, /crowned by a small pediment and gilded urn/);
+  assert.match(palace, /'Garden central gate pediment'/);
+  assert.match(palace, /'Garden central gate gilded urn'/);
+});
