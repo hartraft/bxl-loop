@@ -1988,3 +1988,7 @@ testCase('a tympanum panel fills the Royal Stables gatehouse pediment', () => {
 testCase('windows pierce the Academy Palace end pavilions', () => {
   assert.match(palace, /'Academy end pavilion window'/);
 });
+
+testCase('dark soil fills the wing balcony flower boxes', () => {
+  assert.match(palace, /'Wing flower box soil'/);
+});

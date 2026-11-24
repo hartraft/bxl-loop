@@ -4087,6 +4087,14 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     for (const side of [-1, 1]) {
       box(g, 1.5, 0.2, 0.4, side * 3.3, 18.0, centralFace + 0.3, moulding, 'Portico side light lintel');
     }
+
+    // Dark soil fills the wing balcony flower boxes.
+    for (const side of wingXs) {
+      for (let k = 0; k < 5; k++) {
+        const bx = side - 16 + k * 8;
+        box(g, 1.6, 0.06, 0.35, bx, 7.72, facadeZ + 0.85, shadow, 'Wing flower box soil');
+      }
+    }
   });
   addLandmark('palaceSurroundings', (g) => {
     // Real-world sources: en/fr Wikipedia (Royal Palace of Brussels, Brussels Park, Place des Palais,
