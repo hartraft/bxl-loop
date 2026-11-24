@@ -2293,3 +2293,7 @@ testCase('kerbs edge both sides of the bandstand access steps', () => {
 testCase('kerbs edge both sides of the Vauxhall bandstand steps', () => {
   assert.match(palace, /'Vauxhall step kerb'/);
 });
+
+testCase('finials crown the perron lamp standards above the globes', () => {
+  assert.match(palace, /'Perron lamp finial'/);
+});

@@ -4230,6 +4230,11 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     for (const side of [-1, 1]) {
       box(g, 0.46, 0.06, 0.46, side * 9.6, 1.13, centralFace + 1.6, moulding, 'Perron lamp plinth cap');
     }
+
+    // Finials crown the perron lamp standards above the globes.
+    for (const side of [-1, 1]) {
+      cylinder(g, 0.03, 0.06, 0.3, side * 9.6, 4.95, centralFace + 1.6, bronze, 8).name = 'Perron lamp finial';
+    }
   });
   addLandmark('palaceSurroundings', (g) => {
     // Real-world sources: en/fr Wikipedia (Royal Palace of Brussels, Brussels Park, Place des Palais,
