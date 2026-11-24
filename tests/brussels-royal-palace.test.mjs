@@ -1143,3 +1143,9 @@ testCase('the Palace of the Nation flies EU and Belgian flags from cornice flagp
   assert.match(palace, /'Palace of the Nation EU flag'/);
   assert.match(palace, /'Palace of the Nation Belgian flag'/);
 });
+
+testCase('the Royal Stables have a projecting gatehouse with pediment and gate door', () => {
+  assert.match(palace, /'Royal Stables gatehouse'/);
+  assert.match(palace, /'Royal Stables gatehouse pediment'/);
+  assert.match(palace, /'Royal Stables gate door'/);
+});

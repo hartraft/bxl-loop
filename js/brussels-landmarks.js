@@ -4282,6 +4282,15 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     }
     box(g, 3.2, 2.0, 0.06, -8.4, 31.2, 403.4, materials.enamelBlue, 'Palace of the Nation EU flag');
     box(g, 3.2, 2.0, 0.06, 11.6, 31.2, 403.4, materials.canvas, 'Palace of the Nation Belgian flag');
+
+    // The Royal Stables front is closed by a projecting gatehouse with a pedimented gate.
+    box(g, 12, 15, 4, -70, 7.5, -71, materials.paleStone, 'Royal Stables gatehouse');
+    box(g, 13, 0.8, 5, -70, 15.4, -71, materials.warmStone, 'Royal Stables gatehouse cornice');
+    const rsPed = new THREE.Shape();
+    rsPed.moveTo(-5, 0); rsPed.lineTo(5, 0); rsPed.lineTo(0, 2.6); rsPed.closePath();
+    mesh(g, new THREE.ShapeGeometry(rsPed), materials.warmStone, -70, 15.8, -68.95, 'Royal Stables gatehouse pediment');
+    box(g, 3.8, 0.25, 0.5, -70, 6.7, -68.9, materials.warmStone, 'Royal Stables gate lintel');
+    box(g, 3.2, 6.5, 0.3, -70, 3.25, -68.8, materials.dark, 'Royal Stables gate door');
   });
     addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');
