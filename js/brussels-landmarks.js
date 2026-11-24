@@ -1841,7 +1841,7 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     // Est / aile Ouest) enclose the Cour du Roi — today's Cour d'honneur — closed by
     // a rear range. The wings run tall to the ground so they sit on the sloping site.
     for (const side of [-1, 1]) {
-      box(g, 12, 26, 42, side * 45, 5, -33, stone, 'Palace rear wing (Cour d'honneur)');
+      box(g, 12, 26, 42, side * 45, 5, -33, stone, 'Palace rear wing (Cour d’honneur)');
       box(g, 12.6, 0.8, 42.6, side * 45, 18.4, -33, ashlar, 'Rear wing cornice');
       for (let i = 0; i < 6; i++) {
         const wz = -14 - i * 6.5;
@@ -1849,7 +1849,7 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
         box(g, 2.2, 2.6, 0.2, side * 45, 6.5, wz, glass, 'Rear wing ground window');
       }
     }
-    box(g, 102, 26, 12, 0, 5, -54, stone, 'Palace rear range closing the Cour d'honneur');
+    box(g, 102, 26, 12, 0, 5, -54, stone, 'Palace rear range closing the Cour d’honneur');
     box(g, 103, 0.8, 12.6, 0, 18.4, -54, ashlar, 'Rear range cornice');
   });
     addLandmark('cathedral', (g) => {
