@@ -516,3 +516,10 @@ testCase('the four thoroughfares frame Brussels Park (Rue de la Loi, Royale, Duc
   assert.match(palace, /'Rue Royale street strip'/);
   assert.match(palace, /'Rue Ducale street strip'/);
 });
+
+testCase('the Royal Park Theatre (1782) stands on the park edge facing the Palace of the Nation', () => {
+  assert.match(palace, /built 1782 on the Vaux-Hall site/);
+  assert.match(palace, /'Royal Park Theatre block'/);
+  assert.match(palace, /'Royal Park Theatre facade window'/);
+  assert.match(palace, /'Royal Park Theatre entrance door'/);
+});

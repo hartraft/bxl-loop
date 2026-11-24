@@ -2442,6 +2442,14 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     box(g, 344, 0.06, 14, 0, 0.03, 411, materials.pavingA, 'Rue de la Loi street strip');
     box(g, 14, 0.06, 340, -181, 0.03, 232, materials.pavingA, 'Rue Royale street strip');
     box(g, 14, 0.06, 340, 181, 0.03, 232, materials.pavingA, 'Rue Ducale street strip');
+    // The Royal Park Theatre (Théâtre royal du Parc, built 1782 on the Vaux-Hall site) stands at
+    // 3 Rue de la Loi, on the park's northern edge, facing the Palace of the Nation.
+    box(g, 30, 16, 20, -60, 8, 404, materials.paleStone, 'Royal Park Theatre block');
+    box(g, 32, 0.9, 22, -60, 16.5, 404, materials.warmStone, 'Royal Park Theatre cornice');
+    for (let i = 0; i < 4; i++) {
+      box(g, 2.6, 7, 0.2, -60 - 10.5 + i * 7, 9, 414.1, materials.glass, 'Royal Park Theatre facade window');
+    }
+    box(g, 4.5, 6, 0.4, -60, 5, 414.2, materials.dark, 'Royal Park Theatre entrance door');
   });
     addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');
