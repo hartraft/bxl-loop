@@ -232,6 +232,12 @@ test('guild-house rooflines stay varied and instanced', () => {
   assert.ok(source.includes('gilded window surrounds'));
 });
 
+test('café awnings carry a hanging canvas valance', () => {
+  assert.ok(square.includes(" awning valance'"));
+  assert.ok(square.includes('valances.count = bays'));
+  assert.ok(square.includes('arcDummy.position.set(wx, 2.85, 1.45)'));
+});
+
 test('terrace houses set out tables, chairs and parasols on the square', () => {
   for (const part of [' terrace table top', ' terrace table leg', ' terrace chair', ' terrace parasol pole', ' terrace parasol canopy']) {
     assert.ok(square.includes(part + "'"), `missing${part}`);

@@ -243,6 +243,17 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       awnings.castShadow = true;
       root.add(awnings);
       arcDummy.rotation.set(0, 0, 0);
+      // Scalloped canvas valance hanging from the front edge of each awning.
+      const valances = new THREE.InstancedMesh(new THREE.BoxGeometry((width - 2.8) / bays - 0.3, 0.24, 0.04), materials.canvas, bays);
+      for (let bay = 0; bay < bays; bay++) {
+        const wx = (bay - (bays - 1) / 2) * (width - 2.8) / Math.max(1, bays - 1);
+        arcDummy.position.set(wx, 2.85, 1.45);
+        arcDummy.updateMatrix();
+        valances.setMatrixAt(bay, arcDummy.matrix);
+      }
+      valances.count = bays;
+      valances.name = name + ' awning valance';
+      root.add(valances);
       // Terrace furniture set out on the square in front of the awnings — the real brasseries
       // (Le Roy d'Espagne's parasols in the house colours, etc.) line the plaza with tables,
       // chairs and parasols. All instanced per house.
