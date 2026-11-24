@@ -26,13 +26,13 @@ const _clip = new THREE.Vector4();
 const _q = new THREE.Vector4();
 
 const REFLECTION_EXCLUDED_MATERIALS = new Set([
-  'LondonAsphalt',
-  'LondonGround',
-  'LondonPaving',
-  'LondonMarkings',
-  'LondonGrass',
-  'LondonWater',
-  'LondonBallast'
+  'BrusselsAsphalt',
+  'BrusselsGround',
+  'BrusselsPaving',
+  'BrusselsMarkings',
+  'BrusselsGrass',
+  'BrusselsWater',
+  'BrusselsBallast'
 ]);
 
 function hasExcludedGroundMaterial(object) {

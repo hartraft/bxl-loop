@@ -1,8 +1,8 @@
-// js/city/buildings.js — London buildings from GEO.buildings: extruded footprints (minHeight -> height) with gabled /
+// js/city/buildings.js — Brussels buildings from GEO.buildings: extruded footprints (minHeight -> height) with gabled /
 // hipped / mansard roofs fitted to the footprint's street-aligned box, flat roofs with parapets and rooftop plant,
 // chimney stacks, party walls dropped, street-facing shop fronts; merged into TILE x TILE m tiles (one masonry +
 // roofs geometry and one glass curtain-wall geometry per tile) and one OBB collider per building (split for big
-// concave footprints). Pure geometry: materials are attached by js/london-city.js.
+// concave footprints). Pure geometry: materials are attached by js/brussels-city.js.
 import { BUILDING_KINDS, MATERIALS, ROOFS } from '../brx-geodata.js';
 import { foundationWallBase, terrainEdgeSubdivisionParameters, terrainFootprintMinimum } from '../brussels-terrain.js';
 import { SURF, STYLE } from './materials-shared.js';
@@ -15,7 +15,7 @@ const M = Object.fromEntries(MATERIALS.map((k, i) => [k, i]));
 const RF = Object.fromEntries(ROOFS.map((k, i) => [k, i]));
 
 const PALETTE = {
-  [M.london_stock_brick]: [0xb09f7c, 0xa49371, 0x988a6c, 0xbaa985, 0x8f8268, 0xa8946c],
+  [M.brussels_stock_brick]: [0xb09f7c, 0xa49371, 0x988a6c, 0xbaa985, 0x8f8268, 0xa8946c],
   [M.red_brick]: [0x8e4a38, 0x7f4032, 0x965a44, 0x74402f, 0x8a5240, 0x9b6248],
   [M.portland_stone]: [0xd6d0c0, 0xcdc6b4, 0xdfd9ca, 0xc8c0ac],
   [M.stucco_white]: [0xf1efe9, 0xf4f1ea, 0xeeebe2, 0xf2eee4, 0xe9e8e3, 0xf0ece0],
@@ -103,7 +103,7 @@ function pushBuildingColliders(out, ring, o, area, H, minY, roads) {
 
 export function buildBuildingGeometry(geo, ctx, inRegion) {
   const { driveIndex, majorIndex, extraZones } = ctx;
-  // extra landmark zones (Workstream B's buildLondonLandmarks().zones) on top of GEO's landmark flags
+  // extra landmark zones (buildBrusselsLandmarks().zones) on top of GEO's landmark flags
   const zl = (extraZones || []).map((z) => ({ pts: z.pts, box: ringBox(z.pts) }));
   const inZone = zl.length ? (x, z) => zl.some((q) => x >= q.box[0] && x <= q.box[2] && z >= q.box[1] && z <= q.box[3] && pointInRing(x, z, q.pts)) : null;
   const B = geo.buildings;
@@ -238,7 +238,7 @@ export function buildBuildingGeometry(geo, ctx, inRegion) {
     // Belgravia, Pimlico & Hans Town are white stucco terraces almost street by street; OSM rarely tags the material,
     // so the bake's district default (stock brick) is overridden there for untagged houses / terraces / flats
     // (embassies & offices round the squares are converted houses: stucco too)
-    if ((mat === M.london_stock_brick || mat === M.concrete) && !B.colour[i] && B.height[i] < 30 &&
+    if ((mat === M.brussels_stock_brick || mat === M.concrete) && !B.colour[i] && B.height[i] < 30 &&
       (kind === K.house || kind === K.terrace || kind === K.flats || kind === K.office || kind === K.other) &&
       stuccoDistrict(cen[i * 2], cen[i * 2 + 1]) && hash01(i * 13 + 5) < 0.85) mat = M.stucco_white;
     const roof = B.roof[i];
@@ -268,7 +268,7 @@ export function buildBuildingGeometry(geo, ctx, inRegion) {
     if (base > 2.5 && H - base < 3) style = STYLE.blank; // canopies, bridges between blocks
 
     // colour
-    const pal = PALETTE[mat] || PALETTE[M.london_stock_brick];
+    const pal = PALETTE[mat] || PALETTE[M.brussels_stock_brick];
     let rgb = mixHex(pal[Math.floor(seed * pal.length) % pal.length], pal[Math.floor(seed * 97) % pal.length], 0.5);
     if (B.colour[i]) {
       const c = B.colour[i];
@@ -280,7 +280,7 @@ export function buildBuildingGeometry(geo, ctx, inRegion) {
     rgb = rgb.map((v) => Math.max(0, Math.min(255, v * soot)));
     // roof variant: 0..0.45 felt, ..0.92 gravel, rest green (flat); pitched: < 0.72 slate, else clay tiles
     // roof variant: flat 0..0.45 felt, ..0.975 gravel, rest green; pitched < 0.72 slate, else clay tiles (~15%:
-    // mostly red-brick houses — Victorian London is slate)
+    // mostly brick houses — Brussels roofs are slate)
     const rv = (pitchedClay(kind, mat, i) && area < 400 ? 0.75 + seed * 0.25 : seed * 0.71) * 255; // big blocks: slate
 
     // shop fronts
@@ -607,7 +607,7 @@ export function buildBuildingGeometry(geo, ctx, inRegion) {
         const corners = [[s - cw, -cd], [s + cw, -cd], [s + cw, cd], [s - cw, cd]].map(([a, b]) => [frame.cx + a * frame.ax - b * frame.az, frame.cz + a * frame.az + b * frame.ax]);
         if (corners.every(([x, z]) => pointInRing(x, z, ring))) {
           const lo = Math.min(...corners.map(([x, z]) => roofAt(x, z))) - 0.2;
-          mb.set('binfo', seed * 255, SURF.chimney, M.london_stock_brick, flagsBase);
+          mb.set('binfo', seed * 255, SURF.chimney, M.brussels_stock_brick, flagsBase);
           mb.set('bfu', 0, H + 1.0);
           addBox(mb, corners, lo, H + 1.2);
           stats.chimneys++;
@@ -678,8 +678,8 @@ export function addBox(b, corners, y0, y1) {
 }
 
 /**
- * "The rest of London" beyond the play area: plain blocks (brick / stucco / stone, flat roofs) on a jittered 80 m grid in
- * a `band` m wide ring outside the bounds, skipping the Thames where it flows out (sdf: buildWaterSDF result, which
+ * The area beyond the play bounds: plain blocks (brick / stucco / stone, flat roofs) on a jittered 80 m grid in
+ * a `band` m wide ring outside the bounds, skipping the canal where it flows out (sdf: buildWaterSDF result, which
  * clamps at the bounds). Drawn with the masonry material into `tiles` (same TileBuckets map as the city).
  */
 export function buildFillerGeometry(bounds, sdf, inRegion, tilesMap, band = 1500) {
@@ -693,7 +693,7 @@ export function buildFillerGeometry(bounds, sdf, inRegion, tilesMap, band = 1500
     return sdf.data[cz * sdf.W + cx] < 150; // within ~3 m of water or wet
   };
   let n = 0;
-  const mats = [M.london_stock_brick, M.london_stock_brick, M.red_brick, M.stucco_white, M.portland_stone, M.concrete];
+  const mats = [M.brussels_stock_brick, M.brussels_stock_brick, M.red_brick, M.stucco_white, M.portland_stone, M.concrete];
   for (let x = bounds.minX - band; x < bounds.maxX + band; x += C) {
     for (let z = bounds.minZ - band; z < bounds.maxZ + band; z += C) {
       if (x > bounds.minX - C && x < bounds.maxX && z > bounds.minZ - C && z < bounds.maxZ) continue;

@@ -2,11 +2,11 @@
 //   node --test tests/traffic-player.test.mjs
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { GEO } from '../js/ldn-geodata.js';
-import { buildLondonRoadNetwork } from '../js/road-network.js';
+import { GEO } from '../js/brx-geodata.js';
+import { buildRoadNetwork } from '../js/road-network.js';
 import { createTrafficSim } from '../js/traffic-sim.js';
 
-const network = buildLondonRoadNetwork(GEO, null);
+const network = buildRoadNetwork(GEO, null);
 const DT = 1 / 30;
 
 function pen(v, p) {
@@ -49,13 +49,13 @@ function run(name, road, turn) {
   return { maxPen, touching, near };
 }
 
-test('traffic stops for a player parked in the lane (Strand)', () => {
-  const r = run('Strand, in lane', 'Strand', 0);
+test('traffic stops for a player parked in the lane (Rue de la Loi)', () => {
+  const r = run('Rue de la Loi, in lane', 'Rue de la Loi - Wetstraat', 0);
   assert.ok(r.near > 0, 'traffic reached the player');
   assert.ok(r.maxPen < 0.4, 'no car drives into the player');
 });
-test('traffic stops for a player parked across the road (Whitehall)', () => {
-  const r = run('Whitehall, across', 'Whitehall', Math.PI / 2);
+test('traffic stops for a player parked across the road (Boulevard du Régent)', () => {
+  const r = run('Boulevard du Régent, across', 'Boulevard du Régent - Regentlaan', Math.PI / 2);
   assert.ok(r.near > 0, 'traffic reached the player');
   assert.ok(r.maxPen < 0.4, 'no car drives into the player');
 });

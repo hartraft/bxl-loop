@@ -2,12 +2,12 @@ import * as THREE from 'three/webgpu';
 import { pointAt, laneOffset } from './road-network.js';
 import { createRoadPaintMaterial } from './tsl-materials.js';
 
-// js/road-paint.js — Workstream G: the markings that come from the traffic network (white, UK style):
+// js/road-paint.js — the markings that come from the traffic network (white, continental style):
 // - stop lines across signal-controlled junction approaches, where the traffic actually waits,
 // - give-way lines (double broken white) at roundabout entries,
 // - lane dividers (dashed white) between same-direction lanes of multi-lane roads,
 // - lane arrows on multi-lane approaches to junctions, from each lane's real turn connectors.
-// Workstream F (london-city.js) draws centre lines, double yellows, zebras, signal-crossing stop lines and minor-road
+// The city renderer (brussels-city.js) draws centre lines, lane arrows, zebras, signal-crossing stop lines and minor-road
 // give-ways — not repeated here.
 //
 //   const paint = buildRoadPaint(scene, network);   // NY signature; tiles (250 m) are built around the camera

@@ -1,7 +1,7 @@
 // js/brussels-frame.js — Brussels Loop world frame.
 // 1 world unit = 1 metre. Origin = Grand-Place / Grote Markt. +x east, +z south, +y up.
 // This module is intentionally separate from geo-frame.js until the Brussels geodata is baked;
-// swapping the active frame before replacing the London data would misalign the whole world.
+// this frame is fixed: the world is built around it and the baked data is aligned to it.
 
 export const BRUSSELS_FRAME = {
   lat0: 50.84673,

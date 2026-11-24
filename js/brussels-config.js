@@ -1,7 +1,6 @@
-// Brussels-specific world queries, landmarks and street-level teleports.
-// Kept separate until the Brussels dataset and browser entry point are switched together.
+// Brussels world queries, landmarks and street-level teleports.
 import { GEO } from './brx-geodata.js';
-import { createWorldQueries } from './brussels-base-world.js';
+import { createWorldQueries } from './brussels-world.js';
 import { loadBrusselsTerrain, createTerrainSurface } from './brussels-terrain.js';
 import { BRUSSELS_FRAME, BRUSSELS_WORLD_BOUNDS, BRUSSELS_LANDMARK_ANCHORS, brusselsToWorld } from './brussels-frame.js';
 
@@ -35,9 +34,6 @@ export const BRUSSELS_LANDMARKS = landmarkMeta.map(([id, name, short, district, 
   const p = brusselsToWorld(a.lat, a.lon);
   return { id, name, short, district, r, x: Math.round(p.x * 10) / 10, z: Math.round(p.z * 10) / 10 };
 });
-// Compatibility export for city systems that currently consume the London config's landmark array.
-export const LONDON_LANDMARKS = BRUSSELS_LANDMARKS;
-
 const teleports = [
   ['grandPlace', 'Grand-Place', 'Grote Markt', 50.84725, 4.35315],
   ['mannekenPis', 'Manneken Pis', 'Rue de l’Étuve', 50.84478, 4.34985],
@@ -64,14 +60,15 @@ export const TELEPORT_LOCATIONS = Object.fromEntries(teleports.map(([id, name, s
   if (hit) {
     heading = hit.heading;
     if (hit.road.oneway === -1) heading += Math.PI;
-    if (anchor && !hit.road.oneway) {
-      const face = brusselsToWorld(anchor.lat, anchor.lon);
-      if (Math.sin(heading) * (face.x - hit.x) + Math.cos(heading) * (face.z - hit.z) < 0) heading += Math.PI;
-    }
     // Belgium drives on the right: offset to the right side of the road's travel direction.
     const off = Math.max(1, hit.road.w * 0.22);
     x = hit.x - Math.cos(heading) * off;
     z = hit.z + Math.sin(heading) * off;
+    // Landmark teleports arrive facing the landmark, not along the road.
+    if (anchor) {
+      const face = brusselsToWorld(anchor.lat, anchor.lon);
+      heading = Math.atan2(face.x - x, face.z - z);
+    }
   }
   return [id, { id, name, sub, x: Math.round(x * 10) / 10, z: Math.round(z * 10) / 10, heading: Math.round(heading * 1000) / 1000 }];
 }));

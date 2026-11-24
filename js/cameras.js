@@ -1,23 +1,22 @@
 import * as THREE from 'three/webgpu';
-import { IS_BRUSSELS } from './city-identity.js';
 
 // js/cameras.js
 // Multi-camera system supporting Third-Person Chase (with mouse/touch orbit + zoom),
-// Low-Angle Action Cam, POV/Cockpit Cam, 7 Iconic NYC Architectural Cameras, and Auto-Director Drone.
+// Low-Angle Action Cam, POV/Cockpit Cam, 7 Brussels landmark Cameras, and Auto-Director Drone.
 
 const CAMERA_PRESETS = [
-  { id: 'chase',       name: '3rd-Person Chase',         short: 'Chase',       category: 'follow', fov: 56 },
-  { id: 'action',      name: 'Low-Angle Action',         short: 'Action',      category: 'follow', fov: 60 },
-  { id: 'pov',         name: 'First-Person / Cockpit',   short: 'POV / Dash',  category: 'follow', fov: 68 },
-  { id: 'westminster', name: IS_BRUSSELS ? 'Grand-Place Overview' : 'Westminster Bridge & Big Ben', short: IS_BRUSSELS ? 'Grand-Place' : 'Big Ben',    category: 'scenic', fov: 50 },
-  { id: 'southBank',   name: IS_BRUSSELS ? 'Mont des Arts' : 'South Bank & London Eye',      short: IS_BRUSSELS ? 'Mont des Arts' : 'London Eye', category: 'scenic', fov: 54 },
-  { id: 'trafalgar',   name: IS_BRUSSELS ? 'Royal Palace' : "Trafalgar Square & Nelson",    short: IS_BRUSSELS ? 'Royal Palace' : 'Trafalgar',  category: 'scenic', fov: 56 },
-  { id: 'piccadilly',  name: IS_BRUSSELS ? 'European Quarter' : 'Piccadilly Circus Lights',     short: IS_BRUSSELS ? 'EU Quarter' : 'Piccadilly', category: 'scenic', fov: 58 },
-  { id: 'stPauls',     name: IS_BRUSSELS ? 'Cathedral Quarter' : "Millennium Bridge to St Paul's", short: IS_BRUSSELS ? 'Cathedral' : "St Paul's", category: 'scenic', fov: 48 },
-  { id: 'shard',       name: IS_BRUSSELS ? 'Palace of Justice' : 'The Shard from London Bridge', short: IS_BRUSSELS ? 'Justice' : 'The Shard',  category: 'scenic', fov: 52 },
-  { id: 'towerBridge', name: IS_BRUSSELS ? 'Koekelberg Basilica' : 'Tower Bridge on the Thames',   short: IS_BRUSSELS ? 'Basilica' : 'Tower Br',   category: 'scenic', fov: 50 },
-  { id: 'waterfront',  name: IS_BRUSSELS ? 'Canal Skyline' : 'Thames & City Skyline',        short: IS_BRUSSELS ? 'Canal' : 'Skyline',    category: 'scenic', fov: 46 },
-  { id: 'drone',       name: 'Auto-Director Aerial',     short: 'Director',    category: 'scenic', fov: 50 }
+  { id: 'chase',         name: '3rd-Person Chase',         short: 'Chase',       category: 'follow', fov: 56 },
+  { id: 'action',        name: 'Low-Angle Action',         short: 'Action',      category: 'follow', fov: 60 },
+  { id: 'pov',           name: 'First-Person / Cockpit',   short: 'POV / Dash',  category: 'follow', fov: 68 },
+  { id: 'grandPlace',    name: 'Grand-Place Overview',     short: 'Grand-Place', category: 'scenic', fov: 50 },
+  { id: 'montDesArts',   name: 'Mont des Arts',            short: 'Mont des Arts', category: 'scenic', fov: 54 },
+  { id: 'royalPalace',   name: 'Royal Palace',             short: 'Royal Palace', category: 'scenic', fov: 56 },
+  { id: 'euQuarter',     name: 'European Quarter',         short: 'EU Quarter',  category: 'scenic', fov: 58 },
+  { id: 'cathedral',     name: 'Cathedral Quarter',        short: 'Cathedral',   category: 'scenic', fov: 48 },
+  { id: 'palaceOfJustice', name: 'Palace of Justice',      short: 'Justice',     category: 'scenic', fov: 52 },
+  { id: 'koekelberg',    name: 'Koekelberg Basilica',       short: 'Basilica',    category: 'scenic', fov: 50 },
+  { id: 'canal',         name: 'Canal Skyline',            short: 'Canal',       category: 'scenic', fov: 46 },
+  { id: 'drone',         name: 'Auto-Director Aerial',     short: 'Director',    category: 'scenic', fov: 50 }
 ];
 
 const wrapAngle = (a) => a - Math.round(a / (Math.PI * 2)) * (Math.PI * 2);
@@ -357,7 +356,7 @@ class CameraSystem {
           entity.position.y + eyeY,
           entity.position.z + Math.cos(entity.heading) * fwdOffset
         );
-        // London: right-hand-drive seat / cockpit eye from the controller when it knows it
+        // right-hand-drive seat / cockpit eye from the controller when it knows it
         if (this.controllerManager.getPovPosition) {
           this.controllerManager.getPovPosition(desiredPos);
           eyeY = desiredPos.y - entity.position.y;
@@ -371,75 +370,43 @@ class CameraSystem {
         break;
       }
 
-      case 'westminster': {
-        if (IS_BRUSSELS) { desiredPos.set(220, 135, 300); desiredLook.set(0, 12, 0); break; }
-        // East end of Westminster Bridge looking west across the Thames at Elizabeth Tower & the Palace
-        const sway = Math.sin(elapsed * 0.22) * 2.5;
-        desiredPos.set(505.0 + sway, 11.0, 800.0);
-        desiredLook.set(236.0, 55.0, 790.0);
+      case 'grandPlace': {
+        desiredPos.set(220, 135, 300); desiredLook.set(0, 12, 0);
         break;
       }
 
-      case 'southBank': {
-        if (IS_BRUSSELS) { const sway = Math.sin(elapsed * 0.2) * 3; desiredPos.set(500 + sway, 90, -250); desiredLook.set(-350, 10, 100); break; }
-        // Jubilee Gardens looking up at the London Eye
-        const sway = Math.sin(elapsed * 0.2) * 3.0;
-        desiredPos.set(700.0 + sway, 6.0, 640.0);
-        desiredLook.set(590.0, 60.0, 493.0);
+      case 'montDesArts': {
+        const sway = Math.sin(elapsed * 0.2) * 3; desiredPos.set(500 + sway, 90, -250); desiredLook.set(-350, 10, 100);
         break;
       }
 
-      case 'trafalgar': {
-        if (IS_BRUSSELS) { const sway = Math.sin(elapsed * 0.3) * 2; desiredPos.set(-100 + sway, 80, 240); desiredLook.set(450, 15, -200); break; }
-        // Top of Whitehall looking north up at Nelson's Column, the fountains & the National Gallery
-        const sway = Math.sin(elapsed * 0.3) * 2.0;
-        desiredPos.set(8.0 + sway, 5.0, 150.0);
-        desiredLook.set(0.0, 30.0, -60.0);
+      case 'royalPalace': {
+        const sway = Math.sin(elapsed * 0.3) * 2; desiredPos.set(-100 + sway, 80, 240); desiredLook.set(450, 15, -200);
         break;
       }
 
-      case 'piccadilly': {
-        if (IS_BRUSSELS) { const sway = Math.sin(elapsed * 0.3) * 3; desiredPos.set(1900 + sway, 120, 1150); desiredLook.set(1600, 15, 900); break; }
-        // Lower Regent St looking at Eros and the curved screens
-        const sway = Math.sin(elapsed * 0.3) * 2.0;
-        desiredPos.set(-395.0 + sway, 5.5, -175.0);
-        desiredLook.set(-470.0, 16.0, -265.0);
+      case 'euQuarter': {
+        const sway = Math.sin(elapsed * 0.3) * 3; desiredPos.set(1900 + sway, 120, 1150); desiredLook.set(1600, 15, 900);
         break;
       }
 
-      case 'stPauls': {
-        if (IS_BRUSSELS) { const sway = Math.sin(elapsed * 0.22) * 2; desiredPos.set(850 + sway, 85, -300); desiredLook.set(550, 20, 0); break; }
-        // South end of the Millennium Bridge looking north to the dome
-        const sway = Math.sin(elapsed * 0.22) * 1.5;
-        desiredPos.set(2050.0 + sway, 10.0, 10.0);
-        desiredLook.set(2057.0, 75.0, -676.0);
+      case 'cathedral': {
+        const sway = Math.sin(elapsed * 0.22) * 2; desiredPos.set(850 + sway, 85, -300); desiredLook.set(550, 20, 0);
         break;
       }
 
-      case 'shard': {
-        if (IS_BRUSSELS) { const sway = Math.cos(elapsed * 0.2) * 2; desiredPos.set(350 + sway, 145, 1300); desiredLook.set(-50, 25, 1100); break; }
-        // London Bridge looking south up the Shard
-        const sway = Math.cos(elapsed * 0.2) * 2.0;
-        desiredPos.set(2779.0 + sway, 12.0, -40.0);
-        desiredLook.set(2884.0, 170.0, 359.0);
+      case 'palaceOfJustice': {
+        const sway = Math.cos(elapsed * 0.2) * 2; desiredPos.set(350 + sway, 145, 1300); desiredLook.set(-50, 25, 1100);
         break;
       }
 
-      case 'towerBridge': {
-        if (IS_BRUSSELS) { const drift = Math.sin(elapsed * 0.15) * 8; desiredPos.set(-1750, 130, -2500 + drift); desiredLook.set(-1900, 30, -2250); break; }
-        // Low over the Thames upstream of Tower Bridge
-        const drift = Math.sin(elapsed * 0.15) * 25.0;
-        desiredPos.set(3380.0, 16.0, 320.0 + drift);
-        desiredLook.set(3654.0, 35.0, 253.0);
+      case 'koekelberg': {
+        const drift = Math.sin(elapsed * 0.15) * 8; desiredPos.set(-1750, 130, -2500 + drift); desiredLook.set(-1900, 30, -2250);
         break;
       }
 
-      case 'waterfront': {
-        if (IS_BRUSSELS) { const drift = Math.sin(elapsed * 0.15) * 20; desiredPos.set(-1450, 85, drift); desiredLook.set(-2350, 15, -100); break; }
-        // Above Waterloo Bridge looking down the river to the City & the Shard
-        const drift = Math.sin(elapsed * 0.15) * 40.0;
-        desiredPos.set(905.0, 55.0, 260.0 + drift);
-        desiredLook.set(2700.0, 110.0, -250.0);
+      case 'canal': {
+        const drift = Math.sin(elapsed * 0.15) * 20; desiredPos.set(-1450, 85, drift); desiredLook.set(-2350, 15, -100);
         break;
       }
 
@@ -447,9 +414,8 @@ class CameraSystem {
         const angle = elapsed * 0.07 + 0.65;
         const radius = 1500.0 + Math.sin(elapsed * 0.23) * 250.0;
         const alt = 330.0 + Math.cos(elapsed * 0.19) * 90.0;
-        const cx = IS_BRUSSELS ? 0 : 1300, cz = IS_BRUSSELS ? 0 : 150;
-        desiredPos.set(Math.cos(angle) * radius + cx, alt, Math.sin(angle) * radius + cz);
-        desiredLook.set(cx, 90.0, cz);
+        desiredPos.set(Math.cos(angle) * radius, alt, Math.sin(angle) * radius);
+        desiredLook.set(0, 90.0, 0);
         break;
       }
     }

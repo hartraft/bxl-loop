@@ -19,7 +19,7 @@ import {
 import { bloom } from 'three/addons/tsl/display/BloomNode.js';
 
 // js/post-processing.js — Workstream E
-// Scene-linear colour grade and lens bloom, composed in the final render pass. London look: by day a touch cooler
+// Scene-linear colour grade and lens bloom, composed in the final render pass. Brussels look: by day a touch cooler
 // and less saturated than the NY grade (soft northern light, Portland stone & grey brick); at night a split tone of
 // warm sodium / amber highlights over cool LED-blue shadows. Weather eases contrast & saturation (overcast, drizzle)
 // and lets bloom bleed in fog.

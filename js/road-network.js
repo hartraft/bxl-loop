@@ -1,9 +1,9 @@
-// js/road-network.js — Workstream G: the drivable London road graph, built from the baked OSM geodata.
+// js/road-network.js — the drivable Brussels road graph, built from the baked OSM geodata.
 //
-//   import { buildLondonRoadNetwork } from './road-network.js';
-//   const network = buildLondonRoadNetwork(GEO, WORLD);        // ~150-300 ms for all of Zone 1, no three.js
+//   import { buildRoadNetwork } from './road-network.js';
+//   const network = buildRoadNetwork(GEO, WORLD);        // ~150-300 ms for central Brussels, no three.js
 //
-// Pure data (no three.js, no DOM): Node tests and the RideLDN GPS import it directly.
+// Pure data (no three.js, no DOM): Node tests and the RideBXL GPS import it directly.
 //
 // GEO.roads are whole OSM ways; junctions are bit-exact shared vertices (hashed at 0.1 m), including mid-way ones.
 // Every way is cut at its junctions, signals, crossings and ends into "pieces"; each piece gives one directed *link*
@@ -268,7 +268,7 @@ function makePool() {
 }
 
 // =================================================================================================================
-export function buildLondonRoadNetwork(geo, world = null, opts = {}) {
+export function buildRoadNetwork(geo, world = null, opts = {}) {
   const t0 = (typeof performance !== 'undefined' ? performance : Date).now();
   const pool = makePool();
   const inArea = opts.area ? (x, z) => Math.hypot(x - opts.area.cx, z - opts.area.cz) < opts.area.r : null;
@@ -805,7 +805,7 @@ export function buildLondonRoadNetwork(geo, world = null, opts = {}) {
     // stages: [green k][amber k][all-red] ... [+ pedestrians][all-red]
     let t = 0;
     // greens kept short-ish so nobody (the player included) sits at a red for more than ~45 s: 2-axis junctions
-    // ≈ 50 s cycles, 3-axis gyratories ≈ 60 s (real London runs 90–120 s; that is no fun in a game)
+    // ≈ 50 s cycles, 3-axis gyratories ≈ 60 s (that is no fun in a game at 90–120 s)
     const G = ctl.phases === 1 ? 20 : ctl.phases === 2 ? 17 : 12;
     for (let k = 0; k < ctl.phases; k++) {
       ctl.stages.push({ type: 'g', phase: k, start: t, end: (t += G + Math.round(rng() * (ctl.phases === 3 ? 3 : 4))) });
@@ -926,7 +926,7 @@ export function buildLondonRoadNetwork(geo, world = null, opts = {}) {
     pv.len = pv.cum[pv.cum.length - 1];
     return pv;
   }
-  /** replace the derived pavements with Workstream F's drawn ones (london-city.js sidewalks.strips:
+  /** replace the derived pavements with the drawn ones (brussels-city.js sidewalks.strips:
    *  {pts: Float32Array [x,z,…] centreline, y: Float32Array pavement top per point, w, kind}) */
   function usePavements(strips) {
     pavements.length = 0;
@@ -1181,13 +1181,4 @@ export function buildLondonRoadNetwork(geo, world = null, opts = {}) {
   return network;
 }
 
-/** NY name kept for code that still imports it (main.js): builds the London network from the shared geodata */
-export function buildRoadNetwork(geo, world) {
-  return buildLondonRoadNetwork(geo, world);
-}
 
-// Explicit city-named entry point used by the Brussels runtime; retain the
-// generic and historical exports for existing tests and downstream callers.
-export function buildBrusselsRoadNetwork(geo, world) {
-  return buildLondonRoadNetwork(geo, world);
-}

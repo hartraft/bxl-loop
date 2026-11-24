@@ -1,11 +1,11 @@
 // js/life/models.js — Workstream L: low-poly models for the living city (no brand marks): a fast catamaran river
 // bus, a tug pushing a lighter barge, a RIB with passengers, a twin-jet airliner, a pigeon (body + one wing).
-// All return merged geometries in the london-vehicles.js attribute layout (see geo-kit.js); +z = forward, y = 0 at
+// All return merged geometries in the brussels-vehicles.js attribute layout (see geo-kit.js); +z = forward, y = 0 at
 // the waterline / ground.
 import * as THREE from 'three/webgpu';
 import { Kit, SURF } from './geo-kit.js';
 
-/** fast catamaran river bus, ~38 × 8.6 m */
+/** fast catamaran canal passenger boat, ~38 × 8.6 m */
 export function catamaranGeometry({ hull = 0x2b3442, band = 0x9ab7c9 } = {}) {
   const k = new Kit();
   const H = { color: hull, rough: 0.3, metal: 0.2, paint: 1 };

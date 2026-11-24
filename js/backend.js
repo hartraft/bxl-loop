@@ -1,4 +1,4 @@
-// js/backend.js — London Loop save game & RideLDN ride records on Supabase, with a localStorage mock for offline play.
+// js/backend.js — Brussels Loop save game & RideBXL ride records on Supabase, with a localStorage mock for offline play.
 // Plain fetch against PostgREST RPCs (no supabase-js). Workstream D.
 //
 //   const backend = createBackend();                 // ?offline in the URL forces the mock
@@ -13,8 +13,8 @@
 export const SUPABASE_URL = 'https://huorgiwdzlqpnyzmfmoi.supabase.co';
 export const SUPABASE_KEY = 'sb_publishable_02C3aAYazBjZDsZxRgcPAQ_tjZjNOSx';
 
-const PLAYER_KEY = 'londonloop_player';
-const MOCK_KEY = 'londonloop_mock_db';
+const PLAYER_KEY = 'brusselsloop_player';
+const MOCK_KEY = 'brusselsloop_mock_db';
 const NAME_RE = /^[A-Za-z0-9 _.-]{2,20}$/;
 const STATE_MAX = 4000; // the server rejects p_state longer than this (as text)
 
@@ -39,10 +39,10 @@ export function computeBusPay({ distance_m = 0, passengers = 0, stops_served = 0
 }
 const BUS_ROUTE_RE = /^[A-Za-z0-9]{1,5}$/;
 
-/** "Cabbie_4821" and friends */
+/** "Sablon_4821" and friends */
 export function randomDriverName(rng = Math.random) {
-  const pre = ['Cabbie', 'Minicab', 'Knowledge', 'Bermondsey', 'Peckham', 'Hackney', 'Brixton', 'Camden', 'Mayfair',
-    'Soho', 'Clapham', 'Bow', 'Stepney', 'Lambeth', 'Pimlico', 'Islington', 'Borough', 'Wapping', 'Southwark', 'Fitzrovia'];
+  const pre = ['Sablon', 'Marolles', 'Pentagon', 'Ixelles', 'Canal', 'Botanique', 'European', 'Louise', 'StGilles', 'Dansette',
+    'Regent', 'Poelaert', 'Louiza', 'Laken', 'Jette', 'Anderlecht', 'Forest', 'Molenbeek', 'Schaerbeek', 'Koekelberg'];
   return `${pre[Math.floor(rng() * pre.length)]}_${String(1000 + Math.floor(rng() * 9000))}`;
 }
 
@@ -140,8 +140,8 @@ function makeMockRpc(storage = safeStorage) {
     const db = storage.get(MOCK_KEY);
     if (db && db.players && db.rides) return db;
     // A few rival drivers so the offline leaderboard has some life in it
-    const bots = [['Knowledge_Kev', 214, 2876.4, 4.91], ['Peckham_Priya', 168, 2190.75, 4.86], ['Bow_Bells_Bill', 121, 1564.2, 4.72],
-      ['Soho_Sid', 88, 1093.1, 4.64], ['Mayfair_Maud', 47, 655.9, 4.95], ['Minicab_Mo', 19, 231.4, 4.4]];
+    const bots = [['Pentagon_Piet', 214, 2876.4, 4.91], ['Marolles_Priya', 168, 2190.75, 4.86], ['Sablon_Bill', 121, 1564.2, 4.72],
+      ['Ixelles_Sid', 88, 1093.1, 4.64], ['Canal_Maud', 47, 655.9, 4.95], ['Zavel_Mo', 19, 231.4, 4.4]];
     const players = {};
     for (const [name, rides, earn, rating] of bots) {
       const id = uuid();
@@ -150,7 +150,7 @@ function makeMockRpc(storage = safeStorage) {
     }
     return { players, rides: [] };
   };
-  // bus-driver data (added in round 2; older mock DBs get it on first use)
+  // bus shift data (older mock DBs get it on first use)
   const busDb = (db) => {
     if (!db.busShifts) db.busShifts = [];
     if (!db.busStats) {
@@ -252,7 +252,7 @@ function makeMockRpc(storage = safeStorage) {
       auth(db, p_id, p_token);
       return db.rides.filter((r) => r.player_id === p_id).reverse().slice(0, 20);
     },
-    // ---- bus driver (same checks & formula as the SQL in migration slop_london_002_buses) ----
+    // ---- bus shift (same checks & formula as the SQL bus migration) ----
     slop_bus_finish_shift(a) {
       const db = busDb(load());
       const p = auth(db, a.p_id, a.p_token);
@@ -359,7 +359,7 @@ export function askDriverName({ initial = randomDriverName(), validate = null } 
     box.setAttribute('role', 'dialog');
     box.setAttribute('aria-modal', 'true');
     const logo = el('div', 'rl-logo');
-    logo.append(el('b', '', 'R'), document.createTextNode('RideLDN'));
+    logo.append(el('b', '', 'R'), document.createTextNode('RideBXL'));
     const h = el('h2', '', 'Pick a driver name');
     const p = el('p', '', 'It goes on the leaderboard and keeps your saved game. Letters, numbers, spaces, _ . - (2–20).');
     const input = el('input');

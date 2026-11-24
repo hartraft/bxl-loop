@@ -1,8 +1,6 @@
-// js/life/bus-routes.js — Workstream L: real London bus routes for the traffic buses (data/ldn-bus-routes.json, baked
-// by Workstream B). No three.js: traffic-sim calls these hooks.
+// js/life/bus-routes.js — bus route planning for the traffic buses. No three.js: traffic-sim calls these hooks.
 //
 //   const planner = createBusPlanner(network);
-//   loadBusRoutes().then((d) => planner.setData(d));
 //   createTrafficSim(network, { assignBus: planner.assign, replanBus: planner.replan, ... })
 //
 // A bus spawned on a lane that one of the routes runs along (within 7 m, same direction) takes that route's number and
@@ -11,23 +9,9 @@
 // planner.variants[i] = {ref, destination, slot}: slot = index into the blind atlas (traffic.js).
 import { pointAt } from '../road-network.js';
 
-export const FALLBACK_BUSES = [['24', 'Pimlico'], ['9', 'Aldwych'], ['38', 'Victoria'], ['15', 'Tower Hill']];
+export const FALLBACK_BUSES = [['71', 'De Brouckère'], ['5', 'Hermann-Debroux'], ['95', 'Wiener'], ['38', 'Héros']];
 const CELL = 40;
 const PLAN_AHEAD = 900;
-
-export async function loadBusRoutes(url = new URL('../../data/ldn-bus-routes.json', import.meta.url)) {
-  try {
-    if (typeof process !== 'undefined' && process.versions && process.versions.node && String(url).startsWith('file:')) {
-      const fs = await import('node:fs/promises');
-      return JSON.parse(await fs.readFile(new URL(url), 'utf8'));
-    }
-    const r = await fetch(url);
-    if (!r.ok) return null;
-    return await r.json();
-  } catch (e) {
-    return null;
-  }
-}
 
 export function createBusPlanner(network, data = null, rand = Math.random) {
   const P = { x: 0, y: 0, z: 0, dx: 0, dz: 1 };

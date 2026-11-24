@@ -23,8 +23,7 @@ execFileSync(process.execPath, [
   path.join(ROOT, 'tools/osm-pbf-extract.mjs'), inputPbf, osmJson, bbox
 ], { stdio: 'inherit', cwd: ROOT });
 
-process.env.CITY = 'brussels';
-process.argv = [process.argv[0], path.join(ROOT, 'tools/build-brussels-base-geodata.mjs'), osmJson, outDir];
+process.argv = [process.argv[0], path.join(ROOT, 'tools/build-geodata.mjs'), osmJson, outDir];
 console.log('[brx-build] baking Brussels geodata');
-await import('./build-brussels-base-geodata.mjs?city=brussels');
+await import('./build-geodata.mjs');
 console.log(`[brx-build] complete: ${path.join(outDir, 'brx-geo.json')} and ${path.join(outDir, 'brx-buildings.bin')}`);

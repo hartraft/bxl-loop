@@ -1,6 +1,6 @@
-// tests/life.test.mjs — Workstream L: river traffic, pigeons, aircraft, real bus routes on traffic buses, pedestrian
+// tests/life.test.mjs — canal traffic, pigeons, aircraft, bus blinds on traffic buses, pedestrian
 // life (queues, groups, photo stops, street shows) and rig gestures — headless (three.js loaded from vendor/, no GPU).
-//   node --test tests/life.test.mjs     (≈30–60 s)
+//   node --test tests/life.test.mjs
 import { register } from 'node:module';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import path from 'node:path';
@@ -20,21 +20,21 @@ const ctx2d = new Proxy({}, { get: (t, k) => (k === 'measureText' ? () => ({ wid
 globalThis.document = globalThis.document || { createElement: () => ({ width: 1, height: 1, style: {}, getContext: () => ctx2d }), addEventListener() {} };
 
 const THREE = await import('three/webgpu');
-const { GEO } = await import('../js/ldn-geodata.js');
-const { WORLD } = await import('../js/london-config.js');
+const { GEO } = await import('../js/brx-geodata.js');
+const { WORLD } = await import('../js/brussels-config.js');
 const { buildRiverPath } = await import('../js/life/river-path.js');
-const { createLondonLife } = await import('../js/life/london-life.js');
-const { createBusPlanner, loadBusRoutes } = await import('../js/life/bus-routes.js');
-const { buildLondonRoadNetwork } = await import('../js/road-network.js');
+const { createBrusselsLife } = await import('../js/life/brussels-life.js');
+const { createBusPlanner, FALLBACK_BUSES } = await import('../js/life/bus-routes.js');
+const { buildRoadNetwork } = await import('../js/road-network.js');
 const { createTrafficSim } = await import('../js/traffic-sim.js');
 const { PersonRig } = await import('../js/pedestrians.js');
 const { toWorld } = await import('../js/geo-frame.js');
 
 const cam = (x, y, z, tx, ty, tz) => { const c = new THREE.PerspectiveCamera(55, 16 / 9, 0.5, 60000); c.position.set(x, y, z); c.lookAt(tx, ty, tz); c.updateMatrixWorld(); return c; };
 
-test('Thames fairway: on the water, both lanes apart, through the arches, piers found', () => {
+test('canal fairway: on the water, both lanes apart, through the arches, quays found', () => {
   const r = buildRiverPath(WORLD);
-  assert.ok(r.length > 9000 && r.length < 12000, `river ${r.length} m`);
+  assert.ok(r.length > 1500 && r.length < 8000, `canal ${r.length} m`);
   let dry = 0, n = 0, minSep = Infinity;
   const a = {}, b = {};
   for (let s = 30; s < r.length - 30; s += 6) {
@@ -42,19 +42,20 @@ test('Thames fairway: on the water, both lanes apart, through the arches, piers 
     for (const p of [a, b]) { n++; if (!WORLD.isWater(p.x, p.z)) dry++; }
     minSep = Math.min(minSep, Math.hypot(a.x - b.x, a.z - b.z));
   }
-  console.log(`fairway ${r.length.toFixed(0)} m, lane samples on dry land ${dry}/${n}, min lane separation ${minSep.toFixed(1)} m, piers ${r.piers.length}`);
+  console.log(`fairway ${r.length.toFixed(0)} m, lane samples on dry land ${dry}/${n}, min lane separation ${minSep.toFixed(1)} m, quays ${r.piers.length}`);
   assert.ok(dry / n < 0.01, `lanes on land ${dry}/${n}`);
   assert.ok(minSep > 7, `lanes ${minSep.toFixed(1)} m apart`);
-  assert.ok(r.piers.length >= 8);
+  assert.ok(r.piers.length >= 3);
 });
 
-test('river boats, aircraft, pigeons: move, stay on the water, keep apart, give way to the player, scatter', () => {
+test('canal boats, aircraft, pigeons: move, stay on the water, keep apart, give way to the player, scatter', () => {
   const scene = new THREE.Scene();
-  const life = createLondonLife(scene, { world: WORLD, planeInterval: 20 });
-  const camera = cam(430, 30, 600, 400, 0, 760);
+  const life = createBrusselsLife(scene, { world: WORLD, planeInterval: 20 });
+  // the canal runs north-south around x ≈ -1800
+  const camera = cam(-1750, 30, 400, -1800, 0, 500);
   const player = { position: new THREE.Vector3(0, -1.2, 0), heading: 0, speed: 0, halfExtents: { hx: 3.95, hz: 13.5 } };
-  // park the player's boat in the eastbound lane, 300 m ahead of the first eastbound boat
-  const R = life.river.river, b0 = life.boats.find((b) => b.dir > 0 && b.s > 1000 && b.s < R.length - 1500);
+  // park the player's boat in the northbound lane, 300 m ahead of the first northbound boat
+  const R = life.river.river, b0 = life.boats.find((b) => b.dir > 0 && b.s > 400 && b.s < R.length - 800);
   const ps = b0.s + 300, pt = R.at(ps, R.laneOffset(ps, 1));
   player.position.set(pt.x, -1.2, pt.z); player.heading = Math.atan2(pt.dx, pt.dz);
   let dry = 0, samples = 0, minGap = Infinity, scattered = 0, minPlayer = Infinity;
@@ -79,7 +80,7 @@ test('river boats, aircraft, pigeons: move, stay on the water, keep apart, give 
   assert.ok(minPlayer > 13, `boats give way to the player's boat (closest ${minPlayer.toFixed(1)} m)`);
   assert.ok(life.aircraft.length >= 1, 'airliners on approach');
   for (const a of life.aircraft) assert.ok(a.y > 300 && a.y < 1700, `plane altitude ${a.y}`);
-  // pigeons: walk a person into the Trafalgar Square flock
+  // pigeons: walk a person into the Grand-Place flock
   const f = life.pigeons.flocks[0];
   const walker = { position: new THREE.Vector3(f.x + 20, 0, f.z), heading: -Math.PI / 2, speed: 1.4 };
   const cam2 = cam(f.x + 30, 5, f.z, f.x, 0, f.z);
@@ -91,22 +92,19 @@ test('river boats, aircraft, pigeons: move, stay on the water, keep apart, give 
     scattered += life.events.filter((e) => e.type === 'scatter' && !e.small).length;
     life.events.length = 0;
   }
-  console.log(`pigeons: ${f.birds.length} in the flock, up to ${flew} in the air, scatter events ${scattered}`);
+  console.log(`pigeons: ${f.birds.length} in the flock at ${f.name}, up to ${flew} in the air, scatter events ${scattered}`);
   assert.ok(scattered >= 1 && flew > f.birds.length * 0.6, 'flock takes off');
   for (const b of f.birds) assert.ok(Number.isFinite(b.x + b.y + b.z), 'finite');
 });
 
-test('traffic buses take real route numbers & destinations and follow their routes', async () => {
-  const network = buildLondonRoadNetwork(GEO, WORLD);
+test('traffic buses take STIB route numbers & destinations from the fallback blind atlas', () => {
+  const network = buildRoadNetwork(GEO, WORLD);
   const planner = createBusPlanner(network);
-  const data = await loadBusRoutes();
-  assert.ok(data && data.routes.length >= 10, 'bus route data');
-  planner.setData(data);
   const sim = createTrafficSim(network, { vehicles: 200, peds: 0, radius: 420, seed: 5, assignBus: planner.assign, replanBus: planner.replan });
-  const cx = 0, cz = 300; // Whitehall / Parliament Street: routes 11, 12, 24, 88, 159, 453
-  const ctx = { focusX: cx, focusZ: cz, visible: (x, z) => Math.hypot(x - cx, z - cz) < 120 };
-  const refs = new Set(data.routes.map((r) => r.ref));
-  let buses = 0, real = 0, onPath = 0, onPathOk = 0;
+  const cx = 0, cz = 0; // Grand-Place
+  const ctx = { focusX: cx, focusZ: cz, visible: (x, z) => Math.hypot(x - cx, z - cz) < 150 };
+  const refs = new Set(FALLBACK_BUSES.map(([ref]) => ref));
+  let buses = 0, real = 0;
   for (let i = 0; i < 90 * 30; i++) {
     sim.step(1 / 30, ctx);
     if (i % 60) continue;
@@ -114,28 +112,26 @@ test('traffic buses take real route numbers & destinations and follow their rout
       if (!v.alive || !v.bus) continue;
       buses++;
       if (refs.has(v.route) && v.destination) real++;
-      if (v.linkPlan) {
-        onPath++;
-        // a planned bus is on (or turning onto) a link of its plan
-        const link = v.seg.type === 'lane' ? v.seg.link : v.seg.to.link;
-        if (v.linkPlan.includes(link)) onPathOk++;
-      }
     }
   }
-  console.log(`bus samples ${buses}: real route blinds ${real}, following a planned route ${onPath} (${onPathOk} on plan), planner ${JSON.stringify(planner.stats)}`);
-  assert.ok(buses > 20 && real / buses > 0.95, 'buses show real routes');
-  assert.ok(onPath / buses > 0.3, 'many buses follow their route');
-  assert.ok(onPathOk / Math.max(1, onPath) > 0.95, 'planned buses stay on the plan');
+  console.log(`bus samples ${buses}: STIB blinds ${real}, planner ${JSON.stringify(planner.stats)}`);
+  assert.ok(buses > 20 && real / buses > 0.95, 'buses show STIB route numbers & destinations');
 });
 
 test('pedestrian life: bus-stop queues board buses, groups, tourists photograph landmarks, a street show', () => {
-  const network = buildLondonRoadNetwork(GEO, null);
-  const cg = toWorld(51.51163, -0.12362);
-  const LM = [{ x: cg.x, z: cg.z, r: 80 }];
+  const network = buildRoadNetwork(GEO, null);
+  const gp = toWorld(50.84673, 4.35247);
+  const LM = [{ x: gp.x, z: gp.z, r: 80 }];
+  // focus on the bus stop closest to the Grand-Place (Rue du Lombard)
+  let stop = null;
+  for (let i = 0; i < GEO.busStops.length; i += 2) {
+    const x = GEO.busStops[i], z = GEO.busStops[i + 1], d = Math.hypot(x - gp.x, z - gp.z);
+    if (!stop || d < stop.d) stop = { x, z, d };
+  }
   const sim = createTrafficSim(network, { vehicles: 120, peds: 260, radius: 420, seed: 7, busStops: GEO.busStops, touristAt: () => 0.4,
-    lookAt: (x, z) => LM.find((l) => Math.hypot(x - l.x, z - l.z) < l.r * 2.5) || null, shows: [{ name: 'CG', x: cg.x, z: cg.z, crowd: 12 }] });
-  const cx = cg.x + 60, cz = cg.z + 40;
-  const ctx = { focusX: cx, focusZ: cz, visible: (x, z) => Math.hypot(x - cx, z - cz) < 60 };
+    lookAt: (x, z) => LM.find((l) => Math.hypot(x - l.x, z - l.z) < l.r * 2.5) || null, shows: [{ name: 'Lombard', x: stop.x + 25, z: stop.z + 15, crowd: 12 }] });
+  const cx = stop.x, cz = stop.z;
+  const ctx = { focusX: cx, focusZ: cz, visible: (x, z) => Math.hypot(x - cx, z - cz) < 90 };
   const seen = {};
   let boarded = 0;
   for (let i = 0; i < 180 * 30; i++) {

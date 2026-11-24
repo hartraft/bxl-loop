@@ -1,29 +1,28 @@
 import * as THREE from 'three/webgpu';
 import { texture, uv, attribute, float, uniform } from 'three/tsl';
 import { GEO, WORLD, BRUSSELS_LANDMARKS } from './city-config.js';
-import { IS_BRUSSELS } from './city-identity.js';
-import { buildLondonRoadNetwork, ASPECT_NAMES } from './road-network.js';
+import { buildRoadNetwork, ASPECT_NAMES } from './road-network.js';
 import { createTrafficSim, VEHICLE_TYPES } from './traffic-sim.js';
-import { VEHICLE_FACTORIES, VEHICLE_UNIFORMS, CAR_COLOURS, getInstanceParts, createVehicleUniforms } from './brussels-base-vehicles.js';
+import { VEHICLE_FACTORIES, VEHICLE_UNIFORMS, CAR_COLOURS, getInstanceParts, createVehicleUniforms } from './brussels-vehicles.js';
 import { brusselsBus } from './brussels-bus.js';
-import { createBusPlanner, loadBusRoutes } from './life/bus-routes.js';
+import { createBusPlanner } from './life/bus-routes.js';
 import { toWorld } from './geo-frame.js';
 import { HEADLIGHTS, createVehicleHeadlight, placeVehicleHeadlight } from './vehicle-lights.js';
 import { createContactShadowMaterial } from './tsl-materials.js';
-import { LondonCrowd } from './pedestrians.js';
+import { CityCrowd } from './pedestrians.js';
 
-// js/traffic.js — Workstream G: London traffic & pedestrians, drawn.
+// js/traffic.js — ambient Brussels traffic & pedestrians, drawn.
 //
-//   const traffic = createTrafficSystem(scene, { network, geo, world, towerBridge });   // network optional (built here)
+//   const traffic = createTrafficSystem(scene, { network, geo, world, drawbridge });   // network optional (built here)
 //   traffic.update(dt, elapsed, cameraPos, playerEntity, activeMode, camera);         // NY signature, or
 //   traffic.update(dt, camera, playerEntity, activeMode);
 //
 // The simulation (left-hand lanes, IDM car following, signals, zebras, roundabouts, buses at stops, pedestrians) is
 // js/traffic-sim.js — pure JS, tested headless (tests/traffic-sim.test.mjs). This file renders it:
-// - Workstream C's London models (black cab, hatch / saloon / SUV / van, red double-deckers per route), one
+// - the vehicle models (hatch / saloon / SUV / van / bus per route), one
 //   InstancedMesh per model part (body with per-instance paint + decals), instanced wheels near the camera, contact
 //   shadows, brake lights & blinking indicators (one instanced lamp mesh), a pool of headlight spots at night.
-// - LondonCrowd (pedestrians.js) for the people, with umbrellas in the rain (setRain).
+// - CityCrowd (pedestrians.js) for the people, with umbrellas in the rain (setRain).
 // It also pushes the player out of traffic (like NY did) and offers getDynamicColliders() in the SPEC format.
 
 const NUM_VEHICLES = 200;
@@ -33,22 +32,21 @@ const DRAW_DIST = 480;
 const WHEEL_DIST = 90;
 const HEADLIGHT_POOL = 10;
 
-// districts where black cabs are thick on the ground, and where the pavements are busiest
-const CAB_DISTRICTS = new Set(['Soho', 'Mayfair', 'Covent Garden', 'Seven Dials', 'St Giles', "St. James's", 'Westminster', 'The City', 'Bank',
-  'Monument', 'Holborn', 'Fitzrovia', 'Marylebone', 'Temple', 'St Clement Danes', 'Blackfriars', 'Aldgate', 'Bishopsgate', 'Moorgate',
-  "St Paul's", 'Leadenhall Market', 'Knightsbridge', 'Belgravia', 'Victoria']);
-const BUSY_DISTRICTS = new Set(['Soho', 'Covent Garden', 'Seven Dials', 'St Giles', 'The City', 'Bank', 'Monument', 'South Bank', 'Waterloo',
-  'Bankside', 'Westminster', "St. James's", 'Mayfair', 'Leadenhall Market', "St Paul's", 'Holborn', 'Fitzrovia', 'Borough Market',
-  'Spitalfields', 'Aldgate', 'Bishopsgate', 'Blackfriars', 'Temple']);
+// central districts where taxis are thick on the ground, and where the pavements are busiest
+const CENTRE_DISTRICTS = new Set(['Dansaert', 'La Marolle - De Marol', 'Quartier Saint-Jacques - Sint-Jacobswijk',
+  'Quartier Royal - Koninklijke Wijk', 'Quartier des Squares - Wijk van de Squares', 'Sablon - Zavel',
+  'Mont des Arts - Kunstberg', 'Quartier européen - Europese wijk', 'Quartier des Quais - Kaaienwijk']);
+const BUSY_DISTRICTS = new Set([...CENTRE_DISTRICTS, 'Quartier Léopold - Leopoldswijk', 'Quartier des Libertés - Vrijheidswijk',
+  'Flagey', 'Quartier Maritime - Maritiemwijk', 'Quartier Nord - Noordwijk', 'Rive Gauche - Linkeroever']);
 
 const BLIND_COLS = 2, BLIND_ROWS = 20, BLIND_W = 512, BLIND_H = 128; // destination-blind atlas: 40 slots (route × direction)
 // street performers draw a ring of onlookers (traffic-sim "shows")
 const SHOWS = [
-  { name: 'Covent Garden Piazza', lat: 51.51163, lon: -0.12362, crowd: 14, open: 0.6 },
-  { name: 'South Bank, Queen\'s Walk', lat: 51.50585, lon: -0.11775, crowd: 11, open: 2.2 },
-  { name: 'Leicester Square', lat: 51.51043, lon: -0.13005, crowd: 9, open: 4.0 }
+  { name: 'Grand-Place', lat: 50.84673, lon: 4.35247, crowd: 14, open: 0.6 },
+  { name: 'Place Sainte-Catherine', lat: 50.85878, lon: 4.34972, crowd: 11, open: 2.2 },
+  { name: 'Place Flagey', lat: 50.82670, lon: 4.37139, crowd: 9, open: 4.0 }
 ].map((s) => ({ ...s, ...toWorld(s.lat, s.lon) }));
-const CAB_PAINTS = [0x0b0c0e, 0x0b0c0e, 0x0b0c0e, 0x0b0c0e, 0x0b0c0e, 0x0b0c0e, 0x2a2d33, 0x5a1d24, 0x1c2a44, 0xc9ccd0];
+const TAXI_PAINTS = [0x0b0c0e, 0x0b0c0e, 0x0b0c0e, 0x0b0c0e, 0x0b0c0e, 0x0b0c0e, 0x2a2d33, 0x5a1d24, 0x1c2a44, 0xc9ccd0];
 const VAN_PAINTS = [0xf1f2f0, 0xf1f2f0, 0xf1f2f0, 0xb8bcc0, 0x1f2f55, 0x2a2b2e];
 
 const _m = new THREE.Matrix4();
@@ -64,18 +62,18 @@ const _sphere = new THREE.Sphere();
 const _dir = new THREE.Vector3();
 
 function createTrafficSystem(scene, opts = {}) {
-  // NY call shape createTrafficSystem(scene, sidewalks, footprints) still works (those are ignored in London)
+  // legacy call shape createTrafficSystem(scene, sidewalks, footprints) still works (those args are ignored)
   if (Array.isArray(opts)) opts = {};
   const geo = opts.geo || GEO;
   const world = opts.world || WORLD;
-  const network = opts.network || buildLondonRoadNetwork(geo, world);
+  const network = opts.network || buildRoadNetwork(geo, world);
   // people walk Workstream F's drawn pavements when we have them (else the network's derived ones)
   if (opts.sidewalks && opts.sidewalks.strips && opts.sidewalks.strips.length) network.usePavements(opts.sidewalks.strips);
   const numVehicles = opts.vehicles ?? NUM_VEHICLES;
   const numPeds = opts.peds ?? NUM_PEDS;
 
   const group = new THREE.Group();
-  group.name = 'LondonTraffic';
+  group.name = 'BrusselsTraffic';
   scene.add(group);
 
   // ---- models ------------------------------------------------------------------------------------------------
@@ -118,20 +116,18 @@ function createTrafficSystem(scene, opts = {}) {
     return V;
   }
   const F = VEHICLE_FACTORIES;
-  addVariant('cab', F.blackCab(), CAB_PAINTS, 90); // TAXI sign lit: for hire
+  addVariant('cab', F.taxi(), TAXI_PAINTS, 90); // TAXI sign lit: for hire
   const hiredU = createVehicleUniforms();
   hiredU.sign.value = 0;
-  addVariant('cab', F.blackCab({ uniforms: hiredU }), CAB_PAINTS, 70, 'hired'); // sign off: carrying a fare
+  addVariant('cab', F.taxi({ uniforms: hiredU }), TAXI_PAINTS, 70, 'hired'); // sign off: carrying a fare
   addVariant('hatch', F.hatch({ seed: 3 }), CAR_COLOURS, 110);
   addVariant('saloon', F.saloon({ seed: 5 }), CAR_COLOURS, 110);
   addVariant('suv', F.suv({ seed: 7 }), CAR_COLOURS, 80);
   addVariant('van', F.van({ seed: 9 }), VAN_PAINTS, 60);
-  // buses: one model; route number & destination per instance from a blind atlas (real routes, data/ldn-bus-routes.json)
+  // buses: one model; route number & destination per instance from a blind atlas (STIB route numbers)
   const BUS_CAP = 48;
-  const busModel = IS_BRUSSELS
-    ? brusselsBus({ route: '71', destination: 'De Brouckère' })
-    : F.doubleDecker({ route: '0', destination: ' ' });
-  const busV = addVariant('bus', busModel, IS_BRUSSELS ? [0xf47721] : [0xc8102e], BUS_CAP);
+  const busModel = brusselsBus({ route: '71', destination: 'De Brouckère' });
+  const busV = addVariant('bus', busModel, [0xf47721], BUS_CAP);
   const planner = createBusPlanner(network);
   const blindCanvas = typeof document !== 'undefined' ? document.createElement('canvas') : null;
   const blindTex = blindCanvas ? new THREE.CanvasTexture(blindCanvas) : new THREE.Texture();
@@ -159,7 +155,7 @@ function createTrafficSystem(scene, opts = {}) {
     };
     variants.forEach((v, i) => {
       const x = (i % BLIND_COLS) * BLIND_W, y = Math.floor(i / BLIND_COLS) * BLIND_H;
-      // same layout as london-vehicles.js getBlindTexture at half size: route + destination on top, route below
+      // same layout as brussels-vehicles.js getBlindTexture at half size: route + destination on top, route below
       fit(String(v.ref), x + 6, y + 4, 110, 56, '900');
       fit(v.destination, x + 120, y + 11, 385, 42, '700');
       fit(String(v.ref), x + 6, y + 68, 116, 56, '900');
@@ -167,24 +163,6 @@ function createTrafficSystem(scene, opts = {}) {
     blindTex.needsUpdate = true;
   }
   drawBlinds(planner.variants);
-  {
-    const bm = busV.meshes.find((m) => m.name.endsWith('_blinds'));
-    if (bm && !IS_BRUSSELS) {
-      bm.geometry.setAttribute('aBlind', blindAttr);
-      const mat = new THREE.MeshStandardNodeMaterial();
-      const t = texture(blindTex, uv().add(attribute('aBlind', 'vec2')).mul(uniform(new THREE.Vector2(1 / BLIND_COLS, 1 / BLIND_ROWS))));
-      mat.colorNode = t.rgb;
-      mat.opacityNode = t.a;
-      mat.alphaTest = 0.5;
-      mat.roughnessNode = float(0.3);
-      mat.metalnessNode = float(0);
-      mat.emissiveNode = t.rgb.mul(VEHICLE_UNIFORMS.night.mul(1.6).add(0.55)); // LED blind, as london-vehicles' class 7
-      mat.polygonOffset = true; mat.polygonOffsetFactor = -2; mat.polygonOffsetUnits = -2;
-      mat.name = 'BusBlindAtlas';
-      bm.material = mat;
-    }
-  }
-  if (!IS_BRUSSELS) loadBusRoutes().then((d) => { if (d) { planner.setData(d); drawBlinds(planner.variants); } });
 
   // vehicle dimensions for the sim from the models themselves
   const types = {};
@@ -196,10 +174,10 @@ function createTrafficSystem(scene, opts = {}) {
   // ---- simulation --------------------------------------------------------------------------------------------
   const lmNear = (x, z, k) => BRUSSELS_LANDMARKS.some((l) => Math.hypot(x - l.x, z - l.z) < l.r * k);
   const sim = createTrafficSim(network, {
-    vehicles: numVehicles, peds: numPeds, radius: opts.radius ?? RADIUS, types, towerBridge: opts.towerBridge || null,
+    vehicles: numVehicles, peds: numPeds, radius: opts.radius ?? RADIUS, types, drawbridge: opts.drawbridge || null,
     assignBus: (v, lane, s) => planner.assign(v, lane, s),
     replanBus: (v, lane) => planner.replan(v, lane),
-    cabShareAt: (x, z) => (CAB_DISTRICTS.has(world.districtAt(x, z)) ? 0.22 : 0.08),
+    cabShareAt: (x, z) => (CENTRE_DISTRICTS.has(world.districtAt(x, z)) ? 0.22 : 0.08),
     densityAt: (x, z) => (BUSY_DISTRICTS.has(world.districtAt(x, z)) ? 3 : 1) * (lmNear(x, z, 2.5) ? 2 : 1),
     touristAt: opts.touristAt || ((x, z) => (lmNear(x, z, 2.5) ? 0.45 : 0.06)),
     busStops: geo.busStops || null,
@@ -250,7 +228,7 @@ function createTrafficSystem(scene, opts = {}) {
   }
 
   // ---- people ---------------------------------------------------------------------------------------------------
-  const crowd = new LondonCrowd(numPeds);
+  const crowd = new CityCrowd(numPeds);
   group.add(...crowd.meshes);
 
   // ---- player ---------------------------------------------------------------------------------------------------
@@ -530,7 +508,7 @@ function createTrafficSystem(scene, opts = {}) {
         if (Math.abs(v.x - x) > r || Math.abs(v.z - z) > r) continue;
         const cs = Math.cos(v.yaw), sn = Math.sin(v.yaw);
         const ex = Math.abs(sn) * v.half + Math.abs(cs) * v.halfW, ez = Math.abs(cs) * v.half + Math.abs(sn) * v.halfW;
-        const h = v.bus ? (IS_BRUSSELS ? 3.25 : 4.4) : v.type === 'van' ? 2.3 : v.type === 'cab' ? 1.9 : 1.6;
+        const h = v.bus ? 3.25 : v.type === 'van' ? 2.3 : v.type === 'cab' ? 1.9 : 1.6;
         out.push({ minX: v.x - ex, maxX: v.x + ex, minZ: v.z - ez, maxZ: v.z + ez, minY: v.y, maxY: v.y + h,
           obb: { cx: v.x, cz: v.z, hx: v.halfW, hz: v.half, cs, sn }, vehicle: v });
       }
@@ -541,7 +519,7 @@ function createTrafficSystem(scene, opts = {}) {
   };
 }
 
-// London has no NY shore highways: kept as a no-op so main.js's call still works
+// no shore highways here: kept as a no-op so main.js's call still works
 function createHighwayTraffic() {
   const group = new THREE.Group();
   return { group, update() {}, cars: [], lanes: [] };

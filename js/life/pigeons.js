@@ -1,21 +1,21 @@
-// js/life/pigeons.js — Workstream L: London pigeons. Flocks peck about Trafalgar Square, Leicester Square, the Covent
-// Garden piazza, St Paul's and Parliament Square; they hop out of the way of passers-by and the whole flock bursts up
+// js/life/pigeons.js — Brussels pigeons. Flocks peck about the Grand-Place, Place Sainte-Catherine, Mont des Arts,
+// Place du Luxembourg and the other squares; they hop out of the way of passers-by and the whole flock bursts up
 // when you come close (on foot, on a bike, or drive / fly at them), wheels round over the square and settles again.
 // Two instanced draws for every bird in town (bodies + wings), only flocks near the camera are simulated.
 import * as THREE from 'three/webgpu';
 import { pigeonBodyGeometry, pigeonWingGeometry } from './models.js';
-import { createVehicleMaterial } from '../london-vehicles.js';
+import { createVehicleMaterial } from '../brussels-vehicles.js';
 import { parkInstances, makeShow } from './geo-kit.js';
 import { toWorld } from '../geo-frame.js';
 
 export const PIGEON_SPOTS = [
-  { name: 'Trafalgar Square', lat: 51.50815, lon: -0.12805, r: 24, n: 46 },
-  { name: 'Leicester Square', lat: 51.51030, lon: -0.13010, r: 16, n: 22 },
-  { name: 'Covent Garden Piazza', lat: 51.51168, lon: -0.12305, r: 15, n: 24 },
-  { name: "St Paul's Churchyard", lat: 51.51367, lon: -0.10015, r: 14, n: 22 },
-  { name: 'Parliament Square', lat: 51.50060, lon: -0.12700, r: 18, n: 18 },
-  { name: 'Piccadilly Circus', lat: 51.50985, lon: -0.13450, r: 9, n: 14 },
-  { name: 'Leadenhall Market', lat: 51.51285, lon: -0.08350, r: 8, n: 10 }
+  { name: 'Grand-Place', lat: 50.84673, lon: 4.35247, r: 24, n: 46 },
+  { name: 'Place Sainte-Catherine', lat: 50.85878, lon: 4.34972, r: 16, n: 22 },
+  { name: 'Mont des Arts', lat: 50.84365, lon: 4.35600, r: 15, n: 24 },
+  { name: 'Place du Luxembourg', lat: 50.83850, lon: 4.37350, r: 14, n: 22 },
+  { name: 'Place Jourdan', lat: 50.81497, lon: 4.41283, r: 18, n: 18 },
+  { name: 'Place Flagey', lat: 50.82670, lon: 4.37139, r: 9, n: 14 },
+  { name: 'Petit Sablon', lat: 50.84595, lon: 4.36135, r: 8, n: 10 }
 ];
 const SIM_DIST = 170;
 

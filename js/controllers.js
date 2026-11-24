@@ -1,18 +1,16 @@
 import * as THREE from 'three/webgpu';
-import { IS_BRUSSELS } from './city-identity.js';
 import { WORLD_BOUNDS, toWorld } from './geo-frame.js';
 import { cityUniforms, createContactShadowMaterial } from './tsl-materials.js';
 import { PersonCrowd, PersonRig } from './pedestrians.js';
 import { HEADLIGHTS, SEARCHLIGHT, beamScaleForGlow, createVehicleHeadlight, placeVehicleHeadlight, createSearchlight } from './vehicle-lights.js';
-import { blackCab, rideCar, doubleDecker, hireBike, policeHeli, riverBoat, createVehicleUniforms, setVehicleNightFromGlow } from './london-vehicles.js';
+import { taxi, rideCar, hireBike, policeHeli, riverBoat, createVehicleUniforms, setVehicleNightFromGlow } from './brussels-vehicles.js';
 import { brusselsBus } from './brussels-bus.js';
-const makeBusModel = (opts = {}) => IS_BRUSSELS ? brusselsBus(opts) : doubleDecker(opts);
 
-// js/controllers.js — London Loop player controllers (Workstream C)
-// Modes: 'person' (walk), 'car' (black cab), 'ride' (RideLDN car, same physics), 'cyclist' (hire bike),
-// 'helicopter' (police heli), 'boat' (Thames river bus), 'bus' (drivable red double-decker, for the bus-driver job).
+// js/controllers.js — Brussels Loop player controllers
+// Modes: 'person' (walk), 'car' (taxi), 'ride' (RideBXL car, same physics), 'cyclist' (hire bike),
+// 'helicopter' (police heli), 'boat' (canal boat), 'bus' (drivable STIB/MIVB bus, for the bus-driver job).
 // Physics runs in fixed-size substeps (<= 1/120 s) whatever the frame rate, so handling is the same at 30-144 fps.
-// Ground & water come from an injected world: { groundHeight(x, z, mode, y?), isWater(x, z) } (london-world.js);
+// Ground & water come from an injected world: { groundHeight(x, z, mode, y?), isWater(x, z) };
 // without one a flat fallback world (water band + one bridge) is used — see createFallbackWorld().
 
 export const PLAYER_MODES = ['person', 'car', 'ride', 'cyclist', 'helicopter', 'boat', 'bus'];
@@ -23,12 +21,12 @@ export const PHYS_STEP = 1 / 120;
 /** HUD/UI info per mode: label, boosted top speed (mph) for the speed meter, keyboard hints */
 export const MODE_INFO = {
   person: { label: 'Pedestrian', topSpeedMph: 18, hints: [[['W', 'S'], 'Walk'], [['A', 'D'], 'Turn'], [['Shift'], 'Run'], [['Space'], 'Jump']] },
-  car: { label: 'Black Cab', topSpeedMph: 65, hints: [[['W', 'S'], 'Drive / Brake'], [['A', 'D'], 'Steer'], [['Space'], 'Handbrake'], [['Shift'], 'Boost'], [['H'], 'For-hire light']] },
-  ride: { label: 'RideLDN', topSpeedMph: 70, hints: [[['W', 'S'], 'Drive / Brake'], [['A', 'D'], 'Steer'], [['Space'], 'Handbrake'], [['Shift'], 'Boost']] },
+  car: { label: 'Taxi', topSpeedMph: 65, hints: [[['W', 'S'], 'Drive / Brake'], [['A', 'D'], 'Steer'], [['Space'], 'Handbrake'], [['Shift'], 'Boost'], [['H'], 'For-hire light']] },
+  ride: { label: 'RideBXL', topSpeedMph: 70, hints: [[['W', 'S'], 'Drive / Brake'], [['A', 'D'], 'Steer'], [['Space'], 'Handbrake'], [['Shift'], 'Boost']] },
   cyclist: { label: 'Hire Bike', topSpeedMph: 24, hints: [[['W', 'S'], 'Pedal / Brake'], [['A', 'D'], 'Steer'], [['Shift'], 'Sprint']] },
   helicopter: { label: 'Police Helicopter', topSpeedMph: 145, hints: [[['W', 'S'], 'Pitch'], [['A', 'D'], 'Yaw'], [['Space', 'E'], 'Climb'], [['Q', 'C'], 'Descend'], [['L'], 'Searchlight']] },
-  boat: { label: 'River Bus', topSpeedMph: 34, hints: [[['W', 'S'], 'Throttle / Astern'], [['A', 'D'], 'Helm'], [['Shift'], 'Boost']] },
-  bus: { label: IS_BRUSSELS ? 'STIB/MIVB Bus' : 'London Bus', topSpeedMph: 34, hints: [[['W', 'S'], 'Drive / Brake'], [['A', 'D'], 'Steer'], [['Space'], 'Parking brake'], [['Shift'], 'Put your foot down']] }
+  boat: { label: 'Canal Boat', topSpeedMph: 34, hints: [[['W', 'S'], 'Throttle / Astern'], [['A', 'D'], 'Helm'], [['Shift'], 'Boost']] },
+  bus: { label: 'STIB/MIVB Bus', topSpeedMph: 34, hints: [[['W', 'S'], 'Drive / Brake'], [['A', 'D'], 'Steer'], [['Space'], 'Parking brake'], [['Shift'], 'Put your foot down']] }
 };
 
 /**
@@ -53,8 +51,8 @@ export const HANDLING = {
 
 const slew = (v, target, up, down) => (target > v ? Math.min(target, v + up) : Math.max(target, v - down));
 
-/** Westminster Pier (Thames) — default boat spawn */
-const BOAT_SPAWN_LATLON = [51.50165, -0.12325];
+/** Quai de Mariemont (canal) — default boat spawn */
+const BOAT_SPAWN_LATLON = [50.84875, 4.33238];
 
 function isTypingInField(e) {
   const t = e && e.target;
@@ -120,7 +118,7 @@ class ThirdPersonControllerManager extends (THREE.EventDispatcher || Object) {
 
     this.entities = {
       person: this.createPersonEntity(),
-      car: this.createCarEntity('car', blackCab({ uniforms: createVehicleUniforms() }), MODE_INFO.car.label, HANDLING.car),
+      car: this.createCarEntity('car', taxi({ uniforms: createVehicleUniforms() }), MODE_INFO.car.label, HANDLING.car),
       ride: this.createCarEntity('ride', rideCar({ uniforms: createVehicleUniforms() }), MODE_INFO.ride.label, HANDLING.ride),
       cyclist: this.createCyclistEntity(),
       helicopter: this.createHelicopterEntity(),
@@ -607,10 +605,10 @@ class ThirdPersonControllerManager extends (THREE.EventDispatcher || Object) {
     };
   }
 
-  /** Black cab / RideLDN car: the model's body rides on a sprung chassis pivot, its wheels on the root */
+  /** Taxi / RideBXL car: the model's body rides on a sprung chassis pivot, its wheels on the root */
   createCarEntity(mode, model, label, tune = {}) {
     const root = new THREE.Group();
-    root.name = mode === 'car' ? 'PlayerBlackCab' : 'PlayerRideCar';
+    root.name = mode === 'car' ? 'PlayerTaxi' : 'PlayerRideCar';
     root.rotation.order = 'YXZ';
     const chassisPivot = new THREE.Group();
     root.add(chassisPivot);
@@ -646,12 +644,12 @@ class ThirdPersonControllerManager extends (THREE.EventDispatcher || Object) {
 
   /** Drivable red double-decker (bus-driver job): car physics with bus handling, nearside doors, cab POV */
   createBusEntity() {
-    const model = makeBusModel({ route: IS_BRUSSELS ? '71' : '24', destination: IS_BRUSSELS ? 'De Brouckère' : 'Pimlico', uniforms: createVehicleUniforms() });
+    const model = brusselsBus({ route: '71', destination: 'De Brouckère', uniforms: createVehicleUniforms() });
     const ent = this.createCarEntity('bus', model, MODE_INFO.bus.label, HANDLING.bus);
     ent.mesh.name = 'PlayerBus';
     ent.isBus = true;
-    ent.route = IS_BRUSSELS ? '71' : '24';
-    ent.destination = IS_BRUSSELS ? 'De Brouckère' : 'Pimlico';
+    ent.route = '71';
+    ent.destination = 'De Brouckère';
     ent.doorsOpen = false;
     ent.doorInterlock = true; // won't pull away with the doors open
     ent.doorOpen = 0; // 0..1 door animation
@@ -753,13 +751,13 @@ class ThirdPersonControllerManager extends (THREE.EventDispatcher || Object) {
     route = route == null ? bus.route : String(route);
     destination = destination == null ? bus.destination : String(destination);
     if (route === bus.route && destination === bus.destination) return;
-    const tmp = makeBusModel({ route, destination, uniforms: bus.uniforms });
+    const tmp = brusselsBus({ route, destination, uniforms: bus.uniforms });
     const fresh = tmp.getObjectByName('blinds');
     const old = bus.model.getObjectByName('blinds');
     if (fresh && old) {
       old.geometry.dispose();
       old.geometry = fresh.geometry;
-      old.material = fresh.material; // shared per blind texture (london-vehicles caches materials)
+      old.material = fresh.material; // shared per blind texture (brussels-vehicles caches materials)
     }
     tmp.traverse((o) => { if (o.isMesh && o !== fresh && o.name !== 'spin') o.geometry.dispose(); });
     bus.route = route;

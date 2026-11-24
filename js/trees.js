@@ -2,10 +2,10 @@ import * as THREE from 'three/webgpu';
 import { createTreeMaterial } from './tsl-materials.js';
 
 // js/trees.js
-// Procedural London street & park trees (Workstream F), planted by street-details.js from GEO.trees + park scatter.
-// Species 0 (London plane) dominates; 2 (elm form) stands in for limes / chestnuts, 1 (locust) for lighter ornamentals.
+// Procedural Brussels street & park trees, planted by street-details.js from GEO.trees + park scatter.
+// Species 0 (plane tree) dominates; 2 (elm form) stands in for limes / chestnuts, 1 (locust) for lighter ornamentals.
 // createTreeField(scene, sites, { startView }) — sites: [{x, z, y?, species, scale, tier, yaw?, sx?, sz?}]:
-// - London plane, honey locust & American elm grown from seeded per-species rules: a flared trunk / leader carrying
+// - Plane tree, honey locust & American elm grown from seeded per-species rules: a flared trunk / leader carrying
 //   scaffold limbs, branches and twigs as tapered, curving bark tubes (uv in metres for the bark shader)
 // - Leaf sprays on alpha-tested cards hung from the twigs, cut from a generated leaf atlas (palmate plane leaves,
 //   feathery locust fronds, toothed elm leaves and a dense far-canopy clump) whose mipmaps keep their coverage, so
@@ -37,7 +37,7 @@ const smooth = (e0, e1, x) => {
 
 // =====================================================================================================================
 // 1. LEAF ATLAS: 2x2 tiles of leaf sprays drawn in metres and fitted to their tile (tileMeters = the card's world size)
-//    0 London plane · 1 honey locust · 2 American elm · 3 dense far-canopy clump (whole-crown cards of the far level)
+//    0 plane tree · 1 honey locust · 2 American elm · 3 dense far-canopy clump (whole-crown cards of the far level)
 //    Texels: r = leaf brightness, g = per-leaf hue jitter, b = twig / stalk mask, a = coverage
 // =====================================================================================================================
 const ATLAS_SIZE = 1024;
@@ -74,7 +74,7 @@ function buildSprays(rng) {
 
   const sprays = [];
 
-  // 0. London plane: four or five twigs fanning out, big palmate leaves on long stalks, alternating along them
+  // 0. Plane tree: four or five twigs fanning out, big palmate leaves on long stalks, alternating along them
   {
     const prims = [];
     const n = 5;
@@ -398,7 +398,7 @@ function coverageMips(level0, size, tiles, cutoff = 128) {
 //    Scale 1 is a mature park tree; street trees are planted smaller.
 // =====================================================================================================================
 const SPECIES = [
-  { // 0: London plane: tall clear trunk and leader with heavy ascending limbs, a broad rounded crown of big leaves
+  { // 0: Plane tree: tall clear trunk and leader with heavy ascending limbs, a broad rounded crown of big leaves
     name: 'plane', tile: 0,
     trunk: { r: 0.3, top: 8.6, lean: 0.04, segs: 8 },
     limbs: { n: 6, y: [3.4, 7.4], tilt: [1.0, 0.36], len: [4.6, 2.8], r: 0.62, up: 0.07, out: 0, droop: 0, jitter: 0.07, segs: 6 },
@@ -979,7 +979,7 @@ function createTreeField(scene, sites, opts = {}) {
     update(viewPos.setFromMatrixPosition(camera.matrixWorld));
   };
 
-  // Levels for the start-up view (default Trafalgar Square), so the precompile pass sees the tree meshes
+  // Levels for the start-up view (default Grand-Place), so the precompile pass sees the tree meshes
   update(opts.startView || new V3(0, 10, 60));
 
   const stats = {

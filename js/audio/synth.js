@@ -1,4 +1,4 @@
-// js/audio/synth.js — Workstream L: synthesised voices (continuous) and one-shots for London Loop.
+// js/audio/synth.js — Workstream L: synthesised voices (continuous) and one-shots for Brussels Loop.
 // All built from oscillators, filters and the core's generated noise loops. Each continuous voice has
 // update(params) (smoothed with setTargetAtTime) and stop(). One-shots schedule themselves and free their nodes.
 import { clamp, ramp, driveCurve } from './audio-core.js';
@@ -459,7 +459,7 @@ export function shipHorn(core, out, { gain = 0.3, pan = 0, dur = 1.4, f = 155, c
   freeLater(core, [lp, S.g, S.p], t + dur + 1);
 }
 
-/** UI / bus sounds by name — see LondonAudio.play() */
+/** UI / bus sounds by name — see BrusselsAudio.play() */
 export function cue(core, out, name, { pan = 0, gain = 1 } = {}) {
   const S = shot(core, out, pan);
   S.g.gain.value = gain;
@@ -484,7 +484,7 @@ export function cue(core, out, name, { pan = 0, gain = 1 } = {}) {
     case 'airBrake':
       noiseBurst(core, S.g, t, name === 'kneel' ? 1.1 : 0.7, { kind: 'white', type: 'highpass', freq: 3200, q: 0.5, gain: 0.3, attack: 0.01 });
       break;
-    case 'notify': // phone notification (RideLDN job offer)
+    case 'notify': // phone notification (RideBXL job offer)
       tone(core, S.g, t, { f: 1046.5, dur: 0.18, gain: 0.25 });
       tone(core, S.g, t + 0.12, { f: 1568, dur: 0.35, gain: 0.25 });
       break;

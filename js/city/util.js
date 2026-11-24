@@ -1,4 +1,4 @@
-// js/city/util.js — geometry helpers shared by the London city renderer (js/london-city.js, js/city/*.js).
+// js/city/util.js — geometry helpers shared by the Brussels city renderer (js/brussels-city.js, js/city/*.js).
 // Plain JS + three core only (no TSL): everything here also runs in Node for the full-city build check.
 import * as THREE from 'three/webgpu';
 
@@ -28,7 +28,7 @@ export function hashXZ(x, z, s = 0) {
   return hash01((Math.round(x * 10) * 73856093) ^ (Math.round(z * 10) * 19349663) ^ (s * 83492791));
 }
 
-/** signed shoelace area over (x, z) of a flat ring [x0,z0,x1,z1,…] (London rings: CCW from above = negative) */
+/** signed shoelace area over (x, z) of a flat ring [x0,z0,x1,z1,…] (CCW from above = negative) */
 export function ringArea(p, start = 0, end = p.length) {
   let a = 0;
   for (let i = start, j = end - 2; i < end; j = i, i += 2) a += p[j] * p[i + 1] - p[i] * p[j + 1];
@@ -266,7 +266,7 @@ export function arcLengths(p) {
   return s;
 }
 
-/** CSR spatial hash over items with bboxes (like london-world.js) */
+/** CSR spatial hash over items with bboxes (like brussels-world.js) */
 export function makeHash(minX, minZ, maxX, maxZ, cell, n, bboxOf) {
   const W = Math.ceil((maxX - minX) / cell) + 1, H = Math.ceil((maxZ - minZ) / cell) + 1;
   const counts = new Uint32Array(W * H + 1);

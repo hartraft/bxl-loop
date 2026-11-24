@@ -4,15 +4,14 @@ import { ssr } from 'three/addons/tsl/display/SSRNode.js';
 import { createPostProcessing } from './post-processing.js';
 import { ClusteredLighting } from 'three/addons/lighting/ClusteredLighting.js';
 import { GEO } from './brx-geodata.js';
-import { CITY_NAME } from './city-identity.js';
 import { WORLD, getLocationLabel, isTypingInField, TELEPORT_LOCATIONS } from './city-config.js';
 import { cityUniforms } from './tsl-materials.js';
 import { createRoadReflections } from './road-reflections.js';
-import { buildBrusselsCity } from './brussels-base-city.js';
+import { buildBrusselsCity } from './brussels-city.js';
 import { buildEdgeBarriers } from './city/edge-barriers.js';
 import { WORLD_BOUNDS } from './geo-frame.js';
 import { buildBrusselsLandmarks } from './brussels-landmarks.js';
-import { buildBrusselsRoadNetwork } from './road-network.js';
+import { buildRoadNetwork } from './road-network.js';
 import { createTrafficSystem } from './traffic.js';
 import { buildRoadPaint } from './road-paint.js';
 import { ThirdPersonControllerManager, PLAYER_MODES, MODE_INFO } from './controllers.js';
@@ -20,15 +19,14 @@ import { TouchControls } from './touch-controls.js';
 import { GamepadControls } from './gamepad-controls.js';
 import { CameraSystem, CAMERA_PRESETS } from './cameras.js';
 import { LightingSystem } from './lighting.js';
-import { BrusselsMapSystem } from './brussels-base-map.js';
-import { applyBrusselsHud } from './brussels-base-ui.js';
+import { BrusselsMapSystem } from './brussels-map.js';
+import { applyBrusselsHud } from './brussels-ui.js';
 import { createBackend } from './backend.js';
 import { RideBXL } from './ridebxl.js';
-import { BusDriver } from './bus-driver.js';
 import { setupSceneCulling, updateSceneCulling } from './scene-culling.js';
-import { createBrusselsLife } from './life/brussels-base-life.js';
-import { createBrusselsAudio } from './audio/brussels-base-audio.js';
-import { VEHICLE_UNIFORMS } from './brussels-base-vehicles.js';
+import { createBrusselsLife } from './life/brussels-life.js';
+import { createBrusselsAudio } from './audio/brussels-audio.js';
+import { VEHICLE_UNIFORMS } from './brussels-vehicles.js';
 import { BRUSSELS_LANDMARKS } from './city-config.js';
 
 // js/main.js
@@ -37,7 +35,7 @@ import { BRUSSELS_LANDMARKS } from './city-config.js';
 const URL_PARAMS = new URLSearchParams(location.search);
 const LITE = URL_PARAMS.has('lite'); // ?lite: no SSR / smaller shadow work for slower machines
 const CITY_WATER = 'the canal and ponds';
-if (CITY_NAME === 'Brussels') document.title = 'Brussels Loop';
+document.title = 'Brussels Loop';
 
 async function initApp() {
   const container = document.getElementById('canvas-container');
@@ -90,24 +88,24 @@ async function initApp() {
   // yield so the loading text paints between the long synchronous build steps
   const paint = () => new Promise((r) => requestAnimationFrame(() => setTimeout(r, 0)));
 
-  status(CITY_NAME === 'Brussels' ? 'Raising Brussels landmarks...' : 'Raising Big Ben, the Eye, Tower Bridge & friends...');
+  status('Raising Brussels landmarks...');
   await paint();
   const landmarks = buildBrusselsLandmarks(scene, { world: WORLD, uniforms: cityUniforms });
   markInit('landmarks');
 
-  status(`Building ${CITY_NAME}: ${GEO.buildings.count.toLocaleString('en-GB')} buildings, ${GEO.roads.length.toLocaleString('en-GB')} streets & ${CITY_WATER}...`);
+  status(`Building Brussels: ${GEO.buildings.count.toLocaleString('en-GB')} buildings, ${GEO.roads.length.toLocaleString('en-GB')} streets & ${CITY_WATER}...`);
   await paint();
-  const city = buildBrusselsCity(scene, { geo: GEO, world: WORLD, landmarkZones: landmarks.zones, onProgress: (label) => status(`Building ${CITY_NAME}: ${label}...`) });
+  const city = buildBrusselsCity(scene, { geo: GEO, world: WORLD, landmarkZones: landmarks.zones, onProgress: (label) => status(`Building Brussels: ${label}...`) });
   markInit('city');
   const allColliders = [...landmarks.colliders, ...city.colliders];
   const edgeBarriers = buildEdgeBarriers(scene, { geo: GEO, world: WORLD, bounds: WORLD_BOUNDS });
 
   status('Timing the traffic lights & routing the 24 to Pimlico...');
   await paint();
-  const network = buildBrusselsRoadNetwork(GEO, WORLD);
+  const network = buildRoadNetwork(GEO, WORLD);
   let onTrafficHit = null; // bound once the controllers exist (traffic knocks count as collisions for RideBXL)
   const trafficSystem = createTrafficSystem(scene, {
-    network, geo: GEO, world: WORLD, sidewalks: city.sidewalks, towerBridge: landmarks.towerBridge,
+    network, geo: GEO, world: WORLD, sidewalks: city.sidewalks,
     onPlayerHit: (e) => onTrafficHit && onTrafficHit(e)
   });
   buildRoadPaint(scene, trafficSystem.network);
@@ -119,7 +117,7 @@ async function initApp() {
   // edge of the map: the controller brakes the car smoothly; say why
   const edgeToast = document.createElement('div');
   edgeToast.className = 'edge-toast';
-  edgeToast.innerHTML = `<b>Edge of the map</b><span>${CITY_NAME} Loop ends here. Turn around, or press M to jump somewhere else.</span>`;
+  edgeToast.innerHTML = `<b>Edge of the map</b><span>Brussels Loop ends here. Turn around, or press M to jump somewhere else.</span>`;
   document.body.appendChild(edgeToast);
   const edgeStyle = document.createElement('style');
   edgeStyle.textContent = `.edge-toast{position:fixed;left:50%;top:96px;transform:translate(-50%,-8px);z-index:45;display:flex;flex-direction:column;gap:2px;align-items:center;
@@ -264,7 +262,7 @@ async function initApp() {
   }
 
   function selectMode(mode) {
-    if (CITY_NAME === 'Brussels' && mode === 'boat') return;
+    if (mode === 'boat') return;
     controllerManager.setMode(mode);
     touchControls.setMode(controllerManager.activeMode);
     gamepadControls.reset();
@@ -376,7 +374,7 @@ async function initApp() {
     if (btn && e.detail > 0) btn.blur();
   });
 
-  // Where you are: Brussels street-name plates (js/brussels-base-ui.js)
+  // Where you are: Brussels street-name plates (js/brussels-ui.js)
   let currentWeather = 'clear';
   const hud = applyBrusselsHud({
     mainHooks: {
@@ -445,18 +443,8 @@ async function initApp() {
     }
   });
 
-  // Brussels route data is not valid in Brussels; keep the generic bus vehicle mode but disable the Brussels route job.
-  const busDriver = CITY_NAME === 'Brussels' ? { openPicker() {}, update() {} } : new BusDriver({
-    scene, camera: () => cameraSystem.camera, controllers: controllerManager, world: WORLD, geo: GEO, backend,
-    ui: {
-      setMode: (m) => selectMode(m), teleport: (x, z, h) => teleportTo(x, z, h),
-      onRouteChange: (r, t) => mapSystem.setRoute && mapSystem.setRoute(r && r.length ? r : null, t),
-      onPinsChange: (p) => mapSystem.setPins && mapSystem.setPins(p || []),
-      traffic: trafficSystem, renderer
-    }
-  });
-  const busBtn = document.getElementById('btn-bus-driver');
-  if (busBtn && CITY_NAME !== 'Brussels') busBtn.addEventListener('click', () => busDriver.openPicker());
+  // The route-job picker is not wired up yet; the bus vehicle mode stays available.
+  const busDriver = { openPicker() {}, update() {} };
 
   teleportButtons.forEach((btn) => {
     btn.addEventListener('click', () => {
@@ -499,7 +487,7 @@ async function initApp() {
         selectCamera('pov', true);
         break;
       case 'Digit0':
-        selectCamera(CITY_NAME === 'Brussels' ? 'chase' : 'westminster', true);
+        selectCamera('chase', true);
         break;
       case 'KeyV':
         cycleCamera(e.shiftKey ? -1 : 1);
@@ -512,9 +500,6 @@ async function initApp() {
         break;
       case 'KeyU': // H is the cab's TAXI sign in Brussels
         if (hudToggleBtn) hudToggleBtn.click();
-        break;
-      case 'KeyB': // open / close Tower Bridge
-        if (landmarks.towerBridge && landmarks.towerBridge.toggle) landmarks.towerBridge.toggle();
         break;
     }
   });

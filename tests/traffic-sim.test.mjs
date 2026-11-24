@@ -1,10 +1,10 @@
-// tests/traffic-sim.test.mjs — Workstream G headless traffic simulation test (no rendering, no three.js).
-//   node --test tests/traffic-sim.test.mjs        (≈1-3 min: 5 sim-minutes around Trafalgar Square + 2 at Hyde Park Corner)
+// tests/traffic-sim.test.mjs — headless traffic simulation test (no rendering, no three.js).
+//   node --test tests/traffic-sim.test.mjs        (≈1-3 min: 5 sim-minutes around the Grand-Place + 2 at Place Poelaert)
 // Env: SIM_SECONDS (default 300), SIM_VEHICLES (default 200).
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { GEO } from '../js/ldn-geodata.js';
-import { buildLondonRoadNetwork, ASPECT } from '../js/road-network.js';
+import { GEO } from '../js/brx-geodata.js';
+import { buildRoadNetwork, ASPECT } from '../js/road-network.js';
 import { createTrafficSim } from '../js/traffic-sim.js';
 
 const SIM_SECONDS = +(process.env.SIM_SECONDS || 300);
@@ -13,7 +13,7 @@ const DT = 1 / 30;
 const now = () => performance.now();
 
 const t0 = now();
-const network = buildLondonRoadNetwork(GEO, null);
+const network = buildRoadNetwork(GEO, null);
 const buildMs = now() - t0;
 
 /** separating-axis overlap depth of two vehicles' footprints (m, <= 0: apart) */
@@ -130,21 +130,21 @@ function runScenario({ cx, cz, seconds, vehicles = NV, peds = 180, seed = 7 }) {
         }
       }
     }
-    // keep left
+    // keep right (Belgium drives on the right: side < 0 is the right of the link's direction)
     for (const v of alive) {
       if (v.seg.type !== 'lane' || v.seg.link.oneway || v.s < 1 || v.s > v.seg.len - 1) continue;
       r.keepLeftChecks++;
       const side = lateral(v.seg.link.pts, v.x, v.z);
-      if (side <= 0.2) r.keepLeftBad.push({ v: desc(v), side: +side.toFixed(2), link: v.seg.link.id, laneOff: v.seg.offset, w: v.seg.link.road.w, t: +sim.time.toFixed(1) });
+      if (side >= -0.2) r.keepLeftBad.push({ v: desc(v), side: +side.toFixed(2), link: v.seg.link.id, laneOff: v.seg.offset, w: v.seg.link.road.w, t: +sim.time.toFixed(1) });
     }
-    // roundabouts clockwise (seen from above, x east / z south: clockwise <=> (r x v) > 0)
+    // roundabouts anticlockwise (right-hand traffic; seen from above, x east / z south: anticlockwise <=> (r x v) <= 0)
     for (const v of alive) {
       if (v.seg.type !== 'lane' || !v.seg.link.roundabout || v.speed < 1) continue;
       const ring = ringOf.get(v.seg.link);
       const vx = v.x - v.prevX, vz = v.z - v.prevZ, rx = v.x - ring.cx, rz = v.z - ring.cz;
       if (Math.hypot(rx, rz) < 3) continue;
       r.roundaboutChecks++;
-      if (rx * vz - rz * vx <= 0) r.roundaboutBad++;
+      if (rx * vz - rz * vx > 0) r.roundaboutBad++;
     }
   }
   r.meanSpeed = r.speedSum / Math.max(1, r.speedN);
@@ -157,23 +157,23 @@ function runScenario({ cx, cz, seconds, vehicles = NV, peds = 180, seed = 7 }) {
 
 const fmt = (r, name) => `${name}: ${r.steps} steps, avg ${r.avgMs.toFixed(2)} ms/step (p95 ${r.p95Ms.toFixed(2)}), mean speed ${r.meanSpeed.toFixed(2)} m/s, ` +
   `stuck>60s ${(r.stuckShare * 100).toFixed(1)}% of ${r.lives.size} vehicle-lives, overlaps ${r.overlaps.length} (max ${r.maxPen.toFixed(2)} m), ` +
-  `keep-left ${r.keepLeftBad.length}/${r.keepLeftChecks}, stop-line crossings ${r.crossings} (red ${r.redRuns.length}), roundabout ${r.roundaboutBad}/${r.roundaboutChecks}, ` +
+  `keep-right ${r.keepLeftBad.length}/${r.keepLeftChecks}, stop-line crossings ${r.crossings} (red ${r.redRuns.length}), roundabout ${r.roundaboutBad}/${r.roundaboutChecks}, ` +
   `stuck causes ${JSON.stringify(r.stuckWhy)}, peds alive ${r.sim.peds.filter((p) => p.alive).length}, recycled ${r.sim.stats.recycled} (stuck ${r.sim.stats.stuckRecycled})`;
 
 test(`network builds (${buildMs.toFixed(0)} ms) with signals, crossings, bus stops`, () => {
   const st = network.stats;
   console.log('network', JSON.stringify(st));
-  assert.ok(st.links > 40000 && st.controllers > 500 && st.crossings > 2000 && st.busStops > 500);
+  assert.ok(st.links > 20000 && st.controllers > 300 && st.crossings > 2000 && st.busStops > 100);
   // every link either leads somewhere or is a clipped oneway end
   const dead = network.links.filter((l) => !l.succ.length).length;
   assert.ok(dead / st.links < 0.01, `dead-end links ${dead}`);
-  // route: Trafalgar Square -> Hyde Park Corner (car-legal, sensible)
-  const r = network.route({ x: 0, z: 0 }, { x: -1580, z: 430 });
-  assert.ok(r && r.length > 1600 && r.length < 3500, `route length ${r && r.length}`);
+  // route: Grand-Place -> Koekelberg Basilica (car-legal, sensible)
+  const r = network.route({ x: 0, z: 0 }, { x: -2538, z: -2223 });
+  assert.ok(r && r.length > 1000 && r.length < 8000, `route length ${r && r.length}`);
   for (let i = 0; i + 1 < r.links.length; i++) assert.ok(r.links[i].succ.includes(r.links[i + 1]), 'route follows legal turns');
 });
 
-test('UK signal sequence: red -> red+amber -> green -> amber -> red', () => {
+test('signal sequence: red -> red+amber -> green -> amber -> red', () => {
   for (const ctl of network.controllers.slice(0, 200)) {
     for (let ph = 0; ph < ctl.phases; ph++) {
       const seq = [];
@@ -191,25 +191,25 @@ test('UK signal sequence: red -> red+amber -> green -> amber -> red', () => {
   }
 });
 
-test(`${SIM_SECONDS} s around Trafalgar Square: no overlaps, keep left, no red-light running, flowing`, () => {
+test(`${SIM_SECONDS} s around the Grand-Place: no overlaps, keep right, no red-light running, flowing`, () => {
   const r = runScenario({ cx: 0, cz: 0, seconds: SIM_SECONDS });
-  console.log(fmt(r, 'Trafalgar Square'));
+  console.log(fmt(r, 'Grand-Place'));
   assert.equal(r.overlaps.length, 0, `overlaps: ${JSON.stringify(r.overlaps.slice(0, 5))}`);
   assert.ok(r.keepLeftChecks > 1000);
   assert.equal(r.redRuns.length, 0, `red light running: ${JSON.stringify(r.redRuns.slice(0, 3))}`);
   assert.ok(r.crossings > 50, 'vehicles go through signals');
 
-  assert.equal(r.keepLeftBad.length, 0, `keep-left violations: ${JSON.stringify(r.keepLeftBad.slice(0, 5))}`);
-  assert.ok(r.meanSpeed > 3, `mean speed ${r.meanSpeed.toFixed(2)} m/s`);
+  assert.equal(r.keepLeftBad.length, 0, `keep-right violations: ${JSON.stringify(r.keepLeftBad.slice(0, 5))}`);
+  assert.ok(r.meanSpeed > 1.5, `mean speed ${r.meanSpeed.toFixed(2)} m/s (the Pentagon is congested by design)`);
   assert.ok(r.stuckShare < 0.05, `stuck share ${(r.stuckShare * 100).toFixed(1)}%`);
   assert.ok(r.avgMs < 6, `sim step ${r.avgMs.toFixed(2)} ms`);
 });
 
-test('Hyde Park Corner: roundabout traffic goes clockwise, no overlaps', () => {
-  const r = runScenario({ cx: -1580, cz: 430, seconds: Math.min(120, SIM_SECONDS), seed: 11 });
-  console.log(fmt(r, 'Hyde Park Corner'));
+test('Place Poelaert: roundabout traffic goes anticlockwise, no overlaps', () => {
+  const r = runScenario({ cx: 20, cz: 1055, seconds: Math.min(120, SIM_SECONDS), seed: 11 });
+  console.log(fmt(r, 'Place Poelaert'));
   assert.ok(r.roundaboutChecks > 100, `roundabout samples ${r.roundaboutChecks}`);
-  assert.ok(r.roundaboutBad / r.roundaboutChecks < 0.01, `anticlockwise ${r.roundaboutBad}/${r.roundaboutChecks}`);
+  assert.ok(r.roundaboutBad / r.roundaboutChecks < 0.01, `clockwise ${r.roundaboutBad}/${r.roundaboutChecks}`);
   assert.equal(r.overlaps.length, 0, `overlaps: ${JSON.stringify(r.overlaps.slice(0, 5))}`);
   assert.equal(r.redRuns.length, 0);
 });

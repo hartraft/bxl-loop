@@ -4,7 +4,7 @@ This repository is being adapted from the Brussels Loop codebase into a playable
 
 ## Current state
 
-The generated Brussels dataset is now validated and the runtime can be previewed with `?city=brussels`. The normal local URL still defaults to Brussels unless that query is present; the GitHub Pages deploy workflow injects a redirect so the deployed site defaults to Brussels.
+The generated Brussels dataset is validated and the runtime is Brussels-only: there is no city query or environment switch, locally or on the deployed site.
 
 ## Work plan
 
@@ -14,12 +14,12 @@ The generated Brussels dataset is now validated and the runtime can be previewed
 - The PBF reader retains a 1 km geometry margin around the requested bbox so roads/building rings crossing the edge can be clipped cleanly.
 - Added `tools/validate-brussels-geodata.mjs` to verify attribution, coordinate frame, layer counts, landmark zones, and binary layout.
 - Added `js/brx-geodata.js`, a decoder/loader for the generated files using the existing city engine's data schema.
-- Added `js/city-config.js` and `js/brussels-config.js` so the same runtime selects Brussels data, landmark anchors, street labels and teleports from `?city=brussels`.
+- Added `js/city-config.js` and `js/brussels-config.js` with Brussels data, landmark anchors, street labels and teleports (single city; no switch).
 - Added procedural models for the Grand-Place, Manneken Pis, Mont des Arts, Royal Palace, Cathedral, Palace of Justice, Cinquantenaire, European Parliament and Koekelberg Basilica.
-- Added right-hand traffic lane offsets/turn-lane preference and surface-street snapping for Brussels teleports. Brussels bus route jobs and Thames boat mode are disabled in Brussels rather than sending players to Brussels-only routes.
+- Added right-hand traffic lane offsets/turn-lane preference and surface-street snapping for Brussels teleports. The canal boat mode spawns on the Brussels canal.
 - Added visible OpenStreetMap contributor attribution and ODbL notice to the UI.
 - Added `.github/workflows/deploy-brussels.yml`: builds/validates the data, smoke-tests routing, stages the static site, defaults Pages to Brussels and deploys with GitHub Pages Actions.
-- The existing `js/geo-frame.js` keeps Brussels as the default; `CITY=brussels` selects Brussels only for the Node-side bake process.
+- `js/geo-frame.js` is the Brussels frame, unconditionally; no environment variable can switch cities.
 - Local build: `mkdir -p tools/data && curl -fL https://download.geofabrik.de/europe/belgium-latest.osm.pbf -o tools/data/belgium-latest.osm.pbf && node --max-old-space-size=6144 tools/build-brussels-geodata.mjs`.
 - Or run the manual GitHub Actions workflow **Build Brussels geodata** from the Actions tab; it downloads the PBF, bakes and validates the map, then uploads a 7-day artifact for review.
 - The Belgium PBF is large; the extraction reads the PBF and can require substantial memory. Pass an existing PBF and output directory as arguments to the build script if needed.

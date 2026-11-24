@@ -1,4 +1,4 @@
-// js/city/materials.js — TSL materials of the London city (buildings, glass towers, roads, pavements, markings,
+// js/city/materials.js — TSL materials of the city (buildings, glass towers, roads, pavements, markings,
 // ground, parks, water, stonework). All shading is procedural, in world space or in per-vertex wall coordinates, and
 // reads the shared time-of-day uniforms (cityUniforms from js/tsl-materials.js: uInteriorGlow lights windows & lamps at
 // night, uSky* colours feed the fake reflections, uRoadWetness darkens the tarmac).
@@ -38,17 +38,17 @@ const streetReflect = (R, P, seed) => {
   const bld = mix(color(0x2b2824), color(0x5a5248), hash2D(vec2(floor(az), 4.1))).mul(mix(float(0.6), float(1.0), cityUniforms.uSkyHorizonColor.g));
   return mix(skyReflect(R), bld, inBld.mul(0.85));
 };
-// sky light reaching a London street canyon (aoNode: indirect light only): darker near the pavement, open at roof level
-const londonCanyonAO = () => mix(float(0.58), float(1.0), smoothstep(0.0, 26.0, positionWorld.y)).mul(smoothstep(0.0, 4.0, positionWorld.y).mul(0.18).add(0.82));
+// sky light reaching a street canyon (aoNode: indirect light only): darker near the pavement, open at roof level
+const canyonAO = () => mix(float(0.58), float(1.0), smoothstep(0.0, 26.0, positionWorld.y)).mul(smoothstep(0.0, 4.0, positionWorld.y).mul(0.18).add(0.82));
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Masonry buildings + every roof
 // ---------------------------------------------------------------------------------------------------------------------
 let _buildingMat = null;
-export function createLondonBuildingMaterial() {
+export function createBrusselsBuildingMaterial() {
   if (_buildingMat) return _buildingMat;
   const mat = new THREE.MeshStandardNodeMaterial({ roughness: 0.85, metalness: 0.0 });
-  mat.name = 'LondonBuilding';
+  mat.name = 'BrusselsBuilding';
 
   const fu = attribute('bfu', 'vec2');
   const info = attribute('binfo', 'vec4');
@@ -140,7 +140,7 @@ export function createLondonBuildingMaterial() {
   const glazingBar = filteredPulse(fract(su.mul(panes)), 0.0, 0.025, fws.mul(panes)).mul(step(0.6, y)).mul(float(1.0).sub(inShopDoor));
   const shopGlass = inOpening.mul(step(0.6, y).max(inShopDoor)).mul(step(y, 3.0)).mul(float(1.0).sub(transomBar)).mul(float(1.0).sub(glazingBar));
   const fascia = step(3.1, y).mul(step(y, 3.9)).mul(filteredPulse(su, 0.005, 0.995, fws));
-  // fascia paint: London greens, navy, black, burgundy, cream, slate, and a few brighter chains
+  // fascia paint: navy, black, burgundy, cream, slate, and a few brighter shopfronts
   const fpick = shopHash.mul(8.0);
   const signCol = mix(mix(mix(mix(mix(mix(mix(color(0x1f3b2c), color(0x1a2540), step(1.0, fpick)), color(0x141414), step(2.0, fpick)),
     color(0x5a1620), step(3.0, fpick)), color(0xd9cfb4), step(4.0, fpick)), color(0x3d444a), step(5.0, fpick)),
@@ -259,7 +259,7 @@ export function createLondonBuildingMaterial() {
   const warmth = mix(float(0.85), float(0.35), step(0.5, style).mul(step(style, 2.5)));
   // the room behind each pane (3D interior mapping, shared with NY's facades): walls, floor, lamp, curtains
   const aptRoom = evaluateApartmentInterior(u.mul(bayW), y, vec2(winU, winV), winId, bayW, fh, seed.mul(97.0), warmth, litProb, vec2(fwu, fwv));
-  // net curtains / blinds on a share of the windows (London!), the panes' grime pooled low
+  // net curtains / blinds on a share of the windows, the panes' grime pooled low
   const net = step(0.62, hash2D(winId.add(vec2(2.1, 9.4)))).mul(smoothstep(0.35, 0.75, winV).mul(0.5).add(0.35));
   const glassTint = mix(color(0x12161a), color(0x1d2329), hash2D(winId.add(vec2(5.3, 1.7))));
   const roomSeen = mix(aptRoom.xyz.mul(0.75), color(0xb8b4aa).mul(0.55), net);
@@ -342,7 +342,7 @@ export function createLondonBuildingMaterial() {
     .mul(float(1.0).sub(step(3.05, y).mul(step(y, 3.14)).mul(0.3)));
   const finalWall = mix(mix(wallLook, porchCol, porch), color(0x121314), rail.mul(0.92));
   mat.colorNode = mix(finalWall, roofCol, isRoofish);
-  mat.aoNode = mix(londonCanyonAO(), float(1.0), isRoofish.mul(0.7));
+  mat.aoNode = mix(canyonAO(), float(1.0), isRoofish.mul(0.7));
 
   const glassy = winMaskUp.mul(float(1.0).sub(frame)).add(shopZone.mul(shopGlass));
   mat.roughnessNode = mix(mix(mix(float(0.88), float(0.62), mStucco.add(isPitched.mul(0.6))), float(0.5), isFlat.mul(stain)), float(0.12), glassy);
@@ -390,10 +390,10 @@ function brickColFor(base, mortar, jit) {
 // Glass curtain walls (towers of the City, South Bank, King's Cross, Nine Elms)
 // ---------------------------------------------------------------------------------------------------------------------
 let _glassMat = null;
-export function createLondonGlassMaterial() {
+export function createBrusselsGlassMaterial() {
   if (_glassMat) return _glassMat;
   const mat = new THREE.MeshStandardNodeMaterial({ roughness: 0.08, metalness: 0.7 });
-  mat.name = 'LondonGlass';
+  mat.name = 'BrusselsGlass';
   const fu = attribute('bfu', 'vec2');
   const info = attribute('binfo', 'vec4');
   const bcol = attribute('bcol', 'vec4');
@@ -453,7 +453,7 @@ export function createLondonGlassMaterial() {
   mat.colorNode = mix(mix(wallCol, glass.add(cityUniforms.uSunColor.mul(sunSpec)), pane), frameCol.mul(0.8), crown);
   mat.roughnessNode = mix(float(0.45), float(0.06), pane);
   mat.metalnessNode = mix(float(0.3), float(0.75), pane);
-  mat.aoNode = londonCanyonAO();
+  mat.aoNode = canyonAO();
   mat.normalNode = Fn(() => {
     const fade = float(1.0).sub(smoothstep(30.0, 160.0, length(cameraPosition.sub(P))));
     const relief = float(1.0).sub(filteredPulse(cu, mix(float(0.035), float(0.08), finTower), mix(float(0.965), float(0.92), finTower), fwu.mul(3.0)))
@@ -496,7 +496,7 @@ let _asphalt = null;
 export function createAsphaltMaterial() {
   if (_asphalt) return _asphalt;
   const mat = new THREE.MeshStandardNodeMaterial({ roughness: 0.9, metalness: 0.0 });
-  mat.name = 'LondonAsphalt';
+  mat.name = 'BrusselsAsphalt';
   const sc = attribute('scol', 'vec4');
   const P = positionWorld.xz;
   const n1 = noise2D(P.mul(0.08));
@@ -505,7 +505,7 @@ export function createAsphaltMaterial() {
   const patch = smoothstep(0.62, 0.66, noise2D(P.mul(0.045).add(17.0)));
   const wet = cityUniforms.uRoadWetness;
   const puddle = smoothstep(0.58, 0.72, noise2D(P.mul(0.11).add(5.0))).mul(wet);
-  // worn London tarmac is a mid grey (the baked tint is fresh-laid black), darker where it was resurfaced
+  // worn tarmac is a mid grey (the baked tint is fresh-laid black), darker where it was resurfaced
   const base = lin(sc.rgb).mul(1.55).mul(mix(float(0.82), float(1.12), n1)).mul(mix(float(0.9), float(1.08), n3));
   // sealed cracks: thin dark tar lines along noise contours, filtered so they fade before they alias
   const cn = noise2D(P.mul(0.6).add(31.0));
@@ -545,7 +545,7 @@ let _paving = null;
 export function createPavingMaterial() {
   if (_paving) return _paving;
   const mat = new THREE.MeshStandardNodeMaterial({ roughness: 0.85, metalness: 0.0 });
-  mat.name = 'LondonPaving';
+  mat.name = 'BrusselsPaving';
   const sc = attribute('scol', 'vec4');
   const st = uv();
   const P = positionWorld.xz;
@@ -563,7 +563,7 @@ export function createPavingMaterial() {
   const n3 = noise2D(P.mul(6.0));
   const wet = cityUniforms.uRoadWetness;
   const kerb = step(st.y, 0.3).mul(float(1.0).sub(isPlaza)).mul(float(1.0).sub(isGravel));
-  // the baked tints read too bright under a clear sun: London flags are a weathered mid grey
+  // the baked tints read too bright under a clear sun: the flags are a weathered mid grey
   const scl = lin(sc.rgb).mul(0.72);
   // stains, chewing-gum spots and a darker band of grime along the building line / kerb
   const stain = smoothstep(0.58, 0.85, noise2D(P.mul(0.7).add(3.0))).mul(0.16);
@@ -585,7 +585,7 @@ let _marking = null;
 export function createMarkingMaterial() {
   if (_marking) return _marking;
   const mat = new THREE.MeshStandardNodeMaterial({ roughness: 0.6, metalness: 0.0 });
-  mat.name = 'LondonMarkings';
+  mat.name = 'BrusselsMarkings';
   const sc = attribute('scol', 'vec4');
   const P = positionWorld.xz;
   const wear = smoothstep(0.35, 0.75, noise2D(P.mul(1.3))).mul(0.45).add(noise2D(P.mul(9.0)).mul(0.15));
@@ -606,7 +606,7 @@ export const streetMask = { tex: null, minX: 0, minZ: 0, sizeX: 1, sizeZ: 1 };
 export function createGroundMaterial() {
   if (_ground) return _ground;
   const mat = new THREE.MeshStandardNodeMaterial({ roughness: 0.95, metalness: 0.0 });
-  mat.name = 'LondonGround';
+  mat.name = 'BrusselsGround';
   const P = positionWorld.xz;
   const n1 = noise2D(P.mul(0.035));
   const n2 = noise2D(P.mul(0.4));
@@ -642,7 +642,7 @@ let _grass = null;
 export function createGrassMaterial() {
   if (_grass) return _grass;
   const mat = new THREE.MeshStandardNodeMaterial({ roughness: 0.95, metalness: 0.0 });
-  mat.name = 'LondonGrass';
+  mat.name = 'BrusselsGrass';
   const sc = attribute('scol', 'vec4');
   const P = positionWorld.xz;
   const n1 = noise2D(P.mul(0.05));
@@ -668,7 +668,7 @@ let _stone = null;
 export function createStoneMaterial() {
   if (_stone) return _stone;
   const mat = new THREE.MeshStandardNodeMaterial({ roughness: 0.85, metalness: 0.0 });
-  mat.name = 'LondonStone';
+  mat.name = 'BrusselsStone';
   const sc = attribute('scol', 'vec4');
   const P = positionWorld;
   const nW = normalWorldGeometry;
@@ -696,11 +696,11 @@ export function createStoneMaterial() {
 }
 
 let _water = null;
-/** Thames / lakes / canals: tidal brown-green-grey with wind ripples, fresnel sky, sun glitter, night light streaks */
-export function createLondonWaterMaterial() {
+/** Canal / lakes / docks: brown-green-grey with wind ripples, fresnel sky, sun glitter, night light streaks */
+export function createBrusselsWaterMaterial() {
   if (_water) return _water;
   const mat = new THREE.MeshStandardNodeMaterial({ roughness: 0.06, metalness: 0.0 });
-  mat.name = 'LondonWater';
+  mat.name = 'BrusselsWater';
   const sc = attribute('scol', 'vec4');
   const P = positionWorld.xz;
   const t = time;
@@ -747,7 +747,7 @@ let _ballast = null;
 export function createBallastMaterial() {
   if (_ballast) return _ballast;
   const mat = new THREE.MeshStandardNodeMaterial({ roughness: 0.95, metalness: 0.0 });
-  mat.name = 'LondonBallast';
+  mat.name = 'BrusselsBallast';
   const st = uv();
   const P = positionWorld.xz;
   const n = noise2D(P.mul(8.0));
@@ -774,7 +774,7 @@ let _vcol = null;
 export function vertexColorMaterial() {
   if (!_vcol) {
     _vcol = new THREE.MeshStandardNodeMaterial({ vertexColors: true, roughness: 0.55, metalness: 0.1 });
-    _vcol.name = 'LondonProps';
+    _vcol.name = 'BrusselsProps';
   }
   return _vcol;
 }
@@ -788,7 +788,7 @@ export function glowMaterial(hex, { blink = 0, day = 0.08 } = {}) {
     const c = color(hex);
     const on = blink > 0 ? step(0.5, fract(time.mul(blink))) : float(1.0);
     m.colorNode = c.mul(mix(float(day), float(1.6), night()).mul(on).add(c.mul(0.15)));
-    m.name = 'LondonGlow';
+    m.name = 'BrusselsGlow';
     _glow.set(key, m);
   }
   return m;
@@ -808,12 +808,3 @@ export function lampPoolMaterial() {
   _pool = m;
   return m;
 }
-
-
-// Brussels port compatibility names. The procedural implementations are shared
-// with the original city renderer; expose the names consumed by brussels-base-city.js.
-export {
-  createLondonBuildingMaterial as createBrusselsBuildingMaterial,
-  createLondonGlassMaterial as createBrusselsGlassMaterial,
-  createLondonWaterMaterial as createBrusselsWaterMaterial
-};

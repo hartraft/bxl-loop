@@ -4,30 +4,29 @@ import test from 'node:test';
 
 const [street, brusselsCity, roads] = await Promise.all([
   readFile(new URL('../js/street-details.js', import.meta.url), 'utf8'),
-  readFile(new URL('../js/brussels-base-city.js', import.meta.url), 'utf8'),
+  readFile(new URL('../js/brussels-city.js', import.meta.url), 'utf8'),
   readFile(new URL('../js/city/roads.js', import.meta.url), 'utf8')
 ]);
 
-test('Brussels city explicitly selects Belgian street furniture while London keeps the default profile', () => {
-  assert.match(brusselsCity, /buildStreetDetails\(scene, \{[^}]*city: 'brussels'/s);
-  assert.match(street, /city = 'london'/);
-  assert.match(street, /const isBrussels = city === 'brussels'/);
-  assert.match(street, /function signalGeometry\(isBrussels = false\)/);
+test('street details are Brussels-only: no city switch parameter and no London default', () => {
+  assert.match(brusselsCity, /buildStreetDetails\(scene, \{ geo, world, ctx, inRegion, roads: rd, ground: gnd, details, trees, parent: root \}\)/);
+  assert.doesNotMatch(street, /city = 'london'/);
+  assert.doesNotMatch(street, /isBrussels/);
+  assert.doesNotMatch(street, /process\.env\.CITY/);
 });
 
-test('Brussels signals use compact vehicle heads and pedestrian signal heads', () => {
+test('Brussels signals use compact vehicle heads and pedestrian signal heads on the left kerb', () => {
   assert.match(street, /BrusselsTrafficSignals/);
   assert.match(street, /BrusselsPedestrianSignals/);
   assert.match(street, /function pedestrianSignalGeometry\(\)/);
-  assert.match(street, /const kerbSide = isBrussels \? -1 : 1/);
+  assert.match(street, /const kerbSide = -1;/);
 });
 
-test('Brussels has bpost mailboxes and no London K6 kiosks or Belisha beacons', () => {
+test('Brussels has bpost mailboxes and no London K6 kiosks or Belisha beacons anywhere', () => {
   assert.match(street, /function bpostMailboxGeometry\(\)/);
   assert.match(street, /BpostMailboxes/);
-  assert.match(street, /if \(!isBrussels\) add\(instanced\(k6Geometry\(\)/);
-  assert.match(street, /if \(!isBrussels\) \{\s*add\(instanced\(belishaPole\(\)/);
-  assert.match(street, /if \(!isBrussels\) for \(const stn of geo\.stations\)/);
+  assert.doesNotMatch(street, /k6Geometry/i);
+  assert.doesNotMatch(street, /belisha/i);
 });
 
 test('Brussels road markings omit UK red routes, double-yellow lines and zebra zig-zags', () => {

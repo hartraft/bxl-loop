@@ -1,4 +1,4 @@
-// js/city/roads.js — London streets from GEO.roads / GEO.crossings / GEO.rail:
+// js/city/roads.js — Brussels streets from GEO.roads / GEO.crossings / GEO.rail:
 //  - carriageways: asphalt ribbons (real widths, miter joins) at y = 0 (bridge deck heights from road.deck), junction
 //    discs at shared nodes; overlapping ribbons shade identically (world-space shader) so they never visibly z-fight
 //  - pavements: raised KERB_H slabs either side of vehicle roads (granite kerb face, York-stone flags), cut wherever
@@ -25,7 +25,7 @@ const nodeKey = (x, z) => (Math.round(x * 10) + 80000) * 200000 + (Math.round(z 
 
 /**
  * Rail heights per vertex: decks over water keep road.deck; OSM bridge=viaduct track without a deck (the brick viaducts
- * into London Bridge, Cannon Street, Charing Cross, Blackfriars, Waterloo…) is raised to VIADUCT_H, and the at-grade
+ * under the canal crossings) is raised to VIADUCT_H, and the at-grade
  * track next to it ramps down along the rail graph at 1:35. Returns an array of Float32Array (one per GEO.rail way).
  */
 export const VIADUCT_H = 7.2;
@@ -141,10 +141,7 @@ export function buildRoadGeometry(geo, ctx, inRegion) {
   const strips = [];
   const sites = { zebras: [], signalCrossings: [], giveWays: [], lampRuns: [], busStops: [], pedEnds: [] };
   const roads = geo.roads;
-  // Tower Bridge: the landmark module (Workstream B) draws its whole deck, footways, parapets, piers & bascules
-  const landmarkRoad = (r) => r.name === 'Tower Bridge';
   const inR = (r) => {
-    if (landmarkRoad(r)) return false;
     const p = r.pts, n = p.length;
     return inRegion(p[0], p[1], 40) || inRegion(p[n - 2], p[n - 1], 40) || inRegion(p[(n >> 2) * 2], p[(n >> 2) * 2 + 1], 40);
   };
@@ -313,7 +310,7 @@ export function buildRoadGeometry(geo, ctx, inRegion) {
   }
 
   // ---- markings ------------------------------------------------------------------------------------------------------
-  // Brussels uses continental/right-hand conventions; never draw London's red routes or double-yellow kerb lines.
+  // Brussels uses continental/right-hand conventions; no red routes or double-yellow kerb lines.
   const markLine = (b, p, ys, off, halfW, dash, gap, col, road, margin, phase = 0) => {
     // dashed (dash > 0) or solid line offset `off` from the centreline, cut wherever it enters another carriageway
     const o = offsetPolyline(p, off);
@@ -434,7 +431,7 @@ export function buildRoadGeometry(geo, ctx, inRegion) {
   }
 
   // ---- dead ends, gateways, building passages, tunnel portals ---------------------------------------------------------
-  // (baked by tools/geo-london-roadfix.mjs: road.capA / capB, GEO.gates, GEO.passages) so no ribbon just stops
+  // (baked by tools/geo-brussels-roadfix.mjs: road.capA / capB, GEO.gates, GEO.passages) so no ribbon just stops
   const colliders = [];
   const ends = buildRoadEnds(geo, ctx, L, inR, inRegion, colliders, stats);
   sites.deadEnds = ends;
@@ -566,7 +563,7 @@ export function buildRoadGeometry(geo, ctx, inRegion) {
     layers: Object.fromEntries(Object.entries(L).map(([k, v]) => [k, v.map])),
     sidewalks: { kerbHeight: KERB_H, strips, pavementAt },
     nodes, sites, stats,
-    // bollards, tunnel-portal walls (SPEC collider format) — london-city.js should add these to city.colliders
+    // bollards, tunnel-portal walls (SPEC collider format) — brussels-city.js should add these to city.colliders
     colliders
   };
 }

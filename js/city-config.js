@@ -12,4 +12,4 @@ export const getLocationText = city.getLocationText;
 export const isTypingInField = city.isTypingInField;
 
 // Stable runtime identity; never infer the active city from the URL.
-export { CITY_NAME, IS_BRUSSELS, TRAFFIC_SIDE } from './city-identity.js';
+export { CITY_NAME, TRAFFIC_SIDE } from './city-identity.js';

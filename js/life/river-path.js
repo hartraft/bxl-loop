@@ -1,31 +1,28 @@
-// js/life/river-path.js — Workstream L: the Thames fairway for river traffic (no three.js; Node-testable).
+// js/life/river-path.js — the Brussels canal fairway for river traffic (no three.js; Node-testable).
 //
 //   const river = buildRiverPath(world);   // world = createWorldQueries(GEO) (needs isWater)
-//   river.sample(s, side, out)  -> out {x, z, dx, dz, half, clear}   (s = metres from the west end, side +1 / -1)
+//   river.at(s, lat, out)       -> out {x, z, dx, dz, half, clearL, clearR}  (s = metres from the south end)
 //   river.nearest(x, z)         -> {s, lat, dist}
-//   river.piers                 -> [{name, s, side, x, z}]  (side the pier is on, its berth point)
+//   river.piers                 -> [{name, s, side, x, z}]  (side the quay is on, its berth point)
 //
-// Midstream waypoints (lat/lon, Chelsea Reach → the Pool of London) are densified to 12 m and each sample is pulled to
-// the middle of the river's cross-section (scanning across with world.isWater, bridging bridge piers), then smoothed.
+// Midstream waypoints (lat/lon along the canal) are densified to 12 m and each sample is pulled to
+// the middle of the water cross-section (scanning across with world.isWater, bridging bridge piers), then smoothed.
 // `half` = half the bank-to-bank width; `clearL/clearR` = open water either side of the centreline *without*
-// crossing a pier (so boats squeeze into the navigation arch under bridges). Lanes keep to starboard (COLREGs: keep
+// crossing a quay (so boats squeeze into the navigation arch under bridges). Lanes keep to starboard (keep
 // to the right of the fairway), offset = a share of the width, narrowed through the arches.
 import { toWorld } from '../geo-frame.js';
 
 const WAYPOINTS = [
-  [51.4790, -0.1840], [51.4812, -0.1735], [51.4826, -0.1666], [51.4838, -0.1580], [51.4848, -0.1500],
-  [51.4858, -0.1420], [51.4868, -0.1340], [51.4880, -0.1272], [51.4912, -0.1243], [51.4944, -0.1232],
-  [51.4978, -0.1222], [51.5009, -0.1218], [51.5040, -0.1213], [51.5065, -0.1205], [51.5085, -0.1167],
-  [51.5092, -0.1110], [51.5095, -0.1046], [51.5095, -0.0985], [51.5085, -0.0942], [51.5079, -0.0878],
-  [51.5068, -0.0810], [51.5055, -0.0754], [51.5045, -0.0700], [51.5040, -0.0620], [51.5038, -0.0560]
+  [50.82390, 4.31470], [50.82983, 4.31293], [50.83127, 4.31428], [50.83271, 4.31598], [50.83415, 4.31761],
+  [50.83792, 4.31804], [50.83954, 4.31932], [50.84152, 4.32102], [50.84295, 4.32287], [50.84421, 4.32450],
+  [50.84547, 4.32663], [50.84673, 4.32876], [50.84781, 4.33067], [50.84889, 4.33266], [50.84979, 4.33529],
+  [50.85069, 4.33813], [50.85194, 4.33990]
 ];
 
-// River piers (approximate berths) — boats moor here for a while
+// Canal quays (approximate berths) — boats moor here for a while
 const PIERS = [
-  ['Cadogan Pier', 51.4836, -0.1685], ['Chelsea Harbour', 51.4805, -0.1810], ['Battersea Power Station Pier', 51.4840, -0.1460],
-  ['Millbank Pier', 51.4915, -0.1255], ['Westminster Pier', 51.5017, -0.1236], ['London Eye Pier', 51.5030, -0.1198],
-  ['Embankment Pier', 51.5072, -0.1218], ['Festival Pier', 51.5068, -0.1172], ['Blackfriars Pier', 51.5108, -0.1040],
-  ['Bankside Pier', 51.5078, -0.0985], ['London Bridge City Pier', 51.5063, -0.0840], ['Tower Millennium Pier', 51.5078, -0.0790]
+  ['Quai de Biestebroeck', 50.83347, 4.31683], ['Quai des Péniches', 50.84066, 4.32031], ['Quai Fernand Demets', 50.82403, 4.31321],
+  ['Quai de Mariemont', 50.84875, 4.33238], ['Quai de Willebroeck', 50.85887, 4.32130]
 ];
 
 const STEP = 12;
@@ -49,7 +46,7 @@ export function buildRiverPath(world, opts = {}) {
       const p = pts[i], q0 = pts[Math.max(0, i - 3)], q1 = pts[Math.min(pts.length - 1, i + 3)];
       let tx = q1.x - q0.x, tz = q1.z - q0.z;
       const tl = Math.hypot(tx, tz) || 1; tx /= tl; tz /= tl;
-      const nx = tz, nz = -tx; // left of travel (west → east)
+      const nx = tz, nz = -tx; // left of travel (south → north)
       const sec = section(isWater, p.x, p.z, nx, nz);
       if (sec) out.push({ x: p.x + nx * sec.mid, z: p.z + nz * sec.mid, ok: true });
       else out.push({ x: p.x, z: p.z, ok: false });
@@ -84,12 +81,12 @@ export function buildRiverPath(world, opts = {}) {
     const nx = DZ[i], nz = -DX[i];
     const sec = section(isWater, X[i], Z[i], nx, nz);
     HALF[i] = sec ? sec.half : 40;
-    // open water either side without crossing a pier / the bank
+    // open water either side without crossing a quay / the bank
     CL[i] = clearRun(isWater, X[i], Z[i], nx, nz);
     CR[i] = clearRun(isWater, X[i], Z[i], -nx, -nz);
   }
   const length = S[n - 1];
-  // 4. lanes (starboard: eastbound right of the line = negative offset, westbound positive): a third of the width out,
+  // 4. lanes (starboard: northbound right of the line = negative offset, southbound positive): a third of the width out,
   //    relaxed into the navigation arch under each bridge (smooth, then clamp to the open-water interval, repeated)
   const laneFor = (dir) => {
     const lo = new Float32Array(n), hi = new Float32Array(n), o = new Float32Array(n);
@@ -98,7 +95,7 @@ export function buildRiverPath(world, opts = {}) {
       const want = dir * -Math.min(HALF[i] * 0.3, 55);
       const wet = (d) => isWater(X[i] + nx * d, Z[i] + nz * d);
       let c = want;
-      if (!wet(c)) { // on a pier: nearest open water on our side
+      if (!wet(c)) { // on a quay: nearest open water on our side
         let found = null;
         for (let k = 2; k <= 40 && found === null; k += 2) { if (wet(want + k)) found = want + k; else if (wet(want - k)) found = want - k; }
         c = found ?? want;
@@ -130,13 +127,13 @@ export function buildRiverPath(world, opts = {}) {
   }
   const lerp = (A, lo, hi, t) => A[lo] + (A[hi] - A[lo]) * t;
 
-  /** lane offset (m, + = left of the west→east direction) for travel direction dir (+1 east, -1 west) at arc length s */
+  /** lane offset (m, + = left of the south→north direction) for travel direction dir (+1 north, -1 south) at arc length s */
   function laneOffset(s, dir) {
     const [lo, hi, t] = idx(s);
     return lerp(dir > 0 ? LANE_E : LANE_W, lo, hi, t);
   }
 
-  /** world position on the fairway: s along, lat metres to the left of the west→east line */
+  /** world position on the fairway: s along, lat metres to the left of the south→north line */
   function at(s, lat, out = {}) {
     const [lo, hi, t] = idx(s);
     const dx = lerp(DX, lo, hi, t), dz = lerp(DZ, lo, hi, t), dl = Math.hypot(dx, dz) || 1;
@@ -157,7 +154,7 @@ export function buildRiverPath(world, opts = {}) {
     return { s: S[bj] + (x - X[bj]) * DX[bj] + (z - Z[bj]) * DZ[bj], lat, dist: Math.sqrt(b2) };
   }
 
-  // piers: berth point on the pier's side, a little off the bank
+  // quays: berth point on the quay's side, a little off the bank
   const piers = [];
   for (const [name, la, lo] of PIERS) {
     const p = toWorld(la, lo);
@@ -174,7 +171,7 @@ export function buildRiverPath(world, opts = {}) {
   return { length, n, X, Z, S, DX, DZ, HALF, clearL: CL, clearR: CR, at, laneOffset, nearest, piers };
 }
 
-/** cross-section of the river through (x, z) along the normal (nx, nz): runs of water, gaps ≤ 30 m (bridge piers,
+/** cross-section of the canal through (x, z) along the normal (nx, nz): runs of water, gaps ≤ 30 m (bridge piers,
  *  moored boats) bridged; the run containing / nearest the point → {mid (offset of its middle), half} */
 function section(isWater, x, z, nx, nz) {
   const R = 420, st = 3;

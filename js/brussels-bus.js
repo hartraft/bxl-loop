@@ -1,6 +1,6 @@
 import * as THREE from 'three/webgpu';
 import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
-import { createVehicleMaterial, createVehicleUniforms } from './brussels-base-vehicles.js';
+import { createVehicleMaterial, createVehicleUniforms } from './brussels-vehicles.js';
 
 // Original, lightweight STIB/MIVB-inspired 12 m low-floor single-decker.
 // Geometry is deliberately procedural; no editorial photo or third-party model is bundled.
