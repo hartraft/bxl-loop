@@ -61,7 +61,14 @@ test('the massing matches the real hors tout 186 x 177 m podium on the 160 x 150
   assert.ok(palace.includes("box(g, 160, wingH, wingD, 0, wingY, -66.5, stone, 'South range above Rue de Wynants')"));
   assert.ok(palace.includes("box(g, wingD, wingH, 116, 71.5, wingY, 0, stone, 'West range Rue des Minimes')"));
   assert.ok(palace.includes("box(g, wingD, wingH, 116, -71.5, wingY, 0, stone, 'East range Rue aux Laines')"));
-  assert.ok(palace.includes('for (const x of [-66, 66]) for (const z of [-61.5, 61.5])'));
+  assert.ok(palace.includes('for (const x of [-66, 66]) for (const z of [-61.5, 64])'));
+});
+
+test('the four corner pavilions carry hipped pavilion roofs and the north pair projects past the facade', () => {
+  assert.ok(palace.includes("'Corner pavilion hipped roof (toit en pavillon)'"));
+  assert.ok(palace.includes('new THREE.ConeGeometry(21, 6.5, 4)'));
+  assert.ok(palace.includes('const north = z > 0;'), 'north pavilions flank the porch in forte saillie');
+  assert.ok(!palace.includes("'Corner pavilion roof'"), 'no flat roof boxes remain');
 });
 
 test('the monumental dome stack exists: square drum, circular drum, copper dome, lantern', () => {

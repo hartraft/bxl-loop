@@ -1693,13 +1693,15 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     for (const z of [-37.5, 0, 37.5]) {
       box(g, 126, 26, 10, 0, 15, z, light, 'Courthouse transverse gallery');
     }
-    // Raised corner pavilions and central avant-corps articulate the four elevations.
-    for (const x of [-66, 66]) for (const z of [-61.5, 61.5]) {
-      box(g, 28, 39, 27, x, 20, z, light, 'Projecting courthouse corner pavilion');
-      box(g, 30, 1.6, 29, x, 40, z, weathered, 'Corner pavilion cornice');
-      box(g, 26, 3.2, 25, x, 42.2, z, roof, 'Corner pavilion roof');
+    // Raised corner pavilions with hipped pavilion roofs (toit en pavillon); the two north
+    // pavilions flank the monumental porch in strong projection (forte saillie).
+    for (const x of [-66, 66]) for (const z of [-61.5, 64]) {
+      const north = z > 0;
+      box(g, 28, 39, north ? 30 : 27, x, 20, z, light, 'Projecting courthouse corner pavilion');
+      box(g, 30, 1.6, north ? 32 : 29, x, 40, z, weathered, 'Corner pavilion cornice');
+      mesh(g, new THREE.ConeGeometry(21, 6.5, 4), roof, x, 43.85, z, 'Corner pavilion hipped roof (toit en pavillon)');
       for (let bay = -1; bay <= 1; bay++) {
-        box(g, 2.1, 8, 0.35, x + bay * 7, 18, z + (z > 0 ? 13.7 : -13.7), recess, 'Corner pavilion tall window');
+        box(g, 2.1, 8, 0.35, x + bay * 7, 18, z + (north ? 15.2 : -13.7), recess, 'Corner pavilion tall window');
       }
     }
     // North principal façade: the peristyle is preceded by an emmarchement across its
