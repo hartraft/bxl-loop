@@ -2690,6 +2690,14 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
         box(g, 2.4, 6.5, 0.2, wx - 13.5 + i * 9, 8, 402.9, materials.glass, 'Palace of the Nation wing window');
       }
     }
+    // Benches line the park's central avenue for visitors (the park is the city's first
+    // public park, opened for strolling and rest since the 1770s).
+    for (const bz of [90, 130, 210, 250, 330]) {
+      for (const bx of [-12, 12]) {
+        box(g, 2.2, 0.12, 0.7, bx, 0.55, bz, materials.warmStone, 'Park avenue bench seat');
+        box(g, 2.2, 0.5, 0.1, bx, 0.8, bz + 0.32, materials.warmStone, 'Park avenue bench back');
+      }
+    }
   });
     addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');

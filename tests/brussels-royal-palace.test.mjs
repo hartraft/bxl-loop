@@ -689,3 +689,9 @@ testCase('the Palace of the Nation wings carry window grids and hipped roofs', (
   assert.match(palace, /'Palace of the Nation wing roof'/);
   assert.match(palace, /'Palace of the Nation wing window'/);
 });
+
+testCase('benches line the central avenue of Brussels Park', () => {
+  assert.match(palace, /Benches line the park's central avenue/);
+  assert.match(palace, /'Park avenue bench seat'/);
+  assert.match(palace, /'Park avenue bench back'/);
+});
