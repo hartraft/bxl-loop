@@ -64,6 +64,13 @@ test('the massing matches the real hors tout 186 x 177 m podium on the 160 x 150
   assert.ok(palace.includes('for (const x of [-66, 66]) for (const z of [-61.5, 64])'));
 });
 
+test('the side facades carry axial portals with peristyles and stairs on Minimes and aux Laines', () => {
+  assert.ok(palace.includes("'Side entrance landing ' + street"));
+  assert.ok(palace.includes("'Side axial portal ' + street"));
+  assert.ok(palace.includes("'Side portal entablature ' + street"));
+  assert.ok(palace.includes("const street = x > 0 ? 'rue des Minimes' : 'rue aux Laines';"));
+});
+
 test('the north and south ranges carry colossal paired pilasters, lintels and alternating pediments', () => {
   assert.ok(palace.includes("'Courthouse paired pilaster west'"));
   assert.ok(palace.includes("'Courthouse paired pilaster east'"));

@@ -1841,10 +1841,19 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     cylinder(g, 4.6, 5.8, 2.0, 0, 109, -1, bronze, 20);
     mesh(g, new THREE.SphereGeometry(4.8, 20, 12, 0, Math.PI * 2, 0, Math.PI / 2), roof, 0, 110, -1, 'Courthouse lantern cap');
     cylinder(g, 0.22, 0.35, 5.5, 0, 116, -1, bronze, 12);
-    // The two side façades and rear range receive their own axial entrances and stair landings.
-    for (const x of [-1, 1]) {
-      box(g, 20, 3, 18, x * 78, 5, -1, weathered, 'Side entrance landing');
-      for (let i = 0; i < 7; i++) box(g, 22, 0.45, 1.8, x * (78 - i * 1.3), 5 + i * 0.45, -1, light, 'Side monumental stair');
+    // The side facades each carry an axial portal with a small peristyle and a stair down to
+    // street level: rue des Minimes on the west (local +X), rue aux Laines on the east; the
+    // lower ground floor is entered from rue aux Laines.
+    for (const x of [80, -80]) {
+      const side = x > 0 ? 1 : -1;
+      const street = x > 0 ? 'rue des Minimes' : 'rue aux Laines';
+      box(g, 4, 3, 22, x + side * 2, 5, 0, weathered, 'Side entrance landing ' + street);
+      for (let i = 0; i < 7; i++) box(g, 1.8, 0.45, 24, x + side * (84 + (6 - i) * 1.3), 5 + i * 0.45, 0, light, 'Side monumental stair ' + street);
+      box(g, 3, 12, 18, x + side * 1.5, 12, 0, stone, 'Side axial portal ' + street);
+      for (const z of [-6, 0, 6]) {
+        cylinder(g, 0.45, 0.55, 10, x + side * 0.8, 10.5, z, light, 12);
+      }
+      box(g, 4.5, 1.6, 19, x + side * 1.5, 16.3, 0, light, 'Side portal entablature ' + street);
     }
     // Terrace balustrade and retaining edge, kept distinct from the surrounding streets.
     for (let x = -88; x <= 88; x += 4) {
