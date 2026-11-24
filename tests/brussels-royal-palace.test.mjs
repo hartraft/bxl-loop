@@ -2128,3 +2128,7 @@ testCase('scroll ends finish both ends of each wing balcony rail', () => {
 testCase('a bronze kick plate protects the foot of the BELvue door', () => {
   assert.match(palace, /'BELvue door kick plate'/);
 });
+
+testCase('a bronze kick plate protects the foot of the Palace of the Nation door', () => {
+  assert.match(palace, /'Palace of the Nation door kick plate'/);
+});
