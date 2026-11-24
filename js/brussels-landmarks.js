@@ -1767,6 +1767,22 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
         box(g, 1.55, 4.4, 0.22, x + dx, 14.0, facadeZ + 0.1, glass, 'Terminal pavilion window');
       }
     }
+    // The real front garden (jardin d'honneur, laid out 1904–09) holds three sunken
+    // parterres between the façade and the gilded railing: a central parterre on the
+    // portico axis flanked by two lateral parterres ("trois parterres creusés").
+    const lawnMat = new THREE.MeshStandardMaterial({ color: 0x5f7f52, roughness: 0.96 });
+    const flowerMat = new THREE.MeshStandardMaterial({ color: 0xb06a5a, roughness: 0.95 });
+    const parterres = [
+      { x: 0, w: 22, z: 12.4, d: 2.6 },
+      { x: -38, w: 34, z: 12.4, d: 2.6 },
+      { x: 38, w: 34, z: 12.4, d: 2.6 }
+    ];
+    for (const p of parterres) {
+      box(g, p.w, 0.24, p.d, p.x, -0.12, p.z, ashlar, 'Sunken parterre retaining edge');
+      box(g, p.w - 0.8, 0.1, p.d - 0.8, p.x, -0.02, p.z, lawnMat, 'Sunken parterre lawn');
+      box(g, p.w - 4, 0.06, 0.7, p.x, 0.05, p.z, flowerMat, 'Parterre flower band');
+    }
+
     for (let x = -74; x <= 74; x += 2.4) {
       cylinder(g, 0.1, 0.14, 1.1, x, 0.55, 14, ashlar, 8);
       if (x < 73.9) box(g, 2.4, 0.07, 0.07, x + 1.2, 0.9, 14, bronze, 'Forecourt railing');
