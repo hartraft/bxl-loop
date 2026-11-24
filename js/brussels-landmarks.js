@@ -5783,6 +5783,13 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
         box(g, 0.25, 0.25, 0.8, -46 + side * 2.2, 0.125 + s * 0.25, 157.2 - s * 0.7, materials.pavingEdge, 'Bandstand step kerb');
       }
     }
+
+    // Kerbs edge both sides of the Vauxhall bandstand steps.
+    for (let s = 0; s < 2; s++) {
+      for (const side of [-1, 1]) {
+        box(g, 0.25, 0.25, 0.8, 46 + side * 2.2, 0.125 + s * 0.25, 216.6 - s * 0.7, materials.pavingEdge, 'Vauxhall step kerb');
+      }
+    }
   });
     addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');
