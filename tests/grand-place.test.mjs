@@ -1222,3 +1222,22 @@ test('rounds 343-352: lantern drip ring, spire base plate, blind-niche figures, 
   assert.ok(square.includes('King’s House portal door studs'));
   assert.ok(square.includes('doorStuds.count = 8'));
 });
+
+test('rounds 353-362: balcony medallion, dormer cap balls, octagonal-top balls, gable apex finial, grate bars, lintel trim, ground string-course trim, string-course corner balls, niche jambs, pot rims', () => {
+  assert.ok(square.includes('Wing balcony center medallion'));
+  assert.ok(square.includes('Dormer cap finial balls'));
+  assert.ok(square.includes('dormerTips.count = 11'));
+  assert.ok(square.includes('King’s House octagonal top corner balls'));
+  assert.ok(square.includes('khOctBalls.count = 8'));
+  assert.ok(square.includes('gable apex finial'));
+  assert.ok(square.includes('Grand-Place areaway grate bars'));
+  assert.ok(square.includes('grateBars.count = gb2'));
+  assert.ok(square.includes('arcade lintel gilded trim'));
+  assert.ok(square.includes('lintelTrim.count = bays'));
+  assert.ok(square.includes('King’s House ground string course gold trim'));
+  assert.ok(square.includes('Tower string course corner balls'));
+  assert.ok(square.includes('scBalls.count = scb'));
+  assert.ok(source.includes('Manneken Pis niche jamb panel'));
+  assert.ok(square.includes('chimney pot rim rings'));
+  assert.ok(square.includes('potRims.count = 4'));
+});

@@ -557,6 +557,16 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     arcadeCaps.count = acap;
     arcadeCaps.name = name + ' arcade pier capitals';
     root.add(arcadeCaps);
+    // Gilded trim runs along every arcade lintel, as on the real shopfronts.
+    const lintelTrim = new THREE.InstancedMesh(new THREE.BoxGeometry(1.9, 0.05, 0.06), materials.gold, bays);
+    for (let bay = 0; bay < bays; bay++) {
+      arcDummy.position.set((bay - (bays - 1) / 2) * (width - 2.8) / Math.max(1, bays - 1), 3.38, 0.46);
+      arcDummy.updateMatrix();
+      lintelTrim.setMatrixAt(bay, arcDummy.matrix);
+    }
+    lintelTrim.count = bays;
+    lintelTrim.name = name + ' arcade lintel gilded trim';
+    root.add(lintelTrim);
     // Arched door leaf with a gilded fanlight in the centre arcade bay of every house.
     box(root, 0.95, 2.5, 0.12, 0, 1.55, 0.42, materials.dark, name + ' arched door leaf');
     const fanlight = cylinder(root, 0.4, 0.4, 0.08, 0, 3.02, 0.44, materials.gold, 16);
@@ -995,6 +1005,8 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     root.add(volutes);
     // A gilded center scroll crowns the gable between the shoulder volutes.
     mesh(root, new THREE.SphereGeometry(0.24, 10, 8), materials.gold, 0, height + 1.6, 0.12, name + ' gable center scroll');
+    // A gilded finial crowns the gable pediment apex, as on the real gables.
+    mesh(root, new THREE.SphereGeometry(0.16, 10, 8), materials.gold, 0, height + gableHeight + 0.25, 0.1, name + ' gable apex finial');
     // Chimneys with terracotta pots rise from the roof, as on the real houses.
     const chimneys = new THREE.InstancedMesh(new THREE.BoxGeometry(0.55, 1.6, 0.55), materials.warmStone, 2);
     const chimneyPots = new THREE.InstancedMesh(new THREE.CylinderGeometry(0.16, 0.2, 0.5, 8), materials.dark, 4);
@@ -1025,6 +1037,17 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     chimneyCaps.count = 2;
     chimneyCaps.name = name + ' chimney cap slabs';
     root.add(chimneyCaps);
+    // Rim rings dress the top of each terracotta chimney pot, as on the real pots.
+    const potRims = new THREE.InstancedMesh(new THREE.CylinderGeometry(0.17, 0.17, 0.08, 8), materials.dark, 4);
+    for (let i = 0; i < 4; i++) {
+      const side = i < 2 ? -1 : 1;
+      modDummy.position.set(side * (width / 2 - 1.6) + (i % 2 ? 0.12 : -0.12), height + 2.32, -depth / 2 + 1.6);
+      modDummy.updateMatrix();
+      potRims.setMatrixAt(i, modDummy.matrix);
+    }
+    potRims.count = 4;
+    potRims.name = name + ' chimney pot rim rings';
+    root.add(potRims);
     box(root, 0.35, height - 1.8, 0.25, -width / 2 + 0.45, height / 2 + 0.5, 0.16, materials.gold);
     box(root, 0.35, height - 1.8, 0.25, width / 2 - 0.45, height / 2 + 0.5, 0.16, materials.gold);
     cylinder(root, 0.12, 0.12, 1.3, 0, height + gableHeight + 0.55, 0.08, materials.gold, 8);
@@ -1709,6 +1732,8 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     for (const side of [-1, 1]) {
       box(root, 0.16, 0.85, 0.16, side * (width / 2 + 0.5), 9.1, 1.12, trim, 'Wing balcony corner post');
     }
+    // A gilded medallion centres the wing-connecting balcony, as on the real facade.
+    mesh(root, new THREE.CylinderGeometry(0.4, 0.4, 0.1, 16).rotateX(Math.PI / 2), materials.gold, 0, 8.7, 1.25, 'Wing balcony center medallion');
     const wingBalusters = new THREE.InstancedMesh(new THREE.BoxGeometry(0.14, 0.55, 0.14), trim, 48);
     const wbd = new THREE.Object3D();
     let wb = 0;
@@ -2264,6 +2289,16 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     dormerCheeks.name = 'Dormer side cheeks';
     dormerHoods.name = 'Dormer window hood moulds';
     root.add(dormerCheeks, dormerHoods);
+    // Gilded balls tip each dormer's pointed cap, as on the real roof dormers.
+    const dormerTips = new THREE.InstancedMesh(new THREE.SphereGeometry(0.11, 8, 6), materials.gold, 11);
+    for (let i = 0; i < 11; i++) {
+      pinDummy.position.set(-width / 2 + 2.8 + i * 4.25, height + 4.75, -depth / 2 + (i % 2 ? -3.1 : 3.1));
+      pinDummy.updateMatrix();
+      dormerTips.setMatrixAt(i, pinDummy.matrix);
+    }
+    dormerTips.count = 11;
+    dormerTips.name = 'Dormer cap finial balls';
+    root.add(dormerTips);
     // Both wings terminate in corner turrets that rise the full facade height, above the roofline.
     // Narrow lancet slits pierce both corner turret shafts, as on the real turrets.
     const turretSlits = new THREE.InstancedMesh(new THREE.BoxGeometry(0.3, 3.2, 0.14), glass, 8);
@@ -2372,6 +2407,19 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     tower.add(baseButtresses);
     // A wider dark stone plinth courses around the tower base, as on the real tower foot.
     box(tower, towerW + 1.6, 1.0, towerW + 1.6, 0, 0.5, 0, darkStone, 'Tower base plinth course');
+    // Gilded balls stud the tower shaft's string-course corners, as on the real tower.
+    const scBalls = new THREE.InstancedMesh(new THREE.SphereGeometry(0.1, 8, 6), materials.gold, 20);
+    let scb = 0;
+    for (const y of [9, 19, 29, 39, 49]) {
+      for (const sx of [-1, 1]) for (const sz of [-1, 1]) {
+        stdd.position.set(sx * (towerW / 2 + 0.3), y + 0.25, sz * (towerW / 2 + 0.3));
+        stdd.updateMatrix();
+        scBalls.setMatrixAt(scb++, stdd.matrix);
+      }
+    }
+    scBalls.count = scb;
+    scBalls.name = 'Tower string course corner balls';
+    tower.add(scBalls);
     // The square shaft is chained with oversized stone quoins at its four corners.
     const tqRows = Math.floor(54 / 4.5);
     const towerQuoins = new THREE.InstancedMesh(new THREE.BoxGeometry(0.42, 0.9, 0.42), trim, tqRows * 4);
@@ -3012,6 +3060,8 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       archR.rotation.z = 0.55;
     }
     box(root, width - 1.2, 0.24, 0.5, 0, 6.7, 0.2, darkStone, 'Ground gallery string course');
+    // Gilded trim rides on the Broodhuis ground-gallery string course.
+    box(root, width - 1.2, 0.05, 0.1, 0, 6.84, 0.28, materials.gold, 'King’s House ground string course gold trim');
     // Dressed voussoir wedges ringing each pointed gallery arch, as in the real
     // Broodhuis ground arcade archivolt.
     const khVoussoirs = new THREE.InstancedMesh(new THREE.BoxGeometry(0.36, 0.3, 0.42), trim, bays * 5);
@@ -3561,6 +3611,18 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     khLouvers.count = 8;
     khLouvers.name = 'King’s House belfry louver openings';
     root.add(khLouvers);
+    // Gilded balls crown the corners of the Broodhuis tower's octagonal top.
+    const khOctBalls = new THREE.InstancedMesh(new THREE.SphereGeometry(0.12, 8, 6), materials.gold, 8);
+    for (let i = 0; i < 8; i++) {
+      const a = i * Math.PI / 4 + Math.PI / 8;
+      khLd.position.set(Math.cos(a) * 1.5, 35.7, towerZ + Math.sin(a) * 1.5);
+      khLd.rotation.y = 0;
+      khLd.updateMatrix();
+      khOctBalls.setMatrixAt(i, khLd.matrix);
+    }
+    khOctBalls.count = 8;
+    khOctBalls.name = 'King’s House octagonal top corner balls';
+    root.add(khOctBalls);
     const dome = mesh(root, new THREE.SphereGeometry(1.7, 12, 8), roofMat, 0, 36.3, towerZ, 'King’s House tower domed slate spire');
     dome.scale.set(1, 0.75, 1);
     // Meridian ribs run up the domed slate spire, as on the real dome.
@@ -4374,6 +4436,21 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     mhRings.name = 'Grand-Place manhole flange rings';
     grateHinges.name = 'Grand-Place areaway grate hinges';
     plaza.add(mhRings, grateHinges);
+    // Raised bars run across each areaway grate, as on the real cellar grilles.
+    const grateBars = new THREE.InstancedMesh(new THREE.BoxGeometry(1.5, 0.02, 0.06), materials.warmStone, gr * 3);
+    let gb2 = 0;
+    for (const z of [33.2, -33.2]) {
+      for (let i = 0; i < 14; i++) {
+        for (let b = 0; b < 3; b++) {
+          md.position.set(-49 + i * 7.2, -0.045, z + (z > 0 ? -1.6 : 1.6) + (b - 1) * 0.14);
+          md.updateMatrix();
+          grateBars.setMatrixAt(gb2++, md.matrix);
+        }
+      }
+    }
+    grateBars.count = gb2;
+    grateBars.name = 'Grand-Place areaway grate bars';
+    plaza.add(grateBars);
 
     // Traditional Brussels enamel street signs — blue board with a white rim on a dark post —
     // stand at each of the seven street mouths, naming the street that opens onto the square.
@@ -4447,6 +4524,9 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     // A darker recessed back panel deepens the niche behind the figure, as on the real
     // rocaille surround.
     box(g, 2.2, 3.4, 0.1, 0, 2.2, -0.58, materials.dark, 'Manneken Pis niche recess panel');
+    // Blue-stone inner side panels line the niche jambs, as on the real rocaille surround.
+    box(g, 0.18, 3.6, 2.0, -1.5, 2.2, -0.4, materials.blueStone, 'Manneken Pis niche jamb panel');
+    box(g, 0.18, 3.6, 2.0, 1.5, 2.2, -0.4, materials.blueStone, 'Manneken Pis niche jamb panel');
     mesh(g, new THREE.CircleGeometry(1.15, 16, 0, Math.PI), materials.blueStone, 0, 2.2, -0.24, 'Manneken Pis rocaille niche arch');
     box(g, 2.5, 0.5, 0.8, 0, 4.65, -0.28, materials.blueStone, 'Manneken Pis niche cornice');
     box(g, 2.2, 1.3, 2.2, 0, 0.65, 0, materials.dark, 'Manneken Pis pedestal plinth');
