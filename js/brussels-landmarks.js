@@ -2757,6 +2757,11 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
         box(g, 2.2, 5.5, 0.2, -168 - 27 + i * 9, 9, fz, materials.glass, 'Academy Palace side window');
       }
     }
+    // The BELvue north face (toward the park) carries a window grid and a ground-floor door.
+    for (let i = 0; i < 5; i++) {
+      box(g, 2.2, 4.6, 0.2, 168 - 13 + i * 6.5, 11, 50.1, materials.glass, 'BELvue north window');
+    }
+    box(g, 3.6, 4.8, 0.4, 168, 2.4, 50.2, materials.dark, 'BELvue north entrance door');
   });
     addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');

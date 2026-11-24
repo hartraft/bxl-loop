@@ -742,3 +742,9 @@ testCase('the Academy Palace has seven bays on its north and south faces', () =>
   assert.match(palace, /'Academy Palace side window'/);
   assert.match(palace, /for \(let i = 0; i < 7; i\+\+\)/);
 });
+
+testCase('the BELvue north face carries windows and an entrance door toward the park', () => {
+  assert.match(palace, /BELvue north face/);
+  assert.match(palace, /'BELvue north window'/);
+  assert.match(palace, /'BELvue north entrance door'/);
+});
