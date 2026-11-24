@@ -1834,3 +1834,7 @@ testCase('a kerb closes the garden walk at the gilded railing', () => {
 testCase('a glazed fanlight crowns the BELvue entrance door', () => {
   assert.match(palace, /'BELvue door fanlight'/);
 });
+
+testCase('a leaf split divides the portico main door into two leaves', () => {
+  assert.match(palace, /'Portico door leaf split'/);
+});

@@ -4017,6 +4017,9 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
 
     // A kerb closes the garden walk at the gilded railing.
     box(g, 3.6, 0.14, 0.3, 0, 0.08, 14.1, ashlar, 'Garden walk end kerb');
+
+    // A leaf split bar divides the portico main door into two leaves.
+    box(g, 0.08, 7.5, 0.06, 0, 4.1, centralFace + 0.26, bronze, 'Portico door leaf split');
   });
   addLandmark('palaceSurroundings', (g) => {
     // Real-world sources: en/fr Wikipedia (Royal Palace of Brussels, Brussels Park, Place des Palais,
