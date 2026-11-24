@@ -283,3 +283,49 @@ testCase("Royal Palace snapshot camera faces the north façade (world -Z after t
   const snapshot = readFileSync(new URL('../snapshot-royal-palace.html', import.meta.url), 'utf8');
   assert.match(snapshot, /camera\.position\.set\(centre\.x\+[^,]+,.*centre\.z-Math\.max/);
 });
+
+testCase('two symmetrical curved galleries join the end pavilions along the square', () => {
+  assert.match(palace, /symmetrical curved galleries/);
+  assert.match(palace, /'Curved gallery column'/);
+  assert.match(palace, /'Curved gallery capital'/);
+  assert.match(palace, /'Curved gallery entablature'/);
+  assert.match(palace, /'Curved gallery roof segment'/);
+  assert.match(palace, /for \(let cgK = 0; cgK < 7; cgK\+\+\)/);
+});
+
+testCase('real-world fidelity lock: every documented feature of the real palace is present', () => {
+  const markers = [
+    /color: 0xece4d3/,
+    /'Central entablature'/,
+    /'Leopold II pediment medallion disc'/,
+    /'Belgian flag stripe'/,
+    /'Industry relief hammer head'/,
+    /'Agriculture relief sickle'/,
+    /'Escaut river relief'/,
+    /'Meuse river relief'/,
+    /'First-floor wrought-iron balcony rail'/,
+    /'Ground-floor rusticated bossage blocks'/,
+    /'Sunken parterre lawn'/,
+    /'Gilded garden gate leaf'/,
+    /'Gate pier gilded urn'/,
+    /'Les Fleurs du Palais Royal pots'/,
+    /'Portico perron step'/,
+    /'Palace corner quoins'/,
+    /'Wing oval roof window'/,
+    /'Central corps mansard roof'/,
+    /'Palace roof chimney stacks'/,
+    /Palace rear wing/,
+    /'Palace south rear avant-corps \(Throne Room\)'/,
+    /'Place des Palais sett paving'/,
+    /facadeWashMats\.push/,
+    /nightGlowMats\.push/,
+    /'Second-floor window keystone'/,
+    /'Second-floor garland swag'/,
+    /'Dome drum oculus'/,
+    /'Leopold II monogram medallion'/,
+    /'Main cornice modillions'/,
+    /'Curved gallery column'/,
+    /for \(let i = 0; i < 6; i\+\+\)/,
+  ];
+  for (const marker of markers) assert.match(palace, marker);
+});
