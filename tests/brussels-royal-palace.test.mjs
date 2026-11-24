@@ -364,3 +364,11 @@ testCase('a second row of attic oculi lights the central attic (deux rangs d’o
   assert.match(palace, /'Central attic oculus surround'/);
   assert.match(palace, /for \(let i = 0; i < 4; i\+\+\)/);
 });
+
+testCase('the central corps roof is a flat terrasson bordered by a stone balustrade', () => {
+  assert.match(palace, /flat terrasson bordered by a stone balustrade/);
+  assert.match(palace, /'Central corps roof terrasson'/);
+  assert.match(palace, /'Terrasson balustrade posts'/);
+  assert.match(palace, /'Terrasson balustrade front rail'/);
+  assert.match(palace, /trPost\.count = tri/);
+});

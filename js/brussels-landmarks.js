@@ -1818,6 +1818,31 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     pediment.closePath();
     mesh(g, new THREE.ShapeGeometry(pediment), ashlar, 0, 23.55, centralFace + 0.18, 'Palace sculpted triangular pediment');
     box(g, 23.5, 0.5, 1.0, 0, 23.55, centralFace + 0.38, moulding, 'Pediment lower moulding');
+    // Behind the pediment the central corps roof is a flat terrasson bordered by a stone balustrade (heritage 30402).
+    box(g, 24, 0.35, 8, 0, 23.8, 6.0, ashlar, 'Central corps roof terrasson');
+    const trPost = new THREE.InstancedMesh(new THREE.BoxGeometry(0.16, 0.7, 0.16), ashlar, 40);
+    const trd = new THREE.Object3D();
+    let tri = 0;
+    for (let x = -11.5; x <= 11.5; x += 1.15) {
+      trd.position.set(x, 24.32, 2.2);
+      trd.rotation.y = 0;
+      trd.updateMatrix();
+      trPost.setMatrixAt(tri++, trd.matrix);
+    }
+    for (const sx of [-1, 1]) {
+      for (let z = 3.35; z <= 9.8; z += 1.15) {
+        trd.position.set(sx * 11.8, 24.32, z);
+        trd.updateMatrix();
+        trPost.setMatrixAt(tri++, trd.matrix);
+      }
+    }
+    trPost.count = tri;
+    trPost.name = 'Terrasson balustrade posts';
+    g.add(trPost);
+    box(g, 23.6, 0.14, 0.22, 0, 24.72, 2.2, moulding, 'Terrasson balustrade front rail');
+    for (const sx of [-1, 1]) {
+      box(g, 0.22, 0.14, 8.0, sx * 11.8, 24.72, 6.0, moulding, 'Terrasson balustrade side rail');
+    }
     const leftRake = box(g, 0.58, 13.0, 0.9, -5.75, 26.45, centralFace + 0.42, moulding, 'Pediment left raking cornice');
     leftRake.rotation.z = -Math.atan2(11.5, 5.8);
     const rightRake = box(g, 0.58, 13.0, 0.9, 5.75, 26.45, centralFace + 0.42, moulding, 'Pediment right raking cornice');
