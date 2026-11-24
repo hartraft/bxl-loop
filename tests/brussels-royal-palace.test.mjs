@@ -2120,3 +2120,7 @@ testCase('a dentil course runs under the Academy portico architrave', () => {
   assert.match(palace, /'Academy portico dentil'/);
   assert.match(palace, /apPd\.count = apPi/);
 });
+
+testCase('scroll ends finish both ends of each wing balcony rail', () => {
+  assert.match(palace, /'Wing balcony scroll end'/);
+});

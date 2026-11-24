@@ -4148,6 +4148,13 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     for (const side of [-1, 1]) {
       mesh(g, new THREE.SphereGeometry(0.12, 10, 8), bronze, side * 1.45, 11.5, centralFace + 1.0, 'Central balcony scroll end');
     }
+
+    // Scroll ends finish both ends of each wing balcony rail.
+    for (const side of wingXs) {
+      for (const e of [-1, 1]) {
+        mesh(g, new THREE.SphereGeometry(0.12, 10, 8), bronze, side + e * (wingW / 2 - 0.2), 8.0, facadeZ + 0.84, 'Wing balcony scroll end');
+      }
+    }
   });
   addLandmark('palaceSurroundings', (g) => {
     // Real-world sources: en/fr Wikipedia (Royal Palace of Brussels, Brussels Park, Place des Palais,
