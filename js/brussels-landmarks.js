@@ -5623,6 +5623,9 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       }
     }
     aepD.count = aepDi; aepD.name = 'Academy end pavilion dentil'; g.add(aepD);
+
+    // A lintel spans the palace-park gate in the Place du Trone fence.
+    box(g, 10, 0.4, 0.5, -120, 3.6, -46, materials.dark, 'Place du Trone gate lintel');
   });
     addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');

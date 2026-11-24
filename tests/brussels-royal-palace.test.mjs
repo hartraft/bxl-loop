@@ -2145,3 +2145,7 @@ testCase('dentil courses run under both Academy end pavilion cornices', () => {
 testCase('a moulded edge finishes the front of the perron top landing', () => {
   assert.match(palace, /'Perron landing edge'/);
 });
+
+testCase('a lintel spans the palace-park gate in the Place du Trone fence', () => {
+  assert.match(palace, /'Place du Trone gate lintel'/);
+});
