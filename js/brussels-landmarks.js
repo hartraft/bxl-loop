@@ -4131,6 +4131,9 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
         box(g, 1.8, 0.07, 0.45, bx, 7.74, facadeZ + 0.85, bronze, 'Wing flower box rim');
       }
     }
+
+    // A nosing strip edges the front stylobate step.
+    box(g, 32, 0.05, 0.1, 0, 0.28, centralFace + 9.0, moulding, 'Stylobate step nosing');
   });
   addLandmark('palaceSurroundings', (g) => {
     // Real-world sources: en/fr Wikipedia (Royal Palace of Brussels, Brussels Park, Place des Palais,

@@ -2069,3 +2069,7 @@ testCase('raking cornices follow both slopes of the Palace of the Nation pedimen
 testCase('kerbs flank the west radiating avenue from the main pond', () => {
   assert.match(palace, /'Radiating avenue west kerb'/);
 });
+
+testCase('a nosing strip edges the front stylobate step', () => {
+  assert.match(palace, /'Stylobate step nosing'/);
+});
