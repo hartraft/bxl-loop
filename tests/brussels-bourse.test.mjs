@@ -918,4 +918,23 @@ testCase('all 300 rounds are present and marked in the builders', () => {
   for (let r = 1; r <= 300; r++) assert.ok(unique.has(r), `round ${r} missing`);
 });
 
+testCase('review fix (P2): the Bourse is a teleport preset with a synced menu button, landing on the Boulevard Anspach crossing', () => {
+  const config = readFileSync(new URL('../js/brussels-config.js', import.meta.url), 'utf8');
+  const html = readFileSync(new URL('../index.html', import.meta.url), 'utf8');
+  assert.match(config, /\['bourse', 'Palais de la Bourse \/ Beurspaleis', 'Place de la Bourse', 50\.84859, 4\.34903\]/);
+  const tStart = config.indexOf('const teleports = [');
+  const tEnd = config.indexOf('];', tStart);
+  assert.ok(tStart >= 0 && tEnd > tStart, 'teleports array exists');
+  const ids = [...config.slice(tStart, tEnd).matchAll(/^\s*\['([a-zA-Z]+)'/gm)].map((m) => m[1]).sort();
+  const buttons = [...html.matchAll(/data-teleport="([^"]+)"/g)].map((m) => m[1]).sort();
+  assert.deepEqual(ids, buttons, 'teleport presets and menu buttons stay in sync (teleports.test.cjs invariant)');
+  assert.ok(buttons.includes('bourse'));
+  assert.match(html, /id="tp-bourse"[^>]*data-teleport="bourse"/);
+  const a = BRUSSELS_LANDMARK_ANCHORS.bourse;
+  const aw = brusselsToWorld(a.lat, a.lon);
+  const tp = brusselsToWorld(50.84859, 4.34903);
+  const dist = Math.hypot(aw.x - tp.x, aw.z - tp.z);
+  assert.ok(dist > 30 && dist < 150, `teleport lands on the square in front of the palace (${dist.toFixed(0)} m from the anchor)`);
+});
+
 // __MORE_BOURSE_TESTS__
