@@ -1742,3 +1742,7 @@ testCase('mullions divide the Academy Palace ground-floor arched windows', () =>
 testCase('a frieze band runs above the Palace of the Nation architrave', () => {
   assert.match(palace, /'Palace of the Nation frieze band'/);
 });
+
+testCase('dark soil fills the two perron planters', () => {
+  assert.match(palace, /'Perron planter soil'/);
+});

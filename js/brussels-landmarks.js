@@ -3972,6 +3972,11 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     for (const side of [-1, 1]) {
       box(g, 1.2, 6.6, 0.18, side * 3.3, 14.6, centralFace + 0.16, glass, 'Portico door side light');
     }
+
+    // Dark soil fills the two perron planters beneath the plantings.
+    for (const side of [-1, 1]) {
+      box(g, 1.4, 0.06, 1.4, side * 9.8, 1.03, centralFace + 0.9, shadow, 'Perron planter soil');
+    }
   });
   addLandmark('palaceSurroundings', (g) => {
     // Real-world sources: en/fr Wikipedia (Royal Palace of Brussels, Brussels Park, Place des Palais,
