@@ -4645,6 +4645,9 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     box(g, 344, 0.3, 0.5, 0, 0.15, 402, materials.paleStone, 'Park north railing plinth');
     box(g, 0.5, 0.3, 340, -172, 0.15, 232, materials.paleStone, 'Park west railing plinth');
     box(g, 0.5, 0.3, 340, 172, 0.15, 232, materials.paleStone, 'Park east railing plinth');
+
+    // An inset tympanum panel fills the Palace of the Nation pediment behind the Justice relief.
+    box(g, 10, 2.2, 0.1, 0, 16.6, 401.7, materials.paleStone, 'Palace of the Nation tympanum panel');
   });
     addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');

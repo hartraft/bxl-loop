@@ -1388,3 +1388,7 @@ testCase('lamp standards with gilded globes flank the garden gates', () => {
   assert.match(palace, /'Garden gate lamp'/);
   assert.match(palace, /'Garden gate lamp globe'/);
 });
+
+testCase('an inset tympanum panel fills the Palace of the Nation pediment', () => {
+  assert.match(palace, /'Palace of the Nation tympanum panel'/);
+});
