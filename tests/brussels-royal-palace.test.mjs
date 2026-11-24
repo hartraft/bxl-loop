@@ -68,6 +68,14 @@ testCase('the front garden holds the real three sunken parterres (central on the
   assert.match(palace, /\{ x: 38, w: 34, z: 12\.4, d: 2\.6 \}/);
 });
 
+testCase('the dome drum is pierced on all four faces by two rows of oculi, lower row garland-rimmed', () => {
+  assert.match(palace, /pierced on EACH FACE/);
+  assert.match(palace, /'Dome drum oculus garland'/);
+  assert.match(palace, /surround\.rotation\.y = oculus\.rotation\.y = Math\.PI \/ 2/);
+  assert.match(palace, /const x = side \* 8\.9;/);
+  assert.match(palace, /if \(y === 26\.4\)/);
+});
+
 testCase('a continuous stone balustrade runs along the whole roofline (central corps + pavilions)', () => {
   assert.match(palace, /balustrade terminale/);
   assert.match(palace, /'Palace roofline balusters'/);

@@ -1768,6 +1768,9 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     // The real central roof is a high, square drum and a broad flattened dome,
     // with two rows of oculi on each face and a rooftop balustrade.
     box(g, 17.5, 4.6, 17.5, 0, 27.2, -1, stone, 'Central dome drum');
+    // Heritage inventory: the drum is pierced on EACH FACE by two rows of oeil-de-boeuf,
+    // the lower row rimmed with a garland ("deux rangs d'yeux-de-bœuf, les inférieurs
+    // ourlés d'une guirlande") — front, back and both side faces.
     for (const face of [-1, 1]) {
       const z = -1 + face * 8.9;
       for (const y of [26.4, 28.4]) {
@@ -1775,6 +1778,26 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
           const x = -5.4 + i * 5.4;
           mesh(g, new THREE.TorusGeometry(0.62, 0.12, 8, 20), moulding, x, y, z + face * 0.08, 'Dome drum oculus surround');
           mesh(g, new THREE.CircleGeometry(0.52, 20), glass, x, y, z + face * 0.1, 'Dome drum oculus');
+          if (y === 26.4) {
+            const garland = mesh(g, new THREE.TorusGeometry(0.85, 0.06, 6, 16, Math.PI), moulding, x, y - 0.42, z + face * 0.1, 'Dome drum oculus garland');
+            garland.rotation.z = Math.PI;
+          }
+        }
+      }
+    }
+    for (const side of [-1, 1]) {
+      const x = side * 8.9;
+      for (const y of [26.4, 28.4]) {
+        for (let i = 0; i < 3; i++) {
+          const z = -1 - 5.4 + i * 5.4;
+          const surround = mesh(g, new THREE.TorusGeometry(0.62, 0.12, 8, 20), moulding, x + side * 0.08, y, z, 'Dome drum oculus surround');
+          const oculus = mesh(g, new THREE.CircleGeometry(0.52, 20), glass, x + side * 0.1, y, z, 'Dome drum oculus');
+          surround.rotation.y = oculus.rotation.y = Math.PI / 2;
+          if (y === 26.4) {
+            const garland = mesh(g, new THREE.TorusGeometry(0.85, 0.06, 6, 16, Math.PI), moulding, x + side * 0.1, y - 0.42, z, 'Dome drum oculus garland');
+            garland.rotation.y = Math.PI / 2;
+            garland.rotation.z = Math.PI;
+          }
         }
       }
     }
