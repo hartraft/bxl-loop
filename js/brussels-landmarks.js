@@ -2833,6 +2833,12 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     for (let wz = 8; wz <= 64; wz += 7) {
       box(g, 0.6, 3.2, 0.7, -204.7, 1.6, wz, materials.pavingB, 'Academy boulevard-side blue-stone pilaster');
     }
+    // The Palace of the Nation peristyle carries a full entablature over its columns and a
+    // broad emmarchement (steps) up to the portico floor.
+    box(g, 52, 1.1, 2.2, 0, 15.6, 401.8, materials.warmStone, 'Palace of the Nation peristyle entablature');
+    for (let s = 0; s < 4; s++) {
+      box(g, 54 - s * 2, 0.3, 1.2, 0, 0.15 + s * 0.3, 399.4 - s * 1.1, materials.plaster, 'Palace of the Nation portico step');
+    }
   });
     addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');

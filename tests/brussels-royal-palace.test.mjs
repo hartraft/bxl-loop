@@ -828,3 +828,10 @@ testCase('the wing end faces are capped by an end cornice and blocking course', 
   assert.match(palace, /'Wing end cornice'/);
   assert.match(palace, /'Wing end blocking course'/);
 });
+
+testCase('the Palace of the Nation peristyle has an entablature and portico steps', () => {
+  assert.match(palace, /full entablature over its columns/);
+  assert.match(palace, /'Palace of the Nation peristyle entablature'/);
+  assert.match(palace, /'Palace of the Nation portico step'/);
+  assert.match(palace, /for \(let s = 0; s < 4; s\+\+\)/);
+});
