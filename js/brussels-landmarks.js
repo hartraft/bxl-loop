@@ -5718,6 +5718,9 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     for (const side of [-1, 1]) {
       box(g, 0.3, 0.15, 4.5, side * 26, 0.14, 401.6, materials.pavingEdge, 'Peristyle floor side kerb');
     }
+
+    // A kerb borders the rear edge of the Palace of the Nation peristyle floor.
+    box(g, 52, 0.15, 0.3, 0, 0.14, 399.4, materials.pavingEdge, 'Peristyle floor rear kerb');
   });
     addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');

@@ -2237,3 +2237,7 @@ testCase('side kerbs border the Palace of the Nation peristyle floor', () => {
 testCase('side caps close the ends of the front stylobate step', () => {
   assert.match(palace, /'Stylobate step side cap'/);
 });
+
+testCase('a kerb borders the rear edge of the peristyle floor', () => {
+  assert.match(palace, /'Peristyle floor rear kerb'/);
+});
