@@ -445,6 +445,14 @@ test('the Royal Palace snapshot shows forecourt ground instead of blank sky', ()
   assert.match(palace, /centre\.z\+18\)/);
 });
 
+test('the Pages deploy waits for the github-pages artifact before deploying', () => {
+  const wf = readFileSync(new URL('../.github/workflows/deploy-brussels.yml', import.meta.url), 'utf8');
+  const wait = wf.indexOf('Wait for the github-pages artifact');
+  const deploy = wf.indexOf('actions/deploy-pages@v4');
+  assert.ok(wait > 0 && deploy > wait, 'the artifact-visibility wait must run before deploy-pages');
+  assert.ok(wf.includes('select(.name == "github-pages"'));
+});
+
 test('every workflow that runs tools/shot.py installs Pillow for its render assertions', () => {
   const workflows = readdirSync(new URL('../.github/workflows', import.meta.url)).filter(f => f.endsWith('.yml'));
   const runners = workflows.filter(f => readFileSync(new URL(`../.github/workflows/${f}`, import.meta.url), 'utf8').includes('tools/shot.py http'));
