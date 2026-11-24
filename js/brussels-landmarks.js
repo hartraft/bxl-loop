@@ -4274,6 +4274,14 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       const wx = 168 - 13 + i * 6.5;
       box(g, 2.4, 0.24, 0.3, wx, 17.35, 22.1, materials.warmStone, 'BELvue piano nobile lintel');
     }
+
+    // The Palace of the Nation flies the EU and Belgian flags from cornice flagpoles.
+    for (const fx of [-10, 10]) {
+      cylinder(g, 0.06, 0.1, 9, fx, 27.7, 403.4, materials.bronze, 8).name = 'Palace of the Nation flagpole';
+      mesh(g, new THREE.SphereGeometry(0.16, 8, 6), materials.gold, fx, 32.3, 403.4, 'Palace of the Nation flag finial');
+    }
+    box(g, 3.2, 2.0, 0.06, -8.4, 31.2, 403.4, materials.enamelBlue, 'Palace of the Nation EU flag');
+    box(g, 3.2, 2.0, 0.06, 11.6, 31.2, 403.4, materials.canvas, 'Palace of the Nation Belgian flag');
   });
     addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');

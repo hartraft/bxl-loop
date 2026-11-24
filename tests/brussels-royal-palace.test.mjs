@@ -1137,3 +1137,9 @@ testCase('the Academy Palace portico pediment holds a framed tympanum panel', ()
 testCase('stone lintels crown the BELvue piano nobile windows', () => {
   assert.match(palace, /'BELvue piano nobile lintel'/);
 });
+
+testCase('the Palace of the Nation flies EU and Belgian flags from cornice flagpoles', () => {
+  assert.match(palace, /'Palace of the Nation flagpole'/);
+  assert.match(palace, /'Palace of the Nation EU flag'/);
+  assert.match(palace, /'Palace of the Nation Belgian flag'/);
+});
