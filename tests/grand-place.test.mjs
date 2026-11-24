@@ -119,6 +119,13 @@ test('guild-house rooflines stay varied and instanced', () => {
   assert.ok(source.includes('gilded window surrounds'));
 });
 
+test('café awnings over the ground-floor arcades of the brasserie houses', () => {
+  assert.ok(source.includes('canvas: new THREE.MeshStandardMaterial'));
+  assert.ok(square.includes("café awnings"));
+  assert.ok(square.includes('terrace = false'));
+  assert.equal((square.match(/terrace: true \}\)/g) || []).length, 6, 'six houses carry terraces');
+});
+
 test('signature house emblems: Le Cornet horse, Le Roy d’Espagne cupola-vane and six statues', () => {
   assert.ok(square.includes("emblem: 'horse'"));
   assert.ok(square.includes("emblem: 'vane'"));

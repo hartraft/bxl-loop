@@ -20,6 +20,7 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     bronze: new THREE.MeshStandardMaterial({ color: 0x7a6238, roughness: 0.5, metalness: 0.55 }),
     ochre: new THREE.MeshStandardMaterial({ color: 0xc9a05e, roughness: 0.85 }),
     plaster: new THREE.MeshStandardMaterial({ color: 0xe9e0cb, roughness: 0.9 }),
+    canvas: new THREE.MeshStandardMaterial({ color: 0x94402f, roughness: 0.95 }),
     dark: new THREE.MeshStandardMaterial({ color: 0x4a4035, roughness: 0.92 }),
     pavingA: new THREE.MeshStandardMaterial({ color: 0x77756d, roughness: 0.96 }),
     pavingB: new THREE.MeshStandardMaterial({ color: 0x89857a, roughness: 0.96 }),
@@ -111,7 +112,8 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
   // Instanced windows keep the repeated historic detail to two draw calls per facade.
   function guildHouse(parent, spec) {
     const { name, x, width, height, depth = 11, floors = 3, stone = materials.limestone,
-      roof = materials.roof, style = 'gable', rotation = 0, y = 0, emblem = false, balustradeStatues = false } = spec;
+      roof = materials.roof, style = 'gable', rotation = 0, y = 0, emblem = false, balustradeStatues = false,
+      terrace = false } = spec;
     const root = new THREE.Group();
     root.name = name;
     root.position.set(x, y, 0);
@@ -172,6 +174,23 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     arcade.castShadow = lintels.castShadow = true;
     root.add(arcade, lintels);
     box(root, width - 0.4, 0.2, 0.3, 0, 3.6, 0.36, materials.warmStone, name + ' arcade string course');
+    if (terrace) {
+      // Café awning sloping over each ground-floor arcade bay — the real square's
+      // brasseries and cafés sit under canvas awnings on the Grand-Place.
+      const awnings = new THREE.InstancedMesh(new THREE.BoxGeometry(bayW - 0.5, 0.05, 1.3), materials.canvas, bays);
+      for (let bay = 0; bay < bays; bay++) {
+        const wx = (bay - (bays - 1) / 2) * (width - 2.8) / Math.max(1, bays - 1);
+        arcDummy.position.set(wx, 3.2, 0.85);
+        arcDummy.rotation.set(-0.5, 0, 0);
+        arcDummy.updateMatrix();
+        awnings.setMatrixAt(bay, arcDummy.matrix);
+      }
+      awnings.count = bays;
+      awnings.name = name + ' café awnings';
+      awnings.castShadow = true;
+      root.add(awnings);
+      arcDummy.rotation.set(0, 0, 0);
+    }
 
     // Baroque guild-house dressing, as on the real frontages: pilasters between the
     // bays, a balustrade parapet along the cornice, and gilded statues standing in
@@ -763,7 +782,7 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     plaza.add(south);
     townHall(south);
     guildHouse(south, { name: 'Guild House – L’Étoile', x: -30, width: 13, height: 21, floors: 3, style: 'stepped', stone: materials.warmStone });
-    guildHouse(south, { name: 'Guild House – Le Cygne', x: -44, width: 12, height: 23, floors: 4, style: 'bell', stone: materials.plaster, emblem: true });
+    guildHouse(south, { name: 'Guild House – Le Cygne', x: -44, width: 12, height: 23, floors: 4, style: 'bell', stone: materials.plaster, emblem: true, terrace: true });
 
     const north = new THREE.Group();
     north.name = 'North frontage';
@@ -775,7 +794,7 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     guildHouse(north, { name: 'Guild House – Sainte-Barbe', x: -48.5, width: 10, height: 19, style: 'stepped' });
     guildHouse(north, { name: 'Guild House – Le Cerf', x: 23.5, width: 11, height: 21, style: 'stepped', stone: materials.warmStone });
     guildHouse(north, { name: 'Guild House – L’Ange', x: 34, width: 11, height: 23, floors: 4, style: 'scroll', stone: materials.plaster });
-    guildHouse(north, { name: 'Guild House – La Chaloupe d’Or', x: 46.5, width: 11, height: 24, style: 'bell', stone: materials.ochre, emblem: true });
+    guildHouse(north, { name: 'Guild House – La Chaloupe d’Or', x: 46.5, width: 11, height: 24, style: 'bell', stone: materials.ochre, emblem: true, terrace: true });
 
     const west = new THREE.Group();
     west.name = 'West frontage';
@@ -784,10 +803,10 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     plaza.add(west);
     // West side, numbered from the north corner like the real nos. 1-7, with the street
     // mouths left open at both ends: Rue au Beurre (north) and Rue de la Tête d'or (south).
-    guildHouse(west, { name: 'Guild House – Le Roy d’Espagne', x: 23, width: 8.5, height: 24, floors: 4, style: 'bell', stone: materials.plaster, emblem: 'vane', balustradeStatues: true });
+    guildHouse(west, { name: 'Guild House – Le Roy d’Espagne', x: 23, width: 8.5, height: 24, floors: 4, style: 'bell', stone: materials.plaster, emblem: 'vane', balustradeStatues: true, terrace: true });
     guildHouse(west, { name: 'Guild House – La Brouette', x: 13.5, width: 8.5, height: 20, style: 'stepped', stone: materials.plaster });
     guildHouse(west, { name: 'Guild House – Le Sac', x: 4, width: 8.5, height: 22, style: 'gable', stone: materials.warmStone });
-    guildHouse(west, { name: 'Guild House – La Louve', x: -5.5, width: 8.5, height: 23, floors: 3, style: 'scroll', stone: materials.ochre, emblem: true });
+    guildHouse(west, { name: 'Guild House – La Louve', x: -5.5, width: 8.5, height: 23, floors: 3, style: 'scroll', stone: materials.ochre, emblem: true, terrace: true });
     guildHouse(west, { name: 'Guild House – Le Cornet', x: -15, width: 8.5, height: 21, style: 'scroll', stone: materials.ochre, emblem: 'horse' });
     guildHouse(west, { name: 'Guild House – Le Renard', x: -24.5, width: 8.5, height: 20, style: 'gable', stone: materials.warmStone });
 
@@ -796,9 +815,9 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     east.position.set(55, 0, 0);
     east.rotation.y = -Math.PI / 2;
     plaza.add(east);
-    guildHouse(east, { name: 'Guild House – L’Arbre d’Or', x: -18, width: 15, height: 22, style: 'stepped', stone: materials.ochre });
+    guildHouse(east, { name: 'Guild House – L’Arbre d’Or', x: -18, width: 15, height: 22, style: 'stepped', stone: materials.ochre, terrace: true });
     guildHouse(east, { name: 'Guild House – La Rose', x: 1, width: 16, height: 24, style: 'bell', stone: materials.paleStone, emblem: true });
-    guildHouse(east, { name: 'Guild House – Le Mont Thabor', x: 20, width: 15, height: 20, style: 'gable' });
+    guildHouse(east, { name: 'Guild House – Le Mont Thabor', x: 20, width: 15, height: 20, style: 'gable', terrace: true });
 
     // The real square is entered by seven narrow streets (Rue au Beurre, Rue de la Tête
     // d'or, Rue des Chapeliers, Rue Charles Buls, Rue de la Colline, Rue d'Arenberg and
