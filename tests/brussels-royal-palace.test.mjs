@@ -2057,3 +2057,7 @@ testCase('a rim finishes the central balcony flower box', () => {
 testCase('kerbs edge both sides of the Academy portico steps', () => {
   assert.match(palace, /'Academy portico step kerb'/);
 });
+
+testCase('rims finish the wing balcony flower boxes', () => {
+  assert.match(palace, /'Wing flower box rim'/);
+});
