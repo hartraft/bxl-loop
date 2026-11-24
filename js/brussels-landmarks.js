@@ -1722,13 +1722,19 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
         box(g, 2.3, 0.5, 2.3, x, 21.35, z, light, 'Doric abacus'); // square abacus
       }
     }
-    // Main front pediment and attic balustrade.
+    // Principal pediment over the porch with a sculptural crest, attic behind it, and the
+    // full-width entablature and balustrade along the real north facade line.
     const pediment = new THREE.Shape();
-    pediment.moveTo(-25, 0); pediment.lineTo(0, 11); pediment.lineTo(25, 0); pediment.closePath();
-    mesh(g, new THREE.ExtrudeGeometry(pediment, { depth: 3, bevelEnabled: false }), light, 0, 23.2, 77, 'Triangular principal pediment');
-    box(g, 154, 1.3, 3.0, 0, 34, 58, light, 'North façade entablature');
-    for (let x = -73; x <= 73; x += 3.2) {
-      box(g, 0.55, 1.5, 0.55, x, 35.2, 58, weathered, 'North façade balustrade');
+    pediment.moveTo(-26, 0); pediment.lineTo(0, 12); pediment.lineTo(26, 0); pediment.closePath();
+    mesh(g, new THREE.ExtrudeGeometry(pediment, { depth: 4, bevelEnabled: false }), light, 0, 24.4, 75.5, 'Triangular principal pediment');
+    box(g, 3.2, 1.2, 3.2, 0, 37.0, 77.5, stone, 'Pediment crest plinth');
+    cylinder(g, 0.55, 0.7, 3.6, 0, 39.2, 77.5, stone, 12);
+    mesh(g, new THREE.SphereGeometry(0.55, 12, 10), stone, 0, 41.3, 77.5, 'Pediment crest figure head');
+    for (const x of [-24.5, 24.5]) box(g, 1.2, 1.6, 1.2, x, 25.2, 77.5, stone, 'Pediment corner acroterion');
+    box(g, 58, 4.2, 12, 0, 26.1, 72, light, 'Portico attic');
+    box(g, 160, 1.3, 3.0, 0, 34, 75.2, light, 'North façade entablature');
+    for (let x = -78; x <= 78; x += 3.2) {
+      box(g, 0.55, 1.5, 0.55, x, 35.4, 75.2, weathered, 'North façade balustrade');
     }
     // Repeated pilasters, deep window reveals and three storey bands on the outer ranges.
     for (const side of [-1, 1]) {
