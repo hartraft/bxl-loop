@@ -5154,6 +5154,9 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     for (let i = 0; i < 5; i++) {
       box(g, 0.08, 5, 0.06, -70 - 16 + i * 8, 6, -73.0, materials.warmStone, 'Royal Stables window mullion');
     }
+
+    // A bed moulding crowns the Palace of the Nation cornice.
+    box(g, 62, 0.2, 0.5, 0, 23.3, 403.1, materials.warmStone, 'Palace of the Nation cornice bed moulding');
   });
     addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');

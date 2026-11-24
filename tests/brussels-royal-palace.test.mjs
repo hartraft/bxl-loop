@@ -1774,3 +1774,7 @@ testCase('mullions divide the Royal Stables arched windows', () => {
 testCase('mullions divide the portico door side lights', () => {
   assert.match(palace, /'Portico side light mullion'/);
 });
+
+testCase('a bed moulding crowns the Palace of the Nation cornice', () => {
+  assert.match(palace, /'Palace of the Nation cornice bed moulding'/);
+});
