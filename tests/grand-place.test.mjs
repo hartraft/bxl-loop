@@ -253,8 +253,8 @@ test('guild houses carry the real names on the real sides, with Baroque detailin
 
 test('guild-house windows are divided by stone cross-mullions (croisées)', () => {
   assert.ok(square.includes(" window stone cross-mullions'"));
-  assert.ok(square.includes('new THREE.BoxGeometry(0.09, 1.45, 0.06), stone, bays * floors)'));
-  assert.ok(square.includes('new THREE.BoxGeometry(1.05, 0.09, 0.06), stone, bays * floors)'));
+  assert.ok(square.includes('new THREE.BoxGeometry(0.09, 1.45, 0.06), croisillonMat, bays * floors)'));
+  assert.ok(square.includes('new THREE.BoxGeometry(1.05, 0.09, 0.06), croisillonMat, bays * floors)'));
   assert.ok(square.includes('mullionV.setMatrixAt(index, dummy.matrix)'));
   assert.ok(square.includes('root.add(windows, frames, mullionV, mullionH)'));
 });
@@ -458,10 +458,10 @@ test('houses wear their real facade colours: ochre and plaster alongside the sto
   assert.ok(source.includes('plaster: new THREE.MeshStandardMaterial'));
   assert.ok(square.includes("Le Cornet', x: -15, width: 8.5, height: 21, style: 'scroll', stone: materials.ochre"));
   assert.ok(square.includes("La Louve', x: -5.5, width: 8.5, height: 23, floors: 3, style: 'scroll', stone: materials.ochre"));
-  assert.ok(square.includes("La Chaloupe d’Or', x: 46.5, width: 11, height: 24, style: 'bell', stone: materials.ochre"));
+  assert.ok(square.includes("La Chaloupe d’Or', x: 46.5, width: 11, height: 24, style: 'bell', stone: materials.euville"));
   assert.ok(square.includes("L’Arbre d’Or', x: -18, width: 15, height: 22, style: 'stepped', stone: materials.ochre"));
   assert.ok(square.includes("Le Roy d’Espagne', x: 23, width: 8.5, height: 24, floors: 4, style: 'bell', stone: materials.plaster"));
-  assert.ok(square.includes("Le Cygne', x: -44, width: 12, height: 23, floors: 4, style: 'bell', stone: materials.plaster"));
+  assert.ok(square.includes("Le Cygne', x: -44, width: 12, height: 23, floors: 4, style: 'bell', stone: materials.gobertange"));
 });
 
 test('each street mouth carries a traditional blue enamel Brussels street sign', () => {
@@ -503,7 +503,7 @@ test('the four frontages still face the plaza', () => {
 
 test('facades pick up a faint warm floodlight wash at night', () => {
   assert.ok(source.includes('facadeWashMats'));
-  assert.ok(source.includes("for (const key of ['limestone', 'paleStone', 'warmStone', 'ochre', 'plaster'])"));
+  assert.ok(source.includes("for (const key of ['limestone', 'paleStone', 'warmStone', 'ochre', 'plaster', 'gobertange', 'euville'])"));
   assert.ok(source.includes('m.emissiveIntensity = level * 0.16'));
   assert.ok(source.includes('m.emissive.setHex(0xffd9a0)'));
 });
@@ -650,4 +650,18 @@ test('Le Renard caryatids + haberdashery reliefs, La Brouette colossal pilasters
   assert.ok(square.includes('flower garland ribbons'));
   assert.ok(square.includes('garland fruit and flower dots'));
   assert.ok(square.includes('fruits.count = fr'));
+});
+
+test('real building stones: Gobertange sandstone and Euville limestone houses, blue-stone croisillons on Le Mont Thabor (rounds 87-88)', () => {
+  assert.ok(source.includes("gobertange: new THREE.MeshStandardMaterial"));
+  assert.ok(source.includes("euville: new THREE.MeshStandardMaterial"));
+  assert.ok(source.includes("blueStone: new THREE.MeshStandardMaterial"));
+  assert.ok(source.includes("stone: materials.gobertange, emblem: 'star'"));
+  assert.ok(source.includes("style: 'bell', stone: materials.gobertange"));
+  assert.ok(square.includes("Sainte-Barbe', stone: materials.gobertange"));
+  assert.ok(source.includes("stone: materials.euville, emblem: 'helmet'"));
+  assert.ok(source.includes("stone: materials.euville, emblem: 'boat'"));
+  assert.ok(square.includes("croisillonMat = spec.blueStone ? materials.blueStone : stone"));
+  assert.ok(square.includes("emblem: 'flags', blueStone: true }"));
+  assert.ok(source.includes("'gobertange', 'euville'"), 'night floodlight wash also covers the new stones');
 });

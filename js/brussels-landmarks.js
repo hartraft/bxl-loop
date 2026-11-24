@@ -20,6 +20,11 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     bronze: new THREE.MeshStandardMaterial({ color: 0x7a6238, roughness: 0.5, metalness: 0.55 }),
     ochre: new THREE.MeshStandardMaterial({ color: 0xc9a05e, roughness: 0.85 }),
     plaster: new THREE.MeshStandardMaterial({ color: 0xe9e0cb, roughness: 0.9 }),
+    // The two real building stones of the UNESCO facades: Gobertange calcareous
+    // sandstone and Euville oolitic limestone, plus blue stone (petit granit).
+    gobertange: new THREE.MeshStandardMaterial({ color: 0xcbbd9c, roughness: 0.86 }),
+    euville: new THREE.MeshStandardMaterial({ color: 0xd9cfb6, roughness: 0.8 }),
+    blueStone: new THREE.MeshStandardMaterial({ color: 0x55606e, roughness: 0.72 }),
     canvas: new THREE.MeshStandardMaterial({ color: 0x94402f, roughness: 0.95 }),
     enamelBlue: new THREE.MeshStandardMaterial({ color: 0x1d4f91, roughness: 0.45, metalness: 0.15 }),
     dark: new THREE.MeshStandardMaterial({ color: 0x4a4035, roughness: 0.92 }),
@@ -38,7 +43,7 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
   // Facade stone materials get a faint warm floodlight wash at night (the real square is
   // floodlit after dark) — clone them so daytime rendering is untouched.
   const facadeWashMats = [];
-  for (const key of ['limestone', 'paleStone', 'warmStone', 'ochre', 'plaster']) {
+  for (const key of ['limestone', 'paleStone', 'warmStone', 'ochre', 'plaster', 'gobertange', 'euville']) {
     const m = materials[key].clone();
     m.emissive = new THREE.Color(0x000000);
     facadeWashMats.push(m);
@@ -216,8 +221,9 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     const frames = new THREE.InstancedMesh(frameGeo, materials.gold, bays * floors);
     // Stone cross-mullions (croisées de pierre) dividing each window into four lights — the real
     // houses' upper windows are crossed like this (blue-stone croisillons on e.g. Le Mont Thabor).
-    const mullionV = new THREE.InstancedMesh(new THREE.BoxGeometry(0.09, 1.45, 0.06), stone, bays * floors);
-    const mullionH = new THREE.InstancedMesh(new THREE.BoxGeometry(1.05, 0.09, 0.06), stone, bays * floors);
+    const croisillonMat = spec.blueStone ? materials.blueStone : stone;
+    const mullionV = new THREE.InstancedMesh(new THREE.BoxGeometry(0.09, 1.45, 0.06), croisillonMat, bays * floors);
+    const mullionH = new THREE.InstancedMesh(new THREE.BoxGeometry(1.05, 0.09, 0.06), croisillonMat, bays * floors);
     // Wooden shutters folded back beside every window, as on the real houses.
     const shutters = new THREE.InstancedMesh(new THREE.BoxGeometry(0.34, 1.5, 0.06), materials.dark, bays * floors * 2);
     const dummy = new THREE.Object3D();
@@ -1765,23 +1771,23 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     south.rotation.y = Math.PI;
     plaza.add(south);
     townHall(south);
-    guildHouse(south, { name: 'Guild House – L’Étoile', x: -30, width: 13, height: 21, floors: 3, style: 'stepped', stone: materials.warmStone, emblem: 'star' });
+    guildHouse(south, { name: 'Guild House – L’Étoile', x: -30, width: 13, height: 21, floors: 3, style: 'stepped', stone: materials.gobertange, emblem: 'star' });
     // Everard 't Serclaes, the alderman who died defending the city's liberties at this house in
     // 1388, is commemorated by a bronze memorial plaque on the facade.
     box(south, 0.5, 0.7, 0.08, -30, 3.2, 0.14, materials.bronze, 'Everard ’t Serclaes memorial plaque – L’Étoile');
-    guildHouse(south, { name: 'Guild House – Le Cygne', x: -44, width: 12, height: 23, floors: 4, style: 'bell', stone: materials.plaster, emblem: true, terrace: true, swan: true });
+    guildHouse(south, { name: 'Guild House – Le Cygne', x: -44, width: 12, height: 23, floors: 4, style: 'bell', stone: materials.gobertange, emblem: true, terrace: true, swan: true });
 
     const north = new THREE.Group();
     north.name = 'North frontage';
     north.position.set(0, 0, -36);
     plaza.add(north);
     kingsHouse(north);
-    guildHouse(north, { name: 'Guild House – Le Heaume', x: -27, width: 11, height: 20, style: 'gable', stone: materials.warmStone, emblem: 'helmet' });
+    guildHouse(north, { name: 'Guild House – Le Heaume', x: -27, width: 11, height: 20, style: 'gable', stone: materials.euville, emblem: 'helmet' });
     guildHouse(north, { name: 'Guild House – Le Paon', x: -38, width: 12, height: 22, floors: 3, style: 'neck', stone: materials.paleStone, emblem: 'peacock' });
-    guildHouse(north, { name: 'Guild House – Sainte-Barbe', x: -48.5, width: 10, height: 19, style: 'stepped', saintStatue: true });
+    guildHouse(north, { name: 'Guild House – Sainte-Barbe', stone: materials.gobertange, x: -48.5, width: 10, height: 19, style: 'stepped', saintStatue: true });
     guildHouse(north, { name: 'Guild House – Le Cerf', x: 23.5, width: 11, height: 21, style: 'stepped', stone: materials.warmStone, emblem: 'stag' });
     guildHouse(north, { name: 'Guild House – L’Ange', x: 34, width: 11, height: 23, floors: 4, style: 'scroll', stone: materials.plaster, emblem: 'angel' });
-    guildHouse(north, { name: 'Guild House – La Chaloupe d’Or', x: 46.5, width: 11, height: 24, style: 'bell', stone: materials.ochre, emblem: 'boat', terrace: true });
+    guildHouse(north, { name: 'Guild House – La Chaloupe d’Or', x: 46.5, width: 11, height: 24, style: 'bell', stone: materials.euville, emblem: 'boat', terrace: true });
 
     const west = new THREE.Group();
     west.name = 'West frontage';
@@ -1804,7 +1810,7 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     plaza.add(east);
     guildHouse(east, { name: 'Guild House – L’Arbre d’Or', x: -18, width: 15, height: 22, style: 'stepped', stone: materials.ochre, terrace: true, equestrian: true, dukeBusts: true, emblem: 'barley' });
     guildHouse(east, { name: 'Guild House – La Rose', x: 1, width: 16, height: 24, style: 'bell', stone: materials.paleStone, emblem: 'rose', dukeBusts: true, abundance: true });
-    guildHouse(east, { name: 'Guild House – Le Mont Thabor', x: 20, width: 15, height: 20, style: 'gable', terrace: true, dukeBusts: true, emblem: 'flags' });
+    guildHouse(east, { name: 'Guild House – Le Mont Thabor', x: 20, width: 15, height: 20, style: 'gable', terrace: true, dukeBusts: true, emblem: 'flags', blueStone: true });
 
     // The real square is entered by seven narrow streets (Rue au Beurre, Rue de la Tête
     // d'or, Rue des Chapeliers, Rue Charles Buls, Rue de la Colline, Rue d'Arenberg and
