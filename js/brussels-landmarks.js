@@ -4750,6 +4750,10 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       apDn.setMatrixAt(apDi++, apDd.matrix);
     }
     apDn.count = apDi; apDn.name = 'Academy Palace cornice dentil'; g.add(apDn);
+
+    // A bronze finial with a gilded ball crowns the BELvue pavilion roof.
+    cylinder(g, 0.05, 0.12, 1.2, 168, 30.6, 36, materials.bronze, 8).name = 'BELvue roof finial';
+    mesh(g, new THREE.SphereGeometry(0.22, 10, 8), materials.gold, 168, 31.3, 36, 'BELvue roof finial ball');
   });
     addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');

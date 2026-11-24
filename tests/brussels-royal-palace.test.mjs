@@ -1465,3 +1465,8 @@ testCase('a dentil course runs under the Academy Palace cornice', () => {
   assert.match(palace, /'Academy Palace cornice dentil'/);
   assert.match(palace, /apDn\.count = apDi/);
 });
+
+testCase('a bronze finial with gilded ball crowns the BELvue pavilion roof', () => {
+  assert.match(palace, /'BELvue roof finial'/);
+  assert.match(palace, /'BELvue roof finial ball'/);
+});
