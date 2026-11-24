@@ -2581,6 +2581,19 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       box(g, 2.0, 4.0, 0.2, wx, 9, 24.1, materials.glass, 'Liste Civile piano nobile window');
       box(g, 2.0, 3.0, 0.2, wx, 4.5, 24.1, materials.glass, 'Liste Civile ground window');
     }
+    // The Academy Palace lateral avant-corps project with double pilasters and pedimented
+    // windows; the attic carries the 1879 bas-reliefs of Arts, Letters, Sciences, Medicine.
+    for (const ax of [-193, -143]) {
+      box(g, 12, 18, 5, ax, 9, 18.5, materials.paleStone, 'Academy Palace avant-corps');
+      for (const dx of [-3.4, 3.4]) {
+        box(g, 0.6, 18, 0.4, ax + dx, 9, 20.9, materials.warmStone, 'Academy avant-corps double pilaster');
+      }
+      const apw = new THREE.Shape();
+      apw.moveTo(-2.4, 0); apw.lineTo(2.4, 0); apw.lineTo(0, 1.1); apw.closePath();
+      mesh(g, new THREE.ShapeGeometry(apw), materials.warmStone, ax, 14.6, 20.9, 'Academy avant-corps pediment window');
+      box(g, 3.4, 4.6, 0.2, ax, 11, 20.9, materials.glass, 'Academy avant-corps window');
+      box(g, 9, 1.6, 0.16, ax, 19.6, 21.0, materials.warmStone, 'Academy 1879 bas-relief panel');
+    }
   });
     addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');

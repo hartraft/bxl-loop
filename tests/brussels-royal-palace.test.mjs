@@ -597,3 +597,10 @@ testCase('bronze floodlight fixtures along the garden wall light the palace at n
   assert.match(palace, /'Facade floodlight fixture'/);
   assert.match(palace, /'Facade floodlight head'/);
 });
+
+testCase('the Academy Palace avant-corps carry double pilasters, pediments and 1879 reliefs', () => {
+  assert.match(palace, /1879 bas-reliefs of Arts, Letters, Sciences, Medicine/);
+  assert.match(palace, /'Academy Palace avant-corps'/);
+  assert.match(palace, /'Academy avant-corps double pilaster'/);
+  assert.match(palace, /'Academy 1879 bas-relief panel'/);
+});
