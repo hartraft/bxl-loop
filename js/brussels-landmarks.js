@@ -1149,6 +1149,21 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     springers.count = sp;
     springers.name = 'Arcade arch springer stones';
     root.add(springers);
+    // Plinth blocks at the foot of every arcade pier.
+    const pierPlinths = new THREE.InstancedMesh(new THREE.BoxGeometry(0.44, 0.4, 0.65), darkStone, bays * 2);
+    let pp = 0;
+    for (let i = 0; i < bays; i++) {
+      const x = -width / 2 + bayW * (i + 0.5);
+      for (const side of [-1, 1]) {
+        vd.position.set(x + side * (bayW / 2 - 0.12), 0.2, 0.24);
+        vd.rotation.z = 0;
+        vd.updateMatrix();
+        pierPlinths.setMatrixAt(pp++, vd.matrix);
+      }
+    }
+    pierPlinths.count = pp;
+    pierPlinths.name = 'Arcade pier plinth blocks';
+    root.add(pierPlinths);
     // A stone balcony connects the two wings across the facade above the arcade, on a row of
     // balusters — as on the real elevation.
     box(root, width + 1.2, 0.4, 1.3, 0, 8.7, 0.55, trim, 'Wing-connecting balcony');
@@ -1348,6 +1363,22 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     waterTables.count = wt;
     waterTables.name = 'Balcony and sill water tables';
     root.add(waterTables);
+    // Horizontal transom bars divide each paired lancet into lights, as on the real
+    // mullioned upper windows.
+    const transoms = new THREE.InstancedMesh(new THREE.BoxGeometry(2.4, 0.1, 0.2), trim, bays * 2);
+    let tb = 0;
+    for (let floor = 0; floor < 2; floor++) {
+      const y = floor === 0 ? 12.5 : 20.0;
+      for (let i = 0; i < bays; i++) {
+        const x = -width / 2 + bayW * (i + 0.5);
+        facadeDummy.position.set(x, y + 0.4, 0.28);
+        facadeDummy.updateMatrix();
+        transoms.setMatrixAt(tb++, facadeDummy.matrix);
+      }
+    }
+    transoms.count = tb;
+    transoms.name = 'Lancet transom bars';
+    root.add(transoms);
     // Statues in niches above the ground-floor arcade arch heads as well — the real
     // facade carries nearly three hundred figures on every level.
     for (let i = 0; i < bays; i++) {
@@ -1518,6 +1549,17 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     ridgeTiles.count = ridgeTileCount;
     ridgeTiles.name = 'Town Hall roof ridge tiles';
     root.add(ridgeTiles);
+    // Gilded finial balls terminate the roof ridge at both ends.
+    const ridgeEnds = new THREE.InstancedMesh(new THREE.SphereGeometry(0.22, 10, 8), materials.gold, 2);
+    merDummy.position.set(-width / 2 - 0.8, ridgeY + 0.3, -depth / 2);
+    merDummy.updateMatrix();
+    ridgeEnds.setMatrixAt(0, merDummy.matrix);
+    merDummy.position.set(width / 2 + 0.8, ridgeY + 0.3, -depth / 2);
+    merDummy.updateMatrix();
+    ridgeEnds.setMatrixAt(1, merDummy.matrix);
+    ridgeEnds.count = 2;
+    ridgeEnds.name = 'Roof ridge end finials';
+    root.add(ridgeEnds);
 
     // Dormers and small roof turrets make the skyline read as a Gothic civic palace.
     for (let i = 0; i < 11; i++) {
@@ -1543,6 +1585,27 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     dormerPeds.count = 11;
     dormerPeds.name = 'Hipped dormer pediments';
     root.add(dormerPeds);
+    // Side cheeks and a hood mould dress each hipped dormer, as on the real roof.
+    const dormerCheeks = new THREE.InstancedMesh(new THREE.BoxGeometry(0.12, 2.2, 0.8), trim, 22);
+    const dormerHoods = new THREE.InstancedMesh(new THREE.BoxGeometry(1.1, 0.16, 0.5), darkStone, 11);
+    let dck = 0;
+    for (let i = 0; i < 11; i++) {
+      const x = -width / 2 + 2.8 + i * 4.25;
+      const z = -depth / 2 + (i % 2 ? -3.1 : 3.1);
+      for (const side of [-1, 1]) {
+        pinDummy.position.set(x + side * 0.72, height + 3.3, z);
+        pinDummy.updateMatrix();
+        dormerCheeks.setMatrixAt(dck++, pinDummy.matrix);
+      }
+      pinDummy.position.set(x, height + 4.75, z);
+      pinDummy.updateMatrix();
+      dormerHoods.setMatrixAt(i, pinDummy.matrix);
+    }
+    dormerCheeks.count = dck;
+    dormerHoods.count = 11;
+    dormerCheeks.name = 'Dormer side cheeks';
+    dormerHoods.name = 'Dormer window hood moulds';
+    root.add(dormerCheeks, dormerHoods);
     // Both wings terminate in corner turrets that rise the full facade height, above the roofline.
     // Narrow lancet slits pierce both corner turret shafts, as on the real turrets.
     const turretSlits = new THREE.InstancedMesh(new THREE.BoxGeometry(0.3, 3.2, 0.14), glass, 8);
@@ -1565,6 +1628,26 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     turretSlits.count = ts;
     turretSlits.name = 'Corner turret lancet slits';
     root.add(turretSlits);
+    // Projecting string-course rings circle both corner turret shafts, and crocket rings
+    // dress their spire feet — as on the real corner turrets.
+    const turretRings = new THREE.InstancedMesh(new THREE.CylinderGeometry(1.85, 1.85, 0.24, 8), trim, 10);
+    const spireCrochets = new THREE.InstancedMesh(new THREE.SphereGeometry(0.12, 8, 6), materials.gold, 2);
+    let tr2 = 0;
+    for (const side of [-1, 1]) {
+      for (let r = 0; r < 5; r++) {
+        tsd.position.set(side * (width / 2 - 2.2), 6 + r * 6.4, -depth / 2);
+        tsd.updateMatrix();
+        turretRings.setMatrixAt(tr2++, tsd.matrix);
+      }
+      tsd.position.set(side * (width / 2 - 2.2), height + 7.4, -depth / 2);
+      tsd.updateMatrix();
+      spireCrochets.setMatrixAt(side > 0 ? 1 : 0, tsd.matrix);
+    }
+    turretRings.count = tr2;
+    spireCrochets.count = 2;
+    turretRings.name = 'Corner turret string-course rings';
+    spireCrochets.name = 'Turret spire crocket rings';
+    root.add(turretRings, spireCrochets);
 
     // The off-centre tower rises from the ground-level portal to the real 96 m: square
     // shaft, gallery above the roofline, three-tier openwork octagonal lantern with corner
@@ -1694,6 +1777,9 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     const hoodShape = new THREE.Shape();
     hoodShape.moveTo(-3.4, 0); hoodShape.lineTo(0, 1.3); hoodShape.lineTo(3.4, 0); hoodShape.closePath();
     mesh(tower, new THREE.ShapeGeometry(hoodShape), trim, 0, 11.3, towerW / 2 + 0.2, 'Portal hood mould');
+    // Label stop at the apex of the portal hood mould, and a drip mould under it.
+    box(tower, 0.24, 0.4, 0.3, 0, 12.75, towerW / 2 + 0.22, darkStone, 'Portal hood label stop');
+    box(tower, 6.9, 0.08, 0.4, 0, 11.28, towerW / 2 + 0.4, darkStone, 'Portal hood drip mould');
     // Prophet figures in niches above the portal, between the shaft lancets.
     for (const side of [-1, 1]) {
       for (const dx of [1.1, 3.3]) {

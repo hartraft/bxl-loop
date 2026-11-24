@@ -851,3 +851,20 @@ test('rounds 157-164: lantern pier capitals + belfry hoods, bell frame/clapper, 
   assert.ok(square.includes('Saint Michael sword cross-guard'));
   assert.ok(square.includes('Spire orb base moulding'));
 });
+
+test('rounds 165-172: dormer cheeks/hoods, turret rings + spire crockets, ridge end finials, portal hood label stop/drip, pier plinths, lancet transoms', () => {
+  assert.ok(square.includes('Dormer side cheeks'));
+  assert.ok(square.includes('dormerCheeks.count = dck'));
+  assert.ok(square.includes('Dormer window hood moulds'));
+  assert.ok(square.includes('Corner turret string-course rings'));
+  assert.ok(square.includes('turretRings.count = tr2'));
+  assert.ok(square.includes('Turret spire crocket rings'));
+  assert.ok(square.includes('Roof ridge end finials'));
+  assert.ok(square.includes('ridgeEnds.count = 2'));
+  assert.ok(square.includes('Portal hood label stop'));
+  assert.ok(square.includes('Portal hood drip mould'));
+  assert.ok(square.includes('Arcade pier plinth blocks'));
+  assert.ok(square.includes('pierPlinths.count = pp'));
+  assert.ok(square.includes('Lancet transom bars'));
+  assert.ok(square.includes('transoms.count = tb'));
+});
