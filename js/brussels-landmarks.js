@@ -4947,6 +4947,11 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     for (let i = 0; i < 5; i++) {
       box(g, 1.5, 0.18, 0.3, -70 - 16 + i * 8, 10.7, -73.0, materials.warmStone, 'Royal Stables hayloft lintel');
     }
+
+    // Capitals crown each Academy Palace portico column under the architrave.
+    for (let i = 0; i < 4; i++) {
+      cylinder(g, 1.0, 0.85, 0.5, -174 + i * 4, 12.25, 19.5, materials.paleStone, 12).name = 'Academy portico column capital';
+    }
   });
     addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');

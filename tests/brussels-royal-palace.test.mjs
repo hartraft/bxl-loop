@@ -1622,3 +1622,7 @@ testCase('corner posts with gilded finials close the garden railing run', () => 
   assert.match(palace, /'Garden railing corner post'/);
   assert.match(palace, /'Garden railing corner post finial'/);
 });
+
+testCase('capitals crown each Academy Palace portico column', () => {
+  assert.match(palace, /'Academy portico column capital'/);
+});
