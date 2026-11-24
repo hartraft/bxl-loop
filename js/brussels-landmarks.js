@@ -3884,6 +3884,11 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     for (let i = 0; i < 5; i++) {
       box(g, 3.0, 0.1, 0.5, -10 + i * 5, 11.05, centralFace + 0.35, bronze, 'French door threshold');
     }
+
+    // Cap slabs finish both perron cheek walls.
+    for (const side of [-1, 1]) {
+      box(g, 1.0, 0.12, 2.4, side * 8.9, 1.26, centralFace + 1.2, moulding, 'Perron cheek wall cap');
+    }
   });
   addLandmark('palaceSurroundings', (g) => {
     // Real-world sources: en/fr Wikipedia (Royal Palace of Brussels, Brussels Park, Place des Palais,

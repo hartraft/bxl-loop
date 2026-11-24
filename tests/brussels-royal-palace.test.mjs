@@ -1596,3 +1596,7 @@ testCase('modillions line the underside of the BELvue cornice', () => {
   assert.match(palace, /'BELvue cornice modillion'/);
   assert.match(palace, /bvMd\.count = bvMi/);
 });
+
+testCase('cap slabs finish both perron cheek walls', () => {
+  assert.match(palace, /'Perron cheek wall cap'/);
+});
