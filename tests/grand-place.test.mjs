@@ -102,6 +102,14 @@ test('the Town Hall facade carries the real statue niches and wing-terminating c
   assert.ok(square.includes('Gothic facade buttress'));
 });
 
+test('the King’s House galleries carry arch keystones and oculi', () => {
+  assert.ok(square.includes('gallery arch keystones'));
+  assert.ok(square.includes('gallery oculi'));
+  assert.ok(square.includes('new THREE.CylinderGeometry(0.3, 0.3, 0.14, 12).rotateX(Math.PI / 2), trim, bays)'));
+  assert.ok(square.includes('khKeystones.count = khK'));
+  assert.ok(square.includes('khOculi.count = bays'));
+});
+
 test("the King's House matches Jamaer's measured Broodhuis: 30.78 m facade, 20.21 m high, 38.49 m tower", () => {
   assert.ok(square.includes('King’s House (Maison du Roi / Broodhuis)'));
   assert.ok(square.includes('const width = 31, height = 20.5, depth = 13'));

@@ -876,6 +876,29 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       box(root, 1.5, 4.2, 0.2, x, 10.6, 0.22, glass, 'King’s House first-floor gallery arch');
       box(root, 1.7, 0.24, 0.3, x, 13.1, 0.22, trim, 'First gallery window hood');
     }
+    // Keystones at every gallery arch apex and quatrefoil oculi above the first-floor gallery
+    // arches — the neo-Gothic galleries of the real Broodhuis are tracery-dressed.
+    const khKeystones = new THREE.InstancedMesh(new THREE.BoxGeometry(0.2, 0.4, 0.34), darkStone, bays * 2);
+    const khOculi = new THREE.InstancedMesh(new THREE.CylinderGeometry(0.3, 0.3, 0.14, 12).rotateX(Math.PI / 2), trim, bays);
+    const khd = new THREE.Object3D();
+    let khK = 0;
+    for (let i = 0; i < bays; i++) {
+      const x = -width / 2 + bayW * (i + 0.5);
+      khd.position.set(x, 7.2, 0.22);
+      khd.updateMatrix();
+      khKeystones.setMatrixAt(khK++, khd.matrix);
+      khd.position.set(x, 13.35, 0.26);
+      khd.updateMatrix();
+      khKeystones.setMatrixAt(khK++, khd.matrix);
+      khd.position.set(x, 13.7, 0.24);
+      khd.updateMatrix();
+      khOculi.setMatrixAt(i, khd.matrix);
+    }
+    khKeystones.count = khK;
+    khOculi.count = bays;
+    khKeystones.name = 'King’s House gallery arch keystones';
+    khOculi.name = 'King’s House gallery oculi';
+    root.add(khKeystones, khOculi);
     // Upper storey: windows plus gilded statues in niches at the alternating bay joints.
     const khNiches = new THREE.InstancedMesh(new THREE.BoxGeometry(0.66, 2.2, 0.2), darkStone, bays);
     const khStatues = new THREE.InstancedMesh(new THREE.BoxGeometry(0.24, 1.1, 0.12), materials.gold, bays);
