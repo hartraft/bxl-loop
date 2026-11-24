@@ -1700,3 +1700,7 @@ testCase('mullions divide the Academy Palace first-floor windows', () => {
 testCase('mullions divide the BELvue ground-floor windows', () => {
   assert.match(palace, /'BELvue ground window mullion'/);
 });
+
+testCase('a transom bar crosses each central French door near its head', () => {
+  assert.match(palace, /'Central French door transom bar'/);
+});

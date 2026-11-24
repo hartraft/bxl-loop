@@ -3946,6 +3946,11 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
         box(g, 0.06, 2.4, 0.08, side * 70.12, 6.5, wz, ashlar, 'Wing end ground window mullion');
       }
     }
+
+    // A transom bar crosses each central French door near its head.
+    for (let i = 0; i < 5; i++) {
+      box(g, 2.65, 0.06, 0.05, -10 + i * 5, 17.2, centralFace + 0.27, bronze, 'Central French door transom bar');
+    }
   });
   addLandmark('palaceSurroundings', (g) => {
     // Real-world sources: en/fr Wikipedia (Royal Palace of Brussels, Brussels Park, Place des Palais,
