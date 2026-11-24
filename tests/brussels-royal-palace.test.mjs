@@ -1583,3 +1583,7 @@ testCase('a cap strip crowns each perron side rail', () => {
 testCase('stone sills sit under each Palace of the Nation wing window', () => {
   assert.match(palace, /'Palace of the Nation wing window sill'/);
 });
+
+testCase('bronze threshold plates span each central French door', () => {
+  assert.match(palace, /'French door threshold'/);
+});
