@@ -68,6 +68,13 @@ testCase('the front garden holds the real three sunken parterres (central on the
   assert.match(palace, /\{ x: 38, w: 34, z: 12\.4, d: 2\.6 \}/);
 });
 
+testCase('each wing mansard carries the real nine oeil-de-boeuf dormer windows', () => {
+  assert.match(palace, /nine oeil-de-boeuf/);
+  assert.match(palace, /const bx = x - 24 \+ i \* 6;/);
+  assert.match(palace, /'Wing oval oeil-de-boeuf surround'/);
+  assert.match(palace, /'Wing oval roof window'/);
+});
+
 testCase("the north façade is white Euville limestone over a dark slate roof, as in the real building", () => {
   assert.match(palace, /white Euville limestone/);
   assert.match(palace, /color: 0xece4d3/);
