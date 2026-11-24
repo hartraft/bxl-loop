@@ -2594,6 +2594,18 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       box(g, 3.4, 4.6, 0.2, ax, 11, 20.9, materials.glass, 'Academy avant-corps window');
       box(g, 9, 1.6, 0.16, ax, 19.6, 21.0, materials.warmStone, 'Academy 1879 bas-relief panel');
     }
+    // Along the Rue Ducale the Academy Palace garden is closed by a white-stone wall
+    // crowned by a balustrade (heritage inventory 30098).
+    box(g, 0.8, 3.2, 60, -204, 1.6, 36, materials.paleStone, 'Academy Rue Ducale boundary wall');
+    const awBal = new THREE.InstancedMesh(new THREE.BoxGeometry(0.28, 0.9, 0.28), materials.paleStone, 40);
+    const awd = new THREE.Object3D();
+    let awi = 0;
+    for (let wz = 6; wz <= 66; wz += 3) {
+      awd.position.set(-204, 3.65, wz); awd.rotation.y = 0; awd.updateMatrix();
+      awBal.setMatrixAt(awi++, awd.matrix);
+    }
+    awBal.count = awi; awBal.name = 'Academy boundary balustrade'; g.add(awBal);
+    box(g, 0.9, 0.16, 61, -204, 4.15, 36, materials.warmStone, 'Academy boundary balustrade rail');
   });
     addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');

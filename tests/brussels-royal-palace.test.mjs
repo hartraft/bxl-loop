@@ -604,3 +604,10 @@ testCase('the Academy Palace avant-corps carry double pilasters, pediments and 1
   assert.match(palace, /'Academy avant-corps double pilaster'/);
   assert.match(palace, /'Academy 1879 bas-relief panel'/);
 });
+
+testCase('the Academy Palace garden is closed along Rue Ducale by a balustraded wall', () => {
+  assert.match(palace, /white-stone wall/);
+  assert.match(palace, /'Academy Rue Ducale boundary wall'/);
+  assert.match(palace, /'Academy boundary balustrade'/);
+  assert.match(palace, /awBal\.count = awi/);
+});
