@@ -68,6 +68,17 @@ testCase('the front garden holds the real three sunken parterres (central on the
   assert.match(palace, /\{ x: 38, w: 34, z: 12\.4, d: 2\.6 \}/);
 });
 
+testCase("the palace wraps a southern quadrangle: rear wings and rear range close the Cour d'honneur", () => {
+  assert.match(palace, /Cour d'honneur/);
+  assert.match(palace, /'Palace rear wing \(Cour d'honneur\)'/);
+  assert.match(palace, /'Rear wing cornice'/);
+  assert.match(palace, /'Rear wing piano nobile window'/);
+  assert.match(palace, /'Rear wing ground window'/);
+  assert.match(palace, /'Palace rear range closing the Cour d'honneur'/);
+  assert.match(palace, /'Rear range cornice'/);
+  assert.match(palace, /box\(g, 102, 26, 12, 0, 5, -54, stone/);
+});
+
 testCase('a monumental perron (emmarchement) leads up to the central portico', () => {
   assert.match(palace, /emmarchement/);
   assert.match(palace, /'Portico perron step'/);
