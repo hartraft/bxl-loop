@@ -3746,6 +3746,11 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       box(g, 1.6, 1.0, 1.6, side * 9.8, 0.5, centralFace + 0.9, stone, 'Perron planter');
       mesh(g, new THREE.SphereGeometry(0.55, 10, 8), flowerMat, side * 9.8, 1.25, centralFace + 0.9, 'Perron planter planting');
     }
+
+    // Two steps climb from the garden walk up to the portico stylobate.
+    for (let s = 0; s < 2; s++) {
+      box(g, 32, 0.25, 0.8, 0, 0.125 + s * 0.25, centralFace + 8.6 - s * 0.6, ashlar, 'Portico stylobate step');
+    }
   });
   addLandmark('palaceSurroundings', (g) => {
     // Real-world sources: en/fr Wikipedia (Royal Palace of Brussels, Brussels Park, Place des Palais,
