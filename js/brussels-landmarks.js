@@ -5177,6 +5177,16 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     for (const side of [-1, 1]) {
       box(g, 42, 0.8, 28, side * 70, 16.4, 420, materials.warmStone, 'Palace of the Nation wing cornice');
     }
+
+    // A dentil course runs under the Academy stables cornice.
+    const asDn = new THREE.InstancedMesh(new THREE.BoxGeometry(0.24, 0.3, 0.3), materials.warmStone, 28);
+    const asDd = new THREE.Object3D();
+    let asDi = 0;
+    for (let di4 = 0; di4 < 28; di4++) {
+      asDd.position.set(-191 + di4 * 1.7, 13.9, 71.8); asDd.rotation.y = 0; asDd.updateMatrix();
+      asDn.setMatrixAt(asDi++, asDd.matrix);
+    }
+    asDn.count = asDi; asDn.name = 'Academy stables cornice dentil'; g.add(asDn);
   });
     addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');

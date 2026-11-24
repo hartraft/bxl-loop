@@ -1794,3 +1794,8 @@ testCase('cornices crown both Palace of the Nation wings', () => {
 testCase('bases finish the pilasters on both wing end faces', () => {
   assert.match(palace, /'Wing end pilaster base'/);
 });
+
+testCase('a dentil course runs under the Academy stables cornice', () => {
+  assert.match(palace, /'Academy stables cornice dentil'/);
+  assert.match(palace, /asDn\.count = asDi/);
+});
