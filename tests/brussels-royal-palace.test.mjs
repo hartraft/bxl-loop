@@ -1867,3 +1867,7 @@ testCase('stone surrounds frame the Royal Stables arched windows', () => {
 testCase('pilasters strengthen the BELvue square-facing corners', () => {
   assert.match(palace, /'BELvue corner pilaster'/);
 });
+
+testCase('a base rail joins the feet of the central balcony balusters', () => {
+  assert.match(palace, /'Central balcony base rail'/);
+});

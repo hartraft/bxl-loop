@@ -4030,6 +4030,9 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     for (const side of [-1, 1]) {
       box(g, 0.25, 0.5, 3.2, side * 2.1, 0.25, 12.4, ashlar, 'Garden walk low wall');
     }
+
+    // A base rail joins the feet of the central balcony balusters.
+    box(g, 2.9, 0.06, 0.06, 0, 11.05, centralFace + 1.0, bronze, 'Central balcony base rail');
   });
   addLandmark('palaceSurroundings', (g) => {
     // Real-world sources: en/fr Wikipedia (Royal Palace of Brussels, Brussels Park, Place des Palais,
