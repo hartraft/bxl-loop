@@ -1476,6 +1476,8 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
           const a = Math.PI * (0.08 + k * 0.14);
           box(g, 0.12, 0.34, 0.12, bx + Math.cos(a) * 1.18, 5.35 + Math.sin(a) * 1.18, facadeZ + 0.27, ashlar, 'Wing arcade voussoir joint');
         }
+        // Keystone at the crown of every arch (heritage: "arcades cintrées, sommées d'une clé").
+        box(g, 0.3, 0.5, 0.2, bx, 6.62, facadeZ + 0.27, ashlar, 'Wing arcade keystone');
 
         // Piano nobile: tall French windows with proper stone surrounds.
         for (const [floorY, winH] of [[9.9, 3.55], [16.0, 3.0]]) {
@@ -1600,6 +1602,7 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       mesh(g, new THREE.ShapeGeometry(entranceArch), shadow, x, 0.95, centralFace + 0.22, 'Central open entrance arch');
       mesh(g, new THREE.TorusGeometry(1.28, 0.2, 10, 28, Math.PI), moulding, x, 5.95, centralFace + 0.24, 'Central entrance voussoirs');
       box(g, 3.0, 0.32, 0.55, x, 6.0, centralFace + 0.24, ashlar, 'Central arch impost');
+      box(g, 0.34, 0.55, 0.26, x, 7.32, centralFace + 0.3, ashlar, 'Central arcade keystone');
       box(g, 0.28, 5.9, 0.62, x - 1.58, 3.55, centralFace + 0.2, ashlar, 'Central arcade pier');
       box(g, 0.28, 5.9, 0.62, x + 1.58, 3.55, centralFace + 0.2, ashlar, 'Central arcade pier');
     }
@@ -1809,6 +1812,13 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       mesh(g, new THREE.ConeGeometry(6.6, 2.0, 4), roof, x, 25.0, -1, 'Terminal pavilion pavilion roof');
       for (const dx of [-2.5, 0, 2.5]) {
         box(g, 1.55, 4.4, 0.22, x + dx, 14.0, facadeZ + 0.1, glass, 'Terminal pavilion window');
+        // The pavilion ground floors carry the same rusticated round arches with
+        // keystones as the wings and the avant-corps (heritage inventory).
+        const pArch = new THREE.Shape();
+        pArch.moveTo(-0.95, 0); pArch.lineTo(0.95, 0); pArch.lineTo(0.95, 3.0);
+        pArch.absarc(0, 3.0, 0.95, 0, Math.PI, false); pArch.lineTo(-0.95, 0); pArch.closePath();
+        mesh(g, new THREE.ShapeGeometry(pArch), shadow, x + dx, 1.1, facadeZ + 0.18, 'Pavilion ground-floor arched opening');
+        box(g, 0.28, 0.48, 0.18, x + dx, 5.12, facadeZ + 0.26, ashlar, 'Pavilion arcade keystone');
       }
     }
     // The real front garden (jardin d'honneur, laid out 1904–09) holds three sunken

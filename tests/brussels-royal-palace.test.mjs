@@ -68,6 +68,15 @@ testCase('the front garden holds the real three sunken parterres (central on the
   assert.match(palace, /\{ x: 38, w: 34, z: 12\.4, d: 2\.6 \}/);
 });
 
+testCase('every ground-floor arcade — wings, central corps and pavilions — is crowned with a keystone', () => {
+  assert.match(palace, /somm/); // heritage: "arcades cintrées, sommées d'une clé"
+  assert.match(palace, /'Wing arcade keystone'/);
+  assert.match(palace, /'Central arcade keystone'/);
+  assert.match(palace, /'Pavilion ground-floor arched opening'/);
+  assert.match(palace, /'Pavilion arcade keystone'/);
+  assert.match(palace, /box\(g, 0\.34, 0\.55, 0\.26, x, 7\.32, centralFace \+ 0\.3/);
+});
+
 testCase('stone cross-mullions (croisillons) divide every wing French window into panes', () => {
   assert.match(palace, /cross-mullions \(croisillons/);
   assert.match(palace, /'Palace window cross-mullions vertical'/);
