@@ -3831,6 +3831,9 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     for (let i = 0; i < 5; i++) {
       box(g, 0.5, 0.7, 0.05, -10 + i * 5, 13.5, centralFace + 0.28, bronze, 'French door escutcheon');
     }
+
+    // A landing slab tops the perron at the foot of the portico.
+    box(g, 17, 0.3, 1.0, 0, 1.0, centralFace + 1.1, ashlar, 'Perron top landing');
   });
   addLandmark('palaceSurroundings', (g) => {
     // Real-world sources: en/fr Wikipedia (Royal Palace of Brussels, Brussels Park, Place des Palais,

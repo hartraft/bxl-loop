@@ -1456,3 +1456,7 @@ testCase('urns stand along the Palace of the Nation attic balustrade', () => {
   assert.match(palace, /'Palace of the Nation balustrade urn'/);
   assert.match(palace, /pnUr\.count = pnui/);
 });
+
+testCase('a landing slab tops the perron at the foot of the portico', () => {
+  assert.match(palace, /'Perron top landing'/);
+});
