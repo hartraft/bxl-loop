@@ -607,3 +607,16 @@ test('Broodhuis: gable oculus with step cresting, gallery voussoirs, niche canop
   assert.ok(square.includes('King’s House statue canopy pinnacles'));
   assert.ok(square.includes('khPinnacles.count = khPinBalls.count = khN'));
 });
+
+test('Broodhuis: tower clock, central pointed portal with steps, city arms, dormer oculi, ridge cresting (rounds 73-76)', () => {
+  assert.ok(square.includes('King’s House tower clock face'));
+  assert.ok(square.includes('King’s House clock minute hand'));
+  assert.ok(square.includes('King’s House portal door leaves'));
+  assert.ok(square.includes('King’s House portal tympanum'));
+  assert.ok(square.includes('King’s House portal step'));
+  assert.ok(square.includes('King’s House Brussels coat of arms shield'));
+  assert.ok(square.includes('King’s House dormer oculi'));
+  assert.ok(square.includes('khDormOculi.count = khDormRims.count = 7'));
+  assert.ok(square.includes('King’s House roof ridge cresting'));
+  assert.ok(square.includes('khRidge.count = 11'));
+});

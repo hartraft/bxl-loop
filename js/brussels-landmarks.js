@@ -1413,6 +1413,67 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       box(root, 0.4, 1.5, 0.18, side * 1.2, 18.8, 0.26, stone, 'King’s House saint statue');
       mesh(root, new THREE.SphereGeometry(0.2, 8, 6), stone, side * 1.2, 19.65, 0.26, 'King’s House saint statue head');
     }
+    // Clock face on the tower shaft below the octagonal belfry — the real Broodhuis
+    // tower carries a clock above the roofline.
+    const clockRim = cylinder(root, 1.18, 1.18, 0.12, 0, 29.0, towerZ + 1.42, darkStone, 24);
+    clockRim.name = 'King’s House tower clock rim';
+    mesh(root, new THREE.CircleGeometry(1.05, 24), materials.plaster, 0, 29.0, towerZ + 1.43, 'King’s House tower clock face');
+    box(root, 0.09, 0.62, 0.04, 0, 29.12, towerZ + 1.49, materials.dark, 'King’s House clock minute hand');
+    box(root, 0.09, 0.42, 0.04, 0.18, 28.9, towerZ + 1.49, materials.dark, 'King’s House clock hour hand');
+    // Grand pointed portal in the central ground-floor bay: door leaves, archivolt,
+    // sculpted tympanum and a flight of steps — the real Broodhuis main entrance.
+    box(root, 2.3, 4.0, 0.2, 0, 2.5, 0.18, materials.dark, 'King’s House portal door leaves');
+    box(root, 0.12, 3.6, 0.24, 0, 2.3, 0.18, trim, 'King’s House portal door mullion');
+    const portL = box(root, 1.6, 0.24, 0.4, -0.55, 5.35, 0.2, trim, 'King’s House portal pointed arch');
+    portL.rotation.z = -0.6;
+    const portR = box(root, 1.6, 0.24, 0.4, 0.55, 5.35, 0.2, trim, 'King’s House portal pointed arch');
+    portR.rotation.z = 0.6;
+    const tymp = new THREE.Shape();
+    tymp.moveTo(-1.1, 0); tymp.lineTo(1.1, 0); tymp.lineTo(0, 0.85); tymp.closePath();
+    mesh(root, new THREE.ShapeGeometry(tymp), darkStone, 0, 5.6, 0.2, 'King’s House portal tympanum');
+    for (let s = 0; s < 3; s++) {
+      box(root, 3.6 + s * 0.4, 0.22, 0.35, 0, 0.11 + (2 - s) * 0.22, 0.55 + s * 0.3, darkStone, 'King’s House portal step');
+    }
+    // Arms of the City of Brussels with a crown above the central gallery, as on the
+    // real Broodhuis facade.
+    const shield = new THREE.Shape();
+    shield.moveTo(-0.55, 0.5); shield.lineTo(0.55, 0.5); shield.lineTo(0.55, 0);
+    shield.quadraticCurveTo(0.55, -0.45, 0, -0.62); shield.quadraticCurveTo(-0.55, -0.45, -0.55, 0);
+    shield.closePath();
+    mesh(root, new THREE.ShapeGeometry(shield), materials.gold, 0, 15.1, 0.3, 'King’s House Brussels coat of arms shield');
+    box(root, 0.5, 0.16, 0.1, 0, 15.68, 0.3, materials.gold, 'King’s House coat of arms crown');
+    // Round oeil-de-boeuf windows in each roof dormer of the real slate roof.
+    const khDormOculi = new THREE.InstancedMesh(new THREE.CircleGeometry(0.3, 12), glass, 7);
+    const khDormRims = new THREE.InstancedMesh(new THREE.CylinderGeometry(0.36, 0.36, 0.1, 12), trim, 7);
+    const khDd = new THREE.Object3D();
+    for (let i = 0; i < 7; i++) {
+      const x = -width / 2 + 3 + i * 4.3;
+      const z = -depth / 2 + (i % 2 ? -2.6 : 2.6);
+      const facing = z > -depth / 2 ? 1 : -1;
+      khDd.rotation.y = facing > 0 ? 0 : Math.PI;
+      khDd.position.set(x, height + 2.1, z + facing * 0.31);
+      khDd.updateMatrix();
+      khDormRims.setMatrixAt(i, khDd.matrix);
+      khDd.position.z += facing * 0.03;
+      khDd.updateMatrix();
+      khDormOculi.setMatrixAt(i, khDd.matrix);
+      khDd.rotation.y = 0;
+    }
+    khDormOculi.count = khDormRims.count = 7;
+    khDormOculi.name = 'King’s House dormer oculi';
+    khDormRims.name = 'King’s House dormer oculus rims';
+    root.add(khDormOculi, khDormRims);
+    // Stone cresting finials marching along the roof ridge of the real Broodhuis.
+    const khRidge = new THREE.InstancedMesh(new THREE.ConeGeometry(0.12, 0.6, 4), trim, 11);
+    const khRd = new THREE.Object3D();
+    for (let i = 0; i < 11; i++) {
+      khRd.position.set(-width / 2 + 1 + i * ((width - 2) / 10), ridgeY + 0.3, -depth / 2);
+      khRd.updateMatrix();
+      khRidge.setMatrixAt(i, khRd.matrix);
+    }
+    khRidge.count = 11;
+    khRidge.name = 'King’s House roof ridge cresting';
+    root.add(khRidge);
   }
 
   function grandPlace(g) {
