@@ -9,11 +9,13 @@ assert.ok(start >= 0 && end > start, 'Grand-Place builders must exist');
 const square = source.slice(start, end);
 
 test('the square is the real entirely paved, completely open Grand-Place', () => {
-  assert.ok(source.includes('box(plaza, 108, 0.45, 66, 0, -0.225, 0'));
+  assert.ok(source.includes('box(plaza, 110, 0.45, 72, 0, -0.225, 0'));
   assert.ok(source.includes('Grand-Place pedestrian square'));
   assert.ok(source.includes('Grand-Place cobblestone courses'));
   assert.ok(source.includes('dummy.position.set(x, -0.06, z)'));
-  assert.ok(source.includes('110 x 68 metres and is entirely paved'));
+  assert.ok(source.includes('110 x 68 metres and is paved edge-to-edge'));
+  assert.ok(source.includes('for (let row = 0; row < 15; row++)'));
+  assert.ok(source.includes('for (let col = 0; col < 16; col++)'));
   assert.ok(!source.includes('Historic square lantern'), 'the real square carries no corner lanterns');
   assert.ok(!source.includes('0.32, 0.42, 0.9'), 'the real square carries no bollards');
 });
@@ -65,9 +67,23 @@ test('guild houses carry the real names on the real sides, with Baroque detailin
   assert.ok(square.includes(' gilded statues'));
 });
 
+test('guild houses have the real arcaded ground floors and gilded gable emblems', () => {
+  assert.ok(square.includes(' ground-floor arcade'));
+  assert.ok(square.includes(' arcade lintel'));
+  assert.ok(square.includes(' arcade string course'));
+  assert.ok(square.includes("style === 'scroll'"));
+  assert.ok(square.includes('shape.bezierCurveTo(-width / 2, 3.2'));
+  assert.ok(square.includes(' gilded gable emblem'));
+  assert.ok(square.includes('emblem: true'), 'La Louve, Le Cornet, Le Roy d’Espagne and others carry emblems');
+  // window storeys start above the arcade
+  assert.ok(square.includes('for (let floor = 1; floor <= floors; floor++)'));
+  assert.ok(square.includes('const wy = 4.4 + (floor - 1)'));
+});
+
 test('guild-house rooflines stay varied and instanced', () => {
   assert.ok(source.includes("style === 'stepped'"));
   assert.ok(source.includes("style === 'bell'"));
+  assert.ok(source.includes("style === 'scroll'"));
   assert.ok(source.includes("style = 'gable'"));
   assert.ok(source.includes('else {\n      shape.moveTo(-width / 2, 0)'));
   assert.ok(source.includes('new THREE.InstancedMesh'));

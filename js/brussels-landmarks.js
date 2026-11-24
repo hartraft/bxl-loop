@@ -102,7 +102,7 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
   // Instanced windows keep the repeated historic detail to two draw calls per facade.
   function guildHouse(parent, spec) {
     const { name, x, width, height, depth = 11, floors = 3, stone = materials.limestone,
-      roof = materials.roof, style = 'gable', rotation = 0, y = 0 } = spec;
+      roof = materials.roof, style = 'gable', rotation = 0, y = 0, emblem = false } = spec;
     const root = new THREE.Group();
     root.name = name;
     root.position.set(x, y, 0);
@@ -120,8 +120,8 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     const frames = new THREE.InstancedMesh(frameGeo, materials.gold, bays * floors);
     const dummy = new THREE.Object3D();
     let index = 0;
-    for (let floor = 0; floor < floors; floor++) {
-      const wy = 3.0 + floor * ((height - 5.2) / Math.max(1, floors - 1));
+    for (let floor = 1; floor <= floors; floor++) {
+      const wy = 4.4 + (floor - 1) * ((height - 6.6) / Math.max(1, floors - 1));
       for (let bay = 0; bay < bays; bay++) {
         const wx = (bay - (bays - 1) / 2) * (width - 2.8) / Math.max(1, bays - 1);
         dummy.position.set(wx, wy, 0.13);
@@ -139,6 +139,30 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     frames.name = name + ' gilded window surrounds';
     windows.castShadow = frames.castShadow = true;
     root.add(windows, frames);
+
+    // Ground floor: a recessed arcade opening per bay — on the real square the cafés and
+    // shops sit under these arcades, so the ground floor is taller and darker than the
+    // window storeys above. Instanced like the rest of the repeated detail.
+    const arcade = new THREE.InstancedMesh(new THREE.BoxGeometry(1.55, 2.7, 0.2), materials.glass, bays);
+    const lintels = new THREE.InstancedMesh(new THREE.BoxGeometry(1.9, 0.22, 0.3), materials.warmStone, bays);
+    const arcDummy = new THREE.Object3D();
+    let ac = 0;
+    for (let bay = 0; bay < bays; bay++) {
+      const wx = (bay - (bays - 1) / 2) * (width - 2.8) / Math.max(1, bays - 1);
+      arcDummy.position.set(wx, 1.75, 0.4);
+      arcDummy.updateMatrix();
+      arcade.setMatrixAt(ac, arcDummy.matrix);
+      arcDummy.position.set(wx, 3.25, 0.42);
+      arcDummy.updateMatrix();
+      lintels.setMatrixAt(ac, arcDummy.matrix);
+      ac++;
+    }
+    arcade.count = lintels.count = ac;
+    arcade.name = name + ' ground-floor arcade';
+    lintels.name = name + ' arcade lintel';
+    arcade.castShadow = lintels.castShadow = true;
+    root.add(arcade, lintels);
+    box(root, width - 0.4, 0.2, 0.3, 0, 3.6, 0.36, materials.warmStone, name + ' arcade string course');
 
     // Baroque guild-house dressing, as on the real frontages: pilasters between the
     // bays, a balustrade parapet along the cornice, and gilded statues standing in
@@ -162,8 +186,8 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       ornDummy.updateMatrix();
       balusters.setMatrixAt(bl++, ornDummy.matrix);
     }
-    for (let floor = 0; floor < floors; floor++) {
-      const wy = 3.0 + floor * ((height - 5.2) / Math.max(1, floors - 1));
+    for (let floor = 2; floor <= floors; floor++) {
+      const wy = 4.4 + (floor - 1) * ((height - 6.6) / Math.max(1, floors - 1));
       for (let bay = 0; bay < bays; bay++) {
         const wx = (bay - (bays - 1) / 2) * (width - 2.8) / Math.max(1, bays - 1) + bayStep / 2;
         ornDummy.position.set(wx, wy, 0.16);
@@ -185,7 +209,7 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     box(root, width + 0.7, 0.16, 0.24, 0, height + 0.9, 0.14, stone, name + ' parapet rail');
 
     // Each house gets a distinct roofline instead of the repeated identical cones of the old model.
-    const gableHeight = style === 'stepped' ? 4.8 : style === 'bell' ? 3.6 : 4.2;
+    const gableHeight = style === 'stepped' ? 4.8 : style === 'bell' ? 3.6 : style === 'scroll' ? 4.6 : 4.2;
     const shape = new THREE.Shape();
     if (style === 'stepped') {
       shape.moveTo(-width / 2, 0); shape.lineTo(-width / 2, 1.2);
@@ -199,6 +223,13 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       shape.moveTo(-width / 2, 0); shape.quadraticCurveTo(-width / 2, 2.4, -width / 2 + 1.8, 2.4);
       shape.quadraticCurveTo(0, gableHeight + 1, width / 2 - 1.8, 2.4);
       shape.quadraticCurveTo(width / 2, 2.4, width / 2, 0);
+    } else if (style === 'scroll') {
+      // Ogee / volute gable, as on several of the real houses.
+      shape.moveTo(-width / 2, 0);
+      shape.bezierCurveTo(-width / 2, 3.2, -width / 2 + 2.4, 3.2, -width / 2 + 2.4, 2.0);
+      shape.quadraticCurveTo(-width / 2 + 2.4, 1.2, 0, gableHeight);
+      shape.quadraticCurveTo(width / 2 - 2.4, 1.2, width / 2 - 2.4, 2.0);
+      shape.bezierCurveTo(width / 2 - 2.4, 3.2, width / 2, 3.2, width / 2, 0);
     } else {
       shape.moveTo(-width / 2, 0); shape.lineTo(0, gableHeight); shape.lineTo(width / 2, 0);
     }
@@ -208,6 +239,13 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     box(root, 0.35, height - 1.8, 0.25, -width / 2 + 0.45, height / 2 + 0.5, 0.16, materials.gold);
     box(root, 0.35, height - 1.8, 0.25, width / 2 - 0.45, height / 2 + 0.5, 0.16, materials.gold);
     cylinder(root, 0.12, 0.12, 1.3, 0, height + gableHeight + 0.55, 0.08, materials.gold, 8);
+    if (emblem) {
+      // Gilded guild emblem crowning the gable — La Louve's golden phoenix and the like.
+      const em = mesh(root, new THREE.SphereGeometry(0.34, 10, 8), materials.gold, 0, height + gableHeight + 1.7, 0.1, name + ' gilded gable emblem');
+      em.scale.set(0.7, 1.4, 0.5);
+      const wing = box(root, 1.0, 0.14, 0.1, 0, height + gableHeight + 1.95, 0.12, materials.gold, name + ' gilded gable emblem wing');
+      wing.rotation.z = 0.35;
+    }
     return root;
   }
 
@@ -508,21 +546,21 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
   }
 
   function grandPlace(g) {
-    // The real square measures 110 x 68 metres and is entirely paved; the plaza stays
-    // completely open, as on the real Grand-Place (no bollards or lamps on the cobbles).
+    // The real square measures 110 x 68 metres and is paved edge-to-edge to the facades;
+    // the plaza stays completely open, as on the real Grand-Place (no bollards or lamps).
     const plaza = new THREE.Group();
     plaza.name = 'Grand-Place pedestrian square';
     g.add(plaza);
-    box(plaza, 108, 0.45, 66, 0, -0.225, 0, materials.pavingEdge, 'Grand-Place stone perimeter');
+    box(plaza, 110, 0.45, 72, 0, -0.225, 0, materials.pavingEdge, 'Grand-Place stone perimeter');
     const cobbleGeo = new THREE.BoxGeometry(6.8, 0.12, 4.1);
-    const cobblesA = new THREE.InstancedMesh(cobbleGeo, materials.pavingA, 180);
-    const cobblesB = new THREE.InstancedMesh(cobbleGeo, materials.pavingB, 180);
+    const cobblesA = new THREE.InstancedMesh(cobbleGeo, materials.pavingA, 240);
+    const cobblesB = new THREE.InstancedMesh(cobbleGeo, materials.pavingB, 240);
     const dummy = new THREE.Object3D();
     let a = 0, b = 0;
-    for (let row = 0; row < 12; row++) {
-      for (let col = 0; col < 15; col++) {
-        const x = -50 + col * 6.9 + (row % 2) * 0.45;
-        const z = -30 + row * 5.15;
+    for (let row = 0; row < 15; row++) {
+      for (let col = 0; col < 16; col++) {
+        const x = -51.7 + col * 6.9 + (row % 2) * 0.45;
+        const z = -35 + row * 4.9;
         dummy.position.set(x, -0.06, z);
         dummy.rotation.y = ((row + col) % 3) * 0.025;
         dummy.updateMatrix();
@@ -546,7 +584,7 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     plaza.add(south);
     townHall(south);
     guildHouse(south, { name: 'Guild House – L’Étoile', x: -30, width: 13, height: 21, floors: 3, style: 'stepped', stone: materials.warmStone });
-    guildHouse(south, { name: 'Guild House – Le Cygne', x: -44, width: 12, height: 23, floors: 4, style: 'bell', stone: materials.paleStone });
+    guildHouse(south, { name: 'Guild House – Le Cygne', x: -44, width: 12, height: 23, floors: 4, style: 'bell', stone: materials.paleStone, emblem: true });
 
     const north = new THREE.Group();
     north.name = 'North frontage';
@@ -557,8 +595,8 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     guildHouse(north, { name: 'Guild House – Le Paon', x: -37, width: 12, height: 22, floors: 3, style: 'bell', stone: materials.warmStone });
     guildHouse(north, { name: 'Guild House – Sainte-Barbe', x: -48, width: 10, height: 19, style: 'stepped' });
     guildHouse(north, { name: 'Guild House – Le Cerf', x: 24, width: 11, height: 21, style: 'stepped', stone: materials.warmStone });
-    guildHouse(north, { name: 'Guild House – L’Ange', x: 35, width: 11, height: 23, floors: 4, style: 'gable', stone: materials.paleStone });
-    guildHouse(north, { name: 'Guild House – La Chaloupe d’Or', x: 46, width: 11, height: 24, style: 'bell', stone: materials.limestone });
+    guildHouse(north, { name: 'Guild House – L’Ange', x: 35, width: 11, height: 23, floors: 4, style: 'scroll', stone: materials.paleStone });
+    guildHouse(north, { name: 'Guild House – La Chaloupe d’Or', x: 46, width: 11, height: 24, style: 'bell', stone: materials.limestone, emblem: true });
 
     const west = new THREE.Group();
     west.name = 'West frontage';
@@ -566,11 +604,11 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     west.rotation.y = Math.PI / 2;
     plaza.add(west);
     // West side, numbered from the north corner like the real nos. 1-7.
-    guildHouse(west, { name: 'Guild House – Le Roy d’Espagne', x: 27, width: 10, height: 24, floors: 4, style: 'bell', stone: materials.paleStone });
+    guildHouse(west, { name: 'Guild House – Le Roy d’Espagne', x: 27, width: 10, height: 24, floors: 4, style: 'bell', stone: materials.paleStone, emblem: true });
     guildHouse(west, { name: 'Guild House – La Brouette', x: 16, width: 10, height: 20, style: 'stepped', stone: materials.warmStone });
     guildHouse(west, { name: 'Guild House – Le Sac', x: 5, width: 10, height: 22, style: 'gable' });
-    guildHouse(west, { name: 'Guild House – La Louve', x: -6, width: 10, height: 23, floors: 3, style: 'bell', stone: materials.warmStone });
-    guildHouse(west, { name: 'Guild House – Le Cornet', x: -17, width: 10, height: 21, style: 'stepped', stone: materials.paleStone });
+    guildHouse(west, { name: 'Guild House – La Louve', x: -6, width: 10, height: 23, floors: 3, style: 'scroll', stone: materials.warmStone, emblem: true });
+    guildHouse(west, { name: 'Guild House – Le Cornet', x: -17, width: 10, height: 21, style: 'scroll', stone: materials.paleStone, emblem: true });
     guildHouse(west, { name: 'Guild House – Le Renard', x: -28, width: 10, height: 20, style: 'gable', stone: materials.limestone });
 
     const east = new THREE.Group();
@@ -579,7 +617,7 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     east.rotation.y = -Math.PI / 2;
     plaza.add(east);
     guildHouse(east, { name: 'Guild House – L’Arbre d’Or', x: -18, width: 15, height: 22, style: 'stepped', stone: materials.paleStone });
-    guildHouse(east, { name: 'Guild House – La Rose', x: 1, width: 16, height: 24, style: 'bell', stone: materials.warmStone });
+    guildHouse(east, { name: 'Guild House – La Rose', x: 1, width: 16, height: 24, style: 'bell', stone: materials.warmStone, emblem: true });
     guildHouse(east, { name: 'Guild House – Le Mont Thabor', x: 20, width: 15, height: 20, style: 'gable' });
   }
 
