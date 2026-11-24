@@ -4539,6 +4539,18 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     box(g, 3.4, 7, 0.3, -168, 3.5, 20.85, materials.dark, 'Academy Palace portico door');
     box(g, 3.8, 0.25, 0.4, -168, 7.2, 20.8, materials.warmStone, 'Academy Palace portico door lintel');
     box(g, 4.2, 0.3, 1.2, -168, 0.15, 19.9, materials.pavingEdge, 'Academy Palace portico step');
+
+    // A low railing rings the Cluysenaar bandstand in the park.
+    const bsRail = new THREE.InstancedMesh(new THREE.BoxGeometry(0.08, 0.6, 0.08), materials.dark, 16);
+    const bsd = new THREE.Object3D();
+    let bsi = 0;
+    for (let ba = 0; ba < 16; ba++) {
+      const a = ba * Math.PI / 8;
+      bsd.position.set(-46 + Math.cos(a) * 6.2, 0.85, 150 + Math.sin(a) * 6.2);
+      bsd.rotation.y = -a; bsd.updateMatrix();
+      bsRail.setMatrixAt(bsi++, bsd.matrix);
+    }
+    bsRail.count = bsi; bsRail.name = 'Park bandstand railing'; g.add(bsRail);
   });
     addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');

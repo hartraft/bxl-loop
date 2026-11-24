@@ -1314,3 +1314,8 @@ testCase('the Academy Palace portico shelters a central door with step and linte
 testCase('a bottom rail completes the gilded garden railing', () => {
   assert.match(palace, /'Gilded garden railing bottom rail'/);
 });
+
+testCase('a low railing rings the park bandstand', () => {
+  assert.match(palace, /'Park bandstand railing'/);
+  assert.match(palace, /bsRail\.count = bsi/);
+});
