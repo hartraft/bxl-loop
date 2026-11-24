@@ -3670,6 +3670,12 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     for (let i = 0; i < 4; i++) {
       box(g, 1.2, 1.0, 0.2, -9 + i * 6, 1.6, -63.6, glass, 'South avant-corps basement window');
     }
+
+    // Bronze lamp standards with gilded globes flank the perron at the palace entrance.
+    for (const side of [-1, 1]) {
+      cylinder(g, 0.08, 0.12, 4.2, side * 9.6, 2.1, centralFace + 1.6, bronze, 8).name = 'Perron lamp standard';
+      mesh(g, new THREE.SphereGeometry(0.42, 12, 10), gilded, side * 9.6, 4.5, centralFace + 1.6, 'Perron lamp gilded globe');
+    }
   });
   addLandmark('palaceSurroundings', (g) => {
     // Real-world sources: en/fr Wikipedia (Royal Palace of Brussels, Brussels Park, Place des Palais,

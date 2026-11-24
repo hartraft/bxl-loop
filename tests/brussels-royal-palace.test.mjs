@@ -1105,3 +1105,8 @@ testCase('the 1868-69 monumental fence encloses Place du Trône with a palace-pa
   assert.match(palace, /'Palace park entrance gate pier'/);
   assert.match(palace, /trFence\.count = tri3/);
 });
+
+testCase('bronze lamp standards with gilded globes flank the perron', () => {
+  assert.match(palace, /'Perron lamp standard'/);
+  assert.match(palace, /'Perron lamp gilded globe'/);
+});
