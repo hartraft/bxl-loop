@@ -4701,6 +4701,12 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
 
     // A continuous sill band runs under the Academy Palace ground-floor windows.
     box(g, 62, 0.25, 0.3, -168, 2.6, 20.95, materials.warmStone, 'Academy Palace sill band');
+
+    // Stone sills sit under each BELvue attic window.
+    for (let i = 0; i < 5; i++) {
+      const wx = 168 - 13 + i * 6.5;
+      box(g, 2.4, 0.18, 0.3, wx, 18.15, 22.15, materials.warmStone, 'BELvue attic window sill');
+    }
   });
     addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');

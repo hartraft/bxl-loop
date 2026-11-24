@@ -1431,3 +1431,7 @@ testCase('a sill band runs under the Academy Palace ground-floor windows', () =>
 testCase('transverse joint bands mark the central garden walk paving', () => {
   assert.match(palace, /'Central garden walk joint'/);
 });
+
+testCase('stone sills sit under each BELvue attic window', () => {
+  assert.match(palace, /'BELvue attic window sill'/);
+});
