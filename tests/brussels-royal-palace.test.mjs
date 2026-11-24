@@ -2181,3 +2181,7 @@ testCase('stone bases anchor the end posts of the garden railing', () => {
 testCase('a cap course finishes the Academy garden front wall', () => {
   assert.match(palace, /'Academy garden wall cap'/);
 });
+
+testCase('side caps close the ends of the stylobate edge', () => {
+  assert.match(palace, /'Stylobate side cap'/);
+});
