@@ -3765,6 +3765,9 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       const px = -30 + k * 6;
       box(g, 1.3, 0.3, 1.3, px, 0.15, 11.0, stone, 'Flower pot pedestal');
     }
+
+    // A bottom rail completes the gilded garden railing between its posts.
+    box(g, 68, 0.05, 0.05, 0, 0.72, 14, gilded, 'Gilded garden railing bottom rail');
   });
   addLandmark('palaceSurroundings', (g) => {
     // Real-world sources: en/fr Wikipedia (Royal Palace of Brussels, Brussels Park, Place des Palais,

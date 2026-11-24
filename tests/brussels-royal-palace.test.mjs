@@ -1310,3 +1310,7 @@ testCase('the Academy Palace portico shelters a central door with step and linte
   assert.match(palace, /'Academy Palace portico door lintel'/);
   assert.match(palace, /'Academy Palace portico step'/);
 });
+
+testCase('a bottom rail completes the gilded garden railing', () => {
+  assert.match(palace, /'Gilded garden railing bottom rail'/);
+});
