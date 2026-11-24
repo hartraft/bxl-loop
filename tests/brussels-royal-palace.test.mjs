@@ -930,3 +930,37 @@ testCase('the Academy Palace portico pediment carries an acroterion', () => {
   assert.match(palace, /pediment is crowned by a small sculptural acroterion/);
   assert.match(palace, /'Academy portico pediment acroterion'/);
 });
+
+testCase('surroundings fidelity lock: park, square, end buildings and Parliament all present', () => {
+  const markers = [
+    /'Brussels Park lawn'/,
+    /'Park central avenue to the main pond'/,
+    /'Park main pond rim'/,
+    /'Park octagonal basin rim'/,
+    /'Park Hermes bust'/,
+    /'Park main bandstand kiosk'/,
+    /'Park Vauxhall bandstand kiosk'/,
+    /'Park perimeter railing posts'/,
+    /'Poelaert south gate pediment'/,
+    /'Park Art Deco lamppost poles'/,
+    /'Park perimeter lime trunks'/,
+    /'Park statue pedestals'/,
+    /'Park Roman emperor bust'/,
+    /'Place des Palais full-width sett paving'/,
+    /'Academy Palace main block'/,
+    /'Academy Palace portico pediment'/,
+    /'Academy garden north grille'/,
+    /'BELvue Hôtel Belle-Vue block'/,
+    /'Hôtel de la Liste Civile block'/,
+    /'Palace of the Nation central block'/,
+    /'Palace of the Nation peristyle column'/,
+    /'Chamber of Representatives hemicycle'/,
+    /'Senate hemicycle'/,
+    /'Royal Stables main range'/,
+    /'Leopold II equestrian horse'/,
+    /'Royal Park Theatre block'/,
+    /'Parc metro entrance canopy'/,
+    /'16 rue de la Loi Prime Minister seat'/,
+  ];
+  for (const marker of markers) assert.match(palace, marker);
+});
