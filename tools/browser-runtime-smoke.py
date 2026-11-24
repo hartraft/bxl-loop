@@ -13,6 +13,7 @@ async def main(url: str) -> None:
             "--enable-unsafe-webgpu",
             "--enable-features=Vulkan",
             "--use-angle=swiftshader",
+            "--use-vulkan=swiftshader",
             "--enable-unsafe-swiftshader",
             "--ignore-gpu-blocklist",
         ])
