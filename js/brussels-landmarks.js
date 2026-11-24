@@ -5013,6 +5013,11 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       const gx = -196 + i * 10;
       box(g, 1.9, 0.25, 1.9, gx, 0.12, 64, materials.warmStone, 'Academy statue base collar');
     }
+
+    // A centre mullion divides each Palace of the Nation facade window.
+    for (let i = 0; i < 7; i++) {
+      box(g, 0.08, 8, 0.06, -22.5 + i * 9, 12, 403.0, materials.warmStone, 'Palace of the Nation window mullion');
+    }
   });
     addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');

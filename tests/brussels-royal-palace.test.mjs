@@ -1671,3 +1671,7 @@ testCase('collars anchor the statue pedestals in the Academy garden', () => {
 testCase('caps finish the posts of the perron side rails', () => {
   assert.match(palace, /'Perron rail post cap'/);
 });
+
+testCase('a centre mullion divides each Palace of the Nation facade window', () => {
+  assert.match(palace, /'Palace of the Nation window mullion'/);
+});
