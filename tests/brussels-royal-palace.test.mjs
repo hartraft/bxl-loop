@@ -1044,3 +1044,8 @@ testCase('the wing ground-floor arches carry archivolt rings too', () => {
   assert.match(palace, /same archivolt rings/);
   assert.match(palace, /'Wing arcade archivolt'/);
 });
+
+testCase('a projecting plinth cap crowns the rusticated base of each wing', () => {
+  assert.match(palace, /plinth cap crowns the rusticated base/);
+  assert.match(palace, /'Wing plinth cap'/);
+});

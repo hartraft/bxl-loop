@@ -3603,6 +3603,11 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
         mesh(g, new THREE.TorusGeometry(1.35, 0.14, 6, 16, Math.PI), ashlar, bx, 4.0, facadeZ + 0.2, 'Wing arcade archivolt');
       }
     }
+
+    // A projecting plinth cap crowns the rusticated base of each wing.
+    for (const x of wingXs) {
+      box(g, wingW + 1.1, 0.32, wingD + 0.8, x, 1.05, -1, moulding, 'Wing plinth cap');
+    }
   });
   addLandmark('palaceSurroundings', (g) => {
     // Real-world sources: en/fr Wikipedia (Royal Palace of Brussels, Brussels Park, Place des Palais,
