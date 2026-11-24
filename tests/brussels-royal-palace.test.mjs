@@ -1427,3 +1427,7 @@ testCase('stone lintels crown the Royal Stables arched windows', () => {
 testCase('a sill band runs under the Academy Palace ground-floor windows', () => {
   assert.match(palace, /'Academy Palace sill band'/);
 });
+
+testCase('transverse joint bands mark the central garden walk paving', () => {
+  assert.match(palace, /'Central garden walk joint'/);
+});

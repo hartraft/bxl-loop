@@ -3816,6 +3816,11 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
 
     // A moulded cap crowns the central balcony rail.
     box(g, 3.2, 0.08, 1.0, 0, 11.56, centralFace + 0.72, moulding, 'Central balcony top cap');
+
+    // Transverse joint bands mark the central garden walk paving.
+    for (const jz of [11.4, 12.4, 13.4]) {
+      box(g, 3, 0.05, 0.2, 0, 0.1, jz, ashlar, 'Central garden walk joint');
+    }
   });
   addLandmark('palaceSurroundings', (g) => {
     // Real-world sources: en/fr Wikipedia (Royal Palace of Brussels, Brussels Park, Place des Palais,
