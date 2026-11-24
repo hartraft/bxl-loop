@@ -163,7 +163,7 @@ test('café awnings over the ground-floor arcades of the brasserie houses', () =
   assert.ok(source.includes('canvas: new THREE.MeshStandardMaterial'));
   assert.ok(square.includes("café awnings"));
   assert.ok(square.includes('terrace = false'));
-  assert.equal((square.match(/terrace: true\s*[,}])/g) || []).length, 6, 'six houses carry terraces');
+  assert.equal((square.match(/terrace: true\s*[,}]/g) || []).length, 6, 'six houses carry terraces');
 });
 
 test('Le Roy d’Espagne carries Roman emperor medallions and the St Aubert bust', () => {
