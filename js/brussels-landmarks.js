@@ -421,6 +421,26 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     shape.closePath();
     mesh(root, new THREE.ShapeGeometry(shape), stone, 0, height, 0.08, name + ' gable');
     box(root, width + 0.7, 0.35, depth + 0.5, 0, height + 0.2, -depth / 2, roof, name + ' roof cap');
+    // Chimneys with terracotta pots rise from the roof, as on the real houses.
+    const chimneys = new THREE.InstancedMesh(new THREE.BoxGeometry(0.55, 1.6, 0.55), materials.warmStone, 2);
+    const chimneyPots = new THREE.InstancedMesh(new THREE.CylinderGeometry(0.16, 0.2, 0.5, 8), materials.dark, 4);
+    let ch = 0;
+    for (const side of [-1, 1]) {
+      modDummy.position.set(side * (width / 2 - 1.6), height + 1.05, -depth / 2 + 1.6);
+      modDummy.updateMatrix();
+      chimneys.setMatrixAt(ch, modDummy.matrix);
+      for (let p = 0; p < 2; p++) {
+        modDummy.position.set(side * (width / 2 - 1.6) + (p - 0.5) * 0.24, height + 2.05, -depth / 2 + 1.6);
+        modDummy.updateMatrix();
+        chimneyPots.setMatrixAt(ch * 2 + p, modDummy.matrix);
+      }
+      ch++;
+    }
+    chimneys.count = ch;
+    chimneyPots.count = ch * 2;
+    chimneys.name = name + ' roof chimneys';
+    chimneyPots.name = name + ' chimney pots';
+    root.add(chimneys, chimneyPots);
     box(root, 0.35, height - 1.8, 0.25, -width / 2 + 0.45, height / 2 + 0.5, 0.16, materials.gold);
     box(root, 0.35, height - 1.8, 0.25, width / 2 - 0.45, height / 2 + 0.5, 0.16, materials.gold);
     cylinder(root, 0.12, 0.12, 1.3, 0, height + gableHeight + 0.55, 0.08, materials.gold, 8);
@@ -682,6 +702,12 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       neck.name = name + ' swan neck';
       neck.rotation.z = -0.5;
       mesh(root, new THREE.SphereGeometry(0.12, 8, 6), materials.gold, 0.22, 4.9, 0.5, name + ' swan head');
+    }
+    if (spec.saintStatue) {
+      // Sainte-Barbe: a statue of St Barbara in a niche at the gable base.
+      box(root, 0.7, 1.9, 0.22, 0, height + 0.95, 0.16, materials.dark, name + ' St Barbara niche');
+      box(root, 0.28, 1.05, 0.12, 0, height + 0.95, 0.3, materials.gold, name + ' St Barbara statue');
+      mesh(root, new THREE.SphereGeometry(0.15, 8, 6), materials.gold, 0, height + 1.65, 0.3, name + ' St Barbara statue head');
     }
     return root;
   }
@@ -1425,7 +1451,7 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     kingsHouse(north);
     guildHouse(north, { name: 'Guild House – Le Heaume', x: -27, width: 11, height: 20, style: 'gable', stone: materials.warmStone, emblem: 'helmet' });
     guildHouse(north, { name: 'Guild House – Le Paon', x: -38, width: 12, height: 22, floors: 3, style: 'neck', stone: materials.paleStone, emblem: 'peacock' });
-    guildHouse(north, { name: 'Guild House – Sainte-Barbe', x: -48.5, width: 10, height: 19, style: 'stepped' });
+    guildHouse(north, { name: 'Guild House – Sainte-Barbe', x: -48.5, width: 10, height: 19, style: 'stepped', saintStatue: true });
     guildHouse(north, { name: 'Guild House – Le Cerf', x: 23.5, width: 11, height: 21, style: 'stepped', stone: materials.warmStone, emblem: 'stag' });
     guildHouse(north, { name: 'Guild House – L’Ange', x: 34, width: 11, height: 23, floors: 4, style: 'scroll', stone: materials.plaster, emblem: 'angel' });
     guildHouse(north, { name: 'Guild House – La Chaloupe d’Or', x: 46.5, width: 11, height: 24, style: 'bell', stone: materials.ochre, emblem: 'boat', terrace: true });

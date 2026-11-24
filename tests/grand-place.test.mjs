@@ -218,6 +218,15 @@ test('guild-house gables are flanked by pots à feu (stone vase + flame)', () =>
   assert.ok(square.includes('potVases.count = potFlames.count = 2'));
 });
 
+test('Sainte-Barbe has her niche statue; every house roof has chimneys with pots', () => {
+  assert.ok(square.includes('style: \'stepped\', saintStatue: true }'));
+  assert.ok(square.includes(" St Barbara niche'"));
+  assert.ok(square.includes(" St Barbara statue'"));
+  assert.ok(square.includes(" roof chimneys'"));
+  assert.ok(square.includes('chimneys.count = ch'));
+  assert.ok(square.includes('chimneyPots.count = ch * 2'));
+});
+
 test('guild houses carry the real names on the real sides, with Baroque detailing', () => {
   for (const name of ['Le Roy d’Espagne', 'La Brouette', 'Le Sac', 'La Louve', 'Le Cornet', 'Le Renard',
     'Le Heaume', 'Le Paon', 'Sainte-Barbe', 'Le Cerf', 'L’Ange', 'La Chaloupe d’Or',
