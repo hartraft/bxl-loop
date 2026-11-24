@@ -2065,3 +2065,7 @@ testCase('rims finish the wing balcony flower boxes', () => {
 testCase('raking cornices follow both slopes of the Palace of the Nation pediment', () => {
   assert.match(palace, /'Palace of the Nation raking cornice'/);
 });
+
+testCase('kerbs flank the west radiating avenue from the main pond', () => {
+  assert.match(palace, /'Radiating avenue west kerb'/);
+});

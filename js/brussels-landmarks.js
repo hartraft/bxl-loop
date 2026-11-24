@@ -5510,6 +5510,15 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     pnRkL.rotation.z = Math.atan2(3.5, 11.5);
     const pnRkR = box(g, 12.0, 0.18, 0.2, 5.75, 16.95, 401.65, materials.warmStone, 'Palace of the Nation raking cornice');
     pnRkR.rotation.z = -Math.atan2(3.5, 11.5);
+
+    // Stone edging kerbs flank the west radiating avenue from the main pond.
+    const raW = Math.PI * 0.72;
+    const midWx = Math.cos(raW) * 65, midWz = 150 + Math.sin(raW) * 65;
+    const perpWx = -Math.sin(raW), perpWz = Math.cos(raW);
+    for (const off of [-4.3, 4.3]) {
+      const kerb = box(g, 0.4, 0.18, 92, midWx + perpWx * off, 0.09, midWz + perpWz * off, materials.pavingEdge, 'Radiating avenue west kerb');
+      kerb.rotation.y = Math.PI / 2 - raW;
+    }
   });
     addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');
