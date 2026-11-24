@@ -5413,6 +5413,11 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     for (const px of [-201, -135]) {
       box(g, 1.8, 4.0, 0.2, px, 8, 19.9, materials.glass, 'Academy end pavilion window');
     }
+
+    // Hayloft windows pierce the Academy stables block just under the eaves.
+    for (let i = 0; i < 5; i++) {
+      box(g, 1.2, 1.2, 0.2, -168 - 15 + i * 7.5, 12, 71.9, materials.glass, 'Academy stables hayloft window');
+    }
   });
     addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');

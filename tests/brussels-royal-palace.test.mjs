@@ -1992,3 +1992,7 @@ testCase('windows pierce the Academy Palace end pavilions', () => {
 testCase('dark soil fills the wing balcony flower boxes', () => {
   assert.match(palace, /'Wing flower box soil'/);
 });
+
+testCase('hayloft windows pierce the Academy stables block under the eaves', () => {
+  assert.match(palace, /'Academy stables hayloft window'/);
+});
