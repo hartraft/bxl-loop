@@ -4033,6 +4033,11 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
 
     // A base rail joins the feet of the central balcony balusters.
     box(g, 2.9, 0.06, 0.06, 0, 11.05, centralFace + 1.0, bronze, 'Central balcony base rail');
+
+    // Hinge straps secure the portico main door leaves.
+    for (const hy of [1.5, 4.1, 6.7]) {
+      box(g, 0.4, 0.12, 0.08, -1.9, hy, centralFace + 0.28, bronze, 'Portico door hinge');
+    }
   });
   addLandmark('palaceSurroundings', (g) => {
     // Real-world sources: en/fr Wikipedia (Royal Palace of Brussels, Brussels Park, Place des Palais,

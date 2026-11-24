@@ -1875,3 +1875,7 @@ testCase('a base rail joins the feet of the central balcony balusters', () => {
 testCase('stone surrounds frame the Academy ground-floor arched windows', () => {
   assert.match(palace, /'Academy ground window surround'/);
 });
+
+testCase('hinge straps secure the portico main door leaves', () => {
+  assert.match(palace, /'Portico door hinge'/);
+});
