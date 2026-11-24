@@ -1301,3 +1301,23 @@ test('rounds 383-392: lantern cross, Broodhuis soffits, pilaster gold strips, pa
   assert.ok(square.includes('khGalLabelStops.count = kls'));
   assert.ok(square.includes('Gallery pinnacle base ball'));
 });
+
+test('rounds 393-402: keystone gold caps, manhole key holes, dormer glazing bars, stub edge stones, rear clock face, arcade string-course trim, weathering gold caps, string-ring balls, gable edge flashing, forecourt sett star', () => {
+  assert.ok(square.includes('Arcade keystone gold caps'));
+  assert.ok(square.includes('keystoneCaps.count = kc'));
+  assert.ok(square.includes('Grand-Place manhole lifting key holes'));
+  assert.ok(square.includes('keyHoles.count = 24'));
+  assert.ok(square.includes('Dormer window glazing bars'));
+  assert.ok(square.includes('dormerBars.count = db'));
+  assert.ok(square.includes('Grand-Place street stub edge stones'));
+  assert.ok(square.includes('stubEdges.count = se'));
+  assert.ok(square.includes('King’s House tower clock face (rear)'));
+  assert.ok(square.includes('Arcade string course gold trim'));
+  assert.ok(square.includes('Buttress weathering gold caps'));
+  assert.ok(square.includes('weatherCaps.count = pin'));
+  assert.ok(square.includes('King’s House string ring gilded balls'));
+  assert.ok(square.includes('ringBalls.count = 3'));
+  assert.ok(square.includes('gable edge gold flashing'));
+  assert.ok(square.includes('Grand-Place Town Hall forecourt sett star'));
+  assert.ok(square.includes('thStar.count = 8'));
+});
