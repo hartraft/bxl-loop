@@ -147,3 +147,40 @@ testCase('the Bourse registers world-space colliders and leaves the stair corrid
   assert.ok(sur.length >= 4, '1949 corner tower, 1884-85 blocks, Orts fountain + monument');
   assert.ok(BRUSSELS_LANDMARK_COLLIDER_LAYOUT.bourse && BRUSSELS_LANDMARK_COLLIDER_LAYOUT.bourseSurroundings);
 });
+
+testCase('rounds 11-12: front avant-corps pavilions with pediments + wing windows with surrounds', () => {
+  assert.match(bourse, /'Bourse front avant-corps pavilion ' \+ \(sx < 0 \? 'west' : 'east'\)/);
+  assert.match(bourse, /'Bourse avant-corps pavilion pediment'/);
+  assert.match(bourse, /box\(g, 16, 21, 15, sx \* 44, 15\.5, 33\.5, materials\.paleStone/);
+  assert.match(bourse, /'Bourse facade windows \(rez-de-chaussee \+ etage\)'/);
+  assert.match(bourse, /wins\.count = n/);
+  assert.match(bourse, /'Bourse facade window stone surrounds'/);
+});
+
+testCase('rounds 13-14: quoin chains + string courses', () => {
+  assert.match(bourse, /'Bourse facade corner quoin chains \(chaines d\\'angle\)'/);
+  assert.match(bourse, /quoins\.count = q/);
+  assert.match(bourse, /'Bourse facade first string course \(bandeau\)'/);
+  assert.match(bourse, /'Bourse facade second string course \(bandeau\)'/);
+});
+
+testCase('rounds 15-17: cornice dentils, lion-mouth dripstones, frieze palmettes', () => {
+  assert.match(bourse, /'Bourse main cornice dentils'/);
+  assert.match(bourse, /dentils\.count = 100/);
+  assert.match(bourse, /'Bourse cornice lion-mouth dripstones \(mufles de lion\)'/);
+  assert.match(bourse, /mufles\.count = 26/);
+  assert.match(bourse, /'Bourse frieze palmettes \(palmettes\)'/);
+  assert.match(bourse, /palmettes\.count = 20/);
+});
+
+testCase('rounds 18-20: pediment raking cornice + acroteria, column fluting, base torus rings', () => {
+  assert.match(bourse, /'Bourse pediment raking cornice'/);
+  assert.match(bourse, /'Bourse pediment acroteria \(acroteres\)'/);
+  assert.match(bourse, /acro\.count = 3/);
+  assert.match(bourse, /'Bourse peristyle column fluting \(futs canneles, 12 per column\)'/);
+  assert.match(bourse, /flutes\.count = f/);
+  assert.match(bourse, /'Bourse peristyle column base torus rings'/);
+  assert.match(bourse, /tori\.count = 8/);
+});
+
+// __MORE_BOURSE_TESTS__

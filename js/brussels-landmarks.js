@@ -4828,6 +4828,148 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     }
     cylinder(g, 3.8, 4.6, 7, 0, 53, 0, materials.paleStone, 16, 'Bourse circular lantern crowning the dome');
     mesh(g, new THREE.ConeGeometry(1.6, 3.2, 12), materials.gold, 0, 60, 0, 'Bourse lantern top ornament (finial)');
+    // Round 11: the two front avant-corps pavilions flanking the peristyle, each crowned by
+    // its own pediment (heritage inventory A001/31241: strongly structured facade).
+    for (const sx of [-1, 1]) {
+      box(g, 16, 21, 15, sx * 44, 15.5, 33.5, materials.paleStone, 'Bourse front avant-corps pavilion ' + (sx < 0 ? 'west' : 'east'));
+      pedimentPrism(g, 16, 3.5, 3, sx * 44, 26, 40, materials.paleStone, 'Bourse avant-corps pavilion pediment');
+      box(g, 16.6, 0.5, 15.6, sx * 44, 25.8, 33.5, materials.warmStone, 'Bourse pavilion cornice');
+    }
+    // Round 12: facade windows on the wings between the peristyle and the pavilions, ground
+    // floor and etage, each in a stone surround.
+    {
+      const wins = new THREE.InstancedMesh(new THREE.BoxGeometry(2.2, 4.6, 0.35), materials.glass, 8);
+      const surr = new THREE.InstancedMesh(new THREE.BoxGeometry(2.9, 5.3, 0.25), materials.warmStone, 8);
+      const dummy = new THREE.Object3D();
+      let n = 0;
+      for (const sx of [-1, 1]) for (const wx of [24, 31]) for (const wy of [10, 17.5]) {
+        dummy.position.set(sx * wx, wy, 30.25);
+        dummy.updateMatrix();
+        wins.setMatrixAt(n, dummy.matrix);
+        surr.setMatrixAt(n++, dummy.matrix);
+      }
+      wins.count = n; wins.name = 'Bourse facade windows (rez-de-chaussee + etage)';
+      wins.castShadow = true; g.add(wins);
+      surr.count = n; surr.name = 'Bourse facade window stone surrounds';
+      surr.castShadow = true; g.add(surr);
+    }
+    // Round 13: rusticated quoin chains (chaines d'angle) at the facade's front corners.
+    {
+      const quoins = new THREE.InstancedMesh(new THREE.BoxGeometry(0.55, 0.95, 0.5), materials.warmStone, 44);
+      const dummy = new THREE.Object3D();
+      let q = 0;
+      for (const sx of [-1, 1]) for (let r = 0; r < 22; r++) {
+        dummy.position.set(sx * 49.7, 5.6 + r * 0.95, 30.3);
+        dummy.updateMatrix();
+        quoins.setMatrixAt(q++, dummy.matrix);
+      }
+      quoins.count = q;
+      quoins.name = 'Bourse facade corner quoin chains (chaines d\'angle)';
+      quoins.castShadow = true;
+      g.add(quoins);
+    }
+    // Round 14: horizontal string courses (bandeaux) between the facade registers.
+    box(g, 100, 0.35, 4.5, 0, 13.5, 28, materials.warmStone, 'Bourse facade first string course (bandeau)');
+    box(g, 100, 0.35, 4.5, 0, 19.6, 28, materials.warmStone, 'Bourse facade second string course (bandeau)');
+    // Round 15: dentil teeth under the main cornice.
+    {
+      const dentils = new THREE.InstancedMesh(new THREE.BoxGeometry(0.22, 0.3, 0.25), materials.warmStone, 100);
+      const dummy = new THREE.Object3D();
+      for (let i = 0; i < 100; i++) {
+        dummy.position.set(-49.5 + i * 1.0, 23.25, 37);
+        dummy.updateMatrix();
+        dentils.setMatrixAt(i, dummy.matrix);
+      }
+      dentils.count = 100;
+      dentils.name = 'Bourse main cornice dentils';
+      dentils.castShadow = true;
+      g.add(dentils);
+    }
+    // Round 16: lion-mouth dripstones (mufles de lion) spaced along the cornice, dripping
+    // rainwater clear of the facade (heritage inventory: "a mufle de lion", larmiers).
+    {
+      const mufles = new THREE.InstancedMesh(new THREE.ConeGeometry(0.2, 0.5, 6), materials.warmStone, 26);
+      const dummy = new THREE.Object3D();
+      for (let i = 0; i < 26; i++) {
+        dummy.position.set(-50 + i * 4, 23.1, 37.1);
+        dummy.rotation.set(Math.PI, 0, 0);
+        dummy.updateMatrix();
+        mufles.setMatrixAt(i, dummy.matrix);
+      }
+      mufles.count = 26;
+      mufles.name = 'Bourse cornice lion-mouth dripstones (mufles de lion)';
+      mufles.castShadow = true;
+      g.add(mufles);
+    }
+    // Round 17: palmettes alternating with the abundance garlands on the frieze (heritage
+    // inventory: "frontons a motifs vegetaux, guirlandes d'abondance, palmettes").
+    {
+      const palmettes = new THREE.InstancedMesh(new THREE.ConeGeometry(0.32, 0.7, 4), materials.gold, 20);
+      const dummy = new THREE.Object3D();
+      for (let i = 0; i < 20; i++) {
+        dummy.position.set(-47.5 + i * 5, 22.1, 37.1);
+        dummy.rotation.set(0, Math.PI / 4, 0);
+        dummy.updateMatrix();
+        palmettes.setMatrixAt(i, dummy.matrix);
+      }
+      palmettes.count = 20;
+      palmettes.name = 'Bourse frieze palmettes (palmettes)';
+      palmettes.castShadow = true;
+      g.add(palmettes);
+    }
+    // Round 18: raking cornice along the pediment slopes plus acroteria (antefixes) at the
+    // apex and both eaves corners.
+    {
+      const slope = Math.atan2(8.5, 19);
+      for (const sx of [-1, 1]) {
+        const rail = mesh(g, new THREE.BoxGeometry(0.45, 0.5, 21.5), materials.warmStone, sx * 9.5, 23.5 + 4.25, 32.5, 'Bourse pediment raking cornice');
+        rail.rotation.x = sx * -slope;
+      }
+      const acro = new THREE.InstancedMesh(new THREE.ConeGeometry(0.35, 1.1, 8), materials.warmStone, 3);
+      const dummy = new THREE.Object3D();
+      const spots = [[0, 32.4], [-18.4, 24], [18.4, 24]];
+      for (let i = 0; i < 3; i++) {
+        dummy.position.set(spots[i][0], spots[i][1], 32.5);
+        dummy.updateMatrix();
+        acro.setMatrixAt(i, dummy.matrix);
+      }
+      acro.count = 3;
+      acro.name = 'Bourse pediment acroteria (acroteres)';
+      acro.castShadow = true;
+      g.add(acro);
+    }
+    // Round 19: the Corinthian shafts are fluted (futs canneles) — twelve grooves per column.
+    {
+      const flutes = new THREE.InstancedMesh(new THREE.CylinderGeometry(0.045, 0.045, 13, 5), materials.dark, 96);
+      const dummy = new THREE.Object3D();
+      let f = 0;
+      for (const cx of peristyleX) for (let k = 0; k < 12; k++) {
+        const a = k * Math.PI / 6;
+        dummy.position.set(cx + Math.cos(a) * 0.78, 12.9, 36 + Math.sin(a) * 0.78);
+        dummy.updateMatrix();
+        flutes.setMatrixAt(f++, dummy.matrix);
+      }
+      flutes.count = f;
+      flutes.name = 'Bourse peristyle column fluting (futs canneles, 12 per column)';
+      flutes.castShadow = false;
+      g.add(flutes);
+    }
+    // Round 20: each column base carries a torus ring moulding.
+    {
+      const tori = new THREE.InstancedMesh(new THREE.TorusGeometry(1.0, 0.13, 6, 14), materials.warmStone, 8);
+      const dummy = new THREE.Object3D();
+      for (let i = 0; i < 8; i++) {
+        dummy.position.set(peristyleX[i], 5.62, 36);
+        dummy.rotation.set(Math.PI / 2, 0, 0);
+        dummy.updateMatrix();
+        tori.setMatrixAt(i, dummy.matrix);
+      }
+      tori.count = 8;
+      tori.name = 'Bourse peristyle column base torus rings';
+      tori.castShadow = true;
+      g.add(tori);
+    }
+    // __BOURSE_ROUNDS__
   });
   addLandmark('bourseSurroundings', (g) => {
     // Round 10: the Place de la Bourse itself — created with the covering of the Senne
@@ -4879,6 +5021,7 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       trees.castShadow = true;
       g.add(trees);
     }
+    // __SURROUNDINGS_ROUNDS__
   });
 
   scene?.add(group);
