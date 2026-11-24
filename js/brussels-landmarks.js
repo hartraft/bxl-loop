@@ -4069,6 +4069,11 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
         box(g, 0.15, 0.2, 0.4, bx, 7.35, facadeZ + 0.85, bronze, 'Wing flower box bracket');
       }
     }
+
+    // Brackets carry the central balcony flower box.
+    for (const fx of [-1.0, 0, 1.0]) {
+      box(g, 0.15, 0.2, 0.45, fx, 10.7, centralFace + 1.1, bronze, 'Central flower box bracket');
+    }
   });
   addLandmark('palaceSurroundings', (g) => {
     // Real-world sources: en/fr Wikipedia (Royal Palace of Brussels, Brussels Park, Place des Palais,
