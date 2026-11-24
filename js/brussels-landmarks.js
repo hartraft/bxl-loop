@@ -6397,6 +6397,99 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       grates.name = 'Bourse cellar areaway grates beside the stair (soupiraux de cave)';
       g.add(grates);
     }
+    // Round 241: cella etage windows above the lateral doors, in surrounds.
+    {
+      const wins = new THREE.InstancedMesh(new THREE.BoxGeometry(2.4, 3.8, 0.35), materials.glass, 4);
+      const surr = new THREE.InstancedMesh(new THREE.BoxGeometry(3.1, 4.5, 0.25), materials.warmStone, 4);
+      const dummy = new THREE.Object3D();
+      let n = 0;
+      for (const sx of [-1, 1]) for (const wx of [6.5, 16]) {
+        dummy.position.set(sx * wx, 17.5, 30.25);
+        dummy.updateMatrix();
+        wins.setMatrixAt(n, dummy.matrix);
+        surr.setMatrixAt(n++, dummy.matrix);
+      }
+      wins.count = n; wins.name = 'Bourse cella etage windows';
+      wins.castShadow = true; g.add(wins);
+      surr.count = n; surr.name = 'Bourse cella etage window surrounds';
+      g.add(surr);
+    }
+    // Round 242: the main cornice returns around the facade's ends onto the side faces.
+    for (const sx of [-1, 1]) box(g, 0.5, 3.5, 9.6, sx * 51.8, 21.75, 32.5, materials.paleStone, 'Bourse cornice return at facade end');
+    // Round 243: pilasters at the front-to-side corner turns.
+    for (const sx of [-1, 1]) box(g, 1.0, 21, 1.0, sx * 53.2, 15.5, 38, materials.paleStone, 'Bourse corner turn pilaster');
+    // Round 244: oculi in the front attic band, flanking the central pediment.
+    for (const sx of [-1, 1]) {
+      const o = mesh(g, new THREE.CylinderGeometry(0.7, 0.7, 0.3, 14), materials.glass, sx * 30, 24.9, 37.2, 'Bourse attic band oculus');
+      o.rotation.x = Math.PI / 2;
+      mesh(g, new THREE.TorusGeometry(0.7, 0.1, 6, 14), materials.warmStone, sx * 30, 24.9, 37.2, 'Bourse attic oculus surround');
+    }
+    // Round 245: a string course at the drum's base.
+    box(g, 26.6, 0.4, 26.6, 0, 30.2, 0, materials.warmStone, 'Bourse dome drum base string course (bandeau du tambour)');
+    // Round 246: two more horizontal glazing bars on the dome (five girders in all).
+    for (const rr of [4.5, 8.5]) {
+      const ring = mesh(g, new THREE.TorusGeometry(rr, 0.08, 6, 28), materials.blueStone, 0, 39.6 + Math.sqrt(Math.max(0, 196 - rr * rr)), 0, 'Bourse dome glazing bar (barreau de vitrage)');
+      ring.rotation.x = Math.PI / 2;
+    }
+    // Round 247: glazed openings between the lantern's eight colonnettes.
+    {
+      const panes = new THREE.InstancedMesh(new THREE.BoxGeometry(1.6, 5.6, 0.08), materials.glass, 8);
+      const dummy = new THREE.Object3D();
+      for (let i = 0; i < 8; i++) {
+        const a = (i + 0.5) * Math.PI / 4;
+        dummy.position.set(Math.sin(a) * 4.1, 50.2, Math.cos(a) * 4.1);
+        dummy.rotation.y = -a;
+        dummy.updateMatrix();
+        panes.setMatrixAt(i, dummy.matrix);
+      }
+      panes.count = 8;
+      panes.name = 'Bourse lantern glazed openings (baies vitrees du lanterneau)';
+      g.add(panes);
+    }
+    // Round 248: the roof terrace has an access bulkhead (the terrace is reached from the 4th
+    // floor — nl.wikipedia: toiture-terrasse au 4e etage).
+    {
+      box(g, 4, 3.2, 3, 8, 30.8 + 1.6, -33, materials.paleStone, 'Bourse roof terrace access bulkhead (sas d\'acces au dakterras)');
+      box(g, 3, 2.4, 0.3, 8, 32.2, -31.4, materials.dark, 'Bourse terrace access door');
+      box(g, 4.6, 0.3, 3.6, 8, 34.2, -33, materials.roof, 'Bourse bulkhead roof');
+    }
+    // Round 249: the brass canopy has a scalloped valance along its edge.
+    {
+      const valance = new THREE.InstancedMesh(new THREE.ConeGeometry(0.35, 0.5, 6), materials.gold, 4 * 10);
+      const dummy = new THREE.Object3D();
+      let n = 0;
+      for (let i = 0; i < 10; i++) for (const sx of [-1, 1]) {
+        dummy.position.set(-9 + i * 2, 46.25, sx * 10);
+        dummy.rotation.set(Math.PI, 0, 0);
+        dummy.updateMatrix();
+        valance.setMatrixAt(n++, dummy.matrix);
+      }
+      for (let i = 0; i < 10; i++) for (const sz of [-1, 1]) {
+        dummy.position.set(sz * 10, 46.25, -9 + i * 2);
+        dummy.rotation.set(Math.PI, 0, Math.PI / 2);
+        dummy.updateMatrix();
+        valance.setMatrixAt(n++, dummy.matrix);
+      }
+      valance.count = n;
+      valance.name = 'Bourse brass canopy scalloped valance (feston du luifel)';
+      valance.castShadow = true;
+      g.add(valance);
+    }
+    // Round 250: four flagpole sockets on the roof terrace corners (public building).
+    {
+      const poles = new THREE.InstancedMesh(new THREE.CylinderGeometry(0.05, 0.07, 6, 8), materials.dark, 4);
+      const dummy = new THREE.Object3D();
+      for (let i = 0; i < 4; i++) {
+        const sx = i % 2 ? 1 : -1, sz = i < 2 ? -1 : 1;
+        dummy.position.set(sx * 14, 34, sz * 16);
+        dummy.updateMatrix();
+        poles.setMatrixAt(i, dummy.matrix);
+      }
+      poles.count = 4;
+      poles.name = 'Bourse roof terrace flagpoles (mat de drapeau)';
+      poles.castShadow = true;
+      g.add(poles);
+    }
     // __BOURSE_ROUNDS__
   });
   addLandmark('bourseSurroundings', (g) => {

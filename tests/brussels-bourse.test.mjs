@@ -772,4 +772,26 @@ testCase('rounds 235-240: boulevard cornices, rue Orts cornices, square shopfron
   assert.match(surroundings, /'timetable case \(fiche horaire\)'/);
 });
 
+testCase('rounds 241-245: cella etage windows, cornice returns, corner pilasters, attic oculi, drum string course', () => {
+  assert.match(bourse, /'Bourse cella etage windows'/);
+  assert.match(bourse, /'Bourse cella etage window surrounds'/);
+  assert.match(bourse, /'Bourse cornice return at facade end'/);
+  assert.match(bourse, /'Bourse corner turn pilaster'/);
+  assert.match(bourse, /'Bourse attic band oculus'/);
+  assert.match(bourse, /'Bourse attic oculus surround'/);
+  assert.match(bourse, /'Bourse dome drum base string course \(bandeau du tambour\)'/);
+});
+
+testCase('rounds 246-250: extra dome glazing bars, lantern panes, terrace bulkhead, canopy valance, flagpoles', () => {
+  assert.match(bourse, /'Bourse dome glazing bar \(barreau de vitrage\)'/);
+  assert.match(bourse, /'Bourse lantern glazed openings \(baies vitrees du lanterneau\)'/);
+  assert.match(bourse, /panes\.count = 8/);
+  assert.match(bourse, /'Bourse roof terrace access bulkhead/);
+  assert.match(bourse, /'Bourse terrace access door'/);
+  assert.match(bourse, /'Bourse brass canopy scalloped valance \(feston du luifel\)'/);
+  assert.match(bourse, /valance\.count = n/);
+  assert.match(bourse, /'Bourse roof terrace flagpoles \(mat de drapeau\)'/);
+  assert.match(bourse, /poles\.count = 4/);
+});
+
 // __MORE_BOURSE_TESTS__
