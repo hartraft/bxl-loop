@@ -68,6 +68,14 @@ testCase('the front garden holds the real three sunken parterres (central on the
   assert.match(palace, /\{ x: 38, w: 34, z: 12\.4, d: 2\.6 \}/);
 });
 
+testCase('wing ends and pavilion outer faces carry windows (no blank gable ends)', () => {
+  assert.match(palace, /'Wing end window \(piano nobile\)'/);
+  assert.match(palace, /'Wing end window \(ground\)'/);
+  assert.match(palace, /'Pavilion outer-face window'/);
+  assert.match(palace, /side \* 70\.1/);
+  assert.match(palace, /side \* 80\.1/);
+});
+
 testCase('the Place des Palais frontage is paved with blue-stone setts beyond the garden railing', () => {
   assert.match(palace, /entirely paved/);
   assert.match(palace, /pierre bleue/);

@@ -1966,6 +1966,22 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       }
     }
 
+    // Every face of the real palace is pierced — the wing ends and the pavilions'
+    // outer faces carry windows too, so oblique views from the square never see a
+    // blank gable end.
+    for (const side of [-1, 1]) {
+      for (let i = 0; i < 3; i++) {
+        const wz = -6 - i * 5;
+        box(g, 0.2, 3.2, 1.9, side * 70.1, 12.5, wz, glass, 'Wing end window (piano nobile)');
+        box(g, 0.2, 2.4, 1.9, side * 70.1, 6.5, wz, glass, 'Wing end window (ground)');
+      }
+      for (let f = 0; f < 2; f++) {
+        for (let i = 0; i < 3; i++) {
+          box(g, 0.22, 3.4, 1.9, side * 80.1, 13 + f * 5.5, -5 - i * 5, glass, 'Pavilion outer-face window');
+        }
+      }
+    }
+
     // The Place des Palais in front of the palace is entirely paved — a 70 x 350 m
     // square of blue-stone setts (pierre bleue). Lay the palace's paved frontage apron
     // beyond the gilded garden railing.
