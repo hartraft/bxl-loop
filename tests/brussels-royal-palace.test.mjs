@@ -1401,3 +1401,8 @@ testCase('a moulded surround frames the portico main door', () => {
 testCase('stone sills sit under each BELvue ground-floor window', () => {
   assert.match(palace, /'BELvue ground window sill'/);
 });
+
+testCase('the Academy Palace ground floor is bossaged', () => {
+  assert.match(palace, /'Academy Palace ground bossage'/);
+  assert.match(palace, /apBoss\.count = apBi/);
+});

@@ -4660,6 +4660,17 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       const wx = 168 - 13 + i * 6.5;
       box(g, 2.4, 0.18, 0.3, wx, 5.85, 22.15, materials.warmStone, 'BELvue ground window sill');
     }
+
+    // The Academy Palace ground floor is bossaged with rusticated blocks.
+    const apBoss = new THREE.InstancedMesh(new THREE.BoxGeometry(1.8, 1.4, 0.14), materials.warmStone, 40);
+    const apBd = new THREE.Object3D();
+    let apBi = 0;
+    for (let bx = -194; bx <= -142; bx += 3) {
+      if (Math.abs(bx + 168) < 3) continue;
+      apBd.position.set(bx, 1.2, 20.85); apBd.rotation.y = 0; apBd.updateMatrix();
+      apBoss.setMatrixAt(apBi++, apBd.matrix);
+    }
+    apBoss.count = apBi; apBoss.name = 'Academy Palace ground bossage'; g.add(apBoss);
   });
     addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');
