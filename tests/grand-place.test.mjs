@@ -166,6 +166,14 @@ test('café awnings over the ground-floor arcades of the brasserie houses', () =
   assert.equal((square.match(/terrace: true\s*[,}]/g) || []).length, 6, 'six houses carry terraces');
 });
 
+test('Le Sac carries the carpenter tool cartouches and the globe-compass finial', () => {
+  assert.ok(square.includes("Le Sac', x: 4, width: 8.5, height: 22, style: 'gable', stone: materials.warmStone, guildTools: true }"));
+  assert.ok(square.includes(" globe finial'"));
+  assert.ok(square.includes(" compass needle N-S'"));
+  assert.ok(square.includes(" carpenter tool cartouches'"));
+  assert.ok(square.includes('toolCartouches.count = 3'));
+});
+
 test('Le Renard carries Justice with the four continents, St Nicholas and the fox sign', () => {
   assert.ok(square.includes("Le Renard', x: -24.5, width: 8.5, height: 20, style: 'gable', stone: materials.warmStone, continents: true }"));
   assert.ok(square.includes(" Justice and four continents statues'"));

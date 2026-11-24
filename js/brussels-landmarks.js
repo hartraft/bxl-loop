@@ -398,6 +398,23 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       box(root, 0.8, 0.3, 0.2, 0, 3.95, 0.55, materials.bronze, name + ' fox sign body');
       mesh(root, new THREE.SphereGeometry(0.18, 8, 6), materials.bronze, 0.45, 4.05, 0.55, name + ' fox sign head');
     }
+    if (spec.guildTools) {
+      // Le Sac (carpenters' and coopers' house, no. 4): the guild tools decorate the facade —
+      // a globe crowned by a compass on the gable and gilded tool cartouches above the arcade.
+      mesh(root, new THREE.SphereGeometry(0.42, 12, 10), stone, 0, height + gableHeight + 1.5, 0.1, name + ' globe finial');
+      box(root, 0.7, 0.08, 0.06, 0, height + gableHeight + 2.05, 0.1, materials.gold, name + ' compass needle N-S');
+      const compassDiag = box(root, 0.08, 0.7, 0.06, 0, height + gableHeight + 2.05, 0.1, materials.gold, name + ' compass needle diagonal');
+      compassDiag.rotation.z = Math.PI / 4;
+      const toolCartouches = new THREE.InstancedMesh(new THREE.BoxGeometry(0.5, 0.4, 0.12), materials.gold, 3);
+      for (let i = 0; i < 3; i++) {
+        pedDummy.position.set((i - 1) * bayStep, 3.95, 0.32);
+        pedDummy.updateMatrix();
+        toolCartouches.setMatrixAt(i, pedDummy.matrix);
+      }
+      toolCartouches.count = 3;
+      toolCartouches.name = name + ' carpenter tool cartouches';
+      root.add(toolCartouches);
+    }
     return root;
   }
 
@@ -942,7 +959,7 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     // mouths left open at both ends: Rue au Beurre (north) and Rue de la Tête d'or (south).
     guildHouse(west, { name: 'Guild House – Le Roy d’Espagne', x: 23, width: 8.5, height: 24, floors: 4, style: 'bell', stone: materials.plaster, emblem: 'vane', balustradeStatues: true, terrace: true, medallions: true });
     guildHouse(west, { name: 'Guild House – La Brouette', x: 13.5, width: 8.5, height: 20, style: 'stepped', stone: materials.plaster });
-    guildHouse(west, { name: 'Guild House – Le Sac', x: 4, width: 8.5, height: 22, style: 'gable', stone: materials.warmStone });
+    guildHouse(west, { name: 'Guild House – Le Sac', x: 4, width: 8.5, height: 22, style: 'gable', stone: materials.warmStone, guildTools: true });
     guildHouse(west, { name: 'Guild House – La Louve', x: -5.5, width: 8.5, height: 23, floors: 3, style: 'scroll', stone: materials.ochre, emblem: true, terrace: true });
     guildHouse(west, { name: 'Guild House – Le Cornet', x: -15, width: 8.5, height: 21, style: 'scroll', stone: materials.ochre, emblem: 'horse' });
     guildHouse(west, { name: 'Guild House – Le Renard', x: -24.5, width: 8.5, height: 20, style: 'gable', stone: materials.warmStone, continents: true });
