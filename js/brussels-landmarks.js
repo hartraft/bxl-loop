@@ -40,10 +40,18 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
   const glowGlass = materials.glass.clone();
   glowGlass.emissive = new THREE.Color(0x000000);
   nightGlowMats.push(glowGlass);
+  // The traditional enamel street signs are lit after dark — register a glowing clone.
+  const signGlow = materials.enamelBlue.clone();
+  signGlow.emissive = new THREE.Color(0x000000);
+  nightGlowMats.push(signGlow);
+  // The brasserie awnings glow warm from the café lights beneath them after dark.
+  const awningGlow = materials.canvas.clone();
+  awningGlow.emissive = new THREE.Color(0x000000);
+  nightGlowMats.push(awningGlow);
   // Facade stone materials get a faint warm floodlight wash at night (the real square is
   // floodlit after dark) — clone them so daytime rendering is untouched.
   const facadeWashMats = [];
-  for (const key of ['limestone', 'paleStone', 'warmStone', 'ochre', 'plaster', 'gobertange', 'euville']) {
+  for (const key of ['limestone', 'paleStone', 'warmStone', 'ochre', 'plaster', 'gobertange', 'euville', 'gold', 'bronze', 'pavingA', 'pavingB']) {
     const m = materials[key].clone();
     m.emissive = new THREE.Color(0x000000);
     facadeWashMats.push(m);
@@ -310,7 +318,7 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     if (terrace) {
       // Café awning sloping over each ground-floor arcade bay — the real square's
       // brasseries and cafés sit under canvas awnings on the Grand-Place.
-      const awnings = new THREE.InstancedMesh(new THREE.BoxGeometry((width - 2.8) / bays - 0.3, 0.05, 1.3), materials.canvas, bays);
+      const awnings = new THREE.InstancedMesh(new THREE.BoxGeometry((width - 2.8) / bays - 0.3, 0.05, 1.3), awningGlow, bays);
       for (let bay = 0; bay < bays; bay++) {
         const wx = (bay - (bays - 1) / 2) * (width - 2.8) / Math.max(1, bays - 1);
         arcDummy.position.set(wx, 3.2, 0.85);
@@ -1673,6 +1681,25 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     cobblesC.name = 'Grand-Place cobblestone courses C (banded rows)';
     cobblesA.receiveShadow = cobblesB.receiveShadow = cobblesC.receiveShadow = true;
     plaza.add(cobblesA, cobblesB, cobblesC);
+    // Fine joints between the paving slabs of the real 1883/1899 calepinage — instanced seams.
+    const jointsX = new THREE.InstancedMesh(new THREE.BoxGeometry(0.07, 0.02, 70), materials.pavingEdge, 21);
+    const jointsZ = new THREE.InstancedMesh(new THREE.BoxGeometry(109, 0.02, 0.07), materials.pavingEdge, 15);
+    let jx = 0, jz = 0;
+    dummy.rotation.y = 0;
+    for (let i = 0; i <= 20; i++) {
+      dummy.position.set(-55 + i * 5.5, 0.005, 0);
+      dummy.updateMatrix();
+      jointsX.setMatrixAt(jx++, dummy.matrix);
+    }
+    for (let i = 0; i <= 14; i++) {
+      dummy.position.set(0, 0.005, -35 + i * 5);
+      dummy.updateMatrix();
+      jointsZ.setMatrixAt(jz++, dummy.matrix);
+    }
+    jointsX.count = jx; jointsZ.count = jz;
+    jointsX.name = 'Grand-Place paving joints (long axis)';
+    jointsZ.name = 'Grand-Place paving joints (cross axis)';
+    plaza.add(jointsX, jointsZ);
     // Granite kerb stones along all four facade lines where the paving meets the buildings.
     for (const [w, d, x, z, n] of [[110, 0.5, 0, 35.6, 'south'], [110, 0.5, 0, -35.6, 'north'], [0.5, 71, -54.6, 0, 'west'], [0.5, 71, 54.6, 0, 'east']]) {
       box(plaza, w, 0.18, d, x, 0.02, z, materials.pavingEdge, `Grand-Place ${n} facade kerb`);
@@ -1746,6 +1773,32 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     streetCobbles.name = 'Grand-Place street cobble stubs';
     streetCobbles.receiveShadow = true;
     plaza.add(streetCobbles);
+    // Darker granite sett patch at each of the seven street mouths, where the carriageway
+    // meets the square's calepinage.
+    const settPatches = new THREE.InstancedMesh(new THREE.BoxGeometry(6.4, 0.05, 4.4), materials.pavingEdge, mouths.length);
+    for (let m = 0; m < mouths.length; m++) {
+      const [mx, mz, dx, dz] = mouths[m];
+      sd.position.set(mx + dx * 2.2, -0.02, mz + dz * 2.2);
+      sd.rotation.y = dx ? Math.PI / 2 : 0;
+      sd.updateMatrix();
+      settPatches.setMatrixAt(m, sd.matrix);
+    }
+    settPatches.count = mouths.length;
+    settPatches.name = 'Grand-Place street-mouth granite sett patches';
+    plaza.add(settPatches);
+    // Tactile guidance strips across each street mouth for visually impaired pedestrians —
+    // a standard feature of the real paved square.
+    const tactiles = new THREE.InstancedMesh(new THREE.BoxGeometry(3.2, 0.05, 0.5), materials.warmStone, mouths.length);
+    for (let m = 0; m < mouths.length; m++) {
+      const [mx, mz, dx, dz] = mouths[m];
+      sd.position.set(mx + dx * 3.4, 0.01, mz + dz * 3.4);
+      sd.rotation.y = dx ? Math.PI / 2 : 0;
+      sd.updateMatrix();
+      tactiles.setMatrixAt(m, sd.matrix);
+    }
+    tactiles.count = mouths.length;
+    tactiles.name = 'Grand-Place tactile guidance strips';
+    plaza.add(tactiles);
 
     // Bollards flank each street entrance — the real square is pedestrianised at its mouths.
     const bollards = new THREE.InstancedMesh(new THREE.CylinderGeometry(0.14, 0.18, 0.9, 10), materials.dark, mouths.length * 2);
@@ -1761,6 +1814,34 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     bollards.count = bi;
     bollards.name = 'Grand-Place entrance bollards';
     plaza.add(bollards);
+    // Facade-mounted floodlight projectors at the base of each frontage — the real square is
+    // floodlit from projectors fixed to the facades, not from lamp posts. They use the night
+    // glow glass, so they light up after dark.
+    const uplights = new THREE.InstancedMesh(new THREE.BoxGeometry(0.35, 0.5, 0.18), glowGlass, 24);
+    let ul = 0;
+    for (let i = 0; i < 8; i++) {
+      sd.position.set(-48 + i * 13.7, 0.35, 35.75);
+      sd.rotation.y = Math.PI;
+      sd.updateMatrix();
+      uplights.setMatrixAt(ul++, sd.matrix);
+      sd.position.set(-48 + i * 13.7, 0.35, -35.75);
+      sd.rotation.y = 0;
+      sd.updateMatrix();
+      uplights.setMatrixAt(ul++, sd.matrix);
+    }
+    for (let i = 0; i < 4; i++) {
+      sd.position.set(-54.75, 0.35, -24 + i * 16);
+      sd.rotation.y = Math.PI / 2;
+      sd.updateMatrix();
+      uplights.setMatrixAt(ul++, sd.matrix);
+      sd.position.set(54.75, 0.35, -24 + i * 16);
+      sd.rotation.y = -Math.PI / 2;
+      sd.updateMatrix();
+      uplights.setMatrixAt(ul++, sd.matrix);
+    }
+    uplights.count = ul;
+    uplights.name = 'Grand-Place facade floodlight projectors';
+    plaza.add(uplights);
 
     // Perimeter facades frame the plaza with the real houses, by name and side.
     // North = negative Z; south = positive Z. The Town Hall holds the south-west of the
@@ -1857,7 +1938,7 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     // Traditional Brussels enamel street signs — blue board with a white rim on a dark post —
     // stand at each of the seven street mouths, naming the street that opens onto the square.
     const signRims = new THREE.InstancedMesh(new THREE.BoxGeometry(1.56, 0.48, 0.04), materials.plaster, plaques.length);
-    const signBoards = new THREE.InstancedMesh(new THREE.BoxGeometry(1.5, 0.42, 0.06), materials.enamelBlue, plaques.length);
+    const signBoards = new THREE.InstancedMesh(new THREE.BoxGeometry(1.5, 0.42, 0.06), signGlow, plaques.length);
     const signPosts = new THREE.InstancedMesh(new THREE.CylinderGeometry(0.05, 0.06, 2.6, 8), materials.dark, plaques.length);
     const sgd = new THREE.Object3D();
     const sv = new THREE.Vector3();

@@ -468,7 +468,7 @@ test('each street mouth carries a traditional blue enamel Brussels street sign',
   assert.ok(source.includes('enamelBlue: new THREE.MeshStandardMaterial({ color: 0x1d4f91'));
   assert.ok(square.includes("'Brussels enamel street signs'"));
   assert.ok(square.includes("'Street sign posts'"));
-  assert.ok(square.includes('new THREE.BoxGeometry(1.5, 0.42, 0.06), materials.enamelBlue, plaques.length)'));
+  assert.ok(square.includes('new THREE.BoxGeometry(1.5, 0.42, 0.06), signGlow, plaques.length)'));
   assert.ok(square.includes('signRims.count = signBoards.count = signPosts.count = sg'));
   assert.ok(square.includes('applyMatrix4(front.matrixWorld)'));
 });
@@ -503,7 +503,7 @@ test('the four frontages still face the plaza', () => {
 
 test('facades pick up a faint warm floodlight wash at night', () => {
   assert.ok(source.includes('facadeWashMats'));
-  assert.ok(source.includes("for (const key of ['limestone', 'paleStone', 'warmStone', 'ochre', 'plaster', 'gobertange', 'euville'])"));
+  assert.ok(source.includes("for (const key of ['limestone', 'paleStone', 'warmStone', 'ochre', 'plaster', 'gobertange', 'euville', 'gold', 'bronze', 'pavingA', 'pavingB'])"));
   assert.ok(source.includes('m.emissiveIntensity = level * 0.16'));
   assert.ok(source.includes('m.emissive.setHex(0xffd9a0)'));
 });
@@ -664,4 +664,24 @@ test('real building stones: Gobertange sandstone and Euville limestone houses, b
   assert.ok(square.includes("croisillonMat = spec.blueStone ? materials.blueStone : stone"));
   assert.ok(square.includes("emblem: 'flags', blueStone: true }"));
   assert.ok(source.includes("'gobertange', 'euville'"), 'night floodlight wash also covers the new stones');
+});
+
+test('night: lit enamel street signs, floodlit gilding/bronze/paving, glowing café awnings (rounds 89-90, 95-96)', () => {
+  assert.ok(source.includes('nightGlowMats.push(signGlow)'));
+  assert.ok(square.includes('signGlow, plaques.length'));
+  assert.ok(source.includes("'gold', 'bronze', 'pavingA', 'pavingB'"), 'gold, bronze and paving join the night floodlight wash');
+  assert.ok(source.includes('nightGlowMats.push(awningGlow)'));
+  assert.ok(square.includes('awningGlow, bays'));
+});
+
+test('square paving detail: calepinage joints, street-mouth sett patches, tactile strips, facade floodlights (rounds 91-94)', () => {
+  assert.ok(square.includes('Grand-Place paving joints (long axis)'));
+  assert.ok(square.includes('jointsX.count = jx'));
+  assert.ok(square.includes('Grand-Place street-mouth granite sett patches'));
+  assert.ok(square.includes('settPatches.count = mouths.length'));
+  assert.ok(square.includes('Grand-Place tactile guidance strips'));
+  assert.ok(square.includes('tactiles.count = mouths.length'));
+  assert.ok(square.includes('Grand-Place facade floodlight projectors'));
+  assert.ok(square.includes('uplights.count = ul'));
+  assert.ok(square.includes('glowGlass, 24'));
 });
