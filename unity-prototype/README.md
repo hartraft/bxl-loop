@@ -55,12 +55,12 @@ P0 is successful if the geography imports correctly and the result is fast enoug
 |---|---|---|
 | Windows PC | High | First playable build and reference performance target |
 | Linux PC | High | Build alongside Windows; test Vulkan and OpenGL paths |
-| Steam Deck | High/medium | PC build with controller-first UI, 1280×800 profile and 40/60 FPS targets |
+| Steam Deck | High/medium | PC build with controller-first UI; target a stable 30 FPS at 1280×800 first, then treat 40 FPS as a stretch goal |
 | macOS | Medium | Technically supported; validate Metal and asset pipeline later |
 | Android | Medium/low for full scene | Separate mobile quality tier, smaller streamed area, baked lighting, lower density |
 | Web | Low/medium for this Unity renderer | Unity Web build is possible, but WebGL 2 constraints and memory/download costs make it a separate optimisation effort; keep Three.js as the browser product for now |
 
-Unity 6 supports Windows, Linux, macOS, Android and browser Web builds, but support does not mean equal performance. Steam Deck is a Linux PC target rather than a separate Unity platform. Console targets are deliberately out of scope for P0.
+Unity 6 supports Windows, Linux, macOS, Android and browser Web builds, but support does not mean equal performance. Steam Deck is a PC/SteamOS target rather than a separate Unity platform. Unity's documented Linux Player support lists Ubuntu 22.04/24.04, so SteamOS must be tested on the actual Deck; build and compare a native Linux player against a Windows player under Proton. Valve's current compatibility target is a playable 30 FPS at 800p, with 1280×800 preferred. Console targets are deliberately out of scope for P0.
 
 ## Proposed milestones
 
