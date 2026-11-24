@@ -4301,6 +4301,19 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     for (const az of [24, 36, 48]) {
       box(g, 260, 0.12, 1.2, 0, 0.06, az, materials.pavingB, 'Place des Palais sett accent row');
     }
+
+    // A ring of coping stones caps the rim of the park main pond above the water line.
+    const pondCop = new THREE.InstancedMesh(new THREE.BoxGeometry(1.3, 0.18, 0.55), materials.paleStone, 36);
+    const pcd = new THREE.Object3D();
+    let pci = 0;
+    for (let ca = 0; ca < 36; ca++) {
+      const a = ca * Math.PI / 18;
+      pcd.position.set(Math.cos(a) * 16.35, 1.06, 150 + Math.sin(a) * 16.35);
+      pcd.rotation.y = -a;
+      pcd.updateMatrix();
+      pondCop.setMatrixAt(pci++, pcd.matrix);
+    }
+    pondCop.count = pci; pondCop.name = 'Main pond rim coping'; g.add(pondCop);
   });
     addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');

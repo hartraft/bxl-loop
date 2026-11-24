@@ -1157,3 +1157,8 @@ testCase('contrasting sett accent rows cross the Place des Palais on the palace 
 testCase('each perron step carries a dressed stone nosing strip', () => {
   assert.match(palace, /'Perron step nosing'/);
 });
+
+testCase('coping stones cap the rim of the park main pond', () => {
+  assert.match(palace, /'Main pond rim coping'/);
+  assert.match(palace, /pondCop\.count = pci/);
+});
