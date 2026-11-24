@@ -648,6 +648,36 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       mesh(root, new THREE.SphereGeometry(0.24, 8, 6), materials.gold, 0, height + gableHeight + 2.25, 0.1, name + ' St Nicholas gable statue head');
       box(root, 0.8, 0.3, 0.2, 0, 3.95, 0.55, materials.bronze, name + ' fox sign body');
       mesh(root, new THREE.SphereGeometry(0.18, 8, 6), materials.bronze, 0.45, 4.05, 0.55, name + ' fox sign head');
+      // Four haberdashery bas-relief panels (needles, scissors, thread, buttons) above the
+      // ground-floor arcade — the real Le Renard facade tells the guild's trade in relief.
+      const reliefs = new THREE.InstancedMesh(new THREE.BoxGeometry(0.6, 0.5, 0.1), materials.bronze, 4);
+      for (let i = 0; i < 4; i++) {
+        pedDummy.position.set(-1.5 * bayStep + i * bayStep, 3.95, 0.3);
+        pedDummy.updateMatrix();
+        reliefs.setMatrixAt(i, pedDummy.matrix);
+      }
+      reliefs.count = 4;
+      reliefs.name = name + ' haberdashery bas-relief panels';
+      root.add(reliefs);
+    }
+    if (spec.caryatids) {
+      // Le Renard: caryatids — female figure supports — at the second-floor pilaster
+      // joints, as on the real 1699 haberdashers' facade.
+      const wy3 = 4.4 + 2 * ((height - 6.6) / Math.max(1, floors - 1));
+      const caryatids = new THREE.InstancedMesh(new THREE.BoxGeometry(0.3, 1.6, 0.16), stone, 3);
+      const caryatidHeads = new THREE.InstancedMesh(new THREE.SphereGeometry(0.16, 8, 6), stone, 3);
+      for (let i = 0; i < 3; i++) {
+        pedDummy.position.set((i - 1) * bayStep, wy3, 0.26);
+        pedDummy.updateMatrix();
+        caryatids.setMatrixAt(i, pedDummy.matrix);
+        pedDummy.position.set((i - 1) * bayStep, wy3 + 0.95, 0.28);
+        pedDummy.updateMatrix();
+        caryatidHeads.setMatrixAt(i, pedDummy.matrix);
+      }
+      caryatids.count = caryatidHeads.count = 3;
+      caryatids.name = name + ' second-floor caryatids';
+      caryatidHeads.name = name + ' caryatid heads';
+      root.add(caryatids, caryatidHeads);
     }
     if (spec.guildTools) {
       // Le Sac (carpenters' and coopers' house, no. 4): the guild tools decorate the facade —
@@ -666,6 +696,33 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       toolCartouches.name = name + ' carpenter tool cartouches';
       root.add(toolCartouches);
     }
+    if (spec.garlands) {
+      // Le Sac: stone garlands of flowers and fruits swag beneath every window — the real
+      // carpenters'/coopers' facade is festooned with them.
+      const garlandCount = bays * floors;
+      const ribbons = new THREE.InstancedMesh(new THREE.BoxGeometry(1.0, 0.1, 0.08), stone, garlandCount);
+      const fruits = new THREE.InstancedMesh(new THREE.SphereGeometry(0.09, 6, 5), materials.green, garlandCount * 3);
+      let rg = 0, fr = 0;
+      for (let floor = 1; floor <= floors; floor++) {
+        const wy = 4.4 + (floor - 1) * ((height - 6.6) / Math.max(1, floors - 1));
+        for (let bay = 0; bay < bays; bay++) {
+          const wx = (bay - (bays - 1) / 2) * (width - 2.8) / Math.max(1, bays - 1);
+          pedDummy.position.set(wx, wy - 0.95, 0.18);
+          pedDummy.updateMatrix();
+          ribbons.setMatrixAt(rg++, pedDummy.matrix);
+          for (let f = 0; f < 3; f++) {
+            pedDummy.position.set(wx - 0.3 + f * 0.3, wy - 1.0 - Math.sin((f + 1) * Math.PI / 4) * 0.12, 0.2);
+            pedDummy.updateMatrix();
+            fruits.setMatrixAt(fr++, pedDummy.matrix);
+          }
+        }
+      }
+      ribbons.count = rg;
+      fruits.count = fr;
+      ribbons.name = name + ' flower garland ribbons';
+      fruits.name = name + ' garland fruit and flower dots';
+      root.add(ribbons, fruits);
+    }
     if (spec.brouette) {
       // La Brouette (greasers' house, nos. 2-3): the gable's pediment holds an arched niche with
       // St Giles, patron of greasers (with his deer and a scallop); the centre cartouche carries
@@ -678,6 +735,21 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       box(root, 0.45, 0.2, 0.06, 0, (4.4 + wyB) / 2, 0.4, materials.gold, name + ' gilded wheelbarrow');
       box(root, 0.55, 0.3, 0.12, -bayStep, wyB - 1.35, 0.28, materials.warmStone, name + ' Anno 1697 cartouche');
       box(root, 0.55, 0.3, 0.12, bayStep, wyB - 1.35, 0.28, materials.warmStone, name + ' Anno 1697 cartouche');
+    }
+    if (spec.pilasters) {
+      // La Brouette: colossal pilasters rise the full facade height between the bays,
+      // carrying the four classical orders of the real 1697 greasers' facade.
+      const ph = height - 1.9;
+      const px = [-width / 2 + 0.25, -(width - 2.8) / 4, (width - 2.8) / 4, width / 2 - 0.25];
+      const pilasters = new THREE.InstancedMesh(new THREE.BoxGeometry(0.36, ph, 0.2), materials.warmStone, 4);
+      for (let i = 0; i < 4; i++) {
+        pedDummy.position.set(px[i], 1.15 + ph / 2, 0.12);
+        pedDummy.updateMatrix();
+        pilasters.setMatrixAt(i, pedDummy.matrix);
+      }
+      pilasters.count = 4;
+      pilasters.name = name + ' colossal pilaster bands';
+      root.add(pilasters);
     }
     if (spec.louve) {
       // La Louve (archers' oath, no. 5): a bronze bas-relief of Romulus and Remus suckled by the
@@ -1719,11 +1791,11 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     // West side, numbered from the north corner like the real nos. 1-7, with the street
     // mouths left open at both ends: Rue au Beurre (north) and Rue de la Tête d'or (south).
     guildHouse(west, { name: 'Guild House – Le Roy d’Espagne', x: 23, width: 8.5, height: 24, floors: 4, style: 'bell', stone: materials.plaster, emblem: 'vane', balustradeStatues: true, terrace: true, medallions: true });
-    guildHouse(west, { name: 'Guild House – La Brouette', x: 13.5, width: 8.5, height: 20, style: 'stepped', stone: materials.plaster, brouette: true });
-    guildHouse(west, { name: 'Guild House – Le Sac', x: 4, width: 8.5, height: 22, style: 'gable', stone: materials.warmStone, guildTools: true });
+    guildHouse(west, { name: 'Guild House – La Brouette', x: 13.5, width: 8.5, height: 20, style: 'stepped', stone: materials.plaster, brouette: true, pilasters: true });
+    guildHouse(west, { name: 'Guild House – Le Sac', x: 4, width: 8.5, height: 22, style: 'gable', stone: materials.warmStone, guildTools: true, garlands: true });
     guildHouse(west, { name: 'Guild House – La Louve', x: -5.5, width: 8.5, height: 23, floors: 3, style: 'scroll', stone: materials.ochre, emblem: true, terrace: true, louve: true });
     guildHouse(west, { name: 'Guild House – Le Cornet', x: -15, width: 8.5, height: 21, style: 'scroll', stone: materials.ochre, emblem: 'horse', cornet: true });
-    guildHouse(west, { name: 'Guild House – Le Renard', x: -24.5, width: 8.5, height: 20, style: 'gable', stone: materials.warmStone, continents: true });
+    guildHouse(west, { name: 'Guild House – Le Renard', x: -24.5, width: 8.5, height: 20, style: 'gable', stone: materials.warmStone, continents: true, caryatids: true });
 
     const east = new THREE.Group();
     east.name = 'East frontage';

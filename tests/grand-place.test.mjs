@@ -378,7 +378,7 @@ test('La Louve carries the Romulus-and-Remus she-wolf relief and the Apollo pedi
 });
 
 test('La Brouette carries St Giles in the gable niche, the wheelbarrow and Anno 1697 cartouches', () => {
-  assert.ok(square.includes("La Brouette', x: 13.5, width: 8.5, height: 20, style: 'stepped', stone: materials.plaster, brouette: true }"));
+  assert.ok(square.includes("La Brouette', x: 13.5, width: 8.5, height: 20, style: 'stepped', stone: materials.plaster, brouette: true, pilasters: true }"));
   assert.ok(square.includes(" St Giles arched niche'"));
   assert.ok(square.includes(" St Giles statue'"));
   assert.ok(square.includes(" gilded wheelbarrow'"));
@@ -386,7 +386,7 @@ test('La Brouette carries St Giles in the gable niche, the wheelbarrow and Anno 
 });
 
 test('Le Sac carries the carpenter tool cartouches and the globe-compass finial', () => {
-  assert.ok(square.includes("Le Sac', x: 4, width: 8.5, height: 22, style: 'gable', stone: materials.warmStone, guildTools: true }"));
+  assert.ok(square.includes("Le Sac', x: 4, width: 8.5, height: 22, style: 'gable', stone: materials.warmStone, guildTools: true, garlands: true }"));
   assert.ok(square.includes(" globe finial'"));
   assert.ok(square.includes(" compass needle N-S'"));
   assert.ok(square.includes(" carpenter tool cartouches'"));
@@ -394,7 +394,7 @@ test('Le Sac carries the carpenter tool cartouches and the globe-compass finial'
 });
 
 test('Le Renard carries Justice with the four continents, St Nicholas and the fox sign', () => {
-  assert.ok(square.includes("Le Renard', x: -24.5, width: 8.5, height: 20, style: 'gable', stone: materials.warmStone, continents: true }"));
+  assert.ok(square.includes("Le Renard', x: -24.5, width: 8.5, height: 20, style: 'gable', stone: materials.warmStone, continents: true, caryatids: true }"));
   assert.ok(square.includes(" Justice and four continents statues'"));
   assert.ok(square.includes('continentStatues.count = 5'));
   assert.ok(square.includes(" St Nicholas gable statue body'"));
@@ -638,4 +638,16 @@ test('Town Hall: archivolt prophets, gallery balustrade panels, lantern turret f
   assert.ok(square.includes('galleryBalusters.count = 8'));
   assert.ok(square.includes('Lantern corner turret gilded finials'));
   assert.ok(square.includes('turretFinials.count = 4'));
+});
+
+test('Le Renard caryatids + haberdashery reliefs, La Brouette colossal pilasters, Le Sac garlands (rounds 83-86)', () => {
+  assert.ok(square.includes('second-floor caryatids'));
+  assert.ok(square.includes('caryatids.count = caryatidHeads.count = 3'));
+  assert.ok(square.includes('haberdashery bas-relief panels'));
+  assert.ok(square.includes('reliefs.count = 4'));
+  assert.ok(square.includes('colossal pilaster bands'));
+  assert.ok(square.includes('pilasters.count = 4'));
+  assert.ok(square.includes('flower garland ribbons'));
+  assert.ok(square.includes('garland fruit and flower dots'));
+  assert.ok(square.includes('fruits.count = fr'));
 });
