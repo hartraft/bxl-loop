@@ -461,6 +461,15 @@ test('each street mouth carries a traditional blue enamel Brussels street sign',
   assert.ok(square.includes('applyMatrix4(front.matrixWorld)'));
 });
 
+test('’t Serclaes plaque on L’Étoile, plaque hoods, manholes and areaway grates in the paving', () => {
+  assert.ok(square.includes('Everard ’t Serclaes memorial plaque'));
+  assert.ok(square.includes('UNESCO plaque hood – ${street}'), 'a bronze hood over each UNESCO plaque (in the plaque loop)');
+  assert.ok(source.includes("'Grand-Place manhole covers'"));
+  assert.ok(source.includes('manholes.count = mh'));
+  assert.ok(source.includes("'Grand-Place cellar areaway grates'"));
+  assert.ok(source.includes('grates.count = gr'));
+});
+
 test('the seven real street mouths stay open, each with its bronze UNESCO plaque', () => {
   assert.ok(square.includes('UNESCO entrance plaque – ${street}'));
   for (const street of ['Rue au Beurre', 'Rue de la Tête d’or', 'Rue des Chapeliers', 'Rue Charles Buls', 'Rue de la Colline', 'Rue d’Arenberg', 'Rue Chair et Pain']) {

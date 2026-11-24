@@ -1459,6 +1459,9 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     plaza.add(south);
     townHall(south);
     guildHouse(south, { name: 'Guild House – L’Étoile', x: -30, width: 13, height: 21, floors: 3, style: 'stepped', stone: materials.warmStone, emblem: 'star' });
+    // Everard 't Serclaes, the alderman who died defending the city's liberties at this house in
+    // 1388, is commemorated by a bronze memorial plaque on the facade.
+    box(south, 0.5, 0.7, 0.08, -30, 3.2, 0.14, materials.bronze, 'Everard ’t Serclaes memorial plaque – L’Étoile');
     guildHouse(south, { name: 'Guild House – Le Cygne', x: -44, width: 12, height: 23, floors: 4, style: 'bell', stone: materials.plaster, emblem: true, terrace: true, swan: true });
 
     const north = new THREE.Group();
@@ -1511,7 +1514,32 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     ];
     for (const [front, x, street] of plaques) {
       box(front, 0.55, 0.75, 0.08, x, 1.2, 0.12, materials.bronze, `UNESCO entrance plaque – ${street}`);
+      // A small bronze hood shelters each 2018 UNESCO plaque from the rain.
+      box(front, 0.7, 0.12, 0.18, x, 1.68, 0.12, materials.bronze, `UNESCO plaque hood – ${street}`);
     }
+    // Manhole covers and cellar areaway grates set into the paving along the facade lines.
+    const manholes = new THREE.InstancedMesh(new THREE.CylinderGeometry(0.42, 0.42, 0.06, 14).rotateX(Math.PI / 2), materials.dark, 24);
+    const grates = new THREE.InstancedMesh(new THREE.BoxGeometry(1.6, 0.05, 0.5), materials.dark, 28);
+    const md = new THREE.Object3D();
+    let mh = 0, gr = 0;
+    for (let i = 0; i < 24; i++) {
+      const x = -50 + (i % 8) * 14.3, z = (Math.floor(i / 8) % 2 ? 33.4 : -33.4);
+      md.position.set(x, -0.05, z);
+      md.updateMatrix();
+      manholes.setMatrixAt(mh++, md.matrix);
+    }
+    for (const z of [33.2, -33.2]) {
+      for (let i = 0; i < 14; i++) {
+        md.position.set(-49 + i * 7.2, -0.05, z + (z > 0 ? -1.6 : 1.6));
+        md.updateMatrix();
+        grates.setMatrixAt(gr++, md.matrix);
+      }
+    }
+    manholes.count = mh;
+    grates.count = gr;
+    manholes.name = 'Grand-Place manhole covers';
+    grates.name = 'Grand-Place cellar areaway grates';
+    plaza.add(manholes, grates);
 
     // Traditional Brussels enamel street signs — blue board with a white rim on a dark post —
     // stand at each of the seven street mouths, naming the street that opens onto the square.
