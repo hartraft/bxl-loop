@@ -3848,6 +3848,10 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     for (const side of wingXs) {
       box(g, wingW, 0.12, 0.8, side, 7.8, facadeZ + 0.7, ashlar, 'Wing balcony slab');
     }
+
+    // A cross of muntins divides the portico door fanlight into panes.
+    box(g, 0.08, 3.2, 0.05, 0, 7.9, centralFace + 0.28, bronze, 'Fanlight muntin vertical');
+    box(g, 3.2, 0.08, 0.05, 0, 7.9, centralFace + 0.28, bronze, 'Fanlight muntin horizontal');
   });
   addLandmark('palaceSurroundings', (g) => {
     // Real-world sources: en/fr Wikipedia (Royal Palace of Brussels, Brussels Park, Place des Palais,

@@ -1511,3 +1511,8 @@ testCase('an architrave spans the Academy Palace portico under the pediment', ()
 testCase('bollards mark the four corners of the Place des Palais', () => {
   assert.match(palace, /'Square corner bollard'/);
 });
+
+testCase('a muntin cross divides the portico door fanlight into panes', () => {
+  assert.match(palace, /'Fanlight muntin vertical'/);
+  assert.match(palace, /'Fanlight muntin horizontal'/);
+});
