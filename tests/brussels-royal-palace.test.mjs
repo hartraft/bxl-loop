@@ -1236,3 +1236,7 @@ testCase('glazing muntins divide the central piano nobile French doors into pane
 testCase('dressed stone cheek walls flank both sides of the perron', () => {
   assert.match(palace, /'Perron cheek wall'/);
 });
+
+testCase('hayloft windows pierce the Royal Stables range under the eaves', () => {
+  assert.match(palace, /'Royal Stables hayloft window'/);
+});

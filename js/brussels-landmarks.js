@@ -4438,6 +4438,11 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       box(g, 0.5, 0.7, 0.5, gx, 3.75, 62, materials.bronze, 'Park south gate lantern');
       mesh(g, new THREE.SphereGeometry(0.22, 10, 8), materials.glass, gx, 3.75, 62, 'Park south gate lantern glass');
     }
+
+    // Small hayloft windows pierce the Royal Stables range just under the eaves.
+    for (let i = 0; i < 5; i++) {
+      box(g, 1.2, 1.2, 0.2, -70 - 16 + i * 8, 10, -72.9, materials.glass, 'Royal Stables hayloft window');
+    }
   });
     addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');
