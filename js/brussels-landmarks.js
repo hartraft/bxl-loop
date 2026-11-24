@@ -1512,6 +1512,30 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     box(root, width, height, depth, 0, height / 2, -depth / 2, stone, 'King’s House neo-Gothic main block');
     box(root, width + 1.6, 1.0, depth + 0.9, 0, 0.5, -depth / 2, darkStone, 'King’s House plinth');
     box(root, width + 0.9, 0.8, depth + 0.7, 0, height - 0.4, -depth / 2, trim, 'King’s House upper cornice');
+    // Oversized quoins chain the front corners of the main block, and a row of modillions
+    // stands under the upper cornice — standard dressing of Jamaer's real facade.
+    const khQRows = Math.floor((height - 2) / 0.9);
+    const khQuoins = new THREE.InstancedMesh(new THREE.BoxGeometry(0.4, 0.8, 0.4), darkStone, khQRows * 2);
+    const khMods = new THREE.InstancedMesh(new THREE.BoxGeometry(0.3, 0.34, 0.34), darkStone, 26);
+    const khQd = new THREE.Object3D();
+    let khQ = 0;
+    for (let r = 0; r < khQRows; r++) {
+      for (const sx of [-1, 1]) {
+        khQd.position.set(sx * (width / 2 - 0.1), 1.4 + r * 0.9, 0.2);
+        khQd.updateMatrix();
+        khQuoins.setMatrixAt(khQ++, khQd.matrix);
+      }
+    }
+    for (let i = 0; i < 26; i++) {
+      khQd.position.set(-width / 2 + 0.6 + i * (width - 1.2) / 25, height - 0.95, 0.25);
+      khQd.updateMatrix();
+      khMods.setMatrixAt(i, khQd.matrix);
+    }
+    khQuoins.count = khQ;
+    khMods.count = 26;
+    khQuoins.name = 'King’s House corner quoins';
+    khMods.name = 'King’s House cornice modillions';
+    root.add(khQuoins, khMods);
 
     // Ground-floor arcade gallery: recessed arched openings between piers, pointed heads.
     const bays = 9, bayW = width / bays;
@@ -1547,6 +1571,17 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     root.add(khVoussoirs);
     // First-floor gallery: arched windows above a continuous balustrade.
     box(root, width - 1.5, 0.85, 0.55, 0, 7.6, 0.4, trim, 'First gallery balustrade');
+    // Balusters rise along the first gallery balustrade, as on the real Broodhuis.
+    const khBalusters = new THREE.InstancedMesh(new THREE.BoxGeometry(0.12, 0.6, 0.12), trim, 30);
+    const khBd = new THREE.Object3D();
+    for (let i = 0; i < 30; i++) {
+      khBd.position.set(-width / 2 + 0.8 + i * (width - 1.6) / 29, 8.35, 0.55);
+      khBd.updateMatrix();
+      khBalusters.setMatrixAt(i, khBd.matrix);
+    }
+    khBalusters.count = 30;
+    khBalusters.name = 'King’s House first-gallery balusters';
+    root.add(khBalusters);
     for (let i = 0; i < bays; i++) {
       const x = -width / 2 + bayW * (i + 0.5);
       box(root, 1.5, 4.2, 0.2, x, 10.6, 0.22, glass, 'King’s House first-floor gallery arch');
@@ -1585,6 +1620,18 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       box(root, 1.4, 3.4, 0.18, x, 16.8, 0.22, glass, 'King’s House upper window');
       box(root, 1.6, 0.22, 0.3, x, 18.6, 0.22, trim, 'Upper window hood');
     }
+    // A stone mullion divides each upper-storey window into twin lights, as in the real
+    // neo-Gothic upper floor.
+    const khMullions = new THREE.InstancedMesh(new THREE.BoxGeometry(0.1, 3.4, 0.2), trim, bays);
+    const khMd = new THREE.Object3D();
+    for (let i = 0; i < bays; i++) {
+      khMd.position.set(-width / 2 + bayW * (i + 0.5), 16.8, 0.24);
+      khMd.updateMatrix();
+      khMullions.setMatrixAt(i, khMd.matrix);
+    }
+    khMullions.count = bays;
+    khMullions.name = 'King’s House upper window mullions';
+    root.add(khMullions);
     for (let i = 1; i <= bays; i += 2) {
       const x = -width / 2 + i * bayW;
       khDummy.position.set(x, 10.6, 0.3);
@@ -1641,6 +1688,19 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       const z = -depth / 2 + (i % 2 ? -2.6 : 2.6);
       box(root, 1.3, 2.0, 0.6, x, height + 2.0, z, trim, 'King’s House roof dormer');
     }
+    // Triangular pediments crown the seven slate-roof dormers of the real Broodhuis roof.
+    const khDormPedShape = new THREE.Shape();
+    khDormPedShape.moveTo(-0.75, 0); khDormPedShape.lineTo(0, 0.5); khDormPedShape.lineTo(0.75, 0); khDormPedShape.closePath();
+    const khDormPeds = new THREE.InstancedMesh(new THREE.ShapeGeometry(khDormPedShape), trim, 7);
+    const khPd2 = new THREE.Object3D();
+    for (let i = 0; i < 7; i++) {
+      khPd2.position.set(-width / 2 + 3 + i * 4.3, height + 3.05, -depth / 2 + (i % 2 ? -2.6 : 2.6));
+      khPd2.updateMatrix();
+      khDormPeds.setMatrixAt(i, khPd2.matrix);
+    }
+    khDormPeds.count = 7;
+    khDormPeds.name = 'King’s House dormer pediments';
+    root.add(khDormPeds);
 
     // Central pavilion with a stepped gable and Jamaer's central tower: square shaft,
     // octagonal top, domed slate spire — 38.49 m in reality.
@@ -1680,6 +1740,9 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     const dome = mesh(root, new THREE.SphereGeometry(1.7, 12, 8), roofMat, 0, 36.3, towerZ, 'King’s House tower domed slate spire');
     dome.scale.set(1, 0.75, 1);
     cylinder(root, 0.08, 0.14, 1.2, 0, 38.2, towerZ, materials.gold, 6).name = 'King’s House tower finial';
+    // Gilded flag flying from the tower finial.
+    const khFlag = box(root, 0.7, 0.4, 0.04, 0.4, 38.9, towerZ, materials.gold, 'King’s House tower gilded flag');
+    khFlag.rotation.z = 0.12;
     // Statue of Charles V on the central tower, as on the real building.
     box(root, 0.5, 1.8, 0.2, 0, 30.5, towerZ + 1.55, darkStone, 'King’s House Charles V statue');
     mesh(root, new THREE.SphereGeometry(0.24, 8, 6), darkStone, 0, 31.6, towerZ + 1.55, 'King’s House Charles V statue head');

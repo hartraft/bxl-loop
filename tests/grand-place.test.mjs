@@ -708,3 +708,17 @@ test('Town Hall: wing corner quoins, portal fanlight + hood mould, second-floor 
   assert.ok(square.includes('Town Hall roof ridge tiles'));
   assert.ok(square.includes('ridgeTiles.count = ridgeTileCount'));
 });
+
+test('Broodhuis: corner quoins + cornice modillions, gallery balusters, upper mullions, dormer pediments, tower flag (rounds 105-110)', () => {
+  assert.ok(square.includes('King’s House corner quoins'));
+  assert.ok(square.includes('khQuoins.count = khQ'));
+  assert.ok(square.includes('King’s House cornice modillions'));
+  assert.ok(square.includes('khMods.count = 26'));
+  assert.ok(square.includes('King’s House first-gallery balusters'));
+  assert.ok(square.includes('khBalusters.count = 30'));
+  assert.ok(square.includes('King’s House upper window mullions'));
+  assert.ok(square.includes('khMullions.count = bays'));
+  assert.ok(square.includes('King’s House dormer pediments'));
+  assert.ok(square.includes('khDormPeds.count = 7'));
+  assert.ok(square.includes('King’s House tower gilded flag'));
+});
