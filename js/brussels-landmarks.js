@@ -3843,6 +3843,11 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
 
     // A stone threshold spans the gilded garden gate.
     box(g, 8.4, 0.18, 0.6, 0, 0.09, 14, stone, 'Garden gate threshold');
+
+    // Each wing balcony parapet rests on a stone slab projecting from the facade.
+    for (const side of wingXs) {
+      box(g, wingW, 0.12, 0.8, side, 7.8, facadeZ + 0.7, ashlar, 'Wing balcony slab');
+    }
   });
   addLandmark('palaceSurroundings', (g) => {
     // Real-world sources: en/fr Wikipedia (Royal Palace of Brussels, Brussels Park, Place des Palais,

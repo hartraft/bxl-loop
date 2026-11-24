@@ -1499,3 +1499,7 @@ testCase('a stone threshold spans the gilded garden gate', () => {
 testCase('capitals crown each Palace of the Nation peristyle column', () => {
   assert.match(palace, /'Palace of the Nation column capital'/);
 });
+
+testCase('each wing balcony rests on a projecting stone slab', () => {
+  assert.match(palace, /'Wing balcony slab'/);
+});
