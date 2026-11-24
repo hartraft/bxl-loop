@@ -2173,3 +2173,7 @@ testCase('stone steps lead down to the octagonal basin rim on its south side', (
 testCase('acroteria crown the wing pediments of the Palace of the Nation', () => {
   assert.match(palace, /'Palace of the Nation wing acroterion'/);
 });
+
+testCase('stone bases anchor the end posts of the garden railing', () => {
+  assert.match(palace, /'Garden railing end post base'/);
+});

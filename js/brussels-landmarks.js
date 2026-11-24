@@ -4173,6 +4173,11 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     for (const side of [-1, 1]) {
       box(g, 0.5, 0.6, 0.2, side * 18.2, 22.95, centralFace + 4.5, moulding, 'Triglyph end block');
     }
+
+    // Stone bases anchor the end posts of the gilded garden railing.
+    for (const side of [-1, 1]) {
+      box(g, 0.3, 0.3, 0.3, side * 34, 0.15, 14, ashlar, 'Garden railing end post base');
+    }
   });
   addLandmark('palaceSurroundings', (g) => {
     // Real-world sources: en/fr Wikipedia (Royal Palace of Brussels, Brussels Park, Place des Palais,
