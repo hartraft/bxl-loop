@@ -4991,6 +4991,12 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
 
     // A sett-paved yard lies behind the Academy Palace stables block.
     box(g, 44, 0.12, 24, -168, 0.06, 104, materials.pavingA, 'Academy stables yard paving');
+
+    // Collar rings anchor the emperor bust pedestals around the main pond.
+    for (let ba = 0; ba < 16; ba++) {
+      const a = ba * Math.PI / 8;
+      cylinder(g, 1.1, 1.2, 0.3, Math.cos(a) * 17.6, 0.15, 150 + Math.sin(a) * 17.6, materials.paleStone, 10).name = 'Pond emperor bust collar';
+    }
   });
     addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');

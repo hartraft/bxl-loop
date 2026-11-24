@@ -1655,3 +1655,7 @@ testCase('arms carry the gilded globes from the perron lamp standards', () => {
 testCase('a sett-paved yard lies behind the Academy stables block', () => {
   assert.match(palace, /'Academy stables yard paving'/);
 });
+
+testCase('collar rings anchor the emperor bust pedestals around the pond', () => {
+  assert.match(palace, /'Pond emperor bust collar'/);
+});
