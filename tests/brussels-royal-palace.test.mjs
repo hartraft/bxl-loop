@@ -1667,3 +1667,7 @@ testCase('a moulded cap finishes the front edge of the portico stylobate', () =>
 testCase('collars anchor the statue pedestals in the Academy garden', () => {
   assert.match(palace, /'Academy statue base collar'/);
 });
+
+testCase('caps finish the posts of the perron side rails', () => {
+  assert.match(palace, /'Perron rail post cap'/);
+});

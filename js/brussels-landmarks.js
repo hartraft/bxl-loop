@@ -3924,6 +3924,13 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
 
     // A moulded cap finishes the front edge of the portico stylobate.
     box(g, 31, 0.1, 0.3, 0, 0.68, centralFace + 7.75, moulding, 'Stylobate edge cap');
+
+    // Caps finish the posts of the perron side rails.
+    for (const side of [-1, 1]) {
+      for (const pz of [0.5, 2.1]) {
+        box(g, 0.14, 0.1, 0.14, side * 8.4, 1.25, centralFace + pz, bronze, 'Perron rail post cap');
+      }
+    }
   });
   addLandmark('palaceSurroundings', (g) => {
     // Real-world sources: en/fr Wikipedia (Royal Palace of Brussels, Brussels Park, Place des Palais,
