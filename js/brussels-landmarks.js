@@ -987,6 +987,17 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     box(root, 33.8, 1.0, depth + 1.0, westWingX, 0.5, -depth / 2, darkStone, 'West wing stepped stone plinth');
     box(root, 16.0, 0.8, depth + 0.8, eastWingX, height - 0.35, -depth / 2, trim, 'East wing upper cornice');
     box(root, 33.0, 0.8, depth + 0.8, westWingX, height - 0.35, -depth / 2, trim, 'West wing upper cornice');
+    // Drip moulds under both wing cornices shed water off the facade.
+    const corniceDrips = new THREE.InstancedMesh(new THREE.BoxGeometry(1, 0.07, 0.5), darkStone, 2);
+    wmd.position.set(eastWingX, height - 0.82, 0.25);
+    wmd.updateMatrix();
+    corniceDrips.setMatrixAt(0, wmd.matrix);
+    wmd.position.set(westWingX, height - 0.82, 0.25);
+    wmd.updateMatrix();
+    corniceDrips.setMatrixAt(1, wmd.matrix);
+    corniceDrips.count = 2;
+    corniceDrips.name = 'Wing cornice drip moulds';
+    root.add(corniceDrips);
     // Both wing cornices stand on rows of corbels (modillions), like the guild houses.
     const wingMods = new THREE.InstancedMesh(new THREE.BoxGeometry(0.3, 0.34, 0.34), darkStone, 40);
     const wmd = new THREE.Object3D();
@@ -1118,6 +1129,22 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     vaultRibs.count = bays;
     vaultRibs.name = 'Arcade cross-vault ribs';
     root.add(vaultRibs);
+    // Springer stones where each pointed arch leaves its pier.
+    const springers = new THREE.InstancedMesh(new THREE.BoxGeometry(0.3, 0.36, 0.5), trim, bays * 2);
+    let sp = 0;
+    for (let i = 0; i < bays; i++) {
+      const x = -width / 2 + bayW * (i + 0.5);
+      for (const side of [-1, 1]) {
+        vd.position.set(x + side * (bayW / 2 - 0.12), 6.95, 0.26);
+        vd.rotation.z = side * 0.3;
+        vd.updateMatrix();
+        springers.setMatrixAt(sp++, vd.matrix);
+        vd.rotation.z = 0;
+      }
+    }
+    springers.count = sp;
+    springers.name = 'Arcade arch springer stones';
+    root.add(springers);
     // A stone balcony connects the two wings across the facade above the arcade, on a row of
     // balusters — as on the real elevation.
     box(root, width + 1.2, 0.4, 1.3, 0, 8.7, 0.55, trim, 'Wing-connecting balcony');
@@ -1188,6 +1215,33 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
         pin++;
       }
     }
+    // Every facade buttress stands on a plinth block and is weathered to a slope at its top;
+    // a gargoyle spout projects from each pinnacle base — the real buttresses are dressed thus.
+    const buttressPlinths = new THREE.InstancedMesh(new THREE.BoxGeometry(0.72, 0.5, 0.85), darkStone, pin);
+    const buttressWeather = new THREE.InstancedMesh(new THREE.BoxGeometry(0.56, 0.7, 0.72), trim, pin);
+    const pinGargoyles = new THREE.InstancedMesh(new THREE.BoxGeometry(0.26, 0.4, 0.6), darkStone, pin);
+    for (let i = 0, p = 0; i <= bays; i++) {
+      if (i % 2 === 0) {
+        const x = -width / 2 + i * bayW;
+        pinDummy.position.set(x, 0.25, 0.1);
+        pinDummy.updateMatrix();
+        buttressPlinths.setMatrixAt(p, pinDummy.matrix);
+        pinDummy.position.set(x, height - 0.1, 0.1);
+        pinDummy.rotation.z = 0.18;
+        pinDummy.updateMatrix();
+        buttressWeather.setMatrixAt(p, pinDummy.matrix);
+        pinDummy.rotation.z = 0;
+        pinDummy.position.set(x, height - 1.9, 0.5);
+        pinDummy.updateMatrix();
+        pinGargoyles.setMatrixAt(p, pinDummy.matrix);
+        p++;
+      }
+    }
+    buttressPlinths.count = buttressWeather.count = pinGargoyles.count = pin;
+    buttressPlinths.name = 'Buttress base plinths';
+    buttressWeather.name = 'Buttress weathered tops';
+    pinGargoyles.name = 'Pinnacle base gargoyle spouts';
+    root.add(buttressPlinths, buttressWeather, pinGargoyles);
     pinnacleSpires.count = pinnacleFinials.count = pin;
     pinnacleSpires.name = 'Facade pinnacle spire';
     pinnacleFinials.name = 'Facade pinnacle gilded finial';
@@ -1273,6 +1327,23 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     labelStops.name = 'Lancet hood label stops';
     dripstones.name = 'Window sill dripstones';
     root.add(labelStops, dripstones);
+    // Sloped water tables cap every upper-storey balcony slab and sill, as on the real facade.
+    const waterTables = new THREE.InstancedMesh(new THREE.BoxGeometry(2.6, 0.06, 1.05), darkStone, bays * 2);
+    let wt = 0;
+    for (let floor = 0; floor < 2; floor++) {
+      const y = floor === 0 ? 12.5 : 20.0;
+      for (let i = 0; i < bays; i++) {
+        const x = -width / 2 + bayW * (i + 0.5);
+        facadeDummy.position.set(x, y - 2.62, 0.58);
+        facadeDummy.rotation.z = -0.06;
+        facadeDummy.updateMatrix();
+        waterTables.setMatrixAt(wt++, facadeDummy.matrix);
+        facadeDummy.rotation.z = 0;
+      }
+    }
+    waterTables.count = wt;
+    waterTables.name = 'Balcony and sill water tables';
+    root.add(waterTables);
     // Statues in niches above the ground-floor arcade arch heads as well — the real
     // facade carries nearly three hundred figures on every level.
     for (let i = 0; i < bays; i++) {
@@ -1332,6 +1403,23 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     nicheHoods.name = 'Upper niche canopy hoods';
     hoodCrochets.name = 'Niche hood crocket balls';
     root.add(nicheBacks, statuePlinths, nicheHoods, hoodCrochets);
+    // Slender colonettes flank every upper-floor statue niche, framing it like the real niches.
+    const nicheColonettes = new THREE.InstancedMesh(new THREE.BoxGeometry(0.14, 2.6, 0.16), trim, 16);
+    let nc = 0;
+    for (let floor = 0; floor < 2; floor++) {
+      const y = floor === 0 ? 12.5 : 20.0;
+      for (let i = 1; i <= bays && nc < 16; i += 2) {
+        const x = -width / 2 + i * bayW;
+        for (const side of [-1, 1]) {
+          facadeDummy.position.set(x + side * 0.5, y, 0.2);
+          facadeDummy.updateMatrix();
+          nicheColonettes.setMatrixAt(nc++, facadeDummy.matrix);
+        }
+      }
+    }
+    nicheColonettes.count = nc;
+    nicheColonettes.name = 'Niche side colonettes';
+    root.add(nicheColonettes);
     // Documented ground-floor figures beside the tower base: prophets, David and Solomon and
     // an Annunciation group flank the portal on the real elevation.
     const baseFigures = new THREE.InstancedMesh(new THREE.BoxGeometry(0.26, 1.2, 0.14), materials.gold, 4);
@@ -1497,6 +1585,26 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     stringDrips.count = 5;
     stringDrips.name = 'Tower string-course drip moulds';
     tower.add(stringDrips);
+    // Sloped base buttresses brace the four corners of the tower shaft from the ground, as on
+    // the real tower base.
+    const baseButtresses = new THREE.InstancedMesh(new THREE.BoxGeometry(0.6, 12, 0.6), trim, 4);
+    const bbd = new THREE.Object3D();
+    const bup = new THREE.Vector3(0, 1, 0);
+    for (let k = 0; k < 4; k++) {
+      const sx = k % 2 ? 1 : -1, sz = k < 2 ? 1 : -1;
+      const from = new THREE.Vector3(sx * (towerW / 2 - 0.2), 6.2, sz * (towerW / 2 - 0.2));
+      const to = new THREE.Vector3(sx * (towerW / 2 + 1.6), 0.4, sz * (towerW / 2 + 1.6));
+      const d = to.clone().sub(from);
+      bbd.position.copy(from.clone().add(to).multiplyScalar(0.5));
+      bbd.quaternion.setFromUnitVectors(bup, d.normalize());
+      bbd.scale.set(1, d.length(), 1);
+      bbd.updateMatrix();
+      baseButtresses.setMatrixAt(k, bbd.matrix);
+      bbd.scale.set(1, 1, 1);
+    }
+    baseButtresses.count = 4;
+    baseButtresses.name = 'Tower base corner buttresses';
+    tower.add(baseButtresses);
     // The square shaft is chained with oversized stone quoins at its four corners.
     const tqRows = Math.floor(54 / 4.5);
     const towerQuoins = new THREE.InstancedMesh(new THREE.BoxGeometry(0.42, 0.9, 0.42), trim, tqRows * 4);

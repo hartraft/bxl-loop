@@ -820,3 +820,19 @@ test('rounds 141-148: Town Hall arcade vault ribs, hood label stops, sill dripst
   assert.ok(square.includes('Tower string-course drip moulds'));
   assert.ok(square.includes('stringDrips.count = 5'));
 });
+
+test('rounds 149-156: buttress plinths/weatherings/gargoyles, wing cornice drips, balcony water tables, niche colonettes, arcade springers, tower base buttresses', () => {
+  assert.ok(square.includes('Buttress base plinths'));
+  assert.ok(square.includes('Buttress weathered tops'));
+  assert.ok(square.includes('Pinnacle base gargoyle spouts'));
+  assert.ok(square.includes('Wing cornice drip moulds'));
+  assert.ok(square.includes('corniceDrips.count = 2'));
+  assert.ok(square.includes('Balcony and sill water tables'));
+  assert.ok(square.includes('waterTables.count = wt'));
+  assert.ok(square.includes('Niche side colonettes'));
+  assert.ok(square.includes('nicheColonettes.count = nc'));
+  assert.ok(square.includes('Arcade arch springer stones'));
+  assert.ok(square.includes('springers.count = sp'));
+  assert.ok(square.includes('Tower base corner buttresses'));
+  assert.ok(square.includes('baseButtresses.count = 4'));
+});
