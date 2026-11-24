@@ -4832,6 +4832,12 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
         box(g, 0.12, 1.3, 0.7, bx + side * 1.4, 0.65, 165.5, materials.dark, 'Park pond bench leg');
       }
     }
+
+    // Stone lintels crown the BELvue ground-floor windows.
+    for (let i = 0; i < 5; i++) {
+      const wx = 168 - 13 + i * 6.5;
+      box(g, 2.4, 0.22, 0.3, wx, 9.25, 22.15, materials.warmStone, 'BELvue ground window lintel');
+    }
   });
     addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');

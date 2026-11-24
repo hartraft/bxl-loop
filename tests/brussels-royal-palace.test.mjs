@@ -1538,3 +1538,7 @@ testCase('benches face the main pond from its south rim', () => {
   assert.match(palace, /'Park pond bench seat'/);
   assert.match(palace, /'Park pond bench back'/);
 });
+
+testCase('stone lintels crown the BELvue ground-floor windows', () => {
+  assert.match(palace, /'BELvue ground window lintel'/);
+});
