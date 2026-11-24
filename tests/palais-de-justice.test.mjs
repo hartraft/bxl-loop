@@ -116,7 +116,14 @@ test('the Monument national a l\'Infanterie Belge stands on the esplanade', () =
 
 test('the esplanade retaining wall is split around the central stair corridor', () => {
   assert.ok(!palace.includes("box(g, 178, 1.8, 3, 0, 1.6, 90"), 'no full-width wall across the stair');
+  assert.ok(palace.includes('box(g, 55, 1.8, 3, side * 65.5, 1.6, 90'), 'wall wings span x 38..93, matching the collider corridor');
   assert.ok(palace.includes("'Place Poelaert retaining wall ' + (side < 0 ? 'west' : 'east')"));
+  const wings = BRUSSELS_LANDMARK_COLLIDER_LAYOUT.palaisDeJustice.filter(c => c.name.startsWith('north wall'));
+  assert.equal(wings.length, 2);
+  for (const w of wings) {
+    assert.deepEqual([w.z, w.hz, w.maxY], [90, 1.5, 2.5], 'collider matches the rendered wall z-extent and height');
+    assert.ok(Math.abs(Math.abs(w.x) - w.hx - 38) < 1e-9, 'collider inner edge at |x|=38, aligned with the wall opening');
+  }
 });
 
 test('Place Poelaert is a vast paved esplanade with sett borders', () => {

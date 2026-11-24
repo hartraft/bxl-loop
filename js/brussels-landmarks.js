@@ -1958,9 +1958,10 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       box(g, 0.5, 1.2, 0.5, x, 3.9, 88.5, weathered, 'Forecourt terrace baluster');
     }
     // Retaining wall along the esplanade edge, split around the central stair corridor so the
-    // monumental emmarchement passes through it unobstructed.
+    // monumental emmarchement passes through it unobstructed. The opening (|x| < 38) matches
+    // the collision corridor exactly.
     for (const side of [-1, 1]) {
-      box(g, 59, 1.8, 3, side * 59.5, 1.6, 90, weathered, 'Place Poelaert retaining wall ' + (side < 0 ? 'west' : 'east'));
+      box(g, 55, 1.8, 3, side * 65.5, 1.6, 90, weathered, 'Place Poelaert retaining wall ' + (side < 0 ? 'west' : 'east'));
     }
     // Place Poelaert itself: the vast paved parvis stretching north from the palace toward
     // rue de la Regence, edged with blue-stone setts.

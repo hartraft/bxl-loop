@@ -32,8 +32,10 @@ const palaisDeJustice = [
   { name: 'west podium edge', x: 93, z: 0, hx: 0.9, hz: 88.5, maxY: 1.2 },
   { name: 'east podium edge', x: -93, z: 0, hx: 0.9, hz: 88.5, maxY: 1.2 },
   { name: 'south podium edge', x: 0, z: -88.5, hx: 93, hz: 0.9, maxY: 1.2 },
-  { name: 'north podium west wing', x: -63.5, z: 88.5, hx: 23.5, hz: 0.9, maxY: 1.2 },
-  { name: 'north podium east wing', x: 63.5, z: 88.5, hx: 23.5, hz: 0.9, maxY: 1.2 }
+  // North retaining wall wings: aligned with the rendered wall (x 38..93 / -93..-38, z 88.5..91.5),
+  // leaving the 76 m-wide central stair corridor open.
+  { name: 'north wall west wing', x: -65.5, z: 90, hx: 27.5, hz: 1.5, maxY: 2.5 },
+  { name: 'north wall east wing', x: 65.5, z: 90, hx: 27.5, hz: 1.5, maxY: 2.5 }
 ];
 
 const montDesArts = [
