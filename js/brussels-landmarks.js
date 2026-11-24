@@ -5440,6 +5440,11 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     for (const side of [-1, 1]) {
       box(g, 6, 1.4, 0.1, side * 70, 16.7, 406.9, materials.paleStone, 'Palace of the Nation wing tympanum');
     }
+
+    // Jambs frame the great door of the Academy stables block.
+    for (const side of [-1, 1]) {
+      box(g, 0.3, 5.5, 0.35, -168 + side * 1.8, 2.75, 71.8, materials.warmStone, 'Academy stables door jamb');
+    }
   });
     addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');

@@ -2020,3 +2020,7 @@ testCase('tympanum panels fill the Palace of the Nation wing pediments', () => {
 testCase('a bronze kick plate protects the foot of the portico main door', () => {
   assert.match(palace, /'Portico door kick plate'/);
 });
+
+testCase('jambs frame the great door of the Academy stables block', () => {
+  assert.match(palace, /'Academy stables door jamb'/);
+});
