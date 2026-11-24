@@ -1822,3 +1822,7 @@ testCase('a gate with piers and lintel opens into the Academy garden', () => {
   assert.match(palace, /'Academy garden gate pier'/);
   assert.match(palace, /'Academy garden gate lintel'/);
 });
+
+testCase('a sett medallion marks the centre of the Place des Palais', () => {
+  assert.match(palace, /'Square axis medallion'/);
+});

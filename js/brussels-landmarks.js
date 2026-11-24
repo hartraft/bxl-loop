@@ -5218,6 +5218,9 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       box(g, 0.8, 1.8, 0.5, gx, 0.9, 56, materials.paleStone, 'Academy garden gate pier');
     }
     box(g, 9, 0.4, 0.5, -168, 1.9, 56, materials.warmStone, 'Academy garden gate lintel');
+
+    // A circular sett medallion marks the centre of the Place des Palais on the palace axis.
+    cylinder(g, 4, 4, 0.1, 0, 0.05, 36, materials.pavingB, 24).name = 'Square axis medallion';
   });
     addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');
