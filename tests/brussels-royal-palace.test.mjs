@@ -635,3 +635,9 @@ testCase('the Rue Ducale extends south from the park to the Place du Trône', ()
   assert.match(palace, /Rue Ducale runs south from the park/);
   assert.match(palace, /'Rue Ducale south extension to Place du Trône'/);
 });
+
+testCase('a carriage gate arch pierces the south avant-corps on the palace axis', () => {
+  assert.match(palace, /accessible by road from the south/);
+  assert.match(palace, /Cour d’honneur south carriage gate/);
+  assert.match(palace, /'South carriage gate impost'/);
+});
