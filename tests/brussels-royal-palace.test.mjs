@@ -496,3 +496,10 @@ testCase('the Royal Stables stand south-east of the palace by the Rue Ducale', (
   assert.match(palace, /'Royal Stables hipped roof'/);
   assert.match(palace, /'Royal Stables arched window'/);
 });
+
+testCase('the equestrian statue of Leopold II stands on the Place du Trône south-east of the palace', () => {
+  assert.match(palace, /Place du Trône, south-east of the palace/);
+  assert.match(palace, /'Leopold II statue pedestal'/);
+  assert.match(palace, /'Leopold II equestrian horse'/);
+  assert.match(palace, /'Leopold II pedestal dedication plaque'/);
+});
