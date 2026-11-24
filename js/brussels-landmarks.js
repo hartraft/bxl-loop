@@ -3696,6 +3696,11 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       box(g, 0.05, 0.5, 0.06, bx, 11.28, centralFace + 1.0, bronze, 'Central balcony baluster');
     }
     box(g, 2.9, 0.05, 0.05, 0, 11.3, centralFace + 1.0, bronze, 'Central balcony mid rail');
+
+    // Console brackets carry the central portico balcony slab from the facade.
+    for (const bx of [-1.2, 0, 1.2]) {
+      box(g, 0.18, 0.55, 0.55, bx, 11.05, centralFace + 0.55, bronze, 'Central balcony console');
+    }
   });
   addLandmark('palaceSurroundings', (g) => {
     // Real-world sources: en/fr Wikipedia (Royal Palace of Brussels, Brussels Park, Place des Palais,

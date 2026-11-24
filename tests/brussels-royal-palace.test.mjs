@@ -1182,3 +1182,7 @@ testCase('a balustrade parapet crowns the Academy Palace attic', () => {
   assert.match(palace, /'Academy Palace attic baluster'/);
   assert.match(palace, /'Academy Palace attic balustrade rail'/);
 });
+
+testCase('console brackets carry the central portico balcony from the facade', () => {
+  assert.match(palace, /'Central balcony console'/);
+});
