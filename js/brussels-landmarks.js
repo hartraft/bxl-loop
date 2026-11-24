@@ -1966,6 +1966,33 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       }
     }
 
+    // Rusticated corner quoins (chaînage d'angle) chain the vertical edges of the
+    // central corps and the terminal pavilions, as on the real palace corners.
+    const quoins = new THREE.InstancedMesh(new THREE.BoxGeometry(0.5, 0.8, 0.34), ashlar, 200);
+    const qd = new THREE.Object3D();
+    let qi = 0;
+    for (const cx of [-17, 17]) {
+      for (let y = 1.2; y <= 23.2; y += 0.95) {
+        qd.position.set(cx + (cx < 0 ? -0.25 : 0.25), y, centralFace + 0.12);
+        qd.rotation.y = 0;
+        qd.updateMatrix();
+        quoins.setMatrixAt(qi++, qd.matrix);
+      }
+    }
+    for (const px of [-76, 76]) {
+      for (const cx of [px - 4, px + 4]) {
+        for (let y = 1.2; y <= 22.6; y += 0.95) {
+          qd.position.set(cx + (cx < px ? -0.25 : 0.25), y, facadeZ + 0.12);
+          qd.updateMatrix();
+          quoins.setMatrixAt(qi++, qd.matrix);
+        }
+      }
+    }
+    quoins.count = qi;
+    quoins.name = 'Palace corner quoins';
+    quoins.castShadow = true;
+    g.add(quoins);
+
     // Every face of the real palace is pierced — the wing ends and the pavilions'
     // outer faces carry windows too, so oblique views from the square never see a
     // blank gable end.
