@@ -2169,3 +2169,7 @@ testCase('end blocks close both ends of the portico frieze triglyph run', () => 
 testCase('stone steps lead down to the octagonal basin rim on its south side', () => {
   assert.match(palace, /'Octagonal basin access step'/);
 });
+
+testCase('acroteria crown the wing pediments of the Palace of the Nation', () => {
+  assert.match(palace, /'Palace of the Nation wing acroterion'/);
+});
