@@ -883,4 +883,39 @@ testCase('rounds 286-290: etage keystones, door imposts, bollard chains, manhole
   assert.match(surroundings, /'Bourse classified-monument plaque \(plaque monument classe A001\/31241\)'/);
 });
 
+testCase('rounds 291-295: lantern glazing, cornice modillions, ajouree side arches, terrace planters, weathervane', () => {
+  assert.match(bourse, /'Bourse lantern oculi glazing \(vitres du lanterneau\)'/);
+  assert.match(bourse, /panes\.count = 8/);
+  assert.match(bourse, /'Bourse main cornice modillions \(modillons\)'/);
+  assert.match(bourse, /mod\.count = 24/);
+  assert.match(bourse, /'Bourse side facade ajouree arch frames \(facades ajourees Brunfaut\)'/);
+  assert.match(bourse, /arches\.count = n/);
+  assert.match(bourse, /'Bourse roof terrace planters \(jardinieres, 2023\)'/);
+  assert.match(bourse, /planters\.count = 6/);
+  assert.match(bourse, /'Bourse lantern weathervane arrow \(girouette\)'/);
+  assert.match(bourse, /'Bourse lantern weathervane arrowhead'/);
+});
+
+testCase('rounds 296-300: metro M discs, street plaques, Cafe awning, fountain coping, acroteria', () => {
+  assert.match(surroundings, /'Premetro access metro M disc \(disque M email bleu\)'/);
+  assert.match(surroundings, /k\.name\.startsWith\('Bourse premetro station'\)/);
+  assert.match(surroundings, /'Street name enamel plaques on the square ring \(plaques de rue en email bleu\)'/);
+  assert.match(surroundings, /plaques\.count = 4/);
+  assert.match(surroundings, /'Cafe de la Bourse canvas awning \(store banne\)'/);
+  assert.match(surroundings, /'Cafe de la Bourse awning pole'/);
+  assert.match(surroundings, /'Fontaine Orts basin rim coping \(bordure du bassin\)'/);
+  assert.match(bourse, /'Bourse main cornice corner acroteria \(acroteres dorees\)'/);
+  assert.match(bourse, /acr\.count = n/);
+});
+
+testCase('all 300 rounds are present and marked in the builders', () => {
+  const unique = new Set();
+  for (const m of source.matchAll(/\/\/ Rounds (\d+)-(\d+):/g)) {
+    for (let r = Number(m[1]); r <= Number(m[2]); r++) unique.add(r);
+  }
+  for (const m of source.matchAll(/\/\/ Round (\d+):/g)) unique.add(Number(m[1]));
+  assert.ok(unique.size >= 300, `expected at least 300 distinct round markers, got ${unique.size}`);
+  for (let r = 1; r <= 300; r++) assert.ok(unique.has(r), `round ${r} missing`);
+});
+
 // __MORE_BOURSE_TESTS__

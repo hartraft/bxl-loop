@@ -6663,6 +6663,78 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     for (const sx of [-1, 1]) {
       box(g, 0.9, 0.7, 0.5, sx * 12.2, 11, 30.4, materials.warmStone, 'Bourse lateral door impost block (sommier)');
     }
+    // Round 291: glazing between the lantern colonnettes - eight oculi panes (vitres du
+    // lanterneau) around the drum of the dome.
+    {
+      const panes = new THREE.InstancedMesh(new THREE.BoxGeometry(1.5, 5.2, 0.1), materials.glass, 8);
+      const dummy = new THREE.Object3D();
+      for (let i = 0; i < 8; i++) {
+        const a = (i / 8) * Math.PI * 2;
+        dummy.position.set(Math.cos(a) * 4.0, 53, Math.sin(a) * 4.0);
+        dummy.rotation.y = -a;
+        dummy.updateMatrix();
+        panes.setMatrixAt(i, dummy.matrix);
+      }
+      panes.count = 8; panes.name = 'Bourse lantern oculi glazing (vitres du lanterneau)';
+      panes.castShadow = false; g.add(panes);
+    }
+    // Round 292: modillions under the main cornice of the front facade (modillons de la corniche).
+    {
+      const mod = new THREE.InstancedMesh(new THREE.BoxGeometry(0.55, 0.9, 0.7), materials.paleStone, 24);
+      const dummy = new THREE.Object3D();
+      for (let i = 0; i < 24; i++) {
+        dummy.position.set(-23 + i * 2, 21.9, 31.4);
+        dummy.updateMatrix();
+        mod.setMatrixAt(i, dummy.matrix);
+      }
+      mod.count = 24; mod.name = 'Bourse main cornice modillions (modillons)';
+      g.add(mod);
+    }
+    // Round 293: the ajouree side facades (rue de la Bourse / rue Henri Maus, Brunfaut 1892-93)
+    // - tall arched openings pierced through the flanks.
+    {
+      const arches = new THREE.InstancedMesh(new THREE.TorusGeometry(2.2, 0.22, 6, 18, Math.PI), materials.warmStone, 10);
+      const dummy = new THREE.Object3D();
+      let n = 0;
+      for (const sx of [-1, 1]) for (let i = 0; i < 5; i++) {
+        dummy.position.set(sx * 53.2, 13, -24 + i * 12);
+        dummy.rotation.set(0, sx < 0 ? Math.PI / 2 : -Math.PI / 2, 0);
+        dummy.updateMatrix();
+        arches.setMatrixAt(n++, dummy.matrix);
+      }
+      arches.count = n; arches.name = 'Bourse side facade ajouree arch frames (facades ajourees Brunfaut)';
+      g.add(arches);
+    }
+    // Round 294: planters along the 2023 roof terrace edge (jardinieres de la toiture-terrasse).
+    {
+      const planters = new THREE.InstancedMesh(new THREE.BoxGeometry(2.2, 0.7, 0.9), materials.terracotta || materials.ochre, 6);
+      const dummy = new THREE.Object3D();
+      for (let i = 0; i < 6; i++) {
+        dummy.position.set(-12.5 + i * 5, 31.2, i < 3 ? -37.5 : -24.5);
+        dummy.updateMatrix();
+        planters.setMatrixAt(i, dummy.matrix);
+      }
+      planters.count = 6; planters.name = 'Bourse roof terrace planters (jardinieres, 2023)';
+      g.add(planters);
+    }
+    // Round 295: the weathervane arrow above the lantern cross (girouette sommitale).
+    {
+      box(g, 1.6, 0.08, 0.08, 0, 60.7, 0, materials.gold, 'Bourse lantern weathervane arrow (girouette)');
+      mesh(g, new THREE.ConeGeometry(0.16, 0.5, 8), materials.gold, 0.9, 60.7, 0, 'Bourse lantern weathervane arrowhead');
+    }
+    // Round 300: gilded acroteria at the four corners of the main cornice (acroteres dorees).
+    {
+      const acr = new THREE.InstancedMesh(new THREE.SphereGeometry(0.45, 10, 8), materials.gold, 4);
+      const dummy = new THREE.Object3D();
+      let n = 0;
+      for (const sx of [-1, 1]) for (const sz of [-1, 1]) {
+        dummy.position.set(sx * 24.5, 23.4, sz > 0 ? 31.2 : -31.2);
+        dummy.updateMatrix();
+        acr.setMatrixAt(n++, dummy.matrix);
+      }
+      acr.count = n; acr.name = 'Bourse main cornice corner acroteria (acroteres dorees)';
+      g.add(acr);
+    }
     // __BOURSE_ROUNDS__
   });
   addLandmark('bourseSurroundings', (g) => {
@@ -8149,6 +8221,34 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     // Round 290: the classified-monument plaque on the socle beside the great stair (inventaire
     // A001/31241 du patrimoine immobilier de la Région de Bruxelles-Capitale).
     box(g, 1.6, 1.1, 0.12, -16.5, 3.2, 41.1, materials.bronze, 'Bourse classified-monument plaque (plaque monument classe A001/31241)');
+    // Round 296: the blue enamel metro M discs on the three premetro surface accesses
+    // (disques M du premetro Bourse-Grand-Place, lignes 4 et 10).
+    for (const k of g.children) {
+      if (!k.name || !k.name.startsWith('Bourse premetro station')) continue;
+      const disc = mesh(k, new THREE.CylinderGeometry(0.45, 0.45, 0.1, 16), materials.enamelBlue, 0, 4.9, 1.35, 'Premetro access metro M disc (disque M email bleu)');
+      disc.rotation.x = Math.PI / 2;
+    }
+    // Round 297: blue enamel street-name plaques on the square's ring buildings (plaques de rue).
+    {
+      const plaques = new THREE.InstancedMesh(new THREE.BoxGeometry(1.8, 0.5, 0.08), materials.enamelBlue, 4);
+      const dummy = new THREE.Object3D();
+      const spots = [[-30, 6, 116.3], [30, 6, 116.3], [34, 6, 138.2], [-62, 8, 96.2]];
+      for (let i = 0; i < 4; i++) {
+        dummy.position.set(spots[i][0], spots[i][1], spots[i][2]);
+        dummy.updateMatrix();
+        plaques.setMatrixAt(i, dummy.matrix);
+      }
+      plaques.count = 4; plaques.name = 'Street name enamel plaques on the square ring (plaques de rue en email bleu)';
+      g.add(plaques);
+    }
+    // Round 298: the Cafe de la Bourse (no. 78, 1874, Janlet) canvas awning over its terrace
+    // (store banne du Cafe de la Bourse).
+    {
+      box(g, 10, 0.12, 3.2, 34, 4.6, 137.2, materials.canvas, 'Cafe de la Bourse canvas awning (store banne)');
+      for (const px of [29.5, 38.5]) box(g, 0.12, 4.6, 0.12, px, 2.3, 138.6, materials.dark, 'Cafe de la Bourse awning pole');
+    }
+    // Round 299: stone coping ring around the Fontaine Orts basin (bordure du bassin).
+    mesh(g, new THREE.TorusGeometry(2.45, 0.16, 6, 24), materials.blueStone, -52, 0.78, 78, 'Fontaine Orts basin rim coping (bordure du bassin)');
     // __SURROUNDINGS_ROUNDS__
   });
 
