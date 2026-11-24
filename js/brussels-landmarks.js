@@ -1433,7 +1433,7 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     // arcade level, piano nobile, upper register, central six-column portico and dome.
     // The real frontage runs about 160 m along the Place des Palais — Leopold II's two
     // symmetrical curved galleries nearly doubled the palace and left a façade roughly
-    // half as long again as Buckingham Palace's 108 m front — so the model spans the
+    // half as long again as a 108 m palace front — so the model spans the
     // full ~160 m: wings at ±44 with 52 m frontage each and terminal pavilions at ±76.
     // The real north façade is built of white Euville limestone — "pierre blanche
     // d'Euville" per the heritage inventory — over a dark Belgian slate roof.
@@ -2438,7 +2438,6 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
   return {
     group, colliders, zones, landmarks,
     update(dt, night) { if (typeof night === 'number') setNight(night); },
-    towerBridge: null,
     setNight
   };
 }

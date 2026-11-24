@@ -1,10 +1,10 @@
-// js/traffic-sim.js — Workstream G: the London traffic & pedestrian simulation, without any rendering.
+// js/traffic-sim.js — the Brussels traffic & pedestrian simulation, without any rendering.
 //
 //   import { createTrafficSim } from './traffic-sim.js';
 //   const sim = createTrafficSim(network, { vehicles: 240, peds: 260 });
 //   sim.step(dt, { focusX, focusZ, visible(x, z, r) -> bool, player: {x, z, vx, vz, heading, halfW, halfL} | null });
 //
-// js/traffic.js draws it (instanced London vehicles + people); tests/traffic-sim.test.mjs runs it headless.
+// js/traffic.js draws it (instanced vehicles + people); tests run it headless.
 //
 // Vehicles drive the lane graph of road-network.js: kerb lane = lane 0 on the LEFT. Car following is the
 // Intelligent Driver Model against the nearest of: the vehicle ahead along the planned path (bodies are registered in
@@ -508,8 +508,8 @@ export function createTrafficSim(network, opts = {}) {
       }
     }
 
-    // Tower Bridge raised (or moving): hold at its stop lines (local s = (p - centre) . axis, B's contract)
-    const tb = sim.towerBridge;
+    // a raised drawbridge (if the sim was given one): hold at its stop lines (local s = (p - centre) . axis)
+    const tb = sim.drawbridge;
     if (tb && !tb.isPassable()) {
       const dx = v.x - tb.centre.x, dz = v.z - tb.centre.z;
       if (dx * dx + dz * dz < 220 * 220) {
@@ -748,7 +748,7 @@ export function createTrafficSim(network, opts = {}) {
     stopCache.set(i, st);
     return st;
   }
-  // street shows (Covent Garden piazza, the South Bank, Leicester Square): a performer and a ring of onlookers
+  // street shows (Grand-Place, Place Sainte-Catherine, Place Flagey): a performer and a ring of onlookers
   const shows = (opts.shows || []).map((sh) => ({ ...sh, active: false, members: [], t: 0, jump: 0 }));
   let paveList = [], paveW = [], paveTotal = 0, paveX = Infinity, paveZ = Infinity;
   const tmpPave = [], tmpCross = [];
@@ -1187,9 +1187,10 @@ export function createTrafficSim(network, opts = {}) {
     const h = net.signalHeads[i];
     return h ? net.aspect(net.controllers[h.controller], h.phase, sim.time) : -1;
   };
-  /** Tower Bridge API from Workstream B (buildLondonLandmarks(...).towerBridge): isPassable(), stopLines, centre, axis */
-  sim.towerBridge = opts.towerBridge || null;
-  sim.setTowerBridge = (tb) => { sim.towerBridge = tb || null; };
+  /** drawbridge API (if a landmark provides one): isPassable(), stopLines, centre, axis */
+  // (no Brussels landmark has a working bascule; the hook stays for tests)
+  sim.drawbridge = opts.drawbridge || null;
+  sim.setDrawbridge = (tb) => { sim.drawbridge = tb || null; };
   sim.kill = kill;
   sim._leader = (v) => { findLeader(v); return { ...L }; };
   return sim;

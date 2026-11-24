@@ -1,7 +1,7 @@
 // js/brx-geodata.js — loads the generated Brussels geodata (data/brussels-build/brx-geo.json + brx-buildings.bin).
 // The binary/data schema intentionally matches the existing city engine; only the coordinate frame and source data differ.
 //
-//   import { GEO } from './bxl-geodata.js';      // top-level await: the module resolves once the data is decoded
+//   import { GEO } from './brx-geodata.js';      // top-level await: the module resolves once the data is decoded
 //
 // Works in the browser (fetch relative to this module) and in Node (reads the files with node:fs) so tests can import it.
 // Coordinates: world metres in the js/geo-frame.js frame (x east, z south, origin Grand-Place), 0.1 m precision.

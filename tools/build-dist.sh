@@ -14,7 +14,7 @@ done
 echo "dist: $(find dist -type f | wc -l) files, $(du -sh dist | cut -f1)"
 # Artifact hosting only serves known web types: ship the buildings blob as .wasm (fetch().arrayBuffer() doesn't care)
 if [ "${ARTIFACT:-0}" = "1" ]; then
-  mv dist/data/ldn-buildings.bin dist/data/ldn-buildings.bin.wasm
-  sed -i "s#new URL('ldn-buildings.bin', base)#new URL('ldn-buildings.bin.wasm', base)#" dist/js/ldn-geodata.js
-  grep -q "ldn-buildings.bin.wasm" dist/js/ldn-geodata.js && echo "artifact variant: buildings blob → .wasm"
+  mv dist/data/brx-buildings.bin dist/data/brx-buildings.bin.wasm
+  sed -i "s#new URL('brx-buildings.bin', base)#new URL('brx-buildings.bin.wasm', base)#" dist/js/brx-geodata.js
+  grep -q "brx-buildings.bin.wasm" dist/js/brx-geodata.js && echo "artifact variant: buildings blob → .wasm"
 fi

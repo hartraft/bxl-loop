@@ -1,8 +1,6 @@
 // End-to-end Node smoke test for generated Brussels assets and the runtime config/road graph.
 import assert from 'node:assert/strict';
 
-process.env.CITY = 'brussels';
-globalThis.location = { search: '?city=brussels' };
 
 const [{ GEO }, city, frame, roads] = await Promise.all([
   import('../js/brx-geodata.js'),

@@ -2,15 +2,15 @@
 
 Each workstream appends a section: what main.js / index.html must import, call each frame, and any DOM/CSS it expects.
 
-## Workstream A — Geodata (`js/bxl-geodata.js`, `js/brussels-world.js`, `js/brussels-config.js`, `data/*`)
+## Workstream A — Geodata (`js/brx-geodata.js`, `js/brussels-world.js`, `js/brussels-config.js`, `data/*`)
 
 **Build / check** (only when the OSM extract or the builder changes; the baked files are committed):
-`node --max-old-space-size=12000 tools/build-brussels-geodata.mjs` (~20–40 s) → `data/bxl-geo.json` (5.6 MB) +
-`data/bxl-buildings.bin` (4.4 MB). Tests: `node --test tests/geodata-brussels.test.mjs`. Top-down PNG:
-`node tools/geo-brussels-topdown.mjs [out.png] [m/px] [cx cz w h]` (default `tools/out/bxl-topdown.png`, 4 m/px).
+`node --max-old-space-size=12000 tools/build-brussels-geodata.mjs` (~20–40 s) → `data/brussels-build/brx-geo.json` (5.6 MB) +
+`data/brussels-build/brx-buildings.bin` (4.4 MB). Tests: `node --test tests/geodata-brussels.test.mjs`. Top-down PNG:
+`node tools/geo-brussels-topdown.mjs [out.png] [m/px] [cx cz w h]` (default `tools/out/brussels-topdown.png`, 4 m/px).
 
 **Imports**
-- `import { GEO } from './bxl-geodata.js'` — top-level await; fetches `../data/bxl-geo.json` + `../data/bxl-buildings.bin`
+- `import { GEO } from './brx-geodata.js'` — top-level await; fetches `../data/brussels-build/brx-geo.json` + `../data/brussels-build/brx-buildings.bin`
   relative to the module (serve `data/` next to `js/`). Also exports `BUILDING_KINDS, MATERIALS, ROOFS, decodeGeo, loadGeo`.
   Works in Node too (reads with fs), so tests can import it. Decode ≈ 0.6 s.
 - `import { WORLD, TELEPORT_LOCATIONS, BRUSSELS_LANDMARKS, getLocationLabel, getLocationText, isTypingInField, ROADS, WORLD_BOUNDS } from './brussels-config.js'`.
@@ -216,7 +216,7 @@ If main's top-right toolbar grows taller than ~66 px, override `.rl-phone, .rl-h
 hashed at 0.5 m, oneway respected with a 6× wrong-way fallback, driveways/parking aisles/sidewalks excluded). It's
 logged as `[ridebxl] road graph: N nodes … ms`; expect a few hundred ms on the full city (one-off).
 
-## Workstream B — Landmarks (`js/brussels-landmarks.js`, `js/landmarks/*.js`, `tests/sandbox-landmarks.html`)
+## Workstream B — Landmarks (`js/brussels-landmarks.js`)
 
 Sandbox: `tests/sandbox-landmarks.html?webgl&lm=<id>[&night][&raise][&az=&el=&d=&tx=&ty=&tz=]` — ids `bigBen`
 (= westminster), `brusselsEye`, `towerBridge`, `shard`, `stPauls`, `gherkin`, `buckinghamPalace`, `trafalgarSquare`,
@@ -387,7 +387,7 @@ const { parts, wheels, spec } = getInstanceParts(bus, { instancePaint: true });
   heli 6.0k, boat 4.4k — use a cheaper LOD (e.g. body only, no wheels/decals/interior) beyond ~120 m.
 - `vehicle-lights.js` adds `SEARCHLIGHT`, `createSearchlight()`, `beamScaleForGlow(glow)`; existing exports unchanged.
 
-## Workstream E — Map, HUD look & weather (`js/brussels-map.js`, `js/lighting.js`, `js/post-processing.js`, `js/brussels-ui.js`, `tests/sandbox-map.html`)
+## Workstream E — Map, HUD look & weather (`js/brussels-map.js`, `js/lighting.js`, `js/post-processing.js`, `js/brussels-ui.js`)
 
 **Sandbox**: `tests/sandbox-map.html` — radar + plates with a fake player driving the Strand and a GPS route;
 `?view=full[&fit=1|&zoom=<px/m>&cx=&cz=][&search=Baker%20Street]` full atlas; `?route=ext` RideBXL-style route + pins;
@@ -471,7 +471,7 @@ hud.renderLocation(getLocationLabel(where.x, where.z), where);
 - At runtime it also rewrites the NY strings below — but the lead should make these **index.html edits** directly:
   1. `<title>` → `Brussels Loop`; `meta description` → Brussels text.
   2. modulepreload list: drop `nyc-geodata.js`, `city-config.js`, `city-grid.js`, `boroughs.js`, `buildings.js`,
-     `landmarks.js`, `nyc-map.js`; add `bxl-geodata.js`, `brussels-world.js`, `brussels-config.js`, `brussels-map.js`,
+     `landmarks.js`, `nyc-map.js`; add `brx-geodata.js`, `brussels-world.js`, `brussels-config.js`, `brussels-map.js`,
      `brussels-ui.js` (+ other workstreams' modules).
   3. Loader: `<span class="mta-bullet loader-bullet">NY</span>` → `<span class="bxl-badge loader-bullet">BXL</span>`;
      `.loader-title` → `Brussels Loop`.
@@ -563,7 +563,7 @@ sim step ≈ 1.5–3 ms avg (p95 5–10 ms); mean speed ≈ 3.0–3.1 m/s (centr
 0 keep-left violations, 0 red-light runs, roundabouts 100 % clockwise (Hyde Park Corner), stuck > 60 s ≈ 2–3 % of
 vehicle lives (excluding queues at red lights).
 
-## Round 2 — B — Bus driver (`js/bus-driver.js`, `tools/build-bus-routes.mjs`, `data/bxl-bus-routes.json`, bus RPCs in `js/backend.js`, `tests/sandbox-bus.html`)
+## Round 2 — B — Bus driver (`js/bus-driver.js`, `tools/build-bus-routes.mjs`, `data/bxl-bus-routes.json`, bus RPCs in `js/backend.js`)
 
 ### Data: `data/bxl-bus-routes.json` (≈270 KB, real OSM `route=bus` relations, night routes skipped)
 Rebuild: `node --max-old-space-size=12000 tools/build-bus-routes.mjs` (first run reads osm_central.json ≈30 s and caches
@@ -591,7 +591,7 @@ geodata rebake or a road-network change (paths are routed on `buildBrusselsRoadN
 Traffic (L): a bus can follow `path` and dwell ~8–14 s at each `stop.s`; blind = `ref` + `destination`.
 
 
-## Round 2 — R — Roads & topology (`tools/build-brussels-geodata.mjs`, `tools/geo-brussels-*.mjs`, `data/*`, `js/bxl-geodata.js`, `js/city/roads.js`)
+## Round 2 — R — Roads & topology (`tools/build-brussels-geodata.mjs`, `tools/geo-brussels-*.mjs`, `data/*`, `js/brx-geodata.js`, `js/city/roads.js`)
 
 "Roads leading nowhere" fix. Check: `node tools/geo-brussels-roadcheck.mjs [--crops 3 --tag after]` (counts per category,
 zoomed top-down crops to `tools/out/roadcheck/`). The bake (`tools/geo-brussels-roadfix.mjs`, ~25 s total) now:
@@ -621,7 +621,7 @@ segmental arch + stone surround on the facade at every passage portal. `rd.sites
 **L / lead:** dropped roads are simply absent from `GEO.roads` (indices shift — never cache road ids across rebakes).
 Un-tunnelled roads now join the drive graph at grade. Teleports unchanged and still on roads (test 10).
 
-## Round 2 — C — Car feel + drivable bus (`js/controllers.js`, `js/cameras.js`, `js/touch-controls.js`, `js/gamepad-controls.js`, `tests/sandbox-vehicles.html`, `tools/diag/drive-harness.mjs`)
+## Round 2 — C — Car feel + drivable bus (`js/controllers.js`, `js/cameras.js`, `js/touch-controls.js`, `js/gamepad-controls.js`)
 
 ### Drivable bus (contract for B)
 - New player mode **`'bus'`** (appended: `PLAYER_MODES = ['person','car','ride','cyclist','helicopter','boat','bus']`,
@@ -695,7 +695,7 @@ Bus: 0–20 mph 5.5 s, top 28 mph (32 boost), 30→0 mph 2.5 s / 16.6 m, radius 
   pull away). Harness: `node tools/diag/drive-harness.mjs feel [car|ride|bus] [--json]`, `CTRL=<old controllers.js>
   CAM=<old cameras.js>` to compare (also `CTRL=` for the city modes).
 
-## Round 2 — P — Visual polish (`js/city/buildings.js`, `js/city/materials*.js`, `js/city/ground.js`, `js/brussels-city.js`, `js/street-details.js`, `js/tsl-materials.js`, `js/landmarks/common.js`, `js/lighting.js`, `js/post-processing.js`, `tests/sandbox-city.html`)
+## Round 2 — P — Visual polish (`js/city/buildings.js`, `js/city/materials*.js`, `js/city/ground.js`, `js/brussels-city.js`, `js/street-details.js`, `js/tsl-materials.js`, `js/landmarks/common.js`, `js/lighting.js`, `js/post-processing.js`)
 
 No API changes for main.js — everything is inside the existing materials / builders. What changed:
 - **Facades** (`createBrusselsBuildingMaterial`): 3D interior-mapped rooms behind every upper window (NY's
@@ -735,7 +735,7 @@ No API changes for main.js — everything is inside the existing materials / bui
 - Sandbox: `tests/sandbox-city.html` gains `&post` (game colour grade + bloom), `&landmarks`, `&weather=`,
   `&pos=x,y,z&look=x,y,z` (exact camera, e.g. Westminster scenic `pos=505,11,800&look=236,55,790`).
 
-## Round 2 — L — Life & audio (`js/life/*.js`, `js/audio/*.js`, `js/traffic.js`, `js/traffic-sim.js`, `js/pedestrians.js`, `js/road-network.js`, `tests/sandbox-life.html`)
+## Round 2 — L — Life & audio (`js/life/*.js`, `js/audio/*.js`, `js/traffic.js`, `js/traffic-sim.js`, `js/pedestrians.js`, `js/road-network.js`)
 
 Sandbox: `tests/sandbox-life.html?webgl&scene=river|pigeons|sky|street` (`&gather` all boats in view, `&focus=clipper|
 tourist|barge|rib|bus|cab` chase one, `&scatter=s` walk into the Trafalgar pigeons, `&traffic` road traffic, `&night`,

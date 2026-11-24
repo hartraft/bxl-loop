@@ -32,7 +32,6 @@ jobs:
           node --check js/brussels-config.js
           node --check js/city-config.js
           node --check js/brussels-landmarks.js
-          node --check js/brussels-base-landmarks.js
           node --check js/main.js
           node --check js/lighting.js
           if [ -f tools/browser-screenshots.mjs ]; then
@@ -43,24 +42,22 @@ jobs:
           node --check js/road-reflections.js
           node --check js/city/materials.js
           node --check js/cameras.js
-          node --check js/brussels-base-map.js
+          node --check js/brussels-map.js
           node --check js/traffic.js
           node --check js/brussels-bus.js
           node --check js/street-details.js
           node --check js/city/roads.js
-          node --check js/brussels-base-city.js
+          node --check js/brussels-city.js
           node --check js/controllers.js
-          node --check js/bus-driver.js
-          node --check js/brussels-base-ui.js
+          node --check js/brussels-ui.js
           node --check js/brussels-postcodes.js
           node --check tests/brussels-postcodes.test.mjs
-          node --check js/bxl-geodata.js
           node --check js/brx-geodata.js
           node --check js/road-network.js
           node --check tests/traffic-side.test.mjs
-          node --check tools/build-brussels-base-geodata.mjs
-          node --check tools/geo-brussels-base-areas.mjs
-          node --check tools/geo-brussels-base-lines.mjs
+          node --check tools/build-geodata.mjs
+          node --check tools/geo-brussels-areas.mjs
+          node --check tools/geo-brussels-lines.mjs
           node --check js/geo-frame.js
           node --check js/brussels-terrain.js
           node --check js/brussels-colliders.js
@@ -143,7 +140,7 @@ jobs:
           path: |
             data/brussels-terrain/
             data/brussels-build/
-          key: brussels-build-v2-${{ hashFiles('tools/build-brussels-geodata.mjs', 'tools/build-brussels-base-geodata.mjs', 'tools/geo-brussels-base-*.mjs', 'tools/osm-pbf-extract.mjs', 'tools/prepare-brussels-terrain.py', 'tools/validate-brussels-dtm.py', 'js/brussels-terrain.js', 'js/brx-geodata.js') }}
+          key: brussels-build-v2-${{ hashFiles('tools/build-brussels-geodata.mjs', 'tools/build-geodata.mjs', 'tools/geo-brussels-*.mjs', 'tools/osm-pbf-extract.mjs', 'tools/prepare-brussels-terrain.py', 'tools/validate-brussels-dtm.py', 'js/brussels-terrain.js', 'js/brx-geodata.js') }}
       - name: Install terrain generation dependencies
         if: steps.capture-runner.outputs.present == 'true'
         run: python -m pip install --only-binary=:all: -r tools/requirements-terrain.txt
@@ -170,7 +167,7 @@ jobs:
         if: steps.capture-runner.outputs.present == 'true'
         run: |
           node tools/validate-brussels-geodata.mjs data/brussels-build
-          node --test tests/geodata-brussels-base.test.mjs
+          node --test tests/geodata-brussels.test.mjs
       - name: Smoke-test the Brussels runtime
         if: steps.capture-runner.outputs.present == 'true'
         run: node tests/brussels-runtime-smoke.mjs
@@ -192,22 +189,6 @@ jobs:
           cp data/brussels-build/brx-geo.json data/brussels-build/brx-buildings.bin _site/data/brussels-build/
           mkdir -p _site/data/brussels-terrain
           cp data/brussels-terrain/metadata.json data/brussels-terrain/heightmap.f32 _site/data/brussels-terrain/
-          node --input-type=module <<'NODE'
-          import fs from 'node:fs';
-          const file = '_site/index.html';
-          let html = fs.readFileSync(file, 'utf8');
-          const redirect = `<script>
-          if (!new URLSearchParams(location.search).has('city')) {
-            const url = new URL(location.href);
-            url.searchParams.set('city', 'brussels');
-            location.replace(url.href);
-          }
-          </script>`;
-          if (!html.includes("url.searchParams.set('city', 'brussels')")) {
-            html = html.replace('<head>', '<head>\n  ' + redirect);
-            fs.writeFileSync(file, html);
-          }
-          NODE
       - name: Cache Playwright npm package and Chromium binaries
         if: steps.capture-runner.outputs.present == 'true'
         id: playwright-cache

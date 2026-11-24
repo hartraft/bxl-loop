@@ -54,7 +54,7 @@ function beamScaleForGlow(glow) {
   return Math.min(1.28, Math.max(0.0, (glow - 0.6) * 1.45));
 }
 
-// Vehicle lamp spec (london-vehicles.js model.userData.spec): { headlight: [x, y], zFront, tail: [x, y], zRear }.
-// placeVehicleHeadlight(spot, spec, side) works with any of the London models' specs.
+// Vehicle lamp spec (brussels-vehicles.js model.userData.spec): { headlight: [x, y], zFront, tail: [x, y], zRear }.
+// placeVehicleHeadlight(spot, spec, side) works with any of the vehicle models' specs.
 
 export { HEADLIGHTS, SEARCHLIGHT, beamScaleForGlow, createSearchlight, createVehicleHeadlight, placeVehicleHeadlight };

@@ -24,14 +24,14 @@
   <link rel="modulepreload" href="./js/brussels-frame.js" />
   <link rel="modulepreload" href="./js/brussels-landmarks.js" />
   <link rel="modulepreload" href="./js/geo-frame.js" />
-  <link rel="modulepreload" href="./js/brussels-base-world.js" />
+  <link rel="modulepreload" href="./js/brussels-world.js" />
   <link rel="modulepreload" href="./js/tsl-materials.js" />
   <link rel="modulepreload" href="./js/trees.js" />
-  <link rel="modulepreload" href="./js/brussels-base-vehicles.js" />
+  <link rel="modulepreload" href="./js/brussels-vehicles.js" />
   <link rel="modulepreload" href="./js/vehicle-lights.js" />
   <link rel="modulepreload" href="./js/pedestrians.js" />
   <link rel="modulepreload" href="./js/lighting.js" />
-  <link rel="modulepreload" href="./js/brussels-base-city.js" />
+  <link rel="modulepreload" href="./js/brussels-city.js" />
   <link rel="modulepreload" href="./js/street-details.js" />
   <link rel="modulepreload" href="./js/road-network.js" />
   <link rel="modulepreload" href="./js/road-paint.js" />
@@ -40,8 +40,8 @@
   <link rel="modulepreload" href="./js/touch-controls.js" />
   <link rel="modulepreload" href="./js/gamepad-controls.js" />
   <link rel="modulepreload" href="./js/cameras.js" />
-  <link rel="modulepreload" href="./js/brussels-base-map.js" />
-  <link rel="modulepreload" href="./js/brussels-base-ui.js" />
+  <link rel="modulepreload" href="./js/brussels-map.js" />
+  <link rel="modulepreload" href="./js/brussels-ui.js" />
   <link rel="modulepreload" href="./js/backend.js" />
   <link rel="modulepreload" href="./js/ridebxl.js" />
   <link rel="modulepreload" href="./js/scene-culling.js" />
@@ -184,8 +184,8 @@
       <button id="mode-person" class="mode-btn" data-mode="person" type="button" title="Walk [1]">
         <svg class="icon" aria-hidden="true"><use href="#i-walk"/></svg><span class="mode-label">Walk</span><kbd>1</kbd>
       </button>
-      <button id="mode-car" class="mode-btn active" data-mode="car" type="button" title="Black cab [2]">
-        <svg class="icon" aria-hidden="true"><use href="#i-car"/></svg><span class="mode-label">Black cab</span><kbd>2</kbd>
+      <button id="mode-car" class="mode-btn active" data-mode="car" type="button" title="Taxi [2]">
+        <svg class="icon" aria-hidden="true"><use href="#i-car"/></svg><span class="mode-label">Taxi</span><kbd>2</kbd>
       </button>
       <button id="mode-ride" class="mode-btn" data-mode="ride" type="button" title="RideBXL car (ride-hail) [3]">
         <svg class="icon" aria-hidden="true"><use href="#i-ride"/></svg><span class="mode-label">RideBXL</span><kbd>3</kbd>
@@ -196,7 +196,7 @@
       <button id="mode-helicopter" class="mode-btn" data-mode="helicopter" type="button" title="Police helicopter [5]">
         <svg class="icon" aria-hidden="true"><use href="#i-heli"/></svg><span class="mode-label">Fly</span><kbd>5</kbd>
       </button>
-      <button id="mode-boat" class="mode-btn" data-mode="boat" type="button" title="Thames river bus [6]">
+      <button id="mode-boat" class="mode-btn" data-mode="boat" type="button" title="Canal boat [6]">
         <svg class="icon" aria-hidden="true"><use href="#i-boat"/></svg><span class="mode-label">Boat</span><kbd>6</kbd>
       </button>
       <button id="mode-bus" class="mode-btn" data-mode="bus" type="button" title="Brussels bus [N]">
@@ -210,7 +210,7 @@
     <section id="hud-cluster" class="panel cluster" aria-label="Vehicle telemetry and camera">
       <div class="gauge">
         <div class="gauge-top">
-          <span id="hud-active-mode" class="gauge-label">Black cab</span>
+          <span id="hud-active-mode" class="gauge-label">Taxi</span>
           <span class="gauge-alt"><span class="gauge-alt-label">Alt</span> <span id="hud-altitude">0</span> ft</span>
         </div>
         <div class="gauge-speed"><span id="hud-speed">0</span><span class="gauge-unit">mph</span></div>
@@ -259,14 +259,14 @@
     <button id="cam-chase" class="pop-item cam-btn active" data-camera="chase" type="button"><span class="pop-name">3rd-Person Chase</span><kbd>7</kbd></button>
     <button id="cam-action" class="pop-item cam-btn" data-camera="action" type="button"><span class="pop-name">Low-Angle Action</span><kbd>8</kbd></button>
     <button id="cam-pov" class="pop-item cam-btn" data-camera="pov" type="button"><span class="pop-name">First-Person / Cockpit</span><kbd>9</kbd></button>
-    <button id="cam-westminster" class="pop-item cam-btn" data-camera="westminster" type="button"><span class="pop-name">Westminster Bridge &amp; Big Ben</span><kbd>0</kbd></button>
-    <button id="cam-southBank" class="pop-item cam-btn" data-camera="southBank" type="button"><span class="pop-name">South Bank &amp; Brussels Eye</span></button>
-    <button id="cam-trafalgar" class="pop-item cam-btn" data-camera="trafalgar" type="button"><span class="pop-name">Trafalgar Square &amp; Nelson</span></button>
-    <button id="cam-piccadilly" class="pop-item cam-btn" data-camera="piccadilly" type="button"><span class="pop-name">Piccadilly Circus Lights</span></button>
-    <button id="cam-stPauls" class="pop-item cam-btn" data-camera="stPauls" type="button"><span class="pop-name">Millennium Bridge to St Paul&#39;s</span></button>
-    <button id="cam-shard" class="pop-item cam-btn" data-camera="shard" type="button"><span class="pop-name">The Shard from Brussels Bridge</span></button>
-    <button id="cam-towerBridge" class="pop-item cam-btn" data-camera="towerBridge" type="button"><span class="pop-name">Tower Bridge on the Thames</span></button>
-    <button id="cam-waterfront" class="pop-item cam-btn" data-camera="waterfront" type="button"><span class="pop-name">Thames &amp; City Skyline</span></button>
+    <button id="cam-grandPlace" class="pop-item cam-btn" data-camera="grandPlace" type="button"><span class="pop-name">Grand-Place Overview</span><kbd>0</kbd></button>
+    <button id="cam-montDesArts" class="pop-item cam-btn" data-camera="montDesArts" type="button"><span class="pop-name">Mont des Arts</span></button>
+    <button id="cam-royalPalace" class="pop-item cam-btn" data-camera="royalPalace" type="button"><span class="pop-name">Royal Palace</span></button>
+    <button id="cam-euQuarter" class="pop-item cam-btn" data-camera="euQuarter" type="button"><span class="pop-name">European Quarter</span></button>
+    <button id="cam-cathedral" class="pop-item cam-btn" data-camera="cathedral" type="button"><span class="pop-name">Cathedral Quarter</span></button>
+    <button id="cam-palaceOfJustice" class="pop-item cam-btn" data-camera="palaceOfJustice" type="button"><span class="pop-name">Palace of Justice</span></button>
+    <button id="cam-koekelberg" class="pop-item cam-btn" data-camera="koekelberg" type="button"><span class="pop-name">Koekelberg Basilica</span></button>
+    <button id="cam-canal" class="pop-item cam-btn" data-camera="canal" type="button"><span class="pop-name">Canal Skyline</span></button>
     <button id="cam-drone" class="pop-item cam-btn" data-camera="drone" type="button"><span class="pop-name">Auto-Director Aerial</span></button>
   </div>
 

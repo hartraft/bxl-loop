@@ -20,11 +20,11 @@ converts city OBBs to this. Building colliders now follow footprints and stay cl
 ## Ownership (round 2)
 | Agent | Owns (only edit these) |
 |---|---|
-| R — Roads & topology | `tools/build-brussels-geodata.mjs`, `tools/geo-brussels-*.mjs`, `data/bxl-geo.json`, `data/bxl-buildings.bin`, `js/bxl-geodata.js`, `js/brussels-world.js` (keep `onBridge`), `js/city/roads.js`, `js/city/road-index.js`, `tests/geodata-brussels.test.mjs` |
-| C — Car feel | `js/controllers.js` (keep the `onBridge` water check), `js/cameras.js`, `js/vehicle-lights.js`, `js/touch-controls.js`, `js/gamepad-controls.js`, `tests/sandbox-vehicles.html`, `tools/diag/drive-harness.mjs` |
-| B — Bus driver | new `js/bus-driver.js`, new `tools/build-bus-routes.mjs`, new `data/bxl-bus-routes.json`, `js/backend.js` (add bus RPCs + offline mock), new `tests/sandbox-bus.html`, Supabase `slop_bus_*` objects |
-| L — Life & audio | new `js/life/*.js`, new `js/audio/*.js`, `js/traffic.js`, `js/traffic-sim.js`, `js/pedestrians.js`, `js/road-paint.js`, `js/road-network.js`, new `tests/sandbox-life.html` |
-| P — Visual polish | `js/city/buildings.js` (keep `pushBuildingColliders`), `js/city/materials.js`, `js/city/materials-shared.js`, `js/city/ground.js`, `js/city/util.js` (keep `obbCollider`'s sn flip), `js/brussels-city.js`, `js/street-details.js`, `js/trees.js`, `js/tsl-materials.js`, `js/brussels-vehicles.js`, `js/landmarks/*.js`, `js/lighting.js`, `js/post-processing.js`, `tests/sandbox-city.html` |
+| R — Roads & topology | `tools/build-brussels-geodata.mjs`, `tools/geo-brussels-*.mjs`, `data/brussels-build/brx-geo.json`, `data/brussels-build/brx-buildings.bin`, `js/brx-geodata.js`, `js/brussels-world.js` (keep `onBridge`), `js/city/roads.js`, `tests/geodata-brussels.test.mjs` |
+| C — Car feel | `js/controllers.js` (keep the `onBridge` water check), `js/cameras.js`, `js/vehicle-lights.js`, `js/touch-controls.js`, `js/gamepad-controls.js` |
+| B — Bus driver | `js/backend.js` (add bus RPCs + offline mock), new Supabase `slop_bus_*` objects |
+| L — Life & audio | new `js/life/*.js`, new `js/audio/*.js`, `js/traffic.js`, `js/traffic-sim.js`, `js/pedestrians.js`, `js/road-paint.js`, `js/road-network.js` |
+| P — Visual polish | `js/city/buildings.js` (keep `pushBuildingColliders`), `js/city/materials.js`, `js/city/ground.js`, `js/city/util.js` (keep `obbCollider`'s sn flip), `js/brussels-city.js`, `js/street-details.js`, `js/trees.js`, `js/tsl-materials.js`, `js/brussels-vehicles.js`, `js/lighting.js`, `js/post-processing.js` |
 | Lead | `js/main.js`, `index.html`, `css/style.css`, `js/scene-culling.js`, `js/brussels-map.js`, `js/brussels-ui.js`, `js/ridebxl.js`, `README.md`, `SPEC.md` |
 
 Cross-team contracts (write yours into INTEGRATION.md under a "Round 2 — <agent>" heading, early, then keep it current):
@@ -40,7 +40,7 @@ Cross-team contracts (write yours into INTEGRATION.md under a "Round 2 — <agen
   `node --test tests/geodata-brussels.test.mjs` and the road network/traffic tests after a rebake.
 - **Lead integrates** everything in main.js/index.html (mode buttons, key bindings, map routes). Tell the lead exactly
   what to call in your INTEGRATION.md section. Keys already taken: WASD/arrows, Shift, Space, Q/E/C, 1–6 modes,
-  7/8/9/0 cameras, V, M, R/Enter/X (RideBXL), H (taxi light), L (searchlight), B (Tower Bridge), U (HUD). Propose free
+  7/8/9/0 cameras, V, M, R/Enter/X (RideBXL), H (taxi light), L (searchlight), U (HUD). Propose free
   keys for new actions (e.g. bus doors) in your section; the lead decides.
 
 ## Testing

@@ -1,6 +1,6 @@
 // js/life/geo-kit.js — Workstream L: a tiny low-poly modelling kit for the life props (boats, aircraft, pigeons).
 // Builds one merged BufferGeometry with `position`, `normal`, `color` and `aSurf` (rough, metal, emissive class,
-// paint mask) — the attribute layout of london-vehicles.js, so `createVehicleMaterial()` shades it (lit windows at
+// paint mask) — the attribute layout of brussels-vehicles.js, so `createVehicleMaterial()` shades it (lit windows at
 // night = class 3, nav / head lamps = 1, tail = 2, beacons = 5).
 import * as THREE from 'three/webgpu';
 import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';

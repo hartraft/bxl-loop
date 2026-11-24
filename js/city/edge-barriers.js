@@ -60,7 +60,7 @@ function crossEdge(ax, az, bx, bz, r) {
 
 export function buildEdgeBarriers(scene, { geo, world, bounds, inset = 2 } = {}) {
   const group = new THREE.Group();
-  group.name = 'LondonEdgeBarriers';
+  group.name = 'BrusselsEdgeBarriers';
   scene.add(group);
   const r = { minX: bounds.minX + inset, maxX: bounds.maxX - inset, minZ: bounds.minZ + inset, maxZ: bounds.maxZ - inset };
 

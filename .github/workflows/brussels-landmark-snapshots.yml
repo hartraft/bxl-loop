@@ -31,7 +31,7 @@ jobs:
           path: |
             data/brussels-build/
             data/brussels-terrain/
-          key: site-assets-v1-${{ hashFiles('tools/build-brussels-geodata.mjs', 'tools/build-brussels-base-geodata.mjs', 'tools/geo-brussels-base-*.mjs', 'tools/osm-pbf-extract.mjs', 'js/brx-geodata.js', 'js/brussels-terrain.js') }}
+          key: site-assets-v1-${{ hashFiles('tools/build-brussels-geodata.mjs', 'tools/build-geodata.mjs', 'tools/geo-brussels-*.mjs', 'tools/osm-pbf-extract.mjs', 'js/brx-geodata.js', 'js/brussels-terrain.js') }}
       - name: Fetch generated Brussels map assets from the published site
         if: steps.site-assets-cache.outputs.cache-hit != 'true'
         run: |

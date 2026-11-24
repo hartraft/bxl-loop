@@ -71,7 +71,7 @@ jobs:
           path: |
             data/brussels-terrain/
             data/brussels-build/
-          key: brussels-build-v2-${{ hashFiles('tools/build-brussels-geodata.mjs', 'tools/build-brussels-base-geodata.mjs', 'tools/geo-brussels-base-*.mjs', 'tools/osm-pbf-extract.mjs', 'tools/prepare-brussels-terrain.py', 'tools/validate-brussels-dtm.py', 'js/brussels-terrain.js', 'js/brx-geodata.js') }}
+          key: brussels-build-v2-${{ hashFiles('tools/build-brussels-geodata.mjs', 'tools/build-geodata.mjs', 'tools/geo-brussels-*.mjs', 'tools/osm-pbf-extract.mjs', 'tools/prepare-brussels-terrain.py', 'tools/validate-brussels-dtm.py', 'js/brussels-terrain.js', 'js/brx-geodata.js') }}
       - name: Install terrain generation dependencies
         run: "python -m pip install --only-binary=:all: -r tools/requirements-terrain.txt"
       - name: Download official Brussels DTM
@@ -98,7 +98,7 @@ jobs:
       - name: Smoke-test city config and GPS routing
         run: node tests/brussels-runtime-smoke.mjs
       - name: Test generated Brussels geodata contract
-        run: node --test tests/geodata-brussels-base.test.mjs
+        run: node --test tests/geodata-brussels.test.mjs
       - name: Configure Pages
         uses: actions/configure-pages@v5
         with:
@@ -120,22 +120,6 @@ jobs:
           cp data/brussels-build/brx-geo.json data/brussels-build/brx-buildings.bin _site/data/brussels-build/
           mkdir -p _site/data/brussels-terrain
           cp data/brussels-terrain/metadata.json data/brussels-terrain/heightmap.f32 _site/data/brussels-terrain/
-          node --input-type=module <<'NODE'
-          import fs from 'node:fs';
-          const file = '_site/index.html';
-          let html = fs.readFileSync(file, 'utf8');
-          const redirect = `<script>
-          if (!new URLSearchParams(location.search).has('city')) {
-            const url = new URL(location.href);
-            url.searchParams.set('city', 'brussels');
-            location.replace(url.href);
-          }
-          </script>`;
-          if (!html.includes('url.searchParams.set(\'city\', \'brussels\')')) {
-            html = html.replace('<head>', '<head>\n  ' + redirect);
-            fs.writeFileSync(file, html);
-          }
-          NODE
       - name: Cache Playwright Chromium binaries
         id: playwright-cache
         uses: actions/cache@v4
@@ -187,7 +171,7 @@ jobs:
         run: |
           base="${{ steps.deployment.outputs.page_url }}"
           curl --fail --silent --show-error --location --retry 5 --retry-delay 5 --retry-connrefused "$base" -o /tmp/index.html
-          grep -Fq "url.searchParams.set('city', 'brussels')" /tmp/index.html
+          grep -Fq "js/brussels-frame.js" /tmp/index.html
           curl --fail --silent --show-error --location --retry 5 --retry-delay 5 --retry-connrefused "${base%/}/js/city-config.js" | grep -q "brussels-config.js"
           curl --fail --silent --show-error --location --retry 5 --retry-delay 5 --retry-connrefused "${base%/}/data/brussels-build/brx-geo.json" -o /dev/null
           curl --fail --silent --show-error --location --retry 5 --retry-delay 5 --retry-connrefused "${base%/}/data/brussels-terrain/metadata.json" -o /tmp/brussels-terrain-metadata.json

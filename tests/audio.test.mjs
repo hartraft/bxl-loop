@@ -1,10 +1,10 @@
-// tests/audio.test.mjs — Workstream L: the audio graph & mixing logic with a fake AudioContext (nothing is heard).
+// tests/audio.test.mjs — the audio graph & mixing logic with a fake AudioContext (nothing is heard).
 //   node --test tests/audio.test.mjs
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { FakeAudioContext } from './helpers/fake-audio.mjs';
-import { chimeSchedule, dueChime, londonTime } from '../js/audio/chimes.js';
-import { createLondonAudio } from '../js/audio/london-audio.js';
+import { chimeSchedule, dueChime, brusselsTime } from '../js/audio/chimes.js';
+import { createBrusselsAudio } from '../js/audio/brussels-audio.js';
 
 const camAt = (x, y, z) => ({ matrixWorld: { elements: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, x, y, z, 1] } }); // looks -z, right = +x
 
@@ -15,7 +15,7 @@ function rig(mode = 'car') {
   const traffic = { cars: [], peds: [] };
   const life = { boats: [], aircraft: [], helicopters: [], events: [] };
   let ctx = null;
-  const audio = createLondonAudio({ controllers, traffic, life, world: { isWater: () => false, groundHeight: () => 0, districtAt: () => 'Soho' }, ctxFactory: () => (ctx = new FakeAudioContext()), autoUnlock: false, keys: false, button: false });
+  const audio = createBrusselsAudio({ controllers, traffic, life, world: { isWater: () => false, groundHeight: () => 0, districtAt: () => 'Dansaert' }, ctxFactory: () => (ctx = new FakeAudioContext()), autoUnlock: false, keys: false, button: false });
   audio.setMuted(false);
   audio.unlock();
   audio.rand = (() => { let a = 5; return () => ((a = (a * 16807) % 2147483647) / 2147483647); })();
@@ -23,14 +23,14 @@ function rig(mode = 'car') {
   return { audio, ent, controllers, traffic, life, ctx: () => ctx, step, collide: (e) => listeners.forEach((f) => f(e)) };
 }
 
-test('Westminster Quarters: the right number of strokes per quarter, then the hour', () => {
+test('carillon quarters: the right number of strokes per quarter, then the hour', () => {
   assert.equal(chimeSchedule(1).length, 4);
   assert.equal(chimeSchedule(2).length, 8);
   assert.equal(chimeSchedule(3).length, 12);
   const h = chimeSchedule(4, 3);
-  assert.equal(h.filter((s) => s.bell !== 'BEN').length, 16);
-  assert.equal(h.filter((s) => s.bell === 'BEN').length, 3);
-  assert.equal(chimeSchedule(4, 12).filter((s) => s.bell === 'BEN').length, 12);
+  assert.equal(h.filter((s) => s.bell !== 'BELL').length, 16);
+  assert.equal(h.filter((s) => s.bell === 'BELL').length, 3);
+  assert.equal(chimeSchedule(4, 12).filter((s) => s.bell === 'BELL').length, 12);
   // change 1 is G# F# E B; strokes in time order
   assert.deepEqual(chimeSchedule(1).map((s) => s.bell), ['G#', 'F#', 'E', 'B']);
   for (const q of [1, 2, 3, 4]) { const s = chimeSchedule(q, 7); for (let i = 1; i < s.length; i++) assert.ok(s[i].t > s[i - 1].t); }
@@ -38,9 +38,9 @@ test('Westminster Quarters: the right number of strokes per quarter, then the ho
   assert.equal(dueChime({ h: 12, m: 14, s: 50 }), null);
   assert.deepEqual([dueChime({ h: 15, m: 0, s: 0.5 }).quarter, dueChime({ h: 15, m: 0, s: 0.5 }).hour], [4, 3]);
   assert.equal(dueChime({ h: 0, m: 0, s: 0 }).hour, 12);
-  // BST: 11:00 UTC on 1 July is 12:00 in London; GMT in January
-  assert.equal(londonTime(new Date('2026-07-01T11:00:00Z')).h, 12);
-  assert.equal(londonTime(new Date('2026-01-15T11:00:00Z')).h, 11);
+  // CEST: 11:00 UTC on 1 July is 13:00 in Brussels; CET in January
+  assert.equal(brusselsTime(new Date('2026-07-01T11:00:00Z')).h, 13);
+  assert.equal(brusselsTime(new Date('2026-01-15T11:00:00Z')).h, 12);
 });
 
 test('master chain, mute and volume', () => {
@@ -60,7 +60,7 @@ test('master chain, mute and volume', () => {
   a.setVolume(0.8);
 });
 
-test('black cab engine: idles, revs with speed & throttle, changes gear; squeals when sliding', () => {
+test('taxi engine: idles, revs with speed & throttle, changes gear; squeals when sliding', () => {
   const r = rig('car');
   r.step(10);
   const idle = r.audio.levels.engine, idleRpm = r.audio.levels.rpm;
@@ -114,7 +114,7 @@ test('traffic pass-bys follow the nearest vehicles: panned to their side, louder
   assert.ok(r.audio.levels.hum > 0.04, 'city hum');
 });
 
-test('collisions thump, crowds murmur, Big Ben rings, sirens come and go, life events play', () => {
+test('collisions thump, crowds murmur, the carillon rings, sirens come and go, life events play', () => {
   const r = rig('car');
   r.step(2);
   const before = r.ctx().count('osc');
@@ -127,7 +127,7 @@ test('collisions thump, crowds murmur, Big Ben rings, sirens come and go, life e
   const o0 = r.ctx().count('osc');
   r.audio.chime(4, 3);
   assert.ok(r.ctx().count('osc') - o0 > 19 * 9, 'bells: partials for 19 strokes');
-  assert.ok(r.audio.levels.chime.delay > 1, 'Big Ben heard after the speed of sound delay');
+  assert.ok(r.audio.levels.chime.delay > 1, 'the great bell heard after the speed of sound delay');
   r.audio.timers.siren = 0; r.step(2);
   assert.equal(r.audio.levels.sirens, 1);
   r.audio.sirens[0].age = 999; r.step(1);

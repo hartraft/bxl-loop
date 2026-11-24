@@ -25,8 +25,8 @@ import {
 import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 
 // js/pedestrians.js
-// Skinned, procedurally animated Londoners: the pavement crowds (LondonCrowd below, driven by traffic-sim.js via
-// traffic.js), the player's pedestrian and the cyclist's rider (controllers.js). London dress: mostly dark coats
+// Skinned, procedurally animated pedestrians: the pavement crowds (CityCrowd below, driven by traffic-sim.js via
+// traffic.js), the player's pedestrian and the cyclist's rider (controllers.js). Mostly dark coats
 // (navy, charcoal, black, camel trench); tourists (rig seed >= 1000) wear bright rain jackets; umbrellas when it rains.
 // - One continuous lofted body (torso & neck, trouser legs, sleeves, hands, head, hair, shoes) skinned to a 15-bone
 //   skeleton, with bind-pose morphs for build (girth), female proportions and hair volume & length; a near and a far
@@ -1524,7 +1524,7 @@ class PersonRig {
 }
 
 // ============================================================================
-// 6. LONDON CROWD: the people of traffic-sim.js (pavements, zebras, signal crossings), drawn with PersonCrowd
+// 6. THE CROWD: the people of traffic-sim.js (pavements, zebras, signal crossings), drawn with PersonCrowd
 // ============================================================================
 const _frustum = new THREE.Frustum();
 const _pv = new THREE.Matrix4();
@@ -1553,7 +1553,7 @@ function buildUmbrellaGeometry() {
  * and an instanced umbrella for everyone holding one (sim.setRain). Only people in view within `drawDistance` are
  * animated and drawn. Tourists (p.tourist) get a seed >= 1000, which the material dresses in bright rain jackets.
  */
-class LondonCrowd {
+class CityCrowd {
   constructor(maxCount = 260, { farDistance = 34, drawDistance = 150, castShadow = true } = {}) {
     this.max = maxCount;
     this.drawDistance = drawDistance;
@@ -1640,4 +1640,4 @@ class LondonCrowd {
   }
 }
 
-export { BONE as PERSON_BONES, buildPersonGeometry, createPersonMaterial, PersonCrowd, PersonRig, LondonCrowd };
+export { BONE as PERSON_BONES, buildPersonGeometry, createPersonMaterial, PersonCrowd, PersonRig, CityCrowd };

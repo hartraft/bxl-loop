@@ -30,7 +30,7 @@ import * as TSLM from './tsl-materials.js';
 
 // js/lighting.js — Workstream E
 // Physically-based sky (Preetham SkyMesh + clouds), live PMREM IBL, r186 SunLight (2-cascade CSM) and sky-matched
-// aerial fog, with the sun where it really is over London (51.5° N), plus WEATHER:
+// aerial fog, with the sun where it really is over Brussels (50.85° N), plus WEATHER:
 //
 //   const lighting = new LightingSystem(scene, renderer);
 //   lighting.applyPreset('golden' | 'midday' | 'twilight' | 'midnight');
@@ -52,19 +52,19 @@ function sunDirection(azimuthDeg, elevationDeg) {
   return new THREE.Vector3(Math.sin(a) * Math.cos(e), Math.sin(e), -Math.cos(a) * Math.cos(e)).normalize();
 }
 
-// Sun positions for London in late summer (≈ 25 August, BST). Golden hour sits a little higher than the true
+// Sun positions for Brussels in late summer (≈ 25 August, CEST). Golden hour sits a little higher than the true
 // 19:30 sun so the streets aren't all in shadow; blue hour keeps a low warm key light for readability.
 const TIME_PRESETS = {
   golden: {
     id: 'golden',
     name: 'Golden Hour · 18:50',
-    // az 264° (not the true ~275°): the Westminster scenic camera looks due west (az 272°) at Elizabeth Tower, and a sun
-    // straight behind the tower blew the frame out; 8° south of it the low sun still rakes along the river
+    // az 264° (not the true ~275°): a touch south of due west so the low sun rakes along the canal
+    // instead of blowing the frame out
     sunDir: sunDirection(264, 13),
     sunColor: 0xffc489,
     sunIntensity: 5.6,
     hemiSky: 0x9fbde3,
-    hemiGround: 0xb08a6a, // warm London stock brick & Portland stone bounce
+    hemiGround: 0xb08a6a, // warm Brussels stock brick & Portland stone bounce
     hemiIntensity: 1.5,
     skyTop: 0x2f5a8e,
     skyHorizon: 0xead0b2,
@@ -90,7 +90,7 @@ const TIME_PRESETS = {
     name: 'Midday · 13:00',
     sunDir: sunDirection(185, 50),
     sunColor: 0xfff4e6,
-    sunIntensity: 5.3, // (6.4 burnt sunlit roofs & pavements to white; London's midday sun is a hazy one)
+    sunIntensity: 5.3, // (6.4 burnt sunlit roofs & pavements to white; the midday sun is a hazy one)
     hemiSky: 0xa9cdf6,
     hemiGround: 0xa89580,
     hemiIntensity: 1.55,
@@ -141,7 +141,7 @@ const TIME_PRESETS = {
   },
   midnight: {
     id: 'midnight',
-    name: 'London Night · 23:30',
+    name: 'Brussels Night · 23:30',
     sunDir: sunDirection(160, 38), // moonlight
     sunColor: 0x8cb0e8,
     sunIntensity: 1.4,
@@ -164,7 +164,7 @@ const TIME_PRESETS = {
     cloudDensity: 0.28,
     skyExposure: 0.022,
     nightFactor: 0.86,
-    // London's cloud base glows orange-brown over the city at night
+    // the cloud base glows orange-brown over the city at night
     cloud: { horizon: 0x9a6640, zenith: 0x4a3830, lum: 0.11, fogTint: 0xa07850, rain: 0xb09070 }
   }
 };

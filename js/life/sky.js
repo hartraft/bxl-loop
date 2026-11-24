@@ -1,9 +1,9 @@
-// js/life/sky.js — Workstream L: life overhead. Airliners on the approach to Heathrow (westerly operations: they cross
-// central London heading west on the 3° glide path, ~1 km up, one every ~90 s — real London) with nav lights,
-// strobes and the red beacon blinking; and now and then a helicopter crossing the city a few hundred metres up.
+// js/life/sky.js — life overhead. Airliners crossing the city on approach, ~1 km up, one every ~90 s,
+// with nav lights, strobes and the red beacon blinking; and now and then a helicopter crossing the city
+// a few hundred metres up.
 import * as THREE from 'three/webgpu';
 import { airlinerGeometry } from './models.js';
-import { VEHICLE_FACTORIES, createVehicleMaterial, createVehicleUniforms } from '../london-vehicles.js';
+import { VEHICLE_FACTORIES, createVehicleMaterial, createVehicleUniforms } from '../brussels-vehicles.js';
 import { parkInstances, makeShow } from './geo-kit.js';
 
 const MAX_PLANES = 4;
@@ -12,7 +12,7 @@ const LIGHTS_PER_PLANE = 5;
 
 export function createSky(scene, { group = null, seed = 5, interval = 90, heliEvery = [150, 320] } = {}) {
   const root = group || new THREE.Group();
-  root.name = 'LondonSky';
+  root.name = 'BrusselsSky';
   if (!group) scene.add(root);
   let rs = seed;
   const rand = () => ((rs = (rs * 16807) % 2147483647) / 2147483647);
@@ -39,7 +39,7 @@ export function createSky(scene, { group = null, seed = 5, interval = 90, heliEv
   const planes = [];
   let timer = 8 + rand() * 10;
   function spawnPlane() {
-    // the approach lines are a few km wide: random lateral offset, sometimes a bit north or south of the river
+    // the approach lines are a few km wide: random lateral offset across the city
     const z = -1800 + rand() * 3400;
     planes.push({ x: 11000, y: 0, z, vx: -PLANE_SPEED, vy: 0, vz: (rand() - 0.5) * 3, age: 0, phase: rand() });
   }
@@ -78,7 +78,7 @@ export function createSky(scene, { group = null, seed = 5, interval = 90, heliEv
       const p = planes[i];
       p.age += dt;
       p.x += p.vx * dt; p.z += p.vz * dt;
-      p.y = 1060 + p.x * 0.0524; // 3° glide slope towards Heathrow (~20 km west)
+      p.y = 1060 + p.x * 0.0524; // 3° glide slope towards the airport (~20 km east)
       p.vy = p.vx * 0.0524;
       if (p.x < -13000) { planes.splice(i, 1); continue; }
       const yaw = Math.atan2(p.vx, p.vz);

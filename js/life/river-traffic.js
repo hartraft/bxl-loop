@@ -1,11 +1,11 @@
-// js/life/river-traffic.js — Workstream L: boats on the Thames. Catamaran river buses, sightseeing boats, a tug with
+// js/life/river-traffic.js — boats on the Brussels canal. River boats, sightseeing boats, a tug with
 // a lighter barge and RIBs run up and down the fairway both ways (keeping to starboard, through the navigation arches
-// of the bridges), call at the piers, sound their horns when they leave, leave foamy wakes, keep clear of the
+// of the bridges), call at the quays, sound their horns when they leave, leave foamy wakes, keep clear of the
 // player's boat (slow, stop, swerve) and push it out of their way if it rams them.
 import * as THREE from 'three/webgpu';
 import { buildRiverPath } from './river-path.js';
 import { catamaranGeometry, tugBargeGeometry, ribGeometry } from './models.js';
-import { VEHICLE_FACTORIES, createVehicleMaterial, getInstanceParts } from '../london-vehicles.js';
+import { VEHICLE_FACTORIES, createVehicleMaterial, getInstanceParts } from '../brussels-vehicles.js';
 import { parkInstances, makeShow } from './geo-kit.js';
 
 const WATER = -1.2;
@@ -48,7 +48,7 @@ function foamTexture() {
 export function createRiverTraffic(scene, { world, group = null, seed = 3 } = {}) {
   const river = buildRiverPath(world);
   const root = group || new THREE.Group();
-  root.name = 'ThamesTraffic';
+  root.name = 'CanalTraffic';
   if (!group) scene.add(root);
   let rs = seed;
   const rand = () => ((rs = (rs * 16807) % 2147483647) / 2147483647);
@@ -58,7 +58,7 @@ export function createRiverTraffic(scene, { world, group = null, seed = 3 } = {}
   const show = makeShow();
   const mk = (name, geometry, material, cap, shadow = true) => {
     const m = new THREE.InstancedMesh(geometry, material, cap);
-    m.name = 'Thames_' + name;
+    m.name = 'Canal_' + name;
     m.castShadow = shadow; m.receiveShadow = true; m.frustumCulled = false; m.count = 0;
     parkInstances(m);
     root.add(m);
@@ -134,7 +134,7 @@ export function createRiverTraffic(scene, { world, group = null, seed = 3 } = {}
     }
     for (const b of boats) {
       const T = b.T;
-      // target speed: cruise, slow for the pier, follow the boat ahead, give way to the player
+      // target speed: cruise, slow for the quay, follow the boat ahead, give way to the player
       let vt = T.vmax;
       if (b.state === 'cruise' && !b.pier) b.pier = nextPier(b) || false;
       if (b.pier) {

@@ -12,14 +12,7 @@ function frameFor(city) {
   return JSON.parse(run.stdout);
 }
 
-testCase('normal browser/server imports keep London as the default frame', () => {
-  const result = frameFor(null);
-  assert.equal(result.FRAME.lon0, -0.12803);
-  assert.ok(result.LANDMARK_ANCHORS.bigBen);
-});
-
-testCase('CITY=brussels selects Brussels frame and landmark anchors for the baker', () => {
-  const result = frameFor('brussels');
+function assertBrusselsFrame(result) {
   assert.equal(result.FRAME.lat0, 50.84673);
   assert.equal(result.FRAME.lon0, 4.35247);
   assert.ok(Math.abs(result.origin.x) < 1e-8);
@@ -27,4 +20,12 @@ testCase('CITY=brussels selects Brussels frame and landmark anchors for the bake
   assert.ok(result.LANDMARK_ANCHORS.grandPlace);
   assert.ok(!result.LANDMARK_ANCHORS.bigBen);
   assert.ok(result.WORLD_BOUNDS.minX < 0 && result.WORLD_BOUNDS.maxX > 0);
+}
+
+testCase('browser/server imports unconditionally select the Brussels frame and landmark anchors', () => {
+  assertBrusselsFrame(frameFor(null));
+});
+
+testCase('the CITY environment cannot switch the frame away from Brussels', () => {
+  for (const city of ['brussels', 'london', 'anything-else']) assertBrusselsFrame(frameFor(city));
 });

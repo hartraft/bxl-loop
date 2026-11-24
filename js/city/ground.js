@@ -1,5 +1,5 @@
-// js/city/ground.js — the ground of London: base ground plane (to well beyond the play area), the Thames / lakes /
-// canals / docks at y = WATER_LEVEL with stone embankment walls and the Thames parapet, parks & gardens, plazas, and
+// js/city/ground.js — the ground of Brussels: base ground plane (to well beyond the play area), the canal / lakes /
+// canals / docks at y = WATER_LEVEL with stone embankment walls and parapets, parks & gardens, plazas, and
 // the water signed-distance texture the ground & grass shaders use to cut themselves away over water.
 // Flat layers are merged into FLAT_TILE chunks (they don't cast shadows, so few big meshes are cheapest).
 import { GeoBuilder, TileBuckets, ringArea, ringBox, triangulate, clipRect } from './util.js';
@@ -67,7 +67,7 @@ export function addFlatPolygon(b, outer, holes, y, terrainSurface = null, maxSte
   return tris.length;
 }
 
-/** add a flat polygon split into FLAT_TILE chunks (big parks / the Thames) */
+/** add a flat polygon split into FLAT_TILE chunks (big parks / the canal) */
 function addTiledPolygon(buckets, outer, holes, y, setup, terrainSurface = null) {
   const [x0, z0, x1, z1] = ringBox(outer);
   const T = FLAT_TILE;
@@ -251,7 +251,7 @@ export function buildGroundGeometry(geo, inRegion, bounds, terrainSurface = null
         b.quad(v0, v1, v2, v3);
         stats.wallM += L;
         if (w.kind === 'river' && !isHole) {
-          // granite parapet (0.9 m) on the Thames embankments, 0.45 m thick, set back from the edge
+          // granite parapet (0.9 m) on the canal embankments, 0.45 m thick, set back from the edge
           const ph = 0.9, th = 0.45;
           const ix = -nx * th, iz = -nz * th; // toward the land
           b.set('scol', 170, 165, 150, 0);
@@ -293,7 +293,7 @@ export function buildGroundGeometry(geo, inRegion, bounds, terrainSurface = null
 
   // ---- base ground: a grid of 500 m quads over the play area + 3 km beyond -------------------------------------------
   const ground = new GeoBuilder({});
-  // A 50 m terrain grid follows the regional DTM without exploding the draw cost; London keeps 500 m quads.
+  // A 50 m terrain grid follows the regional DTM without exploding the draw cost.
   const G = terrainSurface ? 50 : 500, pad = 3000;
   const groundY = (x, z) => terrainSurface ? (terrainSurface.sample(x, z) ?? 0) + LAYER.ground : LAYER.ground;
   const groundVertex = (x, z) => ground.v(x, groundY(x, z), z, ...terrainNormal(terrainSurface, x, z));
