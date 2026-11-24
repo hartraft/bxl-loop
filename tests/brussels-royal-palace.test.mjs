@@ -2245,3 +2245,7 @@ testCase('a kerb borders the rear edge of the peristyle floor', () => {
 testCase('rings cage the gilded globes of the perron lamps', () => {
   assert.match(palace, /'Perron lamp globe ring'/);
 });
+
+testCase('a sett field paves the east side of the Place du Trone', () => {
+  assert.match(palace, /'Place du Trone east sett field'/);
+});

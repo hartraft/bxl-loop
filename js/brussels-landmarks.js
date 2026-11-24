@@ -5726,6 +5726,9 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
 
     // A kerb borders the rear edge of the Palace of the Nation peristyle floor.
     box(g, 52, 0.15, 0.3, 0, 0.14, 399.4, materials.pavingEdge, 'Peristyle floor rear kerb');
+
+    // A sett field paves the east side of the Place du Trone.
+    box(g, 60, 0.1, 20, -90, 0.02, -60, materials.pavingA, 'Place du Trone east sett field');
   });
     addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');
