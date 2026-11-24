@@ -738,3 +738,28 @@ test('guild houses: number plaques, arcade keystones, pilaster strips, blind fri
   assert.ok(square.includes('gable stone vase'));
   assert.ok(square.includes("emblem: 'flags', blueStone: true, stoneVase: true }"));
 });
+
+test('Town Hall: eight archivolt prophets, cabbage-leaf finials, trefoil arcade band, historiated corbels (rounds 119-122)', () => {
+  assert.ok(square.includes('new THREE.BoxGeometry(0.22, 1.0, 0.14), materials.gold, 8)'));
+  assert.ok(square.includes('for (const f of [0.15, 0.4, 0.65, 0.9])'));
+  assert.ok(square.includes('archivoltProphets.count = ap'));
+  assert.ok(square.includes('Arcade arch cabbage-leaf finials'));
+  assert.ok(square.includes('leafFinials.count = trefoilBand.count = bays'));
+  assert.ok(square.includes('Arcade trefoil band'));
+  assert.ok(square.includes('Knight statue historiated corbels'));
+  assert.ok(square.includes('histCorbels.count = hc'));
+});
+
+test('Manneken Pis in his 1770 blue-stone rocaille niche with basin and 1851 railings; Broodhuis belfry louvers (rounds 123-124)', () => {
+  assert.ok(source.includes('Manneken Pis rocaille niche back'));
+  assert.ok(source.includes('Manneken Pis rocaille niche arch'));
+  assert.ok(source.includes('Manneken Pis bronze figure'));
+  assert.ok(source.includes('Manneken Pis water jet'));
+  assert.ok(source.includes('Manneken Pis stone basin'));
+  assert.ok(source.includes('Manneken Pis basin water'));
+  assert.ok(source.includes('Manneken Pis railing top hoop'));
+  assert.ok(source.includes('Manneken Pis commemorative plaque'));
+  assert.ok(source.includes('materials.blueStone, 12'));
+  assert.ok(square.includes('King’s House belfry louver openings'));
+  assert.ok(square.includes('khLouvers.count = 8'));
+});

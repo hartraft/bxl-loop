@@ -996,6 +996,34 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     knightStatues.name = 'Arcade pillar knight statues (Noble Houses)';
     knightStatues.castShadow = true;
     root.add(knightStatues);
+    // Cabbage-leaf (kropblad) finials top each ground-arcade arch apex, and a trefoil
+    // arcade band runs above the arcade string course — both Brabantine-Gothic motifs of
+    // the real facade. The knights rest on historiated corbels.
+    const leafFinials = new THREE.InstancedMesh(new THREE.SphereGeometry(0.16, 8, 6), materials.gold, bays);
+    const trefoilBand = new THREE.InstancedMesh(new THREE.CylinderGeometry(0.3, 0.3, 0.14, 12).rotateX(Math.PI / 2), trim, bays);
+    const histCorbels = new THREE.InstancedMesh(new THREE.BoxGeometry(0.34, 0.42, 0.4), darkStone, bays * 2);
+    let lf = 0, hc = 0;
+    for (let i = 0; i < bays; i++) {
+      const x = -width / 2 + bayW * (i + 0.5);
+      vd.position.set(x, 7.82, 0.28);
+      vd.rotation.z = 0;
+      vd.updateMatrix();
+      leafFinials.setMatrixAt(lf++, vd.matrix);
+      vd.position.set(x, 8.05, 0.26);
+      vd.updateMatrix();
+      trefoilBand.setMatrixAt(lf - 1, vd.matrix);
+      for (const px of [x - bayW / 2 + 0.12, x + bayW / 2 - 0.12]) {
+        vd.position.set(px, 7.45, 0.32);
+        vd.updateMatrix();
+        histCorbels.setMatrixAt(hc++, vd.matrix);
+      }
+    }
+    leafFinials.count = trefoilBand.count = bays;
+    histCorbels.count = hc;
+    leafFinials.name = 'Arcade arch cabbage-leaf finials';
+    trefoilBand.name = 'Arcade trefoil band';
+    histCorbels.name = 'Knight statue historiated corbels';
+    root.add(leafFinials, trefoilBand, histCorbels);
     // A stone balcony connects the two wings across the facade above the arcade, on a row of
     // balusters — as on the real elevation.
     box(root, width + 1.2, 0.4, 1.3, 0, 8.7, 0.55, trim, 'Wing-connecting balcony');
@@ -1327,11 +1355,13 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     }
     // Prophet figures in niches along the portal archivolt mouldings — the real ogival
     // portal carries a procession of prophets on its archivolt.
-    const archivoltProphets = new THREE.InstancedMesh(new THREE.BoxGeometry(0.22, 1.0, 0.14), materials.gold, 6);
+    // Eight seated prophets (Claus Sluter / Master of Hakendover, 1401-05) fit the curve
+    // of the real portal archivolt — four per side.
+    const archivoltProphets = new THREE.InstancedMesh(new THREE.BoxGeometry(0.22, 1.0, 0.14), materials.gold, 8);
     const apd = new THREE.Object3D();
     let ap = 0;
     for (const side of [-1, 1]) {
-      for (const f of [0.25, 0.5, 0.75]) {
+      for (const f of [0.15, 0.4, 0.65, 0.9]) {
         apd.position.set(side * (1.75 + 0.92 * (2 * f - 1)), 10.15 + 1.19 * (2 * f - 1), towerW / 2 + 0.3);
         apd.updateMatrix();
         archivoltProphets.setMatrixAt(ap++, apd.matrix);
@@ -1793,6 +1823,19 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     const towerZ = -depth / 2 - 0.7;
     box(root, 2.8, 33, 2.8, 0, 16.5, towerZ, trim, 'King’s House central tower square shaft');
     cylinder(root, 1.35, 1.5, 2.6, 0, 34.3, towerZ, trim, 8).name = 'King’s House central tower octagonal top';
+    // Louvered belfry openings around the octagonal top of the real Broodhuis tower.
+    const khLouvers = new THREE.InstancedMesh(new THREE.BoxGeometry(0.9, 0.1, 0.2), darkStone, 8);
+    const khLd = new THREE.Object3D();
+    for (let i = 0; i < 8; i++) {
+      const a = i * Math.PI / 4;
+      khLd.position.set(Math.cos(a) * 1.42, 34.3, towerZ + Math.sin(a) * 1.42);
+      khLd.rotation.y = -a;
+      khLd.updateMatrix();
+      khLouvers.setMatrixAt(i, khLd.matrix);
+    }
+    khLouvers.count = 8;
+    khLouvers.name = 'King’s House belfry louver openings';
+    root.add(khLouvers);
     const dome = mesh(root, new THREE.SphereGeometry(1.7, 12, 8), roofMat, 0, 36.3, towerZ, 'King’s House tower domed slate spire');
     dome.scale.set(1, 0.75, 1);
     cylinder(root, 0.08, 0.14, 1.2, 0, 38.2, towerZ, materials.gold, 6).name = 'King’s House tower finial';
@@ -2191,9 +2234,26 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
 
   addLandmark('grandPlace', grandPlace);
   addLandmark('mannekenPis', (g) => {
-    box(g, 2.2, 1.3, 2.2, 0, 0.65, 0, materials.dark);
-    cylinder(g, 0.34, 0.45, 1.6, 0, 2.1, 0, materials.gold, 8);
-    mesh(g, new THREE.SphereGeometry(0.32, 10, 8), materials.gold, 0, 3.15, 0);
+    // Manneken Pis at the corner of Rue de l'Étuve / Rue du Chêne, a stone's throw from the
+    // Grand-Place: Duquesnoy's 1619 bronze boy set in his 1770 blue-stone rocaille niche,
+    // pouring into a stone basin, fenced by the 1851 wrought-iron railings.
+    box(g, 3.2, 4.4, 0.7, 0, 2.2, -0.3, materials.blueStone, 'Manneken Pis rocaille niche back');
+    mesh(g, new THREE.CircleGeometry(1.15, 16, 0, Math.PI), materials.blueStone, 0, 2.2, -0.24, 'Manneken Pis rocaille niche arch');
+    box(g, 2.5, 0.5, 0.8, 0, 4.65, -0.28, materials.blueStone, 'Manneken Pis niche cornice');
+    box(g, 2.2, 1.3, 2.2, 0, 0.65, 0, materials.dark, 'Manneken Pis pedestal plinth');
+    cylinder(g, 0.34, 0.45, 1.6, 0, 2.1, 0, materials.blueStone, 8).name = 'Manneken Pis column';
+    box(g, 0.3, 0.62, 0.22, 0, 3.15, 0, materials.bronze, 'Manneken Pis bronze figure');
+    mesh(g, new THREE.SphereGeometry(0.16, 10, 8), materials.bronze, 0, 3.56, 0, 'Manneken Pis bronze head');
+    cylinder(g, 0.02, 0.02, 0.5, 0.14, 3.0, 0.12, materials.glass, 6).name = 'Manneken Pis water jet';
+    cylinder(g, 1.1, 1.25, 0.5, 0, 0.25, 0, materials.blueStone, 12).name = 'Manneken Pis stone basin';
+    mesh(g, new THREE.CircleGeometry(1.05, 12), materials.glass, 0, 0.42, 0, 'Manneken Pis basin water');
+    for (let i = 0; i < 4; i++) {
+      const a = i * Math.PI / 2 + Math.PI / 4;
+      box(g, 0.06, 0.8, 0.06, Math.cos(a) * 1.55, 0.4, Math.sin(a) * 1.55, materials.dark, 'Manneken Pis railing post');
+    }
+    const hoop = mesh(g, new THREE.TorusGeometry(1.55, 0.04, 6, 20), materials.dark, 0, 0.82, 0, 'Manneken Pis railing top hoop');
+    hoop.rotation.x = Math.PI / 2;
+    box(g, 0.5, 0.3, 0.05, 0, 1.6, -0.62, materials.bronze, 'Manneken Pis commemorative plaque');
   });
   addLandmark('montDesArts', (g) => {
     // Mont des Arts: René Péchère's 1957–58 suspended garden, restored in 2001.
