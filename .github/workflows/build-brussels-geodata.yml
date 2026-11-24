@@ -20,7 +20,18 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
+      # Shares the brussels-source-v1 cache namespace with the deploy workflow, so the
+      # multi-hundred-MB PBF is only downloaded when the downloader or Geofabrik file changes.
+      - name: Restore Belgium OSM extract
+        id: source-cache
+        uses: actions/cache@v4
+        with:
+          path: tools/data/belgium-latest.osm.pbf
+          key: brussels-source-v1-${{ hashFiles('tools/download-brussels-dtm.py', 'tools/requirements-terrain.txt') }}-geofabrik-belgium-latest
+          restore-keys: |
+            brussels-source-v1-
       - name: Download Belgium OpenStreetMap extract
+        if: steps.source-cache.outputs.cache-hit != 'true'
         run: |
           mkdir -p tools/data
           curl --fail --location --retry 3 --retry-delay 2             https://download.geofabrik.de/europe/belgium-latest.osm.pbf             --output tools/data/belgium-latest.osm.pbf

@@ -21,6 +21,8 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
+          cache: pip
+          cache-dependency-path: tools/requirements-terrain.txt
       - name: Check Brussels build pipeline syntax
         run: |
           node --check tools/osm-pbf-extract.mjs
@@ -118,35 +120,51 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - name: Restore Brussels source data and generated assets
+          cache: pip
+          cache-dependency-path: tools/requirements-terrain.txt
+      # Source downloads (DTM, Geofabrik PBF) are cached separately from the
+      # generated outputs, so a geodata-code change re-bakes without re-downloading.
+      - name: Restore Brussels source downloads (DTM, OSM PBF)
         if: steps.capture-runner.outputs.present == 'true'
-        id: brussels-cache
+        id: source-cache
         uses: actions/cache@v4
         with:
           path: |
             /tmp/brussels-dtm-5m.tif
             tools/data/belgium-latest.osm.pbf
+          key: brussels-source-v1-${{ hashFiles('tools/download-brussels-dtm.py', 'tools/requirements-terrain.txt') }}-geofabrik-belgium-latest
+          restore-keys: |
+            brussels-source-v1-
+      - name: Restore generated Brussels geodata and terrain
+        if: steps.capture-runner.outputs.present == 'true'
+        id: build-cache
+        uses: actions/cache@v4
+        with:
+          path: |
             data/brussels-terrain/
             data/brussels-build/
-          key: brussels-build-v1-${{ hashFiles('tools/**', '!tools/browser-screenshots.mjs', 'js/brussels-terrain.js') }}
+          key: brussels-build-v2-${{ hashFiles('tools/build-brussels-geodata.mjs', 'tools/build-brussels-base-geodata.mjs', 'tools/geo-brussels-base-*.mjs', 'tools/osm-pbf-extract.mjs', 'tools/prepare-brussels-terrain.py', 'tools/validate-brussels-dtm.py', 'js/brussels-terrain.js', 'js/brx-geodata.js') }}
       - name: Install terrain generation dependencies
         if: steps.capture-runner.outputs.present == 'true'
         run: python -m pip install --only-binary=:all: -r tools/requirements-terrain.txt
-      - name: Download and validate the official Brussels DTM
-        if: steps.capture-runner.outputs.present == 'true' && steps.brussels-cache.outputs.cache-hit != 'true'
+      - name: Download the official Brussels DTM
+        if: steps.capture-runner.outputs.present == 'true' && steps.source-cache.outputs.cache-hit != 'true'
         run: |
           python tools/download-brussels-dtm.py --resolution 5 --timeout 600 --output /tmp/brussels-dtm-5m.tif
+      - name: Bake and validate the terrain grid
+        if: steps.capture-runner.outputs.present == 'true' && steps.build-cache.outputs.cache-hit != 'true'
+        run: |
           python tools/prepare-brussels-terrain.py /tmp/brussels-dtm-5m.tif --resolution 5 --output data/brussels-terrain
           python tools/validate-brussels-dtm.py data/brussels-terrain
       - name: Download the Belgium OpenStreetMap extract
-        if: steps.capture-runner.outputs.present == 'true' && steps.brussels-cache.outputs.cache-hit != 'true'
+        if: steps.capture-runner.outputs.present == 'true' && steps.source-cache.outputs.cache-hit != 'true'
         run: |
           mkdir -p tools/data
           curl --fail --location --retry 10 --retry-connrefused --retry-delay 5 --retry-max-time 300 --connect-timeout 30 --max-time 900 \
             https://download.geofabrik.de/europe/belgium-latest.osm.pbf \
             --output tools/data/belgium-latest.osm.pbf
       - name: Build Brussels geodata
-        if: steps.capture-runner.outputs.present == 'true' && steps.brussels-cache.outputs.cache-hit != 'true'
+        if: steps.capture-runner.outputs.present == 'true' && steps.build-cache.outputs.cache-hit != 'true'
         run: node --max-old-space-size=6144 tools/build-brussels-geodata.mjs
       - name: Validate generated Brussels geodata
         if: steps.capture-runner.outputs.present == 'true'
@@ -190,11 +208,26 @@ jobs:
             fs.writeFileSync(file, html);
           }
           NODE
+      - name: Cache Playwright npm package and Chromium binaries
+        if: steps.capture-runner.outputs.present == 'true'
+        id: playwright-cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.npm
+            ~/.cache/ms-playwright
+          key: ${{ runner.os }}-playwright-${{ hashFiles('tools/browser-screenshots.mjs', 'tools/shot.py') }}
+          restore-keys: |
+            ${{ runner.os }}-playwright-
       - name: Install Playwright Chromium
         if: steps.capture-runner.outputs.present == 'true'
         run: |
           npm install --no-save playwright
-          npx playwright install --with-deps chromium
+          if [ "${{ steps.playwright-cache.outputs.cache-hit }}" = "true" ]; then
+            npx playwright install chromium
+          else
+            npx playwright install --with-deps chromium
+          fi
       - name: Install ImageMagick for screenshot pixel validation
         if: steps.capture-runner.outputs.present == 'true'
         run: |

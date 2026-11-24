@@ -21,7 +21,18 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
+      # The published site assets only change when the geodata pipeline changes, so they
+      # are cached on those inputs; landmark-only PRs reuse them instead of re-downloading.
+      - name: Restore published Brussels map assets
+        id: site-assets-cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            data/brussels-build/
+            data/brussels-terrain/
+          key: site-assets-v1-${{ hashFiles('tools/build-brussels-geodata.mjs', 'tools/build-brussels-base-geodata.mjs', 'tools/geo-brussels-base-*.mjs', 'tools/osm-pbf-extract.mjs', 'js/brx-geodata.js', 'js/brussels-terrain.js') }}
       - name: Fetch generated Brussels map assets from the published site
+        if: steps.site-assets-cache.outputs.cache-hit != 'true'
         run: |
           mkdir -p data/brussels-build data/brussels-terrain
           base="https://hartraft.github.io/bxl-loop"
@@ -35,10 +46,22 @@ jobs:
         run: |
           node --check js/brussels-landmarks.js
           node --test tests/grand-place.test.mjs tests/brussels-royal-palace.test.mjs tests/brussels-landmark-colliders.test.mjs
+      - name: Cache Playwright Chromium binaries
+        id: playwright-cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: ${{ runner.os }}-playwright-chromium-${{ hashFiles('tools/shot.py') }}
+          restore-keys: |
+            ${{ runner.os }}-playwright-chromium-
       - name: Install Playwright
         run: |
           python -m pip install playwright
-          python -m playwright install --with-deps chromium
+          if [ "${{ steps.playwright-cache.outputs.cache-hit }}" = "true" ]; then
+            python -m playwright install chromium
+          else
+            python -m playwright install --with-deps chromium
+          fi
       - name: Capture Grand-Place Town Hall
         run: |
           mkdir -p artifacts

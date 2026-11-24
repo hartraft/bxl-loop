@@ -49,33 +49,49 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - name: Restore Brussels source data and generated geodata
-        id: brussels-cache
+          cache: pip
+          cache-dependency-path: tools/requirements-terrain.txt
+      # Source downloads (DTM GeoTIFF, Geofabrik PBF) are cached separately from the
+      # generated outputs, so a geodata-code change re-bakes without re-downloading
+      # the multi-hundred-MB source files, and vice versa.
+      - name: Restore Brussels source downloads (DTM, OSM PBF)
+        id: source-cache
         uses: actions/cache@v4
         with:
           path: |
             /tmp/brussels-dtm-5m.tif
             tools/data/belgium-latest.osm.pbf
+          key: brussels-source-v1-${{ hashFiles('tools/download-brussels-dtm.py', 'tools/requirements-terrain.txt') }}-geofabrik-belgium-latest
+          restore-keys: |
+            brussels-source-v1-
+      - name: Restore generated Brussels geodata and terrain
+        id: build-cache
+        uses: actions/cache@v4
+        with:
+          path: |
             data/brussels-terrain/
             data/brussels-build/
-          key: brussels-build-v1-${{ hashFiles('tools/**', 'js/brussels-terrain.js') }}
+          key: brussels-build-v2-${{ hashFiles('tools/build-brussels-geodata.mjs', 'tools/build-brussels-base-geodata.mjs', 'tools/geo-brussels-base-*.mjs', 'tools/osm-pbf-extract.mjs', 'tools/prepare-brussels-terrain.py', 'tools/validate-brussels-dtm.py', 'js/brussels-terrain.js', 'js/brx-geodata.js') }}
       - name: Install terrain generation dependencies
         run: "python -m pip install --only-binary=:all: -r tools/requirements-terrain.txt"
-      - name: Download and bake official Brussels DTM
-        if: steps.brussels-cache.outputs.cache-hit != 'true'
+      - name: Download official Brussels DTM
+        if: steps.source-cache.outputs.cache-hit != 'true'
         run: |
           python tools/download-brussels-dtm.py --resolution 5 --timeout 600 --output /tmp/brussels-dtm-5m.tif
+      - name: Bake and validate terrain grid
+        if: steps.build-cache.outputs.cache-hit != 'true'
+        run: |
           python tools/prepare-brussels-terrain.py /tmp/brussels-dtm-5m.tif --resolution 5 --output data/brussels-terrain
           python tools/validate-brussels-dtm.py data/brussels-terrain
       - name: Download Belgium OpenStreetMap extract
-        if: steps.brussels-cache.outputs.cache-hit != 'true'
+        if: steps.source-cache.outputs.cache-hit != 'true'
         run: |
           mkdir -p tools/data
           curl --fail --location --retry 3 --retry-delay 2 \
             https://download.geofabrik.de/europe/belgium-latest.osm.pbf \
             --output tools/data/belgium-latest.osm.pbf
       - name: Build Brussels geodata
-        if: steps.brussels-cache.outputs.cache-hit != 'true'
+        if: steps.build-cache.outputs.cache-hit != 'true'
         run: node --max-old-space-size=6144 tools/build-brussels-geodata.mjs
       - name: Validate generated map
         run: node tools/validate-brussels-geodata.mjs data/brussels-build
@@ -120,10 +136,22 @@ jobs:
             fs.writeFileSync(file, html);
           }
           NODE
+      - name: Cache Playwright Chromium binaries
+        id: playwright-cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: ${{ runner.os }}-playwright-chromium-${{ hashFiles('tools/shot.py') }}
+          restore-keys: |
+            ${{ runner.os }}-playwright-chromium-
       - name: Install Playwright for published landmark snapshot
         run: |
           python -m pip install playwright
-          python -m playwright install --with-deps chromium
+          if [ "${{ steps.playwright-cache.outputs.cache-hit }}" = "true" ]; then
+            python -m playwright install chromium
+          else
+            python -m playwright install --with-deps chromium
+          fi
       - name: Render the Grand-Place Town Hall PNG into the Pages site
         run: |
           mkdir -p _site/snapshots
