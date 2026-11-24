@@ -257,6 +257,15 @@ test('houses wear their real facade colours: ochre and plaster alongside the sto
   assert.ok(square.includes("Le Cygne', x: -44, width: 12, height: 23, floors: 4, style: 'bell', stone: materials.plaster"));
 });
 
+test('each street mouth carries a traditional blue enamel Brussels street sign', () => {
+  assert.ok(source.includes('enamelBlue: new THREE.MeshStandardMaterial({ color: 0x1d4f91'));
+  assert.ok(square.includes("'Brussels enamel street signs'"));
+  assert.ok(square.includes("'Street sign posts'"));
+  assert.ok(square.includes('new THREE.BoxGeometry(1.5, 0.42, 0.06), materials.enamelBlue, plaques.length)'));
+  assert.ok(square.includes('signRims.count = signBoards.count = signPosts.count = sg'));
+  assert.ok(square.includes('applyMatrix4(front.matrixWorld)'));
+});
+
 test('the seven real street mouths stay open, each with its bronze UNESCO plaque', () => {
   assert.ok(square.includes('UNESCO entrance plaque – ${street}'));
   for (const street of ['Rue au Beurre', 'Rue de la Tête d’or', 'Rue des Chapeliers', 'Rue Charles Buls', 'Rue de la Colline', 'Rue d’Arenberg', 'Rue Chair et Pain']) {

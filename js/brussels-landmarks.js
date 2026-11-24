@@ -21,6 +21,7 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     ochre: new THREE.MeshStandardMaterial({ color: 0xc9a05e, roughness: 0.85 }),
     plaster: new THREE.MeshStandardMaterial({ color: 0xe9e0cb, roughness: 0.9 }),
     canvas: new THREE.MeshStandardMaterial({ color: 0x94402f, roughness: 0.95 }),
+    enamelBlue: new THREE.MeshStandardMaterial({ color: 0x1d4f91, roughness: 0.45, metalness: 0.15 }),
     dark: new THREE.MeshStandardMaterial({ color: 0x4a4035, roughness: 0.92 }),
     pavingA: new THREE.MeshStandardMaterial({ color: 0x77756d, roughness: 0.96 }),
     pavingB: new THREE.MeshStandardMaterial({ color: 0x89857a, roughness: 0.96 }),
@@ -1092,6 +1093,37 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     for (const [front, x, street] of plaques) {
       box(front, 0.55, 0.75, 0.08, x, 1.2, 0.12, materials.bronze, `UNESCO entrance plaque – ${street}`);
     }
+
+    // Traditional Brussels enamel street signs — blue board with a white rim on a dark post —
+    // stand at each of the seven street mouths, naming the street that opens onto the square.
+    const signRims = new THREE.InstancedMesh(new THREE.BoxGeometry(1.56, 0.48, 0.04), materials.plaster, plaques.length);
+    const signBoards = new THREE.InstancedMesh(new THREE.BoxGeometry(1.5, 0.42, 0.06), materials.enamelBlue, plaques.length);
+    const signPosts = new THREE.InstancedMesh(new THREE.CylinderGeometry(0.05, 0.06, 2.6, 8), materials.dark, plaques.length);
+    const sgd = new THREE.Object3D();
+    const sv = new THREE.Vector3();
+    let sg = 0;
+    for (const [front, x] of plaques) {
+      front.updateWorldMatrix(true, false);
+      sv.set(x, 2.52, 1.66).applyMatrix4(front.matrixWorld);
+      sgd.position.copy(sv);
+      sgd.rotation.set(0, front.rotation.y, 0);
+      sgd.updateMatrix();
+      signRims.setMatrixAt(sg, sgd.matrix);
+      sv.set(x, 2.52, 1.7).applyMatrix4(front.matrixWorld);
+      sgd.position.copy(sv);
+      sgd.updateMatrix();
+      signBoards.setMatrixAt(sg, sgd.matrix);
+      sv.set(x, 1.3, 1.68).applyMatrix4(front.matrixWorld);
+      sgd.position.copy(sv);
+      sgd.updateMatrix();
+      signPosts.setMatrixAt(sg, sgd.matrix);
+      sg++;
+    }
+    signRims.count = signBoards.count = signPosts.count = sg;
+    signRims.name = 'Street sign white rims';
+    signBoards.name = 'Brussels enamel street signs';
+    signPosts.name = 'Street sign posts';
+    plaza.add(signRims, signBoards, signPosts);
   }
 
   addLandmark('grandPlace', grandPlace);
