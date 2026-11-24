@@ -5756,6 +5756,11 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     for (let s = 0; s < 2; s++) {
       box(g, 4, 0.25, 0.8, -46, 0.125 + s * 0.25, 157.2 - s * 0.7, materials.paleStone, 'Bandstand access step');
     }
+
+    // Steps lead up to the Vauxhall bandstand platform in the park.
+    for (let s = 0; s < 2; s++) {
+      box(g, 4, 0.25, 0.8, 46, 0.125 + s * 0.25, 216.6 - s * 0.7, materials.paleStone, 'Vauxhall bandstand step');
+    }
   });
     addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');
