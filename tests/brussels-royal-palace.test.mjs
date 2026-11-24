@@ -350,3 +350,10 @@ testCase('pavilion dormers (lucarne en pavillon) pierce the terminal pavilion ro
   assert.match(palace, /'Pavilion dormer pavilion roof'/);
   assert.match(palace, /for \(const dx of \[-3\.2, 0, 3\.2\]\)/);
 });
+
+testCase('double smooth colonnettes with socles flank each central attic window', () => {
+  assert.match(palace, /Double smooth-shafted colonnettes/);
+  assert.match(palace, /'Attic colonnette socle'/);
+  assert.match(palace, /'Attic colonnette capital'/);
+  assert.match(palace, /for \(const dx of \[-1\.95, 1\.95\]\)/);
+});

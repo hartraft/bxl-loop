@@ -1785,6 +1785,12 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       box(g, 1.9, 0.18, 0.34, x, 23.25, centralFace + 0.25, moulding, 'Attic window sill');
       box(g, 1.9, 0.18, 0.34, x, 25.05, centralFace + 0.25, moulding, 'Attic window lintel');
       box(g, 3.6, 1.15, 0.18, x, 26.35, centralFace + 0.14, ashlar, 'Sculpted attic panel');
+      // Double smooth-shafted colonnettes with socles flank each attic window (heritage 30402).
+      for (const dx of [-1.95, 1.95]) {
+        box(g, 0.5, 0.25, 0.3, x + dx, 23.42, centralFace + 0.2, ashlar, 'Attic colonnette socle');
+        cylinder(g, 0.15, 0.18, 1.35, x + dx, 24.15, centralFace + 0.2, stone, 10);
+        box(g, 0.42, 0.18, 0.28, x + dx, 24.9, centralFace + 0.2, ashlar, 'Attic colonnette capital');
+      }
     }
 
     // The real central attic carries an oval garlanded medallion struck with Leopold
