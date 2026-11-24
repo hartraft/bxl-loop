@@ -144,7 +144,8 @@ jobs:
           key: brussels-build-v2-${{ hashFiles('tools/build-brussels-geodata.mjs', 'tools/build-geodata.mjs', 'tools/geo-brussels-*.mjs', 'tools/osm-pbf-extract.mjs', 'tools/prepare-brussels-terrain.py', 'tools/validate-brussels-dtm.py', 'js/brussels-terrain.js', 'js/brx-geodata.js') }}
       - name: Install terrain generation dependencies
         if: steps.capture-runner.outputs.present == 'true'
-        run: python -m pip install --only-binary=:all: -r tools/requirements-terrain.txt
+        run: |
+          python -m pip install --only-binary=:all: -r tools/requirements-terrain.txt
       - name: Download the official Brussels DTM
         if: steps.capture-runner.outputs.present == 'true' && steps.source-cache.outputs.cache-hit != 'true'
         run: |
