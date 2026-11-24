@@ -3951,6 +3951,15 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     for (let i = 0; i < 5; i++) {
       box(g, 2.65, 0.06, 0.05, -10 + i * 5, 17.2, centralFace + 0.27, bronze, 'Central French door transom bar');
     }
+
+    // Stone sills sit under the wing end windows on both gable ends.
+    for (const side of [-1, 1]) {
+      for (let i = 0; i < 3; i++) {
+        const wz = -6 - i * 5;
+        box(g, 0.14, 0.2, 2.3, side * 70.12, 10.85, wz, ashlar, 'Wing end window sill');
+        box(g, 0.14, 0.2, 2.3, side * 70.12, 5.25, wz, ashlar, 'Wing end ground window sill');
+      }
+    }
   });
   addLandmark('palaceSurroundings', (g) => {
     // Real-world sources: en/fr Wikipedia (Royal Palace of Brussels, Brussels Park, Place des Palais,

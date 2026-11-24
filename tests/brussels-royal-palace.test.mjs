@@ -1708,3 +1708,8 @@ testCase('a transom bar crosses each central French door near its head', () => {
 testCase('keystones crown the Royal Stables arched windows', () => {
   assert.match(palace, /'Royal Stables window keystone'/);
 });
+
+testCase('stone sills sit under the wing end windows on both gable ends', () => {
+  assert.match(palace, /'Wing end window sill'/);
+  assert.match(palace, /'Wing end ground window sill'/);
+});
