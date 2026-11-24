@@ -4134,6 +4134,9 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
 
     // A nosing strip edges the front stylobate step.
     box(g, 32, 0.05, 0.1, 0, 0.28, centralFace + 9.0, moulding, 'Stylobate step nosing');
+
+    // A sill bar closes the foot of the portico door fanlight.
+    box(g, 3.4, 0.06, 0.15, 0, 7.85, centralFace + 0.28, moulding, 'Fanlight sill bar');
   });
   addLandmark('palaceSurroundings', (g) => {
     // Real-world sources: en/fr Wikipedia (Royal Palace of Brussels, Brussels Park, Place des Palais,
