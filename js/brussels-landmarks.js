@@ -2677,6 +2677,12 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     // among the park's sixty Greco-Roman and historical sculptures.
     box(g, 3.6, 3.0, 3.6, 30, 1.5, 300, materials.paleStone, 'Godecharle monument pedestal');
     mesh(g, new THREE.SphereGeometry(0.85, 12, 10), materials.paleStone, 30, 4.6, 300, 'Godecharle monument figure');
+    // The corner bays of the Academy Palace serve as entrances: coach doors (portes
+    // cochères) open on each side, letting carriages cross the palace from side to side.
+    for (const ax of [-199.5, -136.5]) {
+      box(g, 3.2, 5.2, 0.5, ax, 2.6, 20.9, materials.dark, 'Academy Palace corner coach door');
+      box(g, 4.4, 0.7, 0.7, ax, 5.6, 20.9, materials.warmStone, 'Academy coach door lintel');
+    }
   });
     addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');

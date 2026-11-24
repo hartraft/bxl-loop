@@ -677,3 +677,9 @@ testCase('every wing window has a projecting moulded surround (encadrement moulu
   assert.match(palace, /encadrement mouluré/);
   assert.match(palace, /'Wing window moulded surround'/);
 });
+
+testCase('the Academy Palace corner bays are coach-door entrances (portes cochères)', () => {
+  assert.match(palace, /coach doors \(portes/);
+  assert.match(palace, /'Academy Palace corner coach door'/);
+  assert.match(palace, /'Academy coach door lintel'/);
+});
