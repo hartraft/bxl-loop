@@ -415,6 +415,19 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       toolCartouches.name = name + ' carpenter tool cartouches';
       root.add(toolCartouches);
     }
+    if (spec.brouette) {
+      // La Brouette (greasers' house, nos. 2-3): the gable's pediment holds an arched niche with
+      // St Giles, patron of greasers (with his deer and a scallop); the centre cartouche carries
+      // a gilded wheelbarrow on blue and the side cartouches the rebuild date Anno 1697.
+      const wyB = 4.4 + (height - 6.6) / Math.max(1, floors - 1);
+      box(root, 0.7, 1.5, 0.24, 0, height + gableHeight + 0.3, 0.34, materials.dark, name + ' St Giles arched niche');
+      box(root, 0.28, 1.0, 0.14, 0, height + gableHeight + 0.35, 0.48, materials.gold, name + ' St Giles statue');
+      mesh(root, new THREE.SphereGeometry(0.15, 8, 6), materials.gold, 0, height + gableHeight + 1.05, 0.48, name + ' St Giles statue head');
+      box(root, 0.6, 0.45, 0.14, 0, (4.4 + wyB) / 2, 0.3, materials.dark, name + ' wheelbarrow cartouche ground');
+      box(root, 0.45, 0.2, 0.06, 0, (4.4 + wyB) / 2, 0.4, materials.gold, name + ' gilded wheelbarrow');
+      box(root, 0.55, 0.3, 0.12, -bayStep, wyB - 1.35, 0.28, materials.warmStone, name + ' Anno 1697 cartouche');
+      box(root, 0.55, 0.3, 0.12, bayStep, wyB - 1.35, 0.28, materials.warmStone, name + ' Anno 1697 cartouche');
+    }
     return root;
   }
 
@@ -958,7 +971,7 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     // West side, numbered from the north corner like the real nos. 1-7, with the street
     // mouths left open at both ends: Rue au Beurre (north) and Rue de la Tête d'or (south).
     guildHouse(west, { name: 'Guild House – Le Roy d’Espagne', x: 23, width: 8.5, height: 24, floors: 4, style: 'bell', stone: materials.plaster, emblem: 'vane', balustradeStatues: true, terrace: true, medallions: true });
-    guildHouse(west, { name: 'Guild House – La Brouette', x: 13.5, width: 8.5, height: 20, style: 'stepped', stone: materials.plaster });
+    guildHouse(west, { name: 'Guild House – La Brouette', x: 13.5, width: 8.5, height: 20, style: 'stepped', stone: materials.plaster, brouette: true });
     guildHouse(west, { name: 'Guild House – Le Sac', x: 4, width: 8.5, height: 22, style: 'gable', stone: materials.warmStone, guildTools: true });
     guildHouse(west, { name: 'Guild House – La Louve', x: -5.5, width: 8.5, height: 23, floors: 3, style: 'scroll', stone: materials.ochre, emblem: true, terrace: true });
     guildHouse(west, { name: 'Guild House – Le Cornet', x: -15, width: 8.5, height: 21, style: 'scroll', stone: materials.ochre, emblem: 'horse' });

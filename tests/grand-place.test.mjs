@@ -166,6 +166,14 @@ test('café awnings over the ground-floor arcades of the brasserie houses', () =
   assert.equal((square.match(/terrace: true\s*[,}]/g) || []).length, 6, 'six houses carry terraces');
 });
 
+test('La Brouette carries St Giles in the gable niche, the wheelbarrow and Anno 1697 cartouches', () => {
+  assert.ok(square.includes("La Brouette', x: 13.5, width: 8.5, height: 20, style: 'stepped', stone: materials.plaster, brouette: true }"));
+  assert.ok(square.includes(" St Giles arched niche'"));
+  assert.ok(square.includes(" St Giles statue'"));
+  assert.ok(square.includes(" gilded wheelbarrow'"));
+  assert.equal((square.match(/ Anno 1697 cartouche'/g) || []).length, 2, 'two Anno 1697 cartouches');
+});
+
 test('Le Sac carries the carpenter tool cartouches and the globe-compass finial', () => {
   assert.ok(square.includes("Le Sac', x: 4, width: 8.5, height: 22, style: 'gable', stone: materials.warmStone, guildTools: true }"));
   assert.ok(square.includes(" globe finial'"));
