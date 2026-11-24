@@ -763,3 +763,17 @@ test('Manneken Pis in his 1770 blue-stone rocaille niche with basin and 1851 rai
   assert.ok(square.includes('King’s House belfry louver openings'));
   assert.ok(square.includes('khLouvers.count = 8'));
 });
+
+test('rounds 125-130: Broodhuis plinth rustication + gable cross, paving repairs, Serclaes sett ring, window sill corbels, gable volutes', () => {
+  assert.ok(square.includes('King’s House plinth rustication'));
+  assert.ok(square.includes('khRust.count = 3'));
+  assert.ok(square.includes('King’s House gable apex cross vertical'));
+  assert.ok(square.includes('Grand-Place paving repair patches'));
+  assert.ok(square.includes('repairs.count = 12'));
+  assert.ok(square.includes("Grand-Place 't Serclaes plaque sett ring"));
+  assert.ok(square.includes('serclaesRing.count = 8'));
+  assert.ok(square.includes('window sill corbels'));
+  assert.ok(square.includes('sillCorbels.count = scc'));
+  assert.ok(square.includes('gable shoulder volute scrolls'));
+  assert.ok(square.includes('volutes.count = 2'));
+});

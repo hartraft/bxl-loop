@@ -295,6 +295,23 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     pilasterStrips.count = pilasterStripCount;
     pilasterStrips.name = name + ' facade pilaster strips';
     root.add(pilasterStrips);
+    // Stone corbels under every window sill, carrying the sills of the real facades.
+    const sillCorbels = new THREE.InstancedMesh(new THREE.BoxGeometry(0.2, 0.18, 0.24), materials.warmStone, bays * floors * 2);
+    let scc = 0;
+    for (let floor = 1; floor <= floors; floor++) {
+      const wy = 4.4 + (floor - 1) * ((height - 6.6) / Math.max(1, floors - 1));
+      for (let bay = 0; bay < bays; bay++) {
+        const wx = (bay - (bays - 1) / 2) * (width - 2.8) / Math.max(1, bays - 1);
+        for (const side of [-1, 1]) {
+          dummy.position.set(wx + side * 0.5, wy - 0.85, 0.16);
+          dummy.updateMatrix();
+          sillCorbels.setMatrixAt(scc++, dummy.matrix);
+        }
+      }
+    }
+    sillCorbels.count = scc;
+    sillCorbels.name = name + ' window sill corbels';
+    root.add(sillCorbels);
 
     // Ground floor: a recessed arcade opening per bay — on the real square the cafés and
     // shops sit under these arcades, so the ground floor is taller and darker than the
@@ -523,6 +540,16 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     tileRows.count = tileRowCount;
     tileRows.name = name + ' roof tile rows';
     root.add(tileRows);
+    // Gilded volute scrolls at the gable shoulders — the baroque gables end in scrolls.
+    const volutes = new THREE.InstancedMesh(new THREE.SphereGeometry(0.18, 8, 6), materials.gold, 2);
+    for (let i = 0; i < 2; i++) {
+      modDummy.position.set((i === 0 ? -1 : 1) * (width / 2 - 1.0), height + 0.9, 0.12);
+      modDummy.updateMatrix();
+      volutes.setMatrixAt(i, modDummy.matrix);
+    }
+    volutes.count = 2;
+    volutes.name = name + ' gable shoulder volute scrolls';
+    root.add(volutes);
     // Chimneys with terracotta pots rise from the roof, as on the real houses.
     const chimneys = new THREE.InstancedMesh(new THREE.BoxGeometry(0.55, 1.6, 0.55), materials.warmStone, 2);
     const chimneyPots = new THREE.InstancedMesh(new THREE.CylinderGeometry(0.16, 0.2, 0.5, 8), materials.dark, 4);
@@ -1597,6 +1624,17 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
 
     box(root, width, height, depth, 0, height / 2, -depth / 2, stone, 'King’s House neo-Gothic main block');
     box(root, width + 1.6, 1.0, depth + 0.9, 0, 0.5, -depth / 2, darkStone, 'King’s House plinth');
+    // Rustication grooves in the plinth band of the real Broodhuis base.
+    const khRust = new THREE.InstancedMesh(new THREE.BoxGeometry(width + 1.2, 0.05, 0.06), trim, 3);
+    const khRd0 = new THREE.Object3D();
+    for (let i = 0; i < 3; i++) {
+      khRd0.position.set(0, 0.3 + i * 0.32, 0.32);
+      khRd0.updateMatrix();
+      khRust.setMatrixAt(i, khRd0.matrix);
+    }
+    khRust.count = 3;
+    khRust.name = 'King’s House plinth rustication';
+    root.add(khRust);
     box(root, width + 0.9, 0.8, depth + 0.7, 0, height - 0.4, -depth / 2, trim, 'King’s House upper cornice');
     // Oversized quoins chain the front corners of the main block, and a row of modillions
     // stands under the upper cornice — standard dressing of Jamaer's real facade.
@@ -1820,6 +1858,9 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     khCrest.name = 'King’s House gable step cresting';
     khCrestBall.name = 'King’s House gable crest finial balls';
     root.add(khCrest, khCrestBall);
+    // Gilded cross finial at the apex of the central gable.
+    box(root, 0.06, 0.7, 0.06, 0, height + 2.5 + gh + 0.35, 0.32, materials.gold, 'King’s House gable apex cross vertical');
+    box(root, 0.42, 0.06, 0.06, 0, height + 2.5 + gh + 0.5, 0.32, materials.gold, 'King’s House gable apex cross arm');
     const towerZ = -depth / 2 - 0.7;
     box(root, 2.8, 33, 2.8, 0, 16.5, towerZ, trim, 'King’s House central tower square shaft');
     cylinder(root, 1.35, 1.5, 2.6, 0, 34.3, towerZ, trim, 8).name = 'King’s House central tower octagonal top';
@@ -1965,6 +2006,20 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     jointsX.name = 'Grand-Place paving joints (long axis)';
     jointsZ.name = 'Grand-Place paving joints (cross axis)';
     plaza.add(jointsX, jointsZ);
+    // Patch repairs in the calepinage — newer slabs set into the old paving, as on the
+    // real square's worn surface.
+    const repairs = new THREE.InstancedMesh(new THREE.BoxGeometry(3.2, 0.1, 2.0), materials.pavingB, 12);
+    const repairSpots = [[-40, 12], [-12, -22], [8, 18], [33, -8], [-25, 25], [45, 20], [-48, -14], [20, -28], [0, 0], [-5, 8], [38, 5], [-33, -5]];
+    for (let i = 0; i < 12; i++) {
+      dummy.position.set(repairSpots[i][0], 0.01, repairSpots[i][1]);
+      dummy.rotation.y = (i % 3) * 0.06;
+      dummy.updateMatrix();
+      repairs.setMatrixAt(i, dummy.matrix);
+    }
+    repairs.count = 12;
+    repairs.name = 'Grand-Place paving repair patches';
+    repairs.receiveShadow = true;
+    plaza.add(repairs);
     // Granite kerb stones along all four facade lines where the paving meets the buildings.
     for (const [w, d, x, z, n] of [[110, 0.5, 0, 35.6, 'south'], [110, 0.5, 0, -35.6, 'north'], [0.5, 71, -54.6, 0, 'west'], [0.5, 71, 54.6, 0, 'east']]) {
       box(plaza, w, 0.18, d, x, 0.02, z, materials.pavingEdge, `Grand-Place ${n} facade kerb`);
@@ -2064,6 +2119,19 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     tactiles.count = mouths.length;
     tactiles.name = 'Grand-Place tactile guidance strips';
     plaza.add(tactiles);
+    // Blue-stone sett ring in the paving in front of Everard 't Serclaes' memorial plaque on
+    // L'Étoile (no. 1, south frontage) — the real plaque is set off by a paved surround.
+    const serclaesRing = new THREE.InstancedMesh(new THREE.BoxGeometry(0.7, 0.06, 0.7), materials.pavingEdge, 8);
+    for (let i = 0; i < 8; i++) {
+      const a = i * Math.PI / 4;
+      sd.position.set(-30 + Math.cos(a) * 1.6, 0.005, 34.6 + Math.sin(a) * 1.1);
+      sd.rotation.y = 0;
+      sd.updateMatrix();
+      serclaesRing.setMatrixAt(i, sd.matrix);
+    }
+    serclaesRing.count = 8;
+    serclaesRing.name = "Grand-Place 't Serclaes plaque sett ring";
+    plaza.add(serclaesRing);
 
     // Bollards flank each street entrance — the real square is pedestrianised at its mouths.
     const bollards = new THREE.InstancedMesh(new THREE.CylinderGeometry(0.14, 0.18, 0.9, 10), materials.dark, mouths.length * 2);
