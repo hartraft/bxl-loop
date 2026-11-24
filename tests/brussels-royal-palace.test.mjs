@@ -61,10 +61,18 @@ testCase('the front garden holds the real three sunken parterres (central on the
   assert.match(palace, /'Sunken parterre retaining edge'/);
   assert.match(palace, /'Sunken parterre lawn'/);
   assert.match(palace, /'Parterre flower band'/);
-  assert.equal((palace.match(/\{ x: -?\d+, w: \d+, z: 12\.4, d: 2\.6 \}/g) || []).length, 3, 'three parterre beds defined');
-  assert.match(palace, /\{ x: 0, w: 22, z: 12\.4, d: 2\.6 \}/);
+  assert.equal((palace.match(/\{ x: -?\d+(?:\.\d+)?, w: \d+, z: 12\.4, d: 2\.6 \}/g) || []).length, 4, 'parterre beds: central pair flanking the perron + two lateral');
+  assert.match(palace, /\{ x: -13\.5, w: 9, z: 12\.4, d: 2\.6 \}/);
+  assert.match(palace, /\{ x: 13\.5, w: 9, z: 12\.4, d: 2\.6 \}/);
   assert.match(palace, /\{ x: -38, w: 34, z: 12\.4, d: 2\.6 \}/);
   assert.match(palace, /\{ x: 38, w: 34, z: 12\.4, d: 2\.6 \}/);
+});
+
+testCase('a monumental perron (emmarchement) leads up to the central portico', () => {
+  assert.match(palace, /emmarchement/);
+  assert.match(palace, /'Portico perron step'/);
+  assert.match(palace, /for \(let s = 0; s < 3; s\+\+\)/);
+  assert.match(palace, /centralFace \+ 0\.3 \+ s \* 0\.62/);
 });
 
 testCase('the ground storey is a rusticated soubassement with bossage blocks on every arcade pier', () => {

@@ -1768,12 +1768,14 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       }
     }
     // The real front garden (jardin d'honneur, laid out 1904–09) holds three sunken
-    // parterres between the façade and the gilded railing: a central parterre on the
-    // portico axis flanked by two lateral parterres ("trois parterres creusés").
+    // parterres between the façade and the gilded railing ("trois parterres creusés"):
+    // a central pair flanking the perron walk on the portico axis, plus two lateral
+    // parterres.
     const lawnMat = new THREE.MeshStandardMaterial({ color: 0x5f7f52, roughness: 0.96 });
     const flowerMat = new THREE.MeshStandardMaterial({ color: 0xb06a5a, roughness: 0.95 });
     const parterres = [
-      { x: 0, w: 22, z: 12.4, d: 2.6 },
+      { x: -13.5, w: 9, z: 12.4, d: 2.6 },
+      { x: 13.5, w: 9, z: 12.4, d: 2.6 },
       { x: -38, w: 34, z: 12.4, d: 2.6 },
       { x: 38, w: 34, z: 12.4, d: 2.6 }
     ];
@@ -1781,6 +1783,12 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       box(g, p.w, 0.24, p.d, p.x, -0.12, p.z, ashlar, 'Sunken parterre retaining edge');
       box(g, p.w - 0.8, 0.1, p.d - 0.8, p.x, -0.02, p.z, lawnMat, 'Sunken parterre lawn');
       box(g, p.w - 4, 0.06, 0.7, p.x, 0.05, p.z, flowerMat, 'Parterre flower band');
+    }
+
+    // A monumental perron (emmarchement) leads up from the garden walk to the central
+    // portico entrance, as on the real front.
+    for (let s = 0; s < 3; s++) {
+      box(g, 17, 0.32, 0.62, 0, 0.79 - s * 0.32, centralFace + 0.3 + s * 0.62, ashlar, 'Portico perron step');
     }
 
     // "Les Fleurs du Palais Royal": eleven great pots — one for each of the country's
