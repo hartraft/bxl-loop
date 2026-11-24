@@ -1172,3 +1172,8 @@ testCase('the central portico balcony parapet is filled with iron balusters and 
   assert.match(palace, /'Central balcony baluster'/);
   assert.match(palace, /'Central balcony mid rail'/);
 });
+
+testCase('cast-iron street lamps with globes line the palace-square axis', () => {
+  assert.match(palace, /'Square axis street lamp'/);
+  assert.match(palace, /'Square axis street lamp globe'/);
+});

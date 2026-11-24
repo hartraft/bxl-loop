@@ -4329,6 +4329,14 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       pondCop.setMatrixAt(pci++, pcd.matrix);
     }
     pondCop.count = pci; pondCop.name = 'Main pond rim coping'; g.add(pondCop);
+
+    // Cast-iron street lamps with glass globes line the palace-square axis at night.
+    for (const lz of [18, 30, 42, 54]) {
+      for (const lx of [-7.5, 7.5]) {
+        cylinder(g, 0.07, 0.11, 3.6, lx, 1.8, lz, materials.bronze, 8).name = 'Square axis street lamp';
+        mesh(g, new THREE.SphereGeometry(0.28, 10, 8), materials.glass, lx, 3.75, lz, 'Square axis street lamp globe');
+      }
+    }
   });
     addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');
