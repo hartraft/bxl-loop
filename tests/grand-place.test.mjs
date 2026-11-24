@@ -107,6 +107,20 @@ test('guild-house rooflines stay varied and instanced', () => {
   assert.ok(source.includes('gilded window surrounds'));
 });
 
+test('the seven real street mouths stay open, each with its bronze UNESCO plaque', () => {
+  assert.ok(square.includes('UNESCO entrance plaque – Rue au Beurre'));
+  assert.ok(square.includes('Rue de la Tête d’or'));
+  assert.ok(square.includes('Rue des Chapeliers'));
+  assert.ok(square.includes('Rue Charles Buls'));
+  assert.ok(square.includes('Rue de la Colline'));
+  assert.ok(square.includes('Rue d’Arenberg'));
+  assert.ok(square.includes('Rue Chair et Pain'));
+  assert.ok(square.includes('materials.bronze'));
+  // west frontage leaves gaps at both ends for Rue au Beurre (north) and Rue de la Tête d'or (south)
+  assert.ok(square.includes("x: 23, width: 8.5"));
+  assert.ok(square.includes("x: -24.5, width: 8.5"));
+});
+
 test('the four frontages still face the plaza', () => {
   assert.ok(source.includes('south.rotation.y = Math.PI'));
   assert.ok(source.includes('north.position.set(0, 0, -36)'));
