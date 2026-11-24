@@ -1693,7 +1693,7 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       wbd.updateMatrix();
       canopyCrochets.setMatrixAt(i, wbd.matrix);
     }
-    canopyCrockets.count = arcBays;
+    canopyCrochets.count = arcBays;
     canopyCrochets.name = 'Arcade canopy crocket balls';
     root.add(canopyCrochets);
 
