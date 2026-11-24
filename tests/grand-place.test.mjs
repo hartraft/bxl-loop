@@ -166,6 +166,14 @@ test('café awnings over the ground-floor arcades of the brasserie houses', () =
   assert.equal((square.match(/terrace: true\s*[,}]/g) || []).length, 6, 'six houses carry terraces');
 });
 
+test('Le Renard carries Justice with the four continents, St Nicholas and the fox sign', () => {
+  assert.ok(square.includes("Le Renard', x: -24.5, width: 8.5, height: 20, style: 'gable', stone: materials.warmStone, continents: true }"));
+  assert.ok(square.includes(" Justice and four continents statues'"));
+  assert.ok(square.includes('continentStatues.count = 5'));
+  assert.ok(square.includes(" St Nicholas gable statue body'"));
+  assert.ok(square.includes(" fox sign body'"));
+});
+
 test('Le Roy d’Espagne carries Roman emperor medallions and the St Aubert bust', () => {
   assert.ok(square.includes('emblem: \'vane\', balustradeStatues: true, terrace: true, medallions: true }'));
   assert.ok(square.includes(" Roman emperor medallions'"));

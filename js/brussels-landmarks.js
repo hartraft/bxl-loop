@@ -378,6 +378,26 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       box(root, 0.5, 0.18, 0.15, 0, 5.45, 0.4, materials.warmStone, name + ' St Aubert bust plinth');
       mesh(root, new THREE.SphereGeometry(0.22, 10, 8), materials.gold, 0, 5.78, 0.44, name + ' St Aubert bust');
     }
+    if (spec.continents) {
+      // Le Renard (haberdashers' house): on the first-floor balcony the allegory of Justice
+      // (blindfolded, with scales and sword) flanked by the four continents — Africa, Europa,
+      // Asia and America; St Nicholas, patron of haberdashers, crowns the gable, and a gilded
+      // fox sign hangs above the entrance.
+      const wy2 = 4.4 + (height - 6.6) / Math.max(1, floors - 1);
+      const continentStatues = new THREE.InstancedMesh(new THREE.BoxGeometry(0.3, 1.25, 0.16), materials.gold, 5);
+      for (let i = 0; i < 5; i++) {
+        pedDummy.position.set((i - 2) * (width - 2.6) / 4, wy2 + 2.0, 0.3);
+        pedDummy.updateMatrix();
+        continentStatues.setMatrixAt(i, pedDummy.matrix);
+      }
+      continentStatues.count = 5;
+      continentStatues.name = name + ' Justice and four continents statues';
+      root.add(continentStatues);
+      box(root, 0.3, 0.9, 0.14, 0, height + gableHeight + 1.7, 0.1, materials.gold, name + ' St Nicholas gable statue body');
+      mesh(root, new THREE.SphereGeometry(0.24, 8, 6), materials.gold, 0, height + gableHeight + 2.25, 0.1, name + ' St Nicholas gable statue head');
+      box(root, 0.8, 0.3, 0.2, 0, 3.95, 0.55, materials.bronze, name + ' fox sign body');
+      mesh(root, new THREE.SphereGeometry(0.18, 8, 6), materials.bronze, 0.45, 4.05, 0.55, name + ' fox sign head');
+    }
     return root;
   }
 
@@ -925,7 +945,7 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     guildHouse(west, { name: 'Guild House – Le Sac', x: 4, width: 8.5, height: 22, style: 'gable', stone: materials.warmStone });
     guildHouse(west, { name: 'Guild House – La Louve', x: -5.5, width: 8.5, height: 23, floors: 3, style: 'scroll', stone: materials.ochre, emblem: true, terrace: true });
     guildHouse(west, { name: 'Guild House – Le Cornet', x: -15, width: 8.5, height: 21, style: 'scroll', stone: materials.ochre, emblem: 'horse' });
-    guildHouse(west, { name: 'Guild House – Le Renard', x: -24.5, width: 8.5, height: 20, style: 'gable', stone: materials.warmStone });
+    guildHouse(west, { name: 'Guild House – Le Renard', x: -24.5, width: 8.5, height: 20, style: 'gable', stone: materials.warmStone, continents: true });
 
     const east = new THREE.Group();
     east.name = 'East frontage';
