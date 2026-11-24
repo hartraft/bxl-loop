@@ -1529,3 +1529,7 @@ testCase('gate piers with caps flank the Royal Stables gate door', () => {
   assert.match(palace, /'Royal Stables gate pier'/);
   assert.match(palace, /'Royal Stables gate pier cap'/);
 });
+
+testCase('stone corbels carry the central balcony slab', () => {
+  assert.match(palace, /'Central balcony corbel'/);
+});

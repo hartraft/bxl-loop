@@ -3852,6 +3852,11 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     // A cross of muntins divides the portico door fanlight into panes.
     box(g, 0.08, 3.2, 0.05, 0, 7.9, centralFace + 0.28, bronze, 'Fanlight muntin vertical');
     box(g, 3.2, 0.08, 0.05, 0, 7.9, centralFace + 0.28, bronze, 'Fanlight muntin horizontal');
+
+    // Stone corbels carry the central balcony slab from the facade.
+    for (const bx of [-1.2, 0, 1.2]) {
+      box(g, 0.22, 0.3, 0.8, bx, 11.2, centralFace + 0.5, ashlar, 'Central balcony corbel');
+    }
   });
   addLandmark('palaceSurroundings', (g) => {
     // Real-world sources: en/fr Wikipedia (Royal Palace of Brussels, Brussels Park, Place des Palais,
