@@ -177,7 +177,7 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     if (terrace) {
       // Café awning sloping over each ground-floor arcade bay — the real square's
       // brasseries and cafés sit under canvas awnings on the Grand-Place.
-      const awnings = new THREE.InstancedMesh(new THREE.BoxGeometry(bayW - 0.5, 0.05, 1.3), materials.canvas, bays);
+      const awnings = new THREE.InstancedMesh(new THREE.BoxGeometry((width - 2.8) / bays - 0.3, 0.05, 1.3), materials.canvas, bays);
       for (let bay = 0; bay < bays; bay++) {
         const wx = (bay - (bays - 1) / 2) * (width - 2.8) / Math.max(1, bays - 1);
         arcDummy.position.set(wx, 3.2, 0.85);
