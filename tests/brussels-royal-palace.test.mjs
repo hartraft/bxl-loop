@@ -1846,3 +1846,7 @@ testCase('volutes finish the Academy Palace pilaster capitals', () => {
 testCase('a projecting plinth bases the Palace of the Nation facade', () => {
   assert.match(palace, /'Palace of the Nation base plinth'/);
 });
+
+testCase('a moulded edge finishes the front of each wing balcony slab', () => {
+  assert.match(palace, /'Wing balcony slab edge'/);
+});

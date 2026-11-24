@@ -4020,6 +4020,11 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
 
     // A leaf split bar divides the portico main door into two leaves.
     box(g, 0.08, 7.5, 0.06, 0, 4.1, centralFace + 0.26, bronze, 'Portico door leaf split');
+
+    // A moulded edge finishes the front of each wing balcony slab.
+    for (const side of wingXs) {
+      box(g, wingW, 0.1, 0.15, side, 7.86, facadeZ + 1.08, moulding, 'Wing balcony slab edge');
+    }
   });
   addLandmark('palaceSurroundings', (g) => {
     // Real-world sources: en/fr Wikipedia (Royal Palace of Brussels, Brussels Park, Place des Palais,
