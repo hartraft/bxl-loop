@@ -1816,10 +1816,13 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       const x = -45 + col * 30;
       const z = -19 + row * 38;
       box(g, 24, 0.28, 22, x, 3.45, z, materials.pavingB, 'Interior courthouse court paving');
+      // Arcaded galleries on all four sides of every court, as in the real plan.
       for (const edge of [-1, 1]) {
         box(g, 24, 5.5, 0.45, x, 8.0, z + edge * 11, light, 'Court inner arcade');
+        box(g, 0.45, 5.5, 22, x + edge * 12, 8.0, z, light, 'Court inner arcade');
         for (let bay = -2; bay <= 2; bay++) {
           box(g, 1.5, 4.0, 0.22, x + bay * 4.5, 8.0, z + edge * 11.25, recess, 'Court arcade opening');
+          box(g, 0.22, 4.0, 1.5, x + edge * 12.25, 8.0, z + bay * 4.5, recess, 'Court arcade opening');
         }
       }
     }

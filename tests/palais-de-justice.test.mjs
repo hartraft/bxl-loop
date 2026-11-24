@@ -38,7 +38,9 @@ test('the landmark is anchored and rotated so the principal facade faces Place P
 test('the plan keeps the real eight inner courtyards open between the ranges', () => {
   assert.ok(palace.includes('for (let row = 0; row < 2; row++) for (let col = 0; col < 4; col++)'));
   assert.ok(palace.includes("'Interior courthouse court paving'"));
-  assert.ok(palace.includes("'Court inner arcade'"));
+  assert.ok(palace.includes("box(g, 24, 5.5, 0.45, x, 8.0, z + edge * 11, light, 'Court inner arcade')"));
+  assert.ok(palace.includes("box(g, 0.45, 5.5, 22, x + edge * 12, 8.0, z, light, 'Court inner arcade')"), 'arcades on all four sides');
+  assert.ok(palace.includes("'Court arcade opening'"));
 });
 
 test('the terrace rests on the visible retaining massif toward Wynants and Minimes', () => {
