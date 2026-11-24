@@ -816,4 +816,23 @@ testCase('rounds 257-260: 1949 rear windows, Cafe terrace paving, spine drainage
   assert.ok(sur2.length >= 9, 'AB + Cafe + kiosks + buildings registered');
 });
 
+testCase('rounds 261-262: door fanlights + frames, stair foot sett fan', () => {
+  assert.match(bourse, /'Bourse door fanlight \(imposte vitree\)'/);
+  assert.match(bourse, /'Bourse fanlight frame'/);
+  assert.match(bourse, /'Bourse stair foot sett fan \(passerelle d..entree en eventail\)'/);
+  assert.match(bourse, /fan\.count = 14/);
+});
+
+testCase('rounds 263-270: 1949 entrance, mirror rim, kiosk roof mouldings, Fontaine finial, monument steps, bin flaps, lamp flanges, axis band', () => {
+  assert.match(surroundings, /'1949 building entrance door'/);
+  assert.match(surroundings, /'1949 entrance lintel'/);
+  assert.match(surroundings, /'Water mirror inner rim/);
+  assert.match(surroundings, /'kiosk roof edge moulding'/);
+  assert.match(surroundings, /'Fontaine Orts finial \(boule sommitale\)'/);
+  assert.match(surroundings, /'Orts monument step 3'/);
+  assert.match(surroundings, /'Bin recycling flaps \(trappe de recyclage\)'/);
+  assert.match(surroundings, /'Lighting pole base flanges \(socles de mat\)'/);
+  assert.match(surroundings, /'Rue Orts view axis band toward the Bourse \(bande d..axe\)'/);
+});
+
 // __MORE_BOURSE_TESTS__

@@ -6490,6 +6490,28 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       poles.castShadow = true;
       g.add(poles);
     }
+    // Round 261: the three cella doors have glazed fanlights (impostes vitrees) above them.
+    for (const [dx, dr] of [[0, 2.5], [-10, 1.75], [10, 1.75]]) {
+      const fan = mesh(g, new THREE.CylinderGeometry(dr, dr, 0.25, 14, 1, false, 0, Math.PI), materials.glass, dx, dx === 0 ? 13 : 9, 30.35, 'Bourse door fanlight (imposte vitree)');
+      fan.rotation.z = Math.PI / 2;
+      mesh(g, new THREE.TorusGeometry(dr, 0.06, 6, 14, Math.PI), materials.warmStone, dx, dx === 0 ? 13 : 9, 30.35, 'Bourse fanlight frame');
+    }
+    // Round 262: a radial sett fan at the stair foot on the square (passerelle d'entree).
+    {
+      const fan = new THREE.InstancedMesh(new THREE.BoxGeometry(0.5, 0.07, 1.6), materials.pavingB, 14);
+      const dummy = new THREE.Object3D();
+      for (let i = 0; i < 14; i++) {
+        const a = (i - 6.5) * 0.11;
+        dummy.position.set(Math.sin(a) * 3.2, 0.05, 50.5 + Math.cos(a) * 3.2);
+        dummy.rotation.set(0, -a, 0);
+        dummy.updateMatrix();
+        fan.setMatrixAt(i, dummy.matrix);
+      }
+      fan.count = 14;
+      fan.name = 'Bourse stair foot sett fan (passerelle d\'entree en eventail)';
+      fan.receiveShadow = true;
+      g.add(fan);
+    }
     // __BOURSE_ROUNDS__
   });
   addLandmark('bourseSurroundings', (g) => {
@@ -7888,6 +7910,63 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     box(g, 170, 0.06, 0.5, 0, -0.05, 122, materials.dark, 'Boulevard spine drainage channel (caniveau central)');
     // Round 260: register colliders for the Ancienne Belgique and the Cafe de la Bourse blocks
     // (layout entries in js/brussels-colliders.js).
+    // Round 263: the 1949 building's entrance door with stone surround at its base.
+    {
+      box(g, 4, 5, 0.6, -62, 2.5, 107.4, materials.dark, '1949 building entrance door');
+      box(g, 5, 0.4, 0.9, -62, 5.2, 107.5, materials.warmStone, '1949 entrance lintel');
+      box(g, 4.6, 0.25, 1.6, -62, 0.12, 108.2, materials.pavingEdge, '1949 entrance step');
+    }
+    // Round 264: the water mirror has a water-level rim inside its frame.
+    mesh(g, new THREE.TorusGeometry(6.9, 0.07, 6, 28), materials.glass, -38, 0.12, 70, 'Water mirror inner rim (niveau d\'eau)');
+    // Round 265: each premetro kiosk roof has an edge moulding.
+    for (const k of g.children) {
+      if (!k.name || !k.name.startsWith('Bourse premetro station')) continue;
+      box(k, 3.8, 0.12, 3.8, 0, 3.12, 0, materials.dark, 'kiosk roof edge moulding');
+    }
+    // Round 266: the Fontaine Orts is crowned by a gilded finial ball.
+    {
+      const f = g.children.find((c) => c.name && c.name.startsWith('Fontaine Orts'));
+      if (f) mesh(f, new THREE.SphereGeometry(0.22, 8, 6), materials.gold, 0, 5.5, 0, 'Fontaine Orts finial (boule sommitale)');
+    }
+    // Round 267: three steps surround the Orts monument pedestal.
+    {
+      const m = g.children.find((c) => c.name && c.name.startsWith('Monument to Auguste Orts'));
+      if (m) {
+        box(m, 4.4, 0.15, 3.0, 0, 0.07, 0, materials.pavingEdge, 'Orts monument step 1');
+        box(m, 5.0, 0.15, 3.6, 0, 0.22, 0, materials.pavingEdge, 'Orts monument step 2');
+        box(m, 5.6, 0.15, 4.2, 0, 0.37, 0, materials.pavingEdge, 'Orts monument step 3');
+      }
+    }
+    // Round 268: each bin has a second recycling flap on the lid.
+    {
+      const flaps = new THREE.InstancedMesh(new THREE.BoxGeometry(0.2, 0.02, 0.2), materials.enamelBlue, 6);
+      const dummy = new THREE.Object3D();
+      for (let i = 0; i < 6; i++) {
+        dummy.position.set(-60 + i * 24 + 0.1, 0.95, 126.5);
+        dummy.updateMatrix();
+        flaps.setMatrixAt(i, dummy.matrix);
+      }
+      flaps.count = 6;
+      flaps.name = 'Bin recycling flaps (trappe de recyclage)';
+      g.add(flaps);
+    }
+    // Round 269: each lighting pole has a base flange ring.
+    {
+      const flanges = new THREE.InstancedMesh(new THREE.CylinderGeometry(0.22, 0.26, 0.12, 10), materials.dark, 8);
+      const dummy = new THREE.Object3D();
+      for (let i = 0; i < 8; i++) {
+        dummy.position.set(-70 + i * 20, 0.06, 118.5);
+        dummy.updateMatrix();
+        flanges.setMatrixAt(i, dummy.matrix);
+      }
+      flanges.count = 8;
+      flanges.name = 'Lighting pole base flanges (socles de mat)';
+      flanges.castShadow = true;
+      g.add(flanges);
+    }
+    // Round 270: a contrasting paved axis band runs from the water mirror to the Bourse facade
+    // along the rue Auguste Orts view axis.
+    box(g, 4, 0.3, 82, 0, -0.1, 94, materials.pavingEdge, 'Rue Orts view axis band toward the Bourse (bande d\'axe)');
     // __SURROUNDINGS_ROUNDS__
   });
 
