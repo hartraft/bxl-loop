@@ -1857,6 +1857,22 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     }
     box(g, 41, 1.6, 41, 0, 63.4, 0, stone, 'Square dome drum top ring');
     box(g, 34, 1.5, 34, 0, 69, 0, weathered, 'Upper dome cornice');
+    // Eight gilded-copper griffins (winged lions) stand under the dome around the circular gallery.
+    const gilded = new THREE.MeshStandardMaterial({ color: 0xc9973f, metalness: 0.62, roughness: 0.38 });
+    for (let i = 0; i < 8; i++) {
+      const a = i * Math.PI / 4;
+      const x = Math.cos(a) * 16, z = Math.sin(a) * 16;
+      const griffin = new THREE.Group();
+      griffin.position.set(x, 69.8, z);
+      griffin.rotation.y = Math.PI / 2 - a;
+      mesh(griffin, new THREE.SphereGeometry(0.7, 10, 8), gilded, 0, 0.9, 0, 'Griffin body under dome');
+      mesh(griffin, new THREE.SphereGeometry(0.38, 8, 6), gilded, 0, 1.6, 0.3, 'Griffin head under dome');
+      for (const w of [-1, 1]) {
+        const wing = mesh(griffin, new THREE.BoxGeometry(0.1, 1.2, 1.8), gilded, w * 0.75, 1.1, -0.1, 'Griffin wing under dome');
+        wing.rotation.z = w * 0.45;
+      }
+      g.add(griffin);
+    }
     // Circular upper drum, marked at its four angles by 5.55 m bronze statues under
     // triangular pediments: the Loi, Justice, Force and Clemence.
     cylinder(g, 17.5, 19.5, 15, 0, 77, 0, light, 32);

@@ -129,6 +129,9 @@ test('the monumental dome stack exists: square drum, circular drum, copper dome,
   assert.ok(palace.includes("'Square dome drum top ring'"));
   assert.ok(palace.includes("const drumStatues = ['Loi', 'Justice', 'Force', 'Clemence'];"), 'four bronze allegories at the drum angles');
   assert.ok(palace.includes("'Drum angle statue plinth'"));
+  assert.ok(palace.includes('const gilded = new THREE.MeshStandardMaterial({ color: 0xc9973f, metalness: 0.62, roughness: 0.38 })'), 'gilded copper');
+  assert.ok(palace.includes("'Griffin body under dome'"), 'eight griffins under the dome');
+  assert.ok(palace.includes("'Griffin wing under dome'"));
   assert.ok(palace.includes("drumStatues[k] + ' drum statue pediment'"), 'each under a triangular pediment');
   assert.ok(palace.includes('cylinder(g, 0.6, 0.85, 5.55, x, 90.0, z, bronze, 10)'), '5.55 m statues');
   assert.ok(palace.includes("'Stylobate cross arm north-south'"), 'Greek-cross stylobate');
