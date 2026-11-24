@@ -166,6 +166,16 @@ test('café awnings over the ground-floor arcades of the brasserie houses', () =
   assert.equal((square.match(/terrace: true\s*[,}]/g) || []).length, 6, 'six houses carry terraces');
 });
 
+test('La Louve carries the Romulus-and-Remus she-wolf relief and the Apollo pediment', () => {
+  assert.ok(square.includes('emblem: true, terrace: true, louve: true }'));
+  assert.ok(square.includes(" Romulus and Remus relief panel'"));
+  assert.ok(square.includes(" Romulus relief figure'"));
+  assert.ok(square.includes(" Remus relief figure'"));
+  assert.ok(square.includes(" she-wolf relief body'"));
+  assert.ok(square.includes(" Apollo pediment'"));
+  assert.ok(square.includes('materials.bronze'));
+});
+
 test('La Brouette carries St Giles in the gable niche, the wheelbarrow and Anno 1697 cartouches', () => {
   assert.ok(square.includes("La Brouette', x: 13.5, width: 8.5, height: 20, style: 'stepped', stone: materials.plaster, brouette: true }"));
   assert.ok(square.includes(" St Giles arched niche'"));
