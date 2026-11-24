@@ -3837,6 +3837,9 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
 
     // A projecting plinth course bases the palace facade.
     box(g, 141, 0.6, 0.4, 0, 0.3, facadeZ + 0.3, ashlar, 'Facade plinth course');
+
+    // The central balcony rail sits on a stone slab projecting from the facade.
+    box(g, 3.2, 0.12, 1.0, 0, 11.38, centralFace + 0.72, ashlar, 'Central balcony slab');
   });
   addLandmark('palaceSurroundings', (g) => {
     // Real-world sources: en/fr Wikipedia (Royal Palace of Brussels, Brussels Park, Place des Palais,

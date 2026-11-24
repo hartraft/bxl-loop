@@ -1478,3 +1478,7 @@ testCase('a projecting plinth course bases the palace facade', () => {
 testCase('each Hermes bust around the octagonal basin stands on a pedestal', () => {
   assert.match(palace, /'Hermes bust pedestal'/);
 });
+
+testCase('the central balcony rail sits on a projecting stone slab', () => {
+  assert.match(palace, /'Central balcony slab'/);
+});
