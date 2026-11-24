@@ -1696,3 +1696,7 @@ testCase('mullions divide the wing end windows on both gable ends', () => {
 testCase('mullions divide the Academy Palace first-floor windows', () => {
   assert.match(palace, /'Academy Palace first-floor mullion'/);
 });
+
+testCase('mullions divide the BELvue ground-floor windows', () => {
+  assert.match(palace, /'BELvue ground window mullion'/);
+});

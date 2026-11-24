@@ -5051,6 +5051,12 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     for (let i = 0; i < 7; i++) {
       box(g, 0.08, 6.5, 0.06, -168 - 24 + i * 8, 11, 21.0, materials.warmStone, 'Academy Palace first-floor mullion');
     }
+
+    // Mullions divide the BELvue ground-floor windows.
+    for (let i = 0; i < 5; i++) {
+      const wx = 168 - 13 + i * 6.5;
+      box(g, 0.08, 3.2, 0.06, wx, 7.5, 22.2, materials.warmStone, 'BELvue ground window mullion');
+    }
   });
     addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');
