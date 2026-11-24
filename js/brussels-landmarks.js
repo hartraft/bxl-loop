@@ -3570,6 +3570,16 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
 
 
 
+
+    // Every wing window sill rests on a projecting stone apron (appui saillant).
+    for (const x of wingXs) {
+      for (let i = 0; i < 9; i++) {
+        const bx = x - 22 + i * 5.5;
+        for (const [floorY, winH] of [[9.9, 3.55], [16.0, 3.0]]) {
+          box(g, 2.5, 0.14, 0.5, bx, floorY - winH / 2 - 0.24, facadeZ + 0.26, moulding, 'Wing window apron');
+        }
+      }
+    }
   });
   addLandmark('palaceSurroundings', (g) => {
     // Real-world sources: en/fr Wikipedia (Royal Palace of Brussels, Brussels Park, Place des Palais,

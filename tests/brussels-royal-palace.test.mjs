@@ -1023,3 +1023,8 @@ testCase('wing bay pilasters carry bases and capitals', () => {
   assert.match(palace, /'Wing bay pilaster capital'/);
   assert.match(palace, /for \(let i = 0; i <= 9; i\+\+\)/);
 });
+
+testCase('every wing window sill rests on a projecting stone apron', () => {
+  assert.match(palace, /projecting stone apron/);
+  assert.match(palace, /'Wing window apron'/);
+});
