@@ -336,3 +336,9 @@ testCase('portico column shafts are fluted (fût cannelé)', () => {
   assert.match(palace, /flutes\.count = fi/);
   assert.match(palace, /for \(let fk = 0; fk < 16; fk\+\+\)/);
 });
+
+testCase('piano nobile wing windows carry a small triangular pediment (inférieure à fronton)', () => {
+  assert.match(palace, /inférieure à fronton/);
+  assert.match(palace, /if \(floorY === 9\.9\)/);
+  assert.match(palace, /'Piano nobile window pediment'/);
+});

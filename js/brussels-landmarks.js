@@ -1486,6 +1486,12 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
           box(g, 2.25, 0.2, 0.38, bx, floorY + winH / 2 + 0.12, facadeZ + 0.2, moulding, 'Wing window lintel');
           box(g, 0.14, winH + 0.34, 0.3, bx - 1.1, floorY, facadeZ + 0.2, ashlar, 'Wing window jamb');
           box(g, 0.14, winH + 0.34, 0.3, bx + 1.1, floorY, facadeZ + 0.2, ashlar, 'Wing window jamb');
+          // Piano nobile windows carry a small pediment (heritage 30402: "deux fenêtres superposées, l'inférieure à fronton").
+          if (floorY === 9.9) {
+            const wPed = new THREE.Shape();
+            wPed.moveTo(-1.3, 0); wPed.lineTo(1.3, 0); wPed.lineTo(0, 0.62); wPed.closePath();
+            mesh(g, new THREE.ShapeGeometry(wPed), ashlar, bx, floorY + winH / 2 + 0.3, facadeZ + 0.26, 'Piano nobile window pediment');
+          }
           // Second-floor windows are crowned with keystone and garland (heritage: "rectangulaire, à clé et guirlande").
           if (floorY === 16.0) {
             box(g, 0.24, 0.42, 0.2, bx, floorY + winH / 2 + 0.34, facadeZ + 0.24, ashlar, 'Second-floor window keystone');
