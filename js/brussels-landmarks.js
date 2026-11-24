@@ -3977,6 +3977,11 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     for (const side of [-1, 1]) {
       box(g, 1.4, 0.06, 1.4, side * 9.8, 1.03, centralFace + 0.9, shadow, 'Perron planter soil');
     }
+
+    // Collar rings decorate the perron lamp standards.
+    for (const side of [-1, 1]) {
+      cylinder(g, 0.14, 0.17, 0.3, side * 9.6, 2.4, centralFace + 1.6, bronze, 8).name = 'Perron lamp collar';
+    }
   });
   addLandmark('palaceSurroundings', (g) => {
     // Real-world sources: en/fr Wikipedia (Royal Palace of Brussels, Brussels Park, Place des Palais,

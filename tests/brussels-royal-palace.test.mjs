@@ -1750,3 +1750,7 @@ testCase('dark soil fills the two perron planters', () => {
 testCase('raking cornices follow both slopes of the Academy pediment', () => {
   assert.match(palace, /'Academy pediment raking cornice'/);
 });
+
+testCase('collar rings decorate the perron lamp standards', () => {
+  assert.match(palace, /'Perron lamp collar'/);
+});
