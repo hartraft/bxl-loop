@@ -1406,3 +1406,8 @@ testCase('the Academy Palace ground floor is bossaged', () => {
   assert.match(palace, /'Academy Palace ground bossage'/);
   assert.match(palace, /apBoss\.count = apBi/);
 });
+
+testCase('flower boxes with plantings line the wing balconies', () => {
+  assert.match(palace, /'Wing balcony flower box'/);
+  assert.match(palace, /'Wing balcony flower box planting'/);
+});

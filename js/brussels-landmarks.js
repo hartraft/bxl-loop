@@ -3804,6 +3804,15 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       box(g, 0.3, 7.5, 0.35, side * 2.15, 4.1, centralFace + 0.22, moulding, 'Portico door jamb');
     }
     box(g, 4.6, 0.3, 0.4, 0, 8.0, centralFace + 0.24, moulding, 'Portico door lintel');
+
+    // Flower boxes with plantings line the wing balconies.
+    for (const side of wingXs) {
+      for (let k = 0; k < 5; k++) {
+        const bx = side - 16 + k * 8;
+        box(g, 1.8, 0.28, 0.45, bx, 7.55, facadeZ + 0.85, bronze, 'Wing balcony flower box');
+        mesh(g, new THREE.SphereGeometry(0.26, 8, 6), flowerMat, bx, 7.8, facadeZ + 0.85, 'Wing balcony flower box planting');
+      }
+    }
   });
   addLandmark('palaceSurroundings', (g) => {
     // Real-world sources: en/fr Wikipedia (Royal Palace of Brussels, Brussels Park, Place des Palais,
