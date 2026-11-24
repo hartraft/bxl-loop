@@ -1667,6 +1667,8 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     // and Place Poelaert.
     const stone = new THREE.MeshStandardMaterial({ color: 0xc9bda8, roughness: 0.9 });
     const light = new THREE.MeshStandardMaterial({ color: 0xd8cbb6, roughness: 0.88 });
+    // Pale sandstone ranges with ochre/sable avant-corps and pavilions, as on the real facades.
+    const ochre = new THREE.MeshStandardMaterial({ color: 0xd3b98a, roughness: 0.88 });
     const weathered = new THREE.MeshStandardMaterial({ color: 0xa99b86, roughness: 0.94 });
     const slate = new THREE.MeshStandardMaterial({ color: 0x2f3a3e, roughness: 0.95 });
     const zinc = new THREE.MeshStandardMaterial({ color: 0x6d7276, roughness: 0.6, metalness: 0.35 });
@@ -1702,7 +1704,7 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     // pavilions flank the monumental porch in strong projection (forte saillie).
     for (const x of [-66, 66]) for (const z of [-61.5, 64]) {
       const north = z > 0;
-      box(g, 28, 39, north ? 30 : 27, x, 20, z, light, 'Projecting courthouse corner pavilion');
+      box(g, 28, 39, north ? 30 : 27, x, 20, z, ochre, 'Projecting courthouse corner pavilion');
       box(g, 30, 1.6, north ? 32 : 29, x, 40, z, weathered, 'Corner pavilion cornice');
       mesh(g, new THREE.ConeGeometry(21, 6.5, 4), slate, x, 43.85, z, 'Corner pavilion hipped roof (toit en pavillon)');
       for (let bay = -1; bay <= 1; bay++) {
@@ -1811,7 +1813,7 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       }
     }
     // South facade above rue de Wynants: a pedimented central avant-corps with its own portal.
-    box(g, 24, 6, 3, 0, 8, -76.5, stone, 'South avant-corps rue de Wynants');
+    box(g, 24, 6, 3, 0, 8, -76.5, ochre, 'South avant-corps rue de Wynants');
     const sp = new THREE.Shape();
     sp.moveTo(-13, 0); sp.lineTo(0, 6); sp.lineTo(13, 0); sp.closePath();
     mesh(g, new THREE.ExtrudeGeometry(sp, { depth: 2, bevelEnabled: false }), light, 0, 11, -76.5, 'South portal pediment rue de Wynants');

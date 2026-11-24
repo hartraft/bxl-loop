@@ -50,6 +50,13 @@ test('the terrace rests on the visible retaining massif toward Wynants and Minim
   assert.ok(palace.includes("'West massif lower tier (rue des Minimes)'"));
 });
 
+test('facades mix pale sandstone with ochre/sable avant-corps, not a uniform white', () => {
+  assert.ok(palace.includes('const ochre = new THREE.MeshStandardMaterial({ color: 0xd3b98a, roughness: 0.88 })'));
+  assert.ok(palace.includes("x, 20, z, ochre, 'Projecting courthouse corner pavilion'"));
+  assert.ok(palace.includes("'South avant-corps rue de Wynants'"));
+  assert.ok(palace.includes('const stone = new THREE.MeshStandardMaterial({ color: 0xc9bda8, roughness: 0.9 })'));
+});
+
 test('the soubassement is the real dark Belgian bluestone (pierre bleue)', () => {
   assert.ok(palace.includes('const bluestone = new THREE.MeshStandardMaterial({ color: 0x3d444c, roughness: 0.92 })'));
   assert.ok(palace.includes("'Palais de Justice bluestone soubassement band'"));
