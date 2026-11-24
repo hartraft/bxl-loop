@@ -2430,6 +2430,12 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
         mesh(g, new THREE.SphereGeometry(0.4, 10, 8), gilded, x + side * 25.4, 23.4, -1, 'Wing mansard ridge finial');
       }
     }
+
+    // Each terminal pavilion rises a chimney stack with a stone cap, like the wing roofs.
+    for (const x of [-76, 76]) {
+      box(g, 1.6, 3.2, 1.6, x, 27.6, -6, stone, 'Pavilion chimney stack');
+      box(g, 2.0, 0.4, 2.0, x, 29.4, -6, ashlar, 'Pavilion chimney cap');
+    }
   });
   addLandmark('palaceSurroundings', (g) => {
     // Brussels Park (Parc de Bruxelles): the rectangular 13.1 ha neoclassical park north of the

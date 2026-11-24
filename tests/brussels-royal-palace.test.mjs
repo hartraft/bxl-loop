@@ -914,3 +914,9 @@ testCase('the Rue de la Loi continues north past Parliament toward the EU quarte
   assert.match(palace, /north extension to the EU quarter/);
   assert.match(palace, /'Rue de la Loi north extension to the EU quarter'/);
 });
+
+testCase('each terminal pavilion carries a capped chimney stack', () => {
+  assert.match(palace, /chimney stack with a stone cap/);
+  assert.match(palace, /'Pavilion chimney stack'/);
+  assert.match(palace, /'Pavilion chimney cap'/);
+});
