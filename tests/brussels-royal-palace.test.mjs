@@ -618,3 +618,9 @@ testCase('the BELvue pavilion carries corner quoins and hipped-roof dormers', ()
   assert.match(palace, /'BELvue dormer'/);
   assert.match(palace, /'BELvue dormer roof'/);
 });
+
+testCase('the Royal Stables open with a carriage arch onto the courtyard road', () => {
+  assert.match(palace, /carriage arch on their courtyard front/);
+  assert.match(palace, /'Royal Stables carriage arch'/);
+  assert.match(palace, /'Royal Stables arch impost'/);
+});
