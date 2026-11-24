@@ -1009,3 +1009,23 @@ test('rounds 233-242: swan wings, she-wolf tail/leg, galleon stern windows, hors
   assert.ok(square.includes('gallery oculi tracery (vertical)'));
   assert.ok(square.includes('oculiBarsV.count = oculiBarsH.count = bays'));
 });
+
+test('rounds 243-252: alt statues + niche shafts, wing balcony rail/posts, Broodhuis pier bases + springers + string course, cornice fillet, gable center scroll, hopper heads, sett fans', () => {
+  assert.ok(square.includes('Ground niche attendant statues (tall)'));
+  assert.ok(square.includes('altStatues.count = as2'));
+  assert.ok(square.includes('Ground niche side shafts'));
+  assert.ok(square.includes('nicheShafts.count = ns'));
+  assert.ok(square.includes('Wing balcony top rail'));
+  assert.ok(square.includes('Wing balcony corner post'));
+  assert.ok(square.includes('King’s House gallery pier plinth blocks'));
+  assert.ok(square.includes('khPierBases.count = kpb'));
+  assert.ok(square.includes('King’s House first-gallery arch springers'));
+  assert.ok(square.includes('khSpringers.count = ksp'));
+  assert.ok(square.includes('King’s House upper string course'));
+  assert.ok(square.includes('cornice top fillet'));
+  assert.ok(square.includes('gable center scroll'));
+  assert.ok(square.includes('downpipe hopper heads'));
+  assert.ok(square.includes('hoppers.count = 2'));
+  assert.ok(square.includes('Grand-Place street-mouth sett fans'));
+  assert.ok(square.includes('fans.count = fn'));
+});
