@@ -4778,6 +4778,11 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     // A tall window pierces the Royal Stables gatehouse above the gate.
     box(g, 2.0, 4.0, 0.2, -70, 10, -68.85, materials.glass, 'Royal Stables gatehouse window');
     box(g, 2.4, 0.22, 0.3, -70, 12.2, -68.9, materials.warmStone, 'Royal Stables gatehouse window lintel');
+
+    // Capitals crown each Palace of the Nation peristyle column under the architrave.
+    for (let i = 0; i < 8; i++) {
+      cylinder(g, 1.2, 1.0, 0.6, -24 + i * 6.85, 15.0, 401.5, materials.plaster, 12).name = 'Palace of the Nation column capital';
+    }
   });
     addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');
