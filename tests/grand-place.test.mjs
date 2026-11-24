@@ -107,6 +107,13 @@ test('guild-house cornices stand on a row of stone corbels (modillions)', () => 
   assert.ok(square.includes("box(root, width + 0.8, 0.65, depth + 0.4, 0, height - 0.35, -depth / 2, materials.gold, name + ' cornice')"));
 });
 
+test('guild-house corners are chained with rusticated quoins', () => {
+  assert.ok(square.includes(" corner quoins'"));
+  assert.ok(square.includes('const quoinRows = Math.max(3, Math.floor((height - 2.2) / 0.85))'));
+  assert.ok(square.includes('quoins.count = q'));
+  assert.ok(square.includes('new THREE.InstancedMesh(new THREE.BoxGeometry(0.34, 0.78, 0.3), materials.warmStone, quoinRows * 2)'));
+});
+
 test('guild houses carry the real names on the real sides, with Baroque detailing', () => {
   for (const name of ['Le Roy d’Espagne', 'La Brouette', 'Le Sac', 'La Louve', 'Le Cornet', 'Le Renard',
     'Le Heaume', 'Le Paon', 'Sainte-Barbe', 'Le Cerf', 'L’Ange', 'La Chaloupe d’Or',

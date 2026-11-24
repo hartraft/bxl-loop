@@ -135,6 +135,22 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     modillions.name = name + ' corbelled cornice modillions';
     modillions.castShadow = true;
     root.add(modillions);
+    // Rusticated quoins: oversized alternating stone blocks chaining each front corner of the
+    // strongly structured Baroque facades — instanced up both corners.
+    const quoinRows = Math.max(3, Math.floor((height - 2.2) / 0.85));
+    const quoins = new THREE.InstancedMesh(new THREE.BoxGeometry(0.34, 0.78, 0.3), materials.warmStone, quoinRows * 2);
+    let q = 0;
+    for (let r = 0; r < quoinRows; r++) {
+      for (const side of [-1, 1]) {
+        modDummy.position.set(side * (width / 2 - 0.17), 1.3 + r * 0.85, 0.1);
+        modDummy.updateMatrix();
+        quoins.setMatrixAt(q++, modDummy.matrix);
+      }
+    }
+    quoins.count = q;
+    quoins.name = name + ' corner quoins';
+    quoins.castShadow = true;
+    root.add(quoins);
     box(root, width + 0.45, 0.45, 0.35, 0, 1.15, 0.12, materials.warmStone, name + ' plinth');
 
     const bays = Math.max(3, Math.round(width / 2.8));
