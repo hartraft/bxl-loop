@@ -1265,3 +1265,7 @@ testCase('a low wall encloses the Royal Stables courtyard', () => {
 testCase('stone edging kerbs flank the north radiating avenue from the pond', () => {
   assert.match(palace, /'Radiating avenue edging kerb'/);
 });
+
+testCase('triangular pediments cap the center of each Palace of the Nation wing', () => {
+  assert.match(palace, /'Palace of the Nation wing pediment'/);
+});

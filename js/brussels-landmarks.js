@@ -4466,6 +4466,13 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     // Stone edging kerbs flank the north radiating avenue from the main pond.
     box(g, 0.4, 0.18, 92, -4.3, 0.09, 215, materials.pavingEdge, 'Radiating avenue edging kerb');
     box(g, 0.4, 0.18, 92, 4.3, 0.09, 215, materials.pavingEdge, 'Radiating avenue edging kerb');
+
+    // Small triangular pediments cap the center of each Palace of the Nation wing.
+    for (const side of [-1, 1]) {
+      const wp = new THREE.Shape();
+      wp.moveTo(-4, 0); wp.lineTo(4, 0); wp.lineTo(0, 2.4); wp.closePath();
+      mesh(g, new THREE.ShapeGeometry(wp), materials.warmStone, side * 70, 16, 406.85, 'Palace of the Nation wing pediment');
+    }
   });
     addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');
