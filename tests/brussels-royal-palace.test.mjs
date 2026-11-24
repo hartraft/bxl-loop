@@ -2136,3 +2136,8 @@ testCase('a bronze kick plate protects the foot of the Palace of the Nation door
 testCase('cap slabs finish the garden walk low walls', () => {
   assert.match(palace, /'Garden walk wall cap'/);
 });
+
+testCase('dentil courses run under both Academy end pavilion cornices', () => {
+  assert.match(palace, /'Academy end pavilion dentil'/);
+  assert.match(palace, /aepD\.count = aepDi/);
+});

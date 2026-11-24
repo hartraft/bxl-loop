@@ -5608,6 +5608,18 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
 
     // A bronze kick plate protects the foot of the Palace of the Nation main door.
     box(g, 3.8, 0.5, 0.06, 0, 0.4, 402.82, materials.bronze, 'Palace of the Nation door kick plate');
+
+    // Dentil courses run under both Academy Palace end pavilion cornices.
+    const aepD = new THREE.InstancedMesh(new THREE.BoxGeometry(0.22, 0.28, 0.28), materials.warmStone, 10);
+    const aepDd = new THREE.Object3D();
+    let aepDi = 0;
+    for (const px of [-201, -135]) {
+      for (let di8 = 0; di8 < 5; di8++) {
+        aepDd.position.set(px - 3.5 + di8 * 1.75, 19.85, 19.9); aepDd.rotation.y = 0; aepDd.updateMatrix();
+        aepD.setMatrixAt(aepDi++, aepDd.matrix);
+      }
+    }
+    aepD.count = aepDi; aepD.name = 'Academy end pavilion dentil'; g.add(aepD);
   });
     addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');
