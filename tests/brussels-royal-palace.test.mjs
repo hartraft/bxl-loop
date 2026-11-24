@@ -1199,3 +1199,7 @@ testCase('the BELvue ground floor is bossaged with rusticated blocks', () => {
 testCase('both Palace of the Nation wings carry rows of facade windows', () => {
   assert.match(palace, /'Palace of the Nation wing window'/);
 });
+
+testCase('corner quoins strengthen the BELvue square-facing corners', () => {
+  assert.match(palace, /'BELvue corner quoin'/);
+});

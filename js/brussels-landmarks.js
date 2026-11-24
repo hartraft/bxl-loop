@@ -4381,6 +4381,13 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
         box(g, 2.4, 7, 0.2, side * 70 - 15 + i * 10, 8, 406.9, materials.glass, 'Palace of the Nation wing window');
       }
     }
+
+    // Corner quoins strengthen the square-facing corners of the BELvue pavilion.
+    for (const cx of [150.1, 185.9]) {
+      for (const qy of [2.5, 7.5, 12.5, 17.5]) {
+        box(g, 0.5, 1.6, 0.4, cx, qy, 21.9, materials.warmStone, 'BELvue corner quoin');
+      }
+    }
   });
     addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');
