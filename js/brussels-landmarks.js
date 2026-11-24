@@ -3864,6 +3864,11 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
         box(g, 0.14, 0.75, 0.14, side + e * (wingW / 2 - 0.3), 8.3, facadeZ + 0.84, bronze, 'Wing balcony end newel');
       }
     }
+
+    // Flanged bases anchor the perron lamp standards on the landing.
+    for (const side of [-1, 1]) {
+      cylinder(g, 0.2, 0.26, 0.2, side * 9.6, 1.1, centralFace + 1.6, bronze, 8).name = 'Perron lamp base flange';
+    }
   });
   addLandmark('palaceSurroundings', (g) => {
     // Real-world sources: en/fr Wikipedia (Royal Palace of Brussels, Brussels Park, Place des Palais,

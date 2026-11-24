@@ -1554,3 +1554,7 @@ testCase('a glazed fanlight crowns the Palace of the Nation main door', () => {
 testCase('a ridge strip crowns the Academy Palace roofline', () => {
   assert.match(palace, /'Academy Palace roof ridge'/);
 });
+
+testCase('flanged bases anchor the perron lamp standards', () => {
+  assert.match(palace, /'Perron lamp base flange'/);
+});
