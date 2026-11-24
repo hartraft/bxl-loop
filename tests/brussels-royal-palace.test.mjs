@@ -630,3 +630,8 @@ testCase('the Boulevard du Régent runs south-east from the Place du Trône (Sma
   assert.match(palace, /'Boulevard du Régent street strip'/);
   assert.match(palace, /bdR\.rotation\.y = Math\.PI \/ 4/);
 });
+
+testCase('the Rue Ducale extends south from the park to the Place du Trône', () => {
+  assert.match(palace, /Rue Ducale runs south from the park/);
+  assert.match(palace, /'Rue Ducale south extension to Place du Trône'/);
+});

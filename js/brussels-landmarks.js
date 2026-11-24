@@ -2629,6 +2629,9 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     // equestrian statue of Leopold II, on the site of the old second city walls (R20).
     const bdR = box(g, 150, 0.06, 18, -185, 0.03, -125, materials.pavingA, 'Boulevard du Régent street strip');
     bdR.rotation.y = Math.PI / 4;
+    // The Rue Ducale runs south from the park's east side down to the Place du Trône,
+    // past the Royal Stables and the Academy Palace (one of the four park thoroughfares).
+    box(g, 14, 0.06, 150, 181, 0.03, -13, materials.pavingA, 'Rue Ducale south extension to Place du Trône');
   });
     addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');
