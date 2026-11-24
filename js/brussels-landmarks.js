@@ -989,12 +989,16 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     box(root, 33.0, 0.8, depth + 0.8, westWingX, height - 0.35, -depth / 2, trim, 'West wing upper cornice');
     // Drip moulds under both wing cornices shed water off the facade.
     const corniceDrips = new THREE.InstancedMesh(new THREE.BoxGeometry(1, 0.07, 0.5), darkStone, 2);
-    wmd.position.set(eastWingX, height - 0.82, 0.25);
-    wmd.updateMatrix();
-    corniceDrips.setMatrixAt(0, wmd.matrix);
-    wmd.position.set(westWingX, height - 0.82, 0.25);
-    wmd.updateMatrix();
-    corniceDrips.setMatrixAt(1, wmd.matrix);
+    const cdrip = new THREE.Object3D();
+    cdrip.position.set(eastWingX, height - 0.82, 0.25);
+    cdrip.scale.set(16, 1, 1);
+    cdrip.updateMatrix();
+    corniceDrips.setMatrixAt(0, cdrip.matrix);
+    cdrip.position.set(westWingX, height - 0.82, 0.25);
+    cdrip.scale.set(32, 1, 1);
+    cdrip.updateMatrix();
+    corniceDrips.setMatrixAt(1, cdrip.matrix);
+    cdrip.scale.set(1, 1, 1);
     corniceDrips.count = 2;
     corniceDrips.name = 'Wing cornice drip moulds';
     root.add(corniceDrips);
