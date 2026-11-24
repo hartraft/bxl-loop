@@ -3681,6 +3681,15 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     for (let s = 0; s < 3; s++) {
       box(g, 17, 0.05, 0.1, 0, 0.95 - s * 0.32, centralFace + 0.61 + s * 0.62, moulding, 'Perron step nosing');
     }
+
+    // Stone surrounds frame the wing end windows, matching the front facade order.
+    for (const side of [-1, 1]) {
+      for (let i = 0; i < 3; i++) {
+        const wz = -6 - i * 5;
+        box(g, 0.14, 3.6, 2.3, side * 70.12, 12.5, wz, ashlar, 'Wing end window surround');
+        box(g, 0.14, 2.8, 2.3, side * 70.12, 6.5, wz, ashlar, 'Wing end ground window surround');
+      }
+    }
   });
   addLandmark('palaceSurroundings', (g) => {
     // Real-world sources: en/fr Wikipedia (Royal Palace of Brussels, Brussels Park, Place des Palais,

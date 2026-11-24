@@ -1162,3 +1162,8 @@ testCase('coping stones cap the rim of the park main pond', () => {
   assert.match(palace, /'Main pond rim coping'/);
   assert.match(palace, /pondCop\.count = pci/);
 });
+
+testCase('stone surrounds frame the wing end windows on both gable ends', () => {
+  assert.match(palace, /'Wing end window surround'/);
+  assert.match(palace, /'Wing end ground window surround'/);
+});
