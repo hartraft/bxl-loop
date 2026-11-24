@@ -1419,3 +1419,7 @@ testCase('stone sills sit under each Palace of the Nation facade window', () => 
 testCase('a moulded cap crowns the central balcony rail', () => {
   assert.match(palace, /'Central balcony top cap'/);
 });
+
+testCase('stone lintels crown the Royal Stables arched windows', () => {
+  assert.match(palace, /'Royal Stables window lintel'/);
+});

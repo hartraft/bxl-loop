@@ -4688,6 +4688,11 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     for (let i = 0; i < 7; i++) {
       box(g, 2.8, 0.2, 0.35, -22.5 + i * 9, 7.9, 403.0, materials.warmStone, 'Palace of the Nation window sill');
     }
+
+    // Stone lintels crown the arched windows of the Royal Stables range.
+    for (let i = 0; i < 5; i++) {
+      box(g, 2.8, 0.22, 0.3, -70 - 16 + i * 8, 8.6, -73.0, materials.warmStone, 'Royal Stables window lintel');
+    }
   });
     addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');
