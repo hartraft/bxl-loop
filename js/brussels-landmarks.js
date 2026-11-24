@@ -369,6 +369,13 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     const facadeStatues = new THREE.InstancedMesh(new THREE.BoxGeometry(0.26, 1.15, 0.14), materials.gold, bays * 2);
     const facadeDummy = new THREE.Object3D();
     let nicheIndex = 0;
+    // Plate tracery on the paired upper-storey lancets: a central mullion splitting each pair
+    // into twin lights, a quatrefoil oculus above the pair and a keystone at each arch apex — the
+    // real facade's two upper floors are large mullioned windows under pointed hood moulds.
+    const lancetMullions = new THREE.InstancedMesh(new THREE.BoxGeometry(0.1, 4.4, 0.2), trim, bays * 2);
+    const lancetOculi = new THREE.InstancedMesh(new THREE.CylinderGeometry(0.34, 0.34, 0.16, 12).rotateX(Math.PI / 2), trim, bays * 2);
+    const lancetKeystones = new THREE.InstancedMesh(new THREE.BoxGeometry(0.2, 0.42, 0.3), darkStone, bays * 2);
+    let traceryIndex = 0;
     for (let i = 0; i <= bays; i++) {
       if (i % 2 === 0) {
         const x = -width / 2 + i * bayW;
@@ -388,6 +395,16 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
         box(root, 2.7, 0.25, 0.48, x, y + 2.45, 0.22, trim, 'Gothic window hood');
         const balcony = box(root, 2.5, 0.22, 0.95, x, y - 2.65, 0.58, trim, 'Stone balcony');
         balcony.castShadow = true;
+        facadeDummy.position.set(x, y, 0.3);
+        facadeDummy.updateMatrix();
+        lancetMullions.setMatrixAt(traceryIndex, facadeDummy.matrix);
+        facadeDummy.position.set(x, y + 1.8, 0.3);
+        facadeDummy.updateMatrix();
+        lancetOculi.setMatrixAt(traceryIndex, facadeDummy.matrix);
+        facadeDummy.position.set(x, y + 2.45, 0.34);
+        facadeDummy.updateMatrix();
+        lancetKeystones.setMatrixAt(traceryIndex, facadeDummy.matrix);
+        traceryIndex++;
       }
       for (let i = 1; i <= bays; i += 2) {
         const x = -width / 2 + i * bayW;
@@ -400,6 +417,11 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
         nicheIndex++;
       }
     }
+    lancetMullions.count = lancetOculi.count = lancetKeystones.count = traceryIndex;
+    lancetMullions.name = 'Lancet mullion (twin-light tracery)';
+    lancetOculi.name = 'Lancet pair oculus (quatrefoil tracery)';
+    lancetKeystones.name = 'Lancet keystone';
+    root.add(lancetMullions, lancetOculi, lancetKeystones);
     // Statues in niches above the ground-floor arcade arch heads as well — the real
     // facade carries nearly three hundred figures on every level.
     for (let i = 0; i < bays; i++) {

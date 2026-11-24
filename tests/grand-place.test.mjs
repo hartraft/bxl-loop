@@ -50,6 +50,14 @@ test('the Town Hall is two genuinely asymmetrical wings with prophets above the 
   assert.ok(square.includes('Portal prophet gilded figure'));
 });
 
+test('the Town Hall upper-storey lancets carry twin-light tracery, oculi and keystones', () => {
+  assert.ok(square.includes('Lancet mullion (twin-light tracery)'));
+  assert.ok(square.includes('Lancet pair oculus (quatrefoil tracery)'));
+  assert.ok(square.includes('Lancet keystone'));
+  assert.ok(square.includes('new THREE.CylinderGeometry(0.34, 0.34, 0.16, 12).rotateX(Math.PI / 2)'));
+  assert.ok(square.includes('lancetMullions.count = lancetOculi.count = lancetKeystones.count = traceryIndex'));
+});
+
 test('the tower lantern is openwork, with corner turrets and flying buttresses', () => {
   assert.ok(square.includes('Openwork octagonal lantern base'));
   assert.ok(square.includes('Open belfry slender pier'));
