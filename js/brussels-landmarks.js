@@ -4693,6 +4693,9 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     for (let i = 0; i < 5; i++) {
       box(g, 2.8, 0.22, 0.3, -70 - 16 + i * 8, 8.6, -73.0, materials.warmStone, 'Royal Stables window lintel');
     }
+
+    // A continuous sill band runs under the Academy Palace ground-floor windows.
+    box(g, 62, 0.25, 0.3, -168, 2.6, 20.95, materials.warmStone, 'Academy Palace sill band');
   });
     addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');

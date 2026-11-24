@@ -1423,3 +1423,7 @@ testCase('a moulded cap crowns the central balcony rail', () => {
 testCase('stone lintels crown the Royal Stables arched windows', () => {
   assert.match(palace, /'Royal Stables window lintel'/);
 });
+
+testCase('a sill band runs under the Academy Palace ground-floor windows', () => {
+  assert.match(palace, /'Academy Palace sill band'/);
+});
