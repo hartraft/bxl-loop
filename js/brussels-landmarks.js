@@ -4397,6 +4397,16 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       box(g, 8, 20, 32, px, 10, 36, materials.paleStone, 'Academy Palace end pavilion');
       box(g, 9, 0.8, 33, px, 20.4, 36, materials.warmStone, 'Academy Palace end pavilion cornice');
     }
+
+    // Modillions line the underside of the Palace of the Nation cornice.
+    const pnMod = new THREE.InstancedMesh(new THREE.BoxGeometry(0.4, 0.55, 0.42), materials.warmStone, 30);
+    const pmd = new THREE.Object3D();
+    let pmi = 0;
+    for (let mi = 0; mi < 30; mi++) {
+      pmd.position.set(-29 + mi * 2, 21.75, 402.7); pmd.rotation.y = 0; pmd.updateMatrix();
+      pnMod.setMatrixAt(pmi++, pmd.matrix);
+    }
+    pnMod.count = pmi; pnMod.name = 'Palace of the Nation cornice modillion'; g.add(pnMod);
   });
     addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');

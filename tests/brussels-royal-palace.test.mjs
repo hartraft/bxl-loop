@@ -1212,3 +1212,8 @@ testCase('projecting end pavilions close both ends of the Academy Palace facade'
   assert.match(palace, /'Academy Palace end pavilion'/);
   assert.match(palace, /'Academy Palace end pavilion cornice'/);
 });
+
+testCase('modillions line the underside of the Palace of the Nation cornice', () => {
+  assert.match(palace, /'Palace of the Nation cornice modillion'/);
+  assert.match(palace, /pnMod\.count = pmi/);
+});
