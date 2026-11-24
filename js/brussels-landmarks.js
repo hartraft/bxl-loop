@@ -4014,6 +4014,9 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     for (const side of [-1, 1]) {
       box(g, 0.3, 0.1, 1.4, side * 15.5, 0.68, centralFace + 7.75, moulding, 'Stylobate edge cap return');
     }
+
+    // A kerb closes the garden walk at the gilded railing.
+    box(g, 3.6, 0.14, 0.3, 0, 0.08, 14.1, ashlar, 'Garden walk end kerb');
   });
   addLandmark('palaceSurroundings', (g) => {
     // Real-world sources: en/fr Wikipedia (Royal Palace of Brussels, Brussels Park, Place des Palais,
