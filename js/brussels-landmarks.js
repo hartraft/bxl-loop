@@ -4572,6 +4572,13 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       obCop.setMatrixAt(obi++, obd.matrix);
     }
     obCop.count = obi; obCop.name = 'Octagonal basin rim coping'; g.add(obCop);
+
+    // Bases and capitals finish the Academy Palace Ionic pilaster order.
+    for (let i = 0; i < 8; i++) {
+      const px = -168 - 28 + i * 8;
+      box(g, 0.9, 0.5, 0.7, px, 0.4, 21.1, materials.warmStone, 'Academy Palace pilaster base');
+      box(g, 0.9, 0.5, 0.7, px, 18.2, 21.1, materials.warmStone, 'Academy Palace pilaster capital');
+    }
   });
     addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');

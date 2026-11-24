@@ -1332,3 +1332,8 @@ testCase('coping stones cap the rim of the octagonal basin', () => {
   assert.match(palace, /'Octagonal basin rim coping'/);
   assert.match(palace, /obCop\.count = obi/);
 });
+
+testCase('bases and capitals finish the Academy Palace pilaster order', () => {
+  assert.match(palace, /'Academy Palace pilaster base'/);
+  assert.match(palace, /'Academy Palace pilaster capital'/);
+});
