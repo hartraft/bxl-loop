@@ -904,3 +904,8 @@ testCase('the Palace of the Nation colonnade stands on a stylobate platform', ()
   assert.match(palace, /'Palace of the Nation peristyle stylobate'/);
   assert.match(palace, /'Palace of the Nation stylobate edge'/);
 });
+
+testCase('the main bandstand kiosk has a raised orchestra platform', () => {
+  assert.match(palace, /raised circular platform/);
+  assert.match(palace, /'Bandstand orchestra platform'/);
+});
