@@ -166,6 +166,13 @@ test('café awnings over the ground-floor arcades of the brasserie houses', () =
   assert.equal((square.match(/terrace: true\s*[,}]/g) || []).length, 6, 'six houses carry terraces');
 });
 
+test('L’Arbre d’Or roof carries the gilded equestrian statue of Charles of Lorraine', () => {
+  assert.ok(square.includes("L’Arbre d’Or', x: -18, width: 15, height: 22, style: 'stepped', stone: materials.ochre, terrace: true, equestrian: true }"));
+  assert.ok(square.includes(" equestrian horse body'"));
+  assert.ok(square.includes(" Charles of Lorraine rider'"));
+  assert.ok(square.includes(" Charles of Lorraine rider head'"));
+});
+
 test('Le Cornet carries the gilded horn and anchor of the boatmen', () => {
   assert.ok(square.includes("emblem: 'horse', cornet: true }"));
   assert.ok(square.includes(" gilded horn'"));
