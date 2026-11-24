@@ -159,6 +159,10 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     const frameGeo = new THREE.BoxGeometry(1.28, 1.7, 0.12);
     const windows = new THREE.InstancedMesh(windowGeo, spec.windowMat || glowGlass, bays * floors);
     const frames = new THREE.InstancedMesh(frameGeo, materials.gold, bays * floors);
+    // Stone cross-mullions (croisées de pierre) dividing each window into four lights — the real
+    // houses' upper windows are crossed like this (blue-stone croisillons on e.g. Le Mont Thabor).
+    const mullionV = new THREE.InstancedMesh(new THREE.BoxGeometry(0.09, 1.45, 0.06), stone, bays * floors);
+    const mullionH = new THREE.InstancedMesh(new THREE.BoxGeometry(1.05, 0.09, 0.06), stone, bays * floors);
     const dummy = new THREE.Object3D();
     let index = 0;
     for (let floor = 1; floor <= floors; floor++) {
@@ -173,13 +177,18 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
         dummy.scale.set(1, 1, 1);
         dummy.updateMatrix();
         frames.setMatrixAt(index, dummy.matrix);
+        dummy.position.set(wx, wy, 0.2);
+        dummy.updateMatrix();
+        mullionV.setMatrixAt(index, dummy.matrix);
+        mullionH.setMatrixAt(index, dummy.matrix);
         index++;
       }
     }
     windows.name = name + ' windows';
     frames.name = name + ' gilded window surrounds';
+    mullionV.name = mullionH.name = name + ' window stone cross-mullions';
     windows.castShadow = frames.castShadow = true;
-    root.add(windows, frames);
+    root.add(windows, frames, mullionV, mullionH);
 
     // Ground floor: a recessed arcade opening per bay — on the real square the cafés and
     // shops sit under these arcades, so the ground floor is taller and darker than the

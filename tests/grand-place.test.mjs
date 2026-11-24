@@ -170,6 +170,14 @@ test('guild houses carry the real names on the real sides, with Baroque detailin
   assert.ok(square.includes(' gilded statues'));
 });
 
+test('guild-house windows are divided by stone cross-mullions (croisées)', () => {
+  assert.ok(square.includes(" window stone cross-mullions'"));
+  assert.ok(square.includes('new THREE.BoxGeometry(0.09, 1.45, 0.06), stone, bays * floors)'));
+  assert.ok(square.includes('new THREE.BoxGeometry(1.05, 0.09, 0.06), stone, bays * floors)'));
+  assert.ok(square.includes('mullionV.setMatrixAt(index, dummy.matrix)'));
+  assert.ok(square.includes('root.add(windows, frames, mullionV, mullionH)'));
+});
+
 test('guild houses have the real arcaded ground floors and gilded gable emblems', () => {
   assert.ok(square.includes(' ground-floor arcade'));
   assert.ok(square.includes(' arcade lintel'));
