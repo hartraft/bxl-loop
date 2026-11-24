@@ -922,3 +922,19 @@ test('rounds 189-196: emblem ray rings, 19 Dukes of Brabant busts, attic shutter
   assert.ok(square.includes('string course end blocks'));
   assert.ok(square.includes('scEnds.count = 2'));
 });
+
+test('rounds 197-204: chimney caps, gable finial ball, parapet rail brackets, gable recess panel, shutter tie-backs, valance trim, parasol ribs, door escutcheon + knocker', () => {
+  assert.ok(square.includes('chimney cap slabs'));
+  assert.ok(square.includes('chimneyCaps.count = 2'));
+  assert.ok(square.includes('gable finial gilded ball'));
+  assert.ok(square.includes('parapet rail brackets'));
+  assert.ok(square.includes('railBrackets.count = 4'));
+  assert.ok(square.includes('gable base recess panel'));
+  assert.ok(square.includes('shutter tie-back straps'));
+  assert.ok(square.includes('tieBacks.count = tbs'));
+  assert.ok(square.includes('awning valance gilded trim'));
+  assert.ok(square.includes('valanceTrim.count = bays'));
+  assert.ok(square.includes('parasol rib tips'));
+  assert.ok(square.includes('door keyhole escutcheon'));
+  assert.ok(square.includes('door knocker'));
+});

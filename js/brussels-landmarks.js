@@ -305,6 +305,21 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     hinges.count = hg;
     hinges.name = name + ' shutter hinge straps';
     root.add(hinges);
+    // Gilded tie-back straps hold each folded shutter open against the facade.
+    const tieBacks = new THREE.InstancedMesh(new THREE.BoxGeometry(0.34, 0.05, 0.08), materials.gold, bays * floors);
+    let tbs = 0;
+    for (let floor = 1; floor <= floors; floor++) {
+      const wy = 4.4 + (floor - 1) * ((height - 6.6) / Math.max(1, floors - 1));
+      for (let bay = 0; bay < bays; bay++) {
+        const wx = (bay - (bays - 1) / 2) * (width - 2.8) / Math.max(1, bays - 1);
+        dummy.position.set(wx - 0.78, wy - 0.4, 0.12);
+        dummy.updateMatrix();
+        tieBacks.setMatrixAt(tbs++, dummy.matrix);
+      }
+    }
+    tieBacks.count = tbs;
+    tieBacks.name = name + ' shutter tie-back straps';
+    root.add(tieBacks);
     windows.name = name + ' windows';
     frames.name = name + ' gilded window surrounds';
     mullionV.name = mullionH.name = name + ' window stone cross-mullions';
@@ -441,6 +456,9 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     // Stone threshold and a single step at every doorway, worn by centuries of use.
     box(root, 1.2, 0.12, 0.4, 0, 0.06, 0.55, materials.warmStone, name + ' door threshold stone');
     box(root, 1.6, 0.14, 0.5, 0, 0.07, 0.85, materials.warmStone, name + ' door step');
+    // Gilded keyhole escutcheon and door knocker on every door leaf.
+    box(root, 0.1, 0.22, 0.05, 0.3, 1.6, 0.5, materials.gold, name + ' door keyhole escutcheon');
+    mesh(root, new THREE.SphereGeometry(0.07, 8, 6), materials.gold, -0.3, 1.65, 0.52, name + ' door knocker');
     // Small attic windows in the gable base, flanking the oculus.
     const atticWindows = new THREE.InstancedMesh(new THREE.BoxGeometry(0.5, 0.7, 0.1), spec.windowMat || glowGlass, 2);
     for (let i = 0; i < 2; i++) {
@@ -462,6 +480,9 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     atticShutters.count = 4;
     atticShutters.name = name + ' attic window shutters';
     root.add(atticShutters);
+    // Recessed dark panel inside the gable base pediment, framing the attic windows and
+    // oculus of the real gable fronts.
+    box(root, width - 3.4, 2.0, 0.06, 0, height + 0.85, 0.16, materials.dark, name + ' gable base recess panel');
     root.add(atticWindows);
     if (terrace) {
       // Café awning sloping over each ground-floor arcade bay — the real square's
@@ -490,6 +511,17 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       valances.count = bays;
       valances.name = name + ' awning valance';
       root.add(valances);
+      // Gilded trim runs along the scalloped valance edge of each awning.
+      const valanceTrim = new THREE.InstancedMesh(new THREE.BoxGeometry((width - 2.8) / bays - 0.3, 0.05, 0.04), materials.gold, bays);
+      for (let bay = 0; bay < bays; bay++) {
+        arcDummy.position.set((bay - (bays - 1) / 2) * (width - 2.8) / Math.max(1, bays - 1), 3.62, 1.62);
+        arcDummy.rotation.y = 0;
+        arcDummy.updateMatrix();
+        valanceTrim.setMatrixAt(bay, arcDummy.matrix);
+      }
+      valanceTrim.count = bays;
+      valanceTrim.name = name + ' awning valance gilded trim';
+      root.add(valanceTrim);
       // Canvas side flaps close the awning ends.
       const sideFlaps = new THREE.InstancedMesh(new THREE.BoxGeometry(0.05, 0.55, 1.05), materials.canvas, 2);
       for (let i = 0; i < 2; i++) {
@@ -538,6 +570,17 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       parasolPoles.name = name + ' terrace parasol pole';
       parasols.name = name + ' terrace parasol canopy';
       root.add(tableTops, tableLegs, chairs, parasolPoles, parasols);
+      // Rib tips crown each terrace parasol, as on the real brasserie parasols.
+      const parasolRibs = new THREE.InstancedMesh(new THREE.BoxGeometry(0.04, 0.3, 0.04), materials.dark, bays);
+      for (let bay = 0; bay < bays; bay++) {
+        const wx = (bay - (bays - 1) / 2) * (width - 2.8) / Math.max(1, bays - 1);
+        arcDummy.position.set(wx, 2.36, 2.4);
+        arcDummy.updateMatrix();
+        parasolRibs.setMatrixAt(bay, arcDummy.matrix);
+      }
+      parasolRibs.count = bays;
+      parasolRibs.name = name + ' parasol rib tips';
+      root.add(parasolRibs);
     }
 
     // Baroque guild-house dressing, as on the real frontages: pilasters between the
@@ -583,6 +626,17 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     pilasters.castShadow = balusters.castShadow = niches.castShadow = statues.castShadow = true;
     root.add(pilasters, balusters, niches, statues);
     box(root, width + 0.7, 0.16, 0.24, 0, height + 0.9, 0.14, stone, name + ' parapet rail');
+    // Gilded brackets support the parapet rail at both ends and mid-span, as on the real
+    // cornices' parapets.
+    const railBrackets = new THREE.InstancedMesh(new THREE.BoxGeometry(0.12, 0.3, 0.2), materials.gold, 4);
+    for (let i = 0; i < 4; i++) {
+      modDummy.position.set(-width / 2 + 0.4 + i * (width - 0.8) / 3, height + 0.72, 0.14);
+      modDummy.updateMatrix();
+      railBrackets.setMatrixAt(i, modDummy.matrix);
+    }
+    railBrackets.count = 4;
+    railBrackets.name = name + ' parapet rail brackets';
+    root.add(railBrackets);
     // Gilded finial balls terminate the parapet rail at both ends of every house.
     const parapetFinials = new THREE.InstancedMesh(new THREE.SphereGeometry(0.14, 8, 6), materials.gold, 2);
     for (let i = 0; i < 2; i++) {
@@ -673,9 +727,20 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     chimneys.name = name + ' roof chimneys';
     chimneyPots.name = name + ' chimney pots';
     root.add(chimneys, chimneyPots);
+    // Stone cap slabs crown each chimney stack, shedding rain off the pots.
+    const chimneyCaps = new THREE.InstancedMesh(new THREE.BoxGeometry(0.75, 0.1, 0.75), materials.warmStone, 2);
+    for (let i = 0; i < 2; i++) {
+      modDummy.position.set((i === 0 ? -1 : 1) * (width / 2 - 1.6), height + 1.9, -depth / 2 + 1.6);
+      modDummy.updateMatrix();
+      chimneyCaps.setMatrixAt(i, modDummy.matrix);
+    }
+    chimneyCaps.count = 2;
+    chimneyCaps.name = name + ' chimney cap slabs';
+    root.add(chimneyCaps);
     box(root, 0.35, height - 1.8, 0.25, -width / 2 + 0.45, height / 2 + 0.5, 0.16, materials.gold);
     box(root, 0.35, height - 1.8, 0.25, width / 2 - 0.45, height / 2 + 0.5, 0.16, materials.gold);
     cylinder(root, 0.12, 0.12, 1.3, 0, height + gableHeight + 0.55, 0.08, materials.gold, 8);
+    mesh(root, new THREE.SphereGeometry(0.16, 10, 8), materials.gold, 0, height + gableHeight + 1.3, 0.08, name + ' gable finial gilded ball');
     // Pots à feu: stone vases with flames flanking the gable pediments — a documented ornament of
     // the 1697-1699 Grand-Place baroque houses (e.g. Le Renard's volute wings, La Brouette's gable).
     const potVases = new THREE.InstancedMesh(new THREE.CylinderGeometry(0.2, 0.3, 0.55, 8), stone, 2);
