@@ -1383,3 +1383,8 @@ testCase('a stone plinth carries the park perimeter railing on all four sides', 
   assert.match(palace, /'Park west railing plinth'/);
   assert.match(palace, /'Park east railing plinth'/);
 });
+
+testCase('lamp standards with gilded globes flank the garden gates', () => {
+  assert.match(palace, /'Garden gate lamp'/);
+  assert.match(palace, /'Garden gate lamp globe'/);
+});
