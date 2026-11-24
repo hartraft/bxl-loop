@@ -1422,11 +1422,12 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     // Dark vault infill panels close each arcade bay between the ribs, as on the real vaulted
     // ground floor.
     const vaultInfills = new THREE.InstancedMesh(new THREE.BoxGeometry(2.6, 0.08, 0.4), materials.dark, arcBays);
+    let vi2 = 0;
     for (const [x] of arcBaysList) {
       vd.position.set(x, 7.18, 0.32);
       vd.rotation.z = 0;
       vd.updateMatrix();
-      vaultInfills.setMatrixAt(i, vd.matrix);
+      vaultInfills.setMatrixAt(vi2++, vd.matrix);
     }
     vaultInfills.count = arcBays;
     vaultInfills.name = 'Arcade vault infill panels';
