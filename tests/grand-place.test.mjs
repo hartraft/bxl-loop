@@ -57,7 +57,7 @@ test('the Town Hall eave is surmounted by a crenellated openwork parapet', () =>
 
 test('the Town Hall arcade pillars carry knight and squire statues of the Noble Houses', () => {
   assert.ok(square.includes("'Arcade pillar knight statues (Noble Houses)'"));
-  assert.ok(square.includes('new THREE.BoxGeometry(0.22, 0.95, 0.12), materials.gold, bays * 2)'));
+  assert.ok(square.includes('new THREE.BoxGeometry(0.22, 0.95, 0.12), materials.gold, arcBays * 2)'));
   assert.ok(square.includes('knightStatues.count = kn'));
 });
 
@@ -744,7 +744,7 @@ test('Town Hall: eight archivolt prophets, cabbage-leaf finials, trefoil arcade 
   assert.ok(square.includes('for (const f of [0.15, 0.4, 0.65, 0.9])'));
   assert.ok(square.includes('archivoltProphets.count = ap'));
   assert.ok(square.includes('Arcade arch cabbage-leaf finials'));
-  assert.ok(square.includes('leafFinials.count = trefoilBand.count = bays'));
+  assert.ok(square.includes('leafFinials.count = trefoilBand.count = arcBays'));
   assert.ok(square.includes('Arcade trefoil band'));
   assert.ok(square.includes('Knight statue historiated corbels'));
   assert.ok(square.includes('histCorbels.count = hc'));
@@ -806,7 +806,7 @@ test('rounds 137-140: arcade pier capitals, Broodhuis impost blocks, parapet fin
 
 test('rounds 141-148: Town Hall arcade vault ribs, hood label stops, sill dripstones, niche backs/plinths/hoods, base figures, string-course drips', () => {
   assert.ok(square.includes('Arcade cross-vault ribs'));
-  assert.ok(square.includes('vaultRibs.count = bays'));
+  assert.ok(square.includes('vaultRibs.count = arcBays'));
   assert.ok(square.includes('Lancet hood label stops'));
   assert.ok(square.includes('labelStops.count = ls'));
   assert.ok(square.includes('Window sill dripstones'));
@@ -984,7 +984,7 @@ test('rounds 223-232: blueStone night wash, glowWater, Broodhuis shaft side lanc
   assert.ok(square.includes('coursing.count = cg'));
   assert.ok(square.includes('Town Hall wing plinth water tables'));
   assert.ok(square.includes('Arcade vault infill panels'));
-  assert.ok(square.includes('vaultInfills.count = bays'));
+  assert.ok(square.includes('vaultInfills.count = arcBays'));
   assert.ok(square.includes('Grand-Place accent cobbles'));
   assert.ok(square.includes('accents.count = 40'));
   assert.ok(source.includes('Manneken Pis rocaille scroll'));
@@ -1028,4 +1028,12 @@ test('rounds 243-252: alt statues + niche shafts, wing balcony rail/posts, Brood
   assert.ok(square.includes('hoppers.count = 2'));
   assert.ok(square.includes('Grand-Place street-mouth sett fans'));
   assert.ok(square.includes('fans.count = fn'));
+});
+
+test('round 253: the real Town Hall ground arcade is asymmetrical — 11 arches in the east wing, 6 in the west wing', () => {
+  assert.ok(square.includes('const wingArcs = [[eastWingX, 15, 11], [westWingX, 32, 6]];'));
+  assert.ok(square.includes('const arcBays = arcBaysList.length;'));
+  assert.ok(square.includes('for (const [x, segW] of arcBaysList)'));
+  assert.ok(square.includes('new THREE.BoxGeometry(0.22, 0.3, 0.34), trim, arcBays * 6)'));
+  assert.ok(square.includes('bays * 2 + 2'));
 });

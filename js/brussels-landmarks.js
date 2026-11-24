@@ -1317,20 +1317,28 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
 
     // Repeated pointed ground-floor arcade: dark recessed openings, piers and pointed heads.
     const bays = 16, bayW = width / bays;
+    // The real ground arcade is highly asymmetrical: the east (left) wing carries ELEVEN
+    // arches while the west (right) wing carries only SIX — build the arch list per wing.
+    const wingArcs = [[eastWingX, 15, 11], [westWingX, 32, 6]];
+    const arcBaysList = [];
+    for (const [wx0, ww, nb] of wingArcs) {
+      const segW = ww / nb;
+      for (let i = 0; i < nb; i++) arcBaysList.push([wx0 - ww / 2 + segW * (i + 0.5), segW]);
+    }
+    const arcBays = arcBaysList.length;
     // The arcade pillars are adorned with statues of knights and squires of the Seven Noble
     // Houses of Brussels — instanced gilded figures on top of every pier.
-    const knightStatues = new THREE.InstancedMesh(new THREE.BoxGeometry(0.22, 0.95, 0.12), materials.gold, bays * 2);
-    const voussoirs = new THREE.InstancedMesh(new THREE.BoxGeometry(0.22, 0.3, 0.34), trim, bays * 6);
+    const knightStatues = new THREE.InstancedMesh(new THREE.BoxGeometry(0.22, 0.95, 0.12), materials.gold, arcBays * 2);
+    const voussoirs = new THREE.InstancedMesh(new THREE.BoxGeometry(0.22, 0.3, 0.34), trim, arcBays * 6);
     const vd = new THREE.Object3D();
     let vi = 0;
     const knightDummy = new THREE.Object3D();
     let kn = 0;
-    for (let i = 0; i < bays; i++) {
-      const x = -width / 2 + bayW * (i + 0.5);
+    for (const [x, segW] of arcBaysList) {
       box(root, 1.72, 6.0, 0.24, x, 4.0, 0.19, glass, 'Town Hall recessed Gothic arcade');
-      box(root, 0.34, 7.1, 0.55, x - bayW / 2 + 0.12, 4.1, 0.22, trim, 'Arcade pier');
-      box(root, 0.34, 7.1, 0.55, x + bayW / 2 - 0.12, 4.1, 0.22, trim, 'Arcade pier');
-      for (const px of [x - bayW / 2 + 0.12, x + bayW / 2 - 0.12]) {
+      box(root, 0.34, 7.1, 0.55, x - segW / 2 + 0.12, 4.1, 0.22, trim, 'Arcade pier');
+      box(root, 0.34, 7.1, 0.55, x + segW / 2 - 0.12, 4.1, 0.22, trim, 'Arcade pier');
+      for (const px of [x - segW / 2 + 0.12, x + segW / 2 - 0.12]) {
         knightDummy.position.set(px, 7.85, 0.3);
         knightDummy.updateMatrix();
         knightStatues.setMatrixAt(kn++, knightDummy.matrix);
@@ -1340,7 +1348,7 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       archL.rotation.z = -0.55;
       const archR = box(root, 2.05, 0.28, 0.48, x + 0.52, 7.12, 0.22, trim, 'Pointed arcade arch');
       archR.rotation.z = 0.55;
-      box(root, bayW - 0.55, 0.24, 0.5, x, 7.55, 0.22, darkStone, 'Arcade string course');
+      box(root, segW - 0.55, 0.24, 0.5, x, 7.55, 0.22, darkStone, 'Arcade string course');
       for (const t of [0.3, 0.6, 0.9]) {
         for (const side of [-1, 1]) {
           vd.position.set(x + side * (0.52 - t * 0.95), 7.12 + t * 0.62, 0.24);
@@ -1360,12 +1368,11 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     // Cabbage-leaf (kropblad) finials top each ground-arcade arch apex, and a trefoil
     // arcade band runs above the arcade string course — both Brabantine-Gothic motifs of
     // the real facade. The knights rest on historiated corbels.
-    const leafFinials = new THREE.InstancedMesh(new THREE.SphereGeometry(0.16, 8, 6), materials.gold, bays);
-    const trefoilBand = new THREE.InstancedMesh(new THREE.CylinderGeometry(0.3, 0.3, 0.14, 12).rotateX(Math.PI / 2), trim, bays);
-    const histCorbels = new THREE.InstancedMesh(new THREE.BoxGeometry(0.34, 0.42, 0.4), darkStone, bays * 2);
+    const leafFinials = new THREE.InstancedMesh(new THREE.SphereGeometry(0.16, 8, 6), materials.gold, arcBays);
+    const trefoilBand = new THREE.InstancedMesh(new THREE.CylinderGeometry(0.3, 0.3, 0.14, 12).rotateX(Math.PI / 2), trim, arcBays);
+    const histCorbels = new THREE.InstancedMesh(new THREE.BoxGeometry(0.34, 0.42, 0.4), darkStone, arcBays * 2);
     let lf = 0, hc = 0;
-    for (let i = 0; i < bays; i++) {
-      const x = -width / 2 + bayW * (i + 0.5);
+    for (const [x, segW] of arcBaysList) {
       vd.position.set(x, 7.82, 0.28);
       vd.rotation.z = 0;
       vd.updateMatrix();
@@ -1373,24 +1380,23 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       vd.position.set(x, 8.05, 0.26);
       vd.updateMatrix();
       trefoilBand.setMatrixAt(lf - 1, vd.matrix);
-      for (const px of [x - bayW / 2 + 0.12, x + bayW / 2 - 0.12]) {
+      for (const px of [x - segW / 2 + 0.12, x + segW / 2 - 0.12]) {
         vd.position.set(px, 7.45, 0.32);
         vd.updateMatrix();
         histCorbels.setMatrixAt(hc++, vd.matrix);
       }
     }
-    leafFinials.count = trefoilBand.count = bays;
+    leafFinials.count = trefoilBand.count = arcBays;
     histCorbels.count = hc;
     leafFinials.name = 'Arcade arch cabbage-leaf finials';
     trefoilBand.name = 'Arcade trefoil band';
     histCorbels.name = 'Knight statue historiated corbels';
     root.add(leafFinials, trefoilBand, histCorbels);
     // Capitals widen the top of every arcade pier, as on the real Brabantine arcade.
-    const pierCapitals = new THREE.InstancedMesh(new THREE.BoxGeometry(0.44, 0.22, 0.6), trim, bays * 2);
+    const pierCapitals = new THREE.InstancedMesh(new THREE.BoxGeometry(0.44, 0.22, 0.6), trim, arcBays * 2);
     let pc = 0;
-    for (let i = 0; i < bays; i++) {
-      const x = -width / 2 + bayW * (i + 0.5);
-      for (const px of [x - bayW / 2 + 0.12, x + bayW / 2 - 0.12]) {
+    for (const [x, segW] of arcBaysList) {
+      for (const px of [x - segW / 2 + 0.12, x + segW / 2 - 0.12]) {
         vd.position.set(px, 7.62, 0.24);
         vd.rotation.z = 0;
         vd.updateMatrix();
@@ -1401,37 +1407,36 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     pierCapitals.name = 'Arcade pier capitals';
     root.add(pierCapitals);
     // Cross-vault ribs spring over every ground-arcade bay — the real arcade is vaulted.
-    const vaultRibs = new THREE.InstancedMesh(new THREE.BoxGeometry(2.6, 0.14, 0.18), trim, bays);
-    for (let i = 0; i < bays; i++) {
-      const x = -width / 2 + bayW * (i + 0.5);
+    const vaultRibs = new THREE.InstancedMesh(new THREE.BoxGeometry(2.6, 0.14, 0.18), trim, arcBays);
+    let vr = 0;
+    for (const [x] of arcBaysList) {
       vd.position.set(x, 7.35, 0.3);
-      vd.rotation.z = (i % 2 ? -1 : 1) * 0.42;
+      vd.rotation.z = (vr % 2 ? -1 : 1) * 0.42;
       vd.updateMatrix();
-      vaultRibs.setMatrixAt(i, vd.matrix);
+      vaultRibs.setMatrixAt(vr++, vd.matrix);
       vd.rotation.z = 0;
     }
-    vaultRibs.count = bays;
+    vaultRibs.count = arcBays;
     vaultRibs.name = 'Arcade cross-vault ribs';
     root.add(vaultRibs);
     // Dark vault infill panels close each arcade bay between the ribs, as on the real vaulted
     // ground floor.
-    const vaultInfills = new THREE.InstancedMesh(new THREE.BoxGeometry(bayW - 0.6, 0.08, 0.4), materials.dark, bays);
-    for (let i = 0; i < bays; i++) {
-      vd.position.set(-width / 2 + bayW * (i + 0.5), 7.18, 0.32);
+    const vaultInfills = new THREE.InstancedMesh(new THREE.BoxGeometry(2.6, 0.08, 0.4), materials.dark, arcBays);
+    for (const [x] of arcBaysList) {
+      vd.position.set(x, 7.18, 0.32);
       vd.rotation.z = 0;
       vd.updateMatrix();
       vaultInfills.setMatrixAt(i, vd.matrix);
     }
-    vaultInfills.count = bays;
+    vaultInfills.count = arcBays;
     vaultInfills.name = 'Arcade vault infill panels';
     root.add(vaultInfills);
     // Springer stones where each pointed arch leaves its pier.
-    const springers = new THREE.InstancedMesh(new THREE.BoxGeometry(0.3, 0.36, 0.5), trim, bays * 2);
+    const springers = new THREE.InstancedMesh(new THREE.BoxGeometry(0.3, 0.36, 0.5), trim, arcBays * 2);
     let sp = 0;
-    for (let i = 0; i < bays; i++) {
-      const x = -width / 2 + bayW * (i + 0.5);
+    for (const [x, segW] of arcBaysList) {
       for (const side of [-1, 1]) {
-        vd.position.set(x + side * (bayW / 2 - 0.12), 6.95, 0.26);
+        vd.position.set(x + side * (segW / 2 - 0.12), 6.95, 0.26);
         vd.rotation.z = side * 0.3;
         vd.updateMatrix();
         springers.setMatrixAt(sp++, vd.matrix);
@@ -1442,12 +1447,11 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     springers.name = 'Arcade arch springer stones';
     root.add(springers);
     // Plinth blocks at the foot of every arcade pier.
-    const pierPlinths = new THREE.InstancedMesh(new THREE.BoxGeometry(0.44, 0.4, 0.65), darkStone, bays * 2);
+    const pierPlinths = new THREE.InstancedMesh(new THREE.BoxGeometry(0.44, 0.4, 0.65), darkStone, arcBays * 2);
     let pp = 0;
-    for (let i = 0; i < bays; i++) {
-      const x = -width / 2 + bayW * (i + 0.5);
+    for (const [x, segW] of arcBaysList) {
       for (const side of [-1, 1]) {
-        vd.position.set(x + side * (bayW / 2 - 0.12), 0.2, 0.24);
+        vd.position.set(x + side * (segW / 2 - 0.12), 0.2, 0.24);
         vd.rotation.z = 0;
         vd.updateMatrix();
         pierPlinths.setMatrixAt(pp++, vd.matrix);
@@ -1488,10 +1492,10 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     // Small gabled canopy hoods shelter the statues standing above the arcade arch heads.
     const canopyShape = new THREE.Shape();
     canopyShape.moveTo(-0.45, 0); canopyShape.lineTo(0, 0.4); canopyShape.lineTo(0.45, 0); canopyShape.closePath();
-    const canopies = new THREE.InstancedMesh(new THREE.ShapeGeometry(canopyShape), trim, bays);
+    const canopies = new THREE.InstancedMesh(new THREE.ShapeGeometry(canopyShape), trim, arcBays);
     let cn = 0;
-    for (let i = 0; i < bays; i++) {
-      wbd.position.set(-width / 2 + bayW * (i + 0.5), 9.85, 0.3);
+    for (const [x] of arcBaysList) {
+      wbd.position.set(x, 9.85, 0.3);
       wbd.updateMatrix();
       canopies.setMatrixAt(cn++, wbd.matrix);
     }
@@ -1502,8 +1506,8 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     // Upper storeys: paired lancets with stone mouldings, balconies, a buttress rhythm at
     // alternating bay joints, and a gilded statue in a niche at the remaining joints — the
     // real facade is densely packed with niches holding dukes, saints and allegorical figures.
-    const facadeNiches = new THREE.InstancedMesh(new THREE.BoxGeometry(0.72, 2.5, 0.22), darkStone, bays * 2);
-    const facadeStatues = new THREE.InstancedMesh(new THREE.BoxGeometry(0.26, 1.15, 0.14), materials.gold, bays * 2);
+    const facadeNiches = new THREE.InstancedMesh(new THREE.BoxGeometry(0.72, 2.5, 0.22), darkStone, bays * 2 + 2);
+    const facadeStatues = new THREE.InstancedMesh(new THREE.BoxGeometry(0.26, 1.15, 0.14), materials.gold, bays * 2 + 2);
     const facadeDummy = new THREE.Object3D();
     let nicheIndex = 0;
     // Plate tracery on the paired upper-storey lancets: a central mullion splitting each pair
@@ -1678,8 +1682,7 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     root.add(transoms);
     // Statues in niches above the ground-floor arcade arch heads as well — the real
     // facade carries nearly three hundred figures on every level.
-    for (let i = 0; i < bays; i++) {
-      const x = -width / 2 + bayW * (i + 0.5);
+    for (const [x] of arcBaysList) {
       facadeDummy.position.set(x, 9.0, 0.15);
       facadeDummy.updateMatrix();
       facadeNiches.setMatrixAt(nicheIndex, facadeDummy.matrix);
@@ -1771,11 +1774,10 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     root.add(baseFigures, baseFigHeads);
     // Taller attendant figures in the ground-floor niches alternate with the shorter ones —
     // the real facade mixes statue scales — and slender shafts flank each ground niche.
-    const altStatues = new THREE.InstancedMesh(new THREE.BoxGeometry(0.26, 1.35, 0.14), materials.gold, bays);
-    const nicheShafts = new THREE.InstancedMesh(new THREE.BoxGeometry(0.14, 2.5, 0.18), trim, bays * 2);
+    const altStatues = new THREE.InstancedMesh(new THREE.BoxGeometry(0.26, 1.35, 0.14), materials.gold, arcBays);
+    const nicheShafts = new THREE.InstancedMesh(new THREE.BoxGeometry(0.14, 2.5, 0.18), trim, arcBays * 2);
     let as2 = 0, ns = 0;
-    for (let i = 0; i < bays; i++) {
-      const x = -width / 2 + bayW * (i + 0.5);
+    for (const [x] of arcBaysList) {
       facadeDummy.position.set(x, 9.05, 0.34);
       facadeDummy.scale.set(1, 1.18, 1);
       facadeDummy.updateMatrix();
