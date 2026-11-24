@@ -4048,6 +4048,9 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
         box(g, 0.18, 0.4, 0.5, side - 21 + k * 7, 7.5, facadeZ + 0.5, bronze, 'Wing balcony corbel');
       }
     }
+
+    // A moulded edge finishes the front of the central balcony slab.
+    box(g, 3.2, 0.08, 0.14, 0, 11.44, centralFace + 1.2, moulding, 'Central balcony slab edge');
   });
   addLandmark('palaceSurroundings', (g) => {
     // Real-world sources: en/fr Wikipedia (Royal Palace of Brussels, Brussels Park, Place des Palais,
