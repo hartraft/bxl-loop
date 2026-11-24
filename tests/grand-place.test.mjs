@@ -888,3 +888,19 @@ test('rounds 173-180: Broodhuis spandrel reliefs, gallery tracery, pavilion quoi
   assert.ok(square.includes('King’s House upper window sill brackets'));
   assert.ok(square.includes('khSillBrackets.count = ksb'));
 });
+
+test('rounds 181-188: Broodhuis window side mouldings, gable panel + gold flashing, Mary/Charles V canopy hoods, side-elevation windows, valley flashings, parapet merlons, pier capitals', () => {
+  assert.ok(square.includes('King’s House upper window side mouldings'));
+  assert.ok(square.includes('khSideMoulds.count = ksm'));
+  assert.ok(square.includes('King’s House gable inner panel'));
+  assert.ok(square.includes('King’s House gable edge flashing'));
+  assert.ok(square.includes('King’s House Virgin Mary group canopy'));
+  assert.ok(square.includes('King’s House Charles V canopy hood'));
+  assert.ok(square.includes('King’s House side-elevation windows'));
+  assert.ok(square.includes('khSideWindows.count = ksw'));
+  assert.ok(square.includes('King’s House roof valley flashing'));
+  assert.ok(square.includes('King’s House crenellated parapet merlons'));
+  assert.ok(square.includes('khMerlons.count = 26'));
+  assert.ok(square.includes('King’s House gallery pier capitals'));
+  assert.ok(square.includes('khPierCaps.count = kpc'));
+});

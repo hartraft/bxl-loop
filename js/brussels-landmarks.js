@@ -2090,6 +2090,22 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     khDownpipes.count = 2;
     khDownpipes.name = 'King’s House rainwater downpipes';
     root.add(khDownpipes);
+    // Glazed windows pierce both side elevations of the Broodhuis block, as on the real
+    // building's flanks facing the side streets.
+    const khSideWindows = new THREE.InstancedMesh(new THREE.BoxGeometry(0.14, 2.6, 1.3), glass, 8);
+    let ksw = 0;
+    for (const sx of [-1, 1]) {
+      for (let f = 0; f < 2; f++) {
+        for (let r = 0; r < 2; r++) {
+          khRd0.position.set(sx * (width / 2 + 0.05), 6 + f * 8, -depth / 2 + 3 + r * 5);
+          khRd0.updateMatrix();
+          khSideWindows.setMatrixAt(ksw++, khRd0.matrix);
+        }
+      }
+    }
+    khSideWindows.count = ksw;
+    khSideWindows.name = 'King’s House side-elevation windows';
+    root.add(khSideWindows);
     box(root, width + 0.9, 0.8, depth + 0.7, 0, height - 0.4, -depth / 2, trim, 'King’s House upper cornice');
     // Oversized quoins chain the front corners of the main block, and a row of modillions
     // stands under the upper cornice — standard dressing of Jamaer's real facade.
@@ -2253,6 +2269,20 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     khImposts.count = ki;
     khImposts.name = 'King’s House gallery arch impost blocks';
     root.add(khImposts);
+    // Capitals widen the tops of the ground-gallery piers, as on the real arcade.
+    const khPierCaps = new THREE.InstancedMesh(new THREE.BoxGeometry(0.44, 0.24, 0.56), trim, bays * 2);
+    let kpc = 0;
+    for (let i = 0; i < bays; i++) {
+      const x = -width / 2 + bayW * (i + 0.5);
+      for (const side of [-1, 1]) {
+        khd.position.set(x + side * (bayW / 2 - 0.1), 6.85, 0.24);
+        khd.updateMatrix();
+        khPierCaps.setMatrixAt(kpc++, khd.matrix);
+      }
+    }
+    khPierCaps.count = kpc;
+    khPierCaps.name = 'King’s House gallery pier capitals';
+    root.add(khPierCaps);
     // Upper storey: windows plus gilded statues in niches at the alternating bay joints.
     const khNiches = new THREE.InstancedMesh(new THREE.BoxGeometry(0.66, 2.2, 0.2), darkStone, bays);
     const khStatues = new THREE.InstancedMesh(new THREE.BoxGeometry(0.24, 1.1, 0.12), materials.gold, bays);
@@ -2289,6 +2319,20 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     khSillBrackets.count = ksb;
     khSillBrackets.name = 'King’s House upper window sill brackets';
     root.add(khSillBrackets);
+    // Stone side mouldings frame every upper-storey window pair, as on the real facade.
+    const khSideMoulds = new THREE.InstancedMesh(new THREE.BoxGeometry(0.12, 3.6, 0.22), trim, bays * 2);
+    let ksm = 0;
+    for (let i = 0; i < bays; i++) {
+      const x = -width / 2 + bayW * (i + 0.5);
+      for (const side of [-1, 1]) {
+        khMd.position.set(x + side * 0.78, 16.8, 0.24);
+        khMd.updateMatrix();
+        khSideMoulds.setMatrixAt(ksm++, khMd.matrix);
+      }
+    }
+    khSideMoulds.count = ksm;
+    khSideMoulds.name = 'King’s House upper window side mouldings';
+    root.add(khSideMoulds);
     for (let i = 1; i <= bays; i += 2) {
       const x = -width / 2 + i * bayW;
       khDummy.position.set(x, 10.6, 0.3);
@@ -2338,6 +2382,16 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     lances.count = 6;
     lances.name = 'King’s House standard-bearer lances';
     root.add(lances);
+    // Crenellated parapet merlons along the Broodhuis front eave, as on the real roofline.
+    const khMerlons = new THREE.InstancedMesh(new THREE.BoxGeometry(0.5, 0.65, 0.3), trim, 26);
+    for (let i = 0; i < 26; i++) {
+      khLd2.position.set(-width / 2 + 0.6 + i * (width - 1.2) / 25, height + 0.85, 0.6);
+      khLd2.updateMatrix();
+      khMerlons.setMatrixAt(i, khLd2.matrix);
+    }
+    khMerlons.count = 26;
+    khMerlons.name = 'King’s House crenellated parapet merlons';
+    root.add(khMerlons);
 
     // Vast slate roof behind the central pavilion, ridge running along the long axis.
     const ridgeY = height + 6.5, eaveY = height + 0.5;
@@ -2351,6 +2405,10 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     roofGeo.setAttribute('position', new THREE.BufferAttribute(roofVertices, 3));
     roofGeo.computeVertexNormals();
     mesh(root, roofGeo, roofMat, 0, 0, 0, 'King’s House steep slate roof');
+    // Lead valley flashings run where the great roof meets the central pavilion, as on the
+    // real roof junctions.
+    box(root, 0.3, 0.1, depth + 1.2, -5.6, height + 2.7, -depth / 2, materials.dark, 'King’s House roof valley flashing');
+    box(root, 0.3, 0.1, depth + 1.2, 5.6, height + 2.7, -depth / 2, materials.dark, 'King’s House roof valley flashing');
     for (let i = 0; i < 7; i++) {
       const x = -width / 2 + 3 + i * 4.3;
       const z = -depth / 2 + (i % 2 ? -2.6 : 2.6);
@@ -2431,6 +2489,13 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     khCrest.name = 'King’s House gable step cresting';
     khCrestBall.name = 'King’s House gable crest finial balls';
     root.add(khCrest, khCrestBall);
+    // Recessed inner panel in the stepped gable, framed by gilded edge flashing along the
+    // gable slopes — the real risalit gable is panelled and trimmed.
+    box(root, 6.4, 2.2, 0.08, 0, height + 2.5 + 2.1, 0.36, darkStone, 'King’s House gable inner panel');
+    const gableFlashL = box(root, 4.6, 0.08, 0.08, -gw / 4 - 0.6, height + 2.5 + gh / 2 + 0.9, 0.36, materials.gold, 'King’s House gable edge flashing');
+    gableFlashL.rotation.z = 0.5;
+    const gableFlashR = box(root, 4.6, 0.08, 0.08, gw / 4 + 0.6, height + 2.5 + gh / 2 + 0.9, 0.36, materials.gold, 'King’s House gable edge flashing');
+    gableFlashR.rotation.z = -0.5;
     // Gilded cross finial at the apex of the central gable.
     box(root, 0.06, 0.7, 0.06, 0, height + 2.5 + gh + 0.35, 0.32, materials.gold, 'King’s House gable apex cross vertical');
     box(root, 0.42, 0.06, 0.06, 0, height + 2.5 + gh + 0.5, 0.32, materials.gold, 'King’s House gable apex cross arm');
@@ -2488,6 +2553,10 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     // Statue of Charles V on the central tower, as on the real building.
     box(root, 0.5, 1.8, 0.2, 0, 30.5, towerZ + 1.55, darkStone, 'King’s House Charles V statue');
     mesh(root, new THREE.SphereGeometry(0.24, 8, 6), darkStone, 0, 31.6, towerZ + 1.55, 'King’s House Charles V statue head');
+    // Canopy niche hood over the Charles V statue on the tower.
+    const charlesHoodShape = new THREE.Shape();
+    charlesHoodShape.moveTo(-0.8, 0); charlesHoodShape.lineTo(0, 0.4); charlesHoodShape.lineTo(0.8, 0); charlesHoodShape.closePath();
+    mesh(root, new THREE.ShapeGeometry(charlesHoodShape), trim, 0, 31.95, towerZ + 1.55, 'King’s House Charles V canopy hood');
     // The 1625 Virgin Mary statue group on the central pavilion: Mary flanked by two saints.
     box(root, 0.5, 1.9, 0.2, 0, 19.0, 0.26, stone, 'King’s House Virgin Mary statue');
     mesh(root, new THREE.SphereGeometry(0.24, 8, 6), stone, 0, 20.1, 0.26, 'King’s House Virgin Mary statue head');
@@ -2495,6 +2564,10 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       box(root, 0.4, 1.5, 0.18, side * 1.2, 18.8, 0.26, stone, 'King’s House saint statue');
       mesh(root, new THREE.SphereGeometry(0.2, 8, 6), stone, side * 1.2, 19.65, 0.26, 'King’s House saint statue head');
     }
+    // A small canopy hood shelters the 1625 Virgin Mary statue group on the pavilion.
+    const maryHoodShape = new THREE.Shape();
+    maryHoodShape.moveTo(-1.8, 0); maryHoodShape.lineTo(0, 0.7); maryHoodShape.lineTo(1.8, 0); maryHoodShape.closePath();
+    mesh(root, new THREE.ShapeGeometry(maryHoodShape), trim, 0, 20.4, 0.28, 'King’s House Virgin Mary group canopy');
     // Clock face on the tower shaft below the octagonal belfry — the real Broodhuis
     // tower carries a clock above the roofline.
     const clockRim = cylinder(root, 1.18, 1.18, 0.12, 0, 29.0, towerZ + 1.42, darkStone, 24);
