@@ -1792,6 +1792,12 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
         box(g, 0.42, 0.18, 0.28, x + dx, 24.9, centralFace + 0.2, ashlar, 'Attic colonnette capital');
       }
     }
+    // A second, smaller row of oculi lights the attic between the windows (heritage 30402: "deux rangs d'œil-de-boeuf").
+    for (let i = 0; i < 4; i++) {
+      const ox = -9 + i * 6;
+      mesh(g, new THREE.CircleGeometry(0.3, 14), glass, ox, 25.5, centralFace + 0.13, 'Central attic oculus');
+      mesh(g, new THREE.TorusGeometry(0.36, 0.06, 6, 16), ashlar, ox, 25.5, centralFace + 0.12, 'Central attic oculus surround');
+    }
 
     // The real central attic carries an oval garlanded medallion struck with Leopold
     // II's monogram, flanked by garland swags (heritage inventory).

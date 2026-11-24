@@ -357,3 +357,10 @@ testCase('double smooth colonnettes with socles flank each central attic window'
   assert.match(palace, /'Attic colonnette capital'/);
   assert.match(palace, /for \(const dx of \[-1\.95, 1\.95\]\)/);
 });
+
+testCase('a second row of attic oculi lights the central attic (deux rangs d’oeil-de-boeuf)', () => {
+  assert.match(palace, /deux rangs d'œil-de-boeuf/);
+  assert.match(palace, /'Central attic oculus'/);
+  assert.match(palace, /'Central attic oculus surround'/);
+  assert.match(palace, /for \(let i = 0; i < 4; i\+\+\)/);
+});
