@@ -1100,6 +1100,21 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       box(tower, 0.66, 2.4, 0.25, side * 2.6, 5.5, towerW / 2 + 0.08, darkStone, 'Portal jamb knight niche');
       box(tower, 0.24, 1.1, 0.12, side * 2.6, 5.5, towerW / 2 + 0.22, materials.gold, 'Portal jamb knight statue');
     }
+    // Prophet figures in niches along the portal archivolt mouldings — the real ogival
+    // portal carries a procession of prophets on its archivolt.
+    const archivoltProphets = new THREE.InstancedMesh(new THREE.BoxGeometry(0.22, 1.0, 0.14), materials.gold, 6);
+    const apd = new THREE.Object3D();
+    let ap = 0;
+    for (const side of [-1, 1]) {
+      for (const f of [0.25, 0.5, 0.75]) {
+        apd.position.set(side * (1.75 + 0.92 * (2 * f - 1)), 10.15 + 1.19 * (2 * f - 1), towerW / 2 + 0.3);
+        apd.updateMatrix();
+        archivoltProphets.setMatrixAt(ap++, apd.matrix);
+      }
+    }
+    archivoltProphets.count = ap;
+    archivoltProphets.name = 'Archivolt prophet statues';
+    tower.add(archivoltProphets);
     // Stone entrance steps descend from the ogival portal onto the square.
     for (let i = 0; i < 3; i++) {
       box(tower, 5.4 - i * 0.8, 0.22, 0.7, 0, 0.11 + i * 0.22, towerW / 2 + 0.55 + i * 0.55, darkStone, 'Portal entrance step');
@@ -1141,6 +1156,19 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       cylinder(tower, 0.3, 0.44, 5.6, x, 60.6, z, trim, 8).name = 'Gallery projecting pinnacle';
       mesh(tower, new THREE.ConeGeometry(0.52, 2.3, 8), roofMat, x, 64.2, z, 'Gallery pinnacle spire');
     }
+    // Balustrade panels filling the gallery between its projecting pinnacles.
+    const galleryBalusters = new THREE.InstancedMesh(new THREE.BoxGeometry(1.15, 0.75, 0.22), trim, 8);
+    const gbd = new THREE.Object3D();
+    for (let i = 0; i < 8; i++) {
+      const a = i * Math.PI / 4;
+      gbd.position.set(Math.cos(a) * 5.7, 57.55, Math.sin(a) * 5.7);
+      gbd.rotation.y = -a;
+      gbd.updateMatrix();
+      galleryBalusters.setMatrixAt(i, gbd.matrix);
+    }
+    galleryBalusters.count = 8;
+    galleryBalusters.name = 'Tower gallery balustrade panels';
+    tower.add(galleryBalusters);
     // Three-tier openwork octagonal lantern: slender piers, pointed arch ribs, parapets.
     cylinder(tower, 4.9, 5.3, 2.0, 0, 59.6, 0, darkStone, 8).name = 'Openwork octagonal lantern base';
     for (let level = 0; level < 3; level++) {
@@ -1154,6 +1182,25 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       cylinder(tower, 4.75, 4.75, 0.55, 0, y0 + 6.25, 0, trim, 8).name = 'Lantern openwork parapet';
     }
     cylinder(tower, 4.2, 4.6, 0.9, 0, 80.6, 0, trim, 8).name = 'Lantern crown';
+    // Louver slats inside each belfry opening and the great bell in the middle tier —
+    // the real openwork lantern houses the tower bells behind wooden louvers.
+    const louvers = new THREE.InstancedMesh(new THREE.BoxGeometry(2.2, 0.12, 0.3), trim, 24);
+    mesh(tower, new THREE.CylinderGeometry(0.55, 0.75, 1.3, 10), materials.gold, 0, 67.5, 0, 'Belfry great bell');
+    const ld = new THREE.Object3D();
+    let lo = 0;
+    for (let level = 0; level < 3; level++) {
+      const y0 = 60.6 + level * 6.6;
+      for (let i = 0; i < 8; i++) {
+        const a = i * Math.PI / 4;
+        ld.position.set(Math.cos(a) * 3.7, y0 + 2.2, Math.sin(a) * 3.7);
+        ld.rotation.y = -a;
+        ld.updateMatrix();
+        louvers.setMatrixAt(lo++, ld.matrix);
+      }
+    }
+    louvers.count = lo;
+    louvers.name = 'Belfry louver slats';
+    tower.add(louvers);
     // Four buttressed octagonal corner turrets and four slender side pinnacles, tied to
     // the shaft by flying buttresses.
     const up = new THREE.Vector3(0, 1, 0);
@@ -1167,6 +1214,18 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       const buttress = mesh(tower, new THREE.BoxGeometry(0.34, d.length(), 0.34), trim, (bx + x) / 2, 59.75, (bz + z) / 2, 'Flying buttress');
       buttress.quaternion.setFromUnitVectors(up, d.normalize());
     }
+    // Gilded finial balls crowning the four lantern corner turret spires.
+    const turretFinials = new THREE.InstancedMesh(new THREE.SphereGeometry(0.2, 8, 6), materials.gold, 4);
+    const tfd = new THREE.Object3D();
+    for (let k = 0; k < 4; k++) {
+      const a = Math.PI / 4 + k * Math.PI / 2;
+      tfd.position.set(Math.cos(a) * 5.7, 79.9, Math.sin(a) * 5.7);
+      tfd.updateMatrix();
+      turretFinials.setMatrixAt(k, tfd.matrix);
+    }
+    turretFinials.count = 4;
+    turretFinials.name = 'Lantern corner turret gilded finials';
+    tower.add(turretFinials);
     for (let k = 0; k < 4; k++) {
       const a = k * Math.PI / 2;
       const x = Math.cos(a) * 5.7, z = Math.sin(a) * 5.7;
@@ -1202,6 +1261,23 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       rib.quaternion.setFromUnitVectors(up, d.normalize());
     }
     cylinder(tower, 2.75, 2.75, 0.16, 0, 85.2, 0, materials.gold, 8).name = 'Spire gilded ring armature';
+    // Gilded crochets hooking each openwork spire rib at intervals, as on the real spire.
+    const crochets = new THREE.InstancedMesh(new THREE.ConeGeometry(0.1, 0.34, 6), materials.gold, 24);
+    const cd = new THREE.Object3D();
+    let ck = 0;
+    for (let i = 0; i < 8; i++) {
+      const a = i * Math.PI / 4;
+      const sx = Math.cos(a) * 3.7, sz = Math.sin(a) * 3.7;
+      for (const t of [0.35, 0.65, 0.9]) {
+        cd.position.set(sx * (1 - t), 80.9 + (96 - 80.9) * t, sz * (1 - t));
+        cd.rotation.y = -a;
+        cd.updateMatrix();
+        crochets.setMatrixAt(ck++, cd.matrix);
+      }
+    }
+    crochets.count = ck;
+    crochets.name = 'Spire rib gilded crochets';
+    tower.add(crochets);
     cylinder(tower, 1.5, 1.5, 0.14, 0, 90.6, 0, materials.gold, 8).name = 'Spire gilded ring armature';
     // The openwork spire's apex carries a gilded orb, and the statue of Saint Michael at the
     // 96 m summit holds his sword raised against the dragon.
@@ -1212,6 +1288,18 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     const sword = box(tower, 0.07, 1.6, 0.07, 0.42, 99.4, 0.1, materials.gold, 'Saint Michael raised sword');
     sword.rotation.z = 0.5;
     mesh(tower, new THREE.SphereGeometry(0.42, 8, 6), darkStone, 0.55, 96.2, 0.35, 'Saint Michael dragon');
+    // Wings on the dragon at Saint Michael's feet.
+    const wingShape = new THREE.Shape();
+    wingShape.moveTo(0, 0); wingShape.lineTo(0.5, 0.28); wingShape.lineTo(0.12, 0.5); wingShape.closePath();
+    const dragonWings = new THREE.InstancedMesh(new THREE.ShapeGeometry(wingShape), darkStone, 2);
+    const wd = new THREE.Object3D();
+    wd.position.set(0.42, 96.32, 0.35); wd.rotation.z = 0.5; wd.updateMatrix();
+    dragonWings.setMatrixAt(0, wd.matrix);
+    wd.position.set(0.68, 96.32, 0.35); wd.rotation.z = -0.9; wd.updateMatrix();
+    dragonWings.setMatrixAt(1, wd.matrix);
+    dragonWings.count = 2;
+    dragonWings.name = 'Saint Michael dragon wings';
+    tower.add(dragonWings);
   }
 
   function kingsHouse(parent) {

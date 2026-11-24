@@ -620,3 +620,22 @@ test('Broodhuis: tower clock, central pointed portal with steps, city arms, dorm
   assert.ok(square.includes('King’s House roof ridge cresting'));
   assert.ok(square.includes('khRidge.count = 11'));
 });
+
+test('Town Hall: belfry louvers + great bell, spire crochets, dragon wings (rounds 77-79)', () => {
+  assert.ok(square.includes('Belfry louver slats'));
+  assert.ok(square.includes('louvrs'.replace('rs', 'ers.count = lo')));
+  assert.ok(square.includes('Belfry great bell'));
+  assert.ok(square.includes('Spire rib gilded crochets'));
+  assert.ok(square.includes('crochets.count = ck'));
+  assert.ok(square.includes('Saint Michael dragon wings'));
+  assert.ok(square.includes('dragonWings.count = 2'));
+});
+
+test('Town Hall: archivolt prophets, gallery balustrade panels, lantern turret finials (rounds 80-82)', () => {
+  assert.ok(square.includes('Archivolt prophet statues'));
+  assert.ok(square.includes('archivoltProphets.count = ap'));
+  assert.ok(square.includes('Tower gallery balustrade panels'));
+  assert.ok(square.includes('galleryBalusters.count = 8'));
+  assert.ok(square.includes('Lantern corner turret gilded finials'));
+  assert.ok(square.includes('turretFinials.count = 4'));
+});
