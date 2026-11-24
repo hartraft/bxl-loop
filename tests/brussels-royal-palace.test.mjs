@@ -1470,3 +1470,7 @@ testCase('a bronze finial with gilded ball crowns the BELvue pavilion roof', () 
   assert.match(palace, /'BELvue roof finial'/);
   assert.match(palace, /'BELvue roof finial ball'/);
 });
+
+testCase('a projecting plinth course bases the palace facade', () => {
+  assert.match(palace, /'Facade plinth course'/);
+});
