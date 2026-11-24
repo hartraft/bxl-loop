@@ -2938,6 +2938,8 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     // The Rue de la Loi continues north from the Palace of the Nation toward the
     // European Quarter (the N3 to Aachen begins here).
     box(g, 16, 0.06, 90, 0, 0.03, 470, materials.pavingA, 'Rue de la Loi north extension to the EU quarter');
+    // The Academy Palace portico pediment is crowned by a small sculptural acroterion.
+    cylinder(g, 0.3, 0.4, 1.1, -168, 16.0, 19.6, materials.warmStone, 8).name = 'Academy portico pediment acroterion';
   });
     addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');

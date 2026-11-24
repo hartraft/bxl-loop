@@ -925,3 +925,8 @@ testCase('a moulded base course runs under the central attic', () => {
   assert.match(palace, /base course runs under the central attic/);
   assert.match(palace, /'Central attic base course'/);
 });
+
+testCase('the Academy Palace portico pediment carries an acroterion', () => {
+  assert.match(palace, /pediment is crowned by a small sculptural acroterion/);
+  assert.match(palace, /'Academy portico pediment acroterion'/);
+});
