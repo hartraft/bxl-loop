@@ -5795,6 +5795,11 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
         box(g, 0.25, 0.25, 0.8, 46 + side * 2.2, 0.125 + s * 0.25, 216.6 - s * 0.7, materials.pavingEdge, 'Vauxhall step kerb');
       }
     }
+
+    // Stone access steps lead down to the main pond rim on its west side.
+    for (let s = 0; s < 3; s++) {
+      box(g, 0.9, 0.25, 6, -16.8 - s * 0.9, 0.9 - s * 0.25, 150, materials.paleStone, 'Main pond west access step');
+    }
   });
     addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');

@@ -2297,3 +2297,7 @@ testCase('kerbs edge both sides of the Vauxhall bandstand steps', () => {
 testCase('finials crown the perron lamp standards above the globes', () => {
   assert.match(palace, /'Perron lamp finial'/);
 });
+
+testCase('stone steps lead down to the main pond rim on its west side', () => {
+  assert.match(palace, /'Main pond west access step'/);
+});
