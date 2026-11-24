@@ -378,3 +378,9 @@ testCase('the side façades keep the pilaster order of the front (aile de sept t
   assert.match(palace, /'Wing end pilaster'/);
   assert.match(palace, /box\(g, 0\.34, 20, 0\.3, side \* 70\.1, 10, -3\.5 - i \* 5/);
 });
+
+testCase('a palace-surroundings landmark carries the rectangular 13.1 ha Brussels Park lawn', () => {
+  assert.match(palace, /rectangular 13\.1 ha neoclassical park/);
+  assert.match(palace, /addLandmark\('palaceSurroundings'/);
+  assert.match(palace, /'Brussels Park lawn'/);
+});

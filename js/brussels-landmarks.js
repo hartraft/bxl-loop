@@ -109,6 +109,7 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     root.position.set(p.x, opts.world?.groundHeight?.(p.x, p.z) || 0, p.z);
     // Align each landmark's local architectural frontage with the real city axis.
     if (id === 'royalPalace') root.rotation.y = Math.PI; // north-facing façade toward Parc de Bruxelles
+    if (id === 'palaceSurroundings') root.rotation.y = Math.PI; // same frame as the palace: local +Z = north toward the park
     if (id === 'palaisDeJustice') root.rotation.y = PALAIS_DE_JUSTICE_ROTATION; // monumental entrance faces Place Poelaert (facade normal bearing ~42 deg)
     if (id === 'montDesArts') root.rotation.y = MONT_DES_ARTS_ROTATION; // local +Z points southeast; the garden descends northwest
     if (id === 'cinquantenaire') root.rotation.y = Math.PI / 2; // triumphal axis east-west; pavilions north/south
@@ -2217,6 +2218,11 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
         cgR.rotation.y = cgRot;
       }
     }
+  });
+  addLandmark('palaceSurroundings', (g) => {
+    // Brussels Park (Parc de Bruxelles): the rectangular 13.1 ha neoclassical park north of the
+    // Place des Palais, laid out 1776-83 by Guimard and Zinner around the palace-parliament axis.
+    box(g, 344, 0.24, 340, 0, 0.0, 232, materials.green, 'Brussels Park lawn');
   });
     addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');

@@ -54,6 +54,7 @@ export const BRUSSELS_LANDMARK_ANCHORS = {
   mannekenPis: { lat: 50.84499, lon: 4.34998, name: 'Manneken Pis' },
   montDesArts: { lat: 50.84291, lon: 4.35785, name: 'Mont des Arts' },
   royalPalace: { lat: 50.84194, lon: 4.36302, name: 'Royal Palace of Brussels' },
+  palaceSurroundings: { lat: 50.84194, lon: 4.36302, name: 'Royal Palace surroundings (Place des Palais, Brussels Park)' },
   cathedral: { lat: 50.84667, lon: 4.36000, name: 'Cathedral of St Michael and St Gudula' },
   palaisDeJustice: { lat: 50.83662, lon: 4.35173, name: 'Palace of Justice' },
   cinquantenaire: { lat: 50.84105, lon: 4.39248, name: 'Parc du Cinquantenaire' },
