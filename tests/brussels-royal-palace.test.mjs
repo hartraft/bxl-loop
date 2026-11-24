@@ -1062,3 +1062,9 @@ testCase('portico column shafts show drum joint bands', () => {
   assert.match(palace, /'Portico column drum joints'/);
   assert.match(palace, /joints\.count = ji/);
 });
+
+testCase('the portico entablature has a cymatium and projecting corona', () => {
+  assert.match(palace, /cymatium and a projecting corona/);
+  assert.match(palace, /'Portico entablature cymatium'/);
+  assert.match(palace, /'Portico entablature corona'/);
+});

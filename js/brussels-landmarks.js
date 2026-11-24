@@ -3644,6 +3644,10 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       }
     }
     joints.count = ji; joints.name = 'Portico column drum joints'; g.add(joints);
+
+    // The portico entablature is finished with a cymatium and a projecting corona band.
+    box(g, 36.2, 0.3, 23.2, 0, 23.3, -1, ashlar, 'Portico entablature cymatium');
+    box(g, 37.2, 0.55, 24.2, 0, 23.75, -1, moulding, 'Portico entablature corona');
   });
   addLandmark('palaceSurroundings', (g) => {
     // Real-world sources: en/fr Wikipedia (Royal Palace of Brussels, Brussels Park, Place des Palais,
