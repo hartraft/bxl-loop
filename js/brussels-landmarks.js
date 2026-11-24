@@ -5130,7 +5130,7 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     }
     // Round 34: the four corner pavilions carry hipped slate roofs with finials.
     for (const sx of [-1, 1]) for (const sz of [-1, 1]) {
-      mesh(g, new THREE.ConeGeometry(15.6, 5, 4), materials.slate, sx * 42, 26.5, sz * 31, 'Bourse corner pavilion hipped slate roof');
+      mesh(g, new THREE.ConeGeometry(11.2, 5, 4), materials.slate, sx * 42, 26.5, sz * 31, 'Bourse corner pavilion hipped slate roof');
       mesh(g, new THREE.SphereGeometry(0.5, 8, 6), materials.gold, sx * 42, 29.4, sz * 31, 'Bourse pavilion roof finial');
     }
     // Round 35: the rear facade (rue du Midi side) is crowned by a curved pediment with the
@@ -5221,6 +5221,136 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
         const rib = box(g, 0.25, 0.25, 19, -7.5 + i * 5, 46.35, 0, materials.gold, 'Bourse brass canopy rib');
         rib.castShadow = false;
       }
+    }
+    // Round 41: the 2020-2023 restoration cut a new contemporary entrance into the blue-stone
+    // socle on the side opposite the great staircase, black granito with gilded brass, prolonging
+    // the parvis of Saint-Nicolas (La Libre, 2023).
+    {
+      const recess = box(g, 7, 4.2, 1.2, 0, 2.1, -41.4, materials.dark, 'Bourse 2023 entrance recess in the blue-stone socle (granito noir)');
+      recess.castShadow = true;
+      box(g, 8.2, 0.25, 1.6, 0, 4.35, -41.4, materials.gold, 'Bourse 2023 entrance gilded brass lintel');
+      box(g, 0.25, 4.2, 1.6, -3.9, 2.1, -41.4, materials.gold, 'Bourse 2023 entrance brass jamb west');
+      box(g, 0.25, 4.2, 1.6, 3.9, 2.1, -41.4, materials.gold, 'Bourse 2023 entrance brass jamb east');
+    }
+    // Round 42: the new entrance's granito floor strip and brass threshold.
+    box(g, 6.5, 0.12, 3.2, 0, 0.06, -42.6, materials.pavingEdge, 'Bourse 2023 entrance granito floor');
+    box(g, 6.5, 0.18, 0.3, 0, 0.09, -41.2, materials.gold, 'Bourse 2023 entrance brass threshold');
+    // Round 43: the socle is opened by utility doors with straight lintels giving access to
+    // service rooms (heritage inventory: "portes a linteau droit ... locaux utilitaires").
+    {
+      const doors = new THREE.InstancedMesh(new THREE.BoxGeometry(2.2, 3, 0.2), materials.dark, 8);
+      const lintels = new THREE.InstancedMesh(new THREE.BoxGeometry(2.8, 0.35, 0.3), materials.warmStone, 8);
+      const dummy = new THREE.Object3D();
+      for (let i = 0; i < 8; i++) {
+        const x = -38.5 + i * 11;
+        dummy.position.set(x, 1.6, 41.08);
+        dummy.updateMatrix();
+        doors.setMatrixAt(i, dummy.matrix);
+        dummy.position.set(x, 3.3, 41.1);
+        dummy.updateMatrix();
+        lintels.setMatrixAt(i, dummy.matrix);
+      }
+      doors.count = 8; doors.name = 'Bourse socle utility doors (portes a linteau droit)';
+      doors.castShadow = true; g.add(doors);
+      lintels.count = 8; lintels.name = 'Bourse socle door straight lintels';
+      lintels.castShadow = true; g.add(lintels);
+    }
+    // Round 44: iron window grilles in the socle above the utility doors (fer forge).
+    {
+      const grilles = new THREE.InstancedMesh(new THREE.BoxGeometry(2.6, 0.9, 0.12), materials.dark, 8);
+      const dummy = new THREE.Object3D();
+      for (let i = 0; i < 8; i++) {
+        dummy.position.set(-38.5 + i * 11, 4.15, 41.08);
+        dummy.updateMatrix();
+        grilles.setMatrixAt(i, dummy.matrix);
+      }
+      grilles.count = 8;
+      grilles.name = 'Bourse socle basement window iron grilles (grilles en fer forge)';
+      g.add(grilles);
+    }
+    // Round 45: a sloped water-table moulding (bandeau / water table) caps the blue-stone socle.
+    box(g, 106.8, 0.4, 82.8, 0, 4.85, 0, materials.warmStone, 'Bourse socle water-table moulding (bandeau)');
+    // Round 46: the palace facade is floodlit after dark — bracket-mounted floodlight heads on
+    // the cella, registered for the night glow pass like the Grand-Place windows.
+    {
+      const floodGlow = materials.gold.clone();
+      floodGlow.emissive = new THREE.Color(0x000000);
+      nightGlowMats.push(floodGlow);
+      const heads = new THREE.InstancedMesh(new THREE.SphereGeometry(0.22, 8, 6), floodGlow, 10);
+      const brackets = new THREE.InstancedMesh(new THREE.BoxGeometry(0.12, 0.9, 0.12), materials.dark, 10);
+      const dummy = new THREE.Object3D();
+      for (let i = 0; i < 10; i++) {
+        const x = -40 + i * 8.9;
+        dummy.position.set(x, 6.2, 30.6);
+        dummy.updateMatrix();
+        heads.setMatrixAt(i, dummy.matrix);
+        dummy.position.set(x, 5.6, 30.5);
+        dummy.updateMatrix();
+        brackets.setMatrixAt(i, dummy.matrix);
+      }
+      heads.count = 10; heads.name = 'Bourse facade floodlight heads (night floodlighting, bracket-mounted)';
+      heads.castShadow = true; g.add(heads);
+      brackets.count = 10; brackets.name = 'Bourse floodlight brackets';
+      g.add(brackets);
+    }
+    // Round 47: lead rainwater downpipes at the facade front corners, with hopper heads.
+    {
+      const pipes = new THREE.InstancedMesh(new THREE.CylinderGeometry(0.07, 0.07, 23, 6), materials.dark, 4);
+      const hoppers = new THREE.InstancedMesh(new THREE.CylinderGeometry(0.22, 0.12, 0.4, 8), materials.dark, 4);
+      const dummy = new THREE.Object3D();
+      let p = 0;
+      for (const sx of [-1, 1]) for (const sz of [1, -1]) {
+        dummy.position.set(sx * 49.6, 11.5, sz * 30.4);
+        dummy.updateMatrix();
+        pipes.setMatrixAt(p, dummy.matrix);
+        dummy.position.set(sx * 49.6, 22.9, sz * 30.4);
+        dummy.updateMatrix();
+        hoppers.setMatrixAt(p++, dummy.matrix);
+      }
+      pipes.count = p; pipes.name = 'Bourse facade lead downpipes (descentes en plomb)';
+      g.add(pipes);
+      hoppers.count = p; hoppers.name = 'Bourse downpipe hopper heads';
+      g.add(hoppers);
+    }
+    // Round 48: hood moulds (larmiers) with label stops above each facade window.
+    {
+      const hoods = new THREE.InstancedMesh(new THREE.BoxGeometry(3.1, 0.22, 0.45), materials.warmStone, 8);
+      const stops = new THREE.InstancedMesh(new THREE.SphereGeometry(0.09, 6, 5), materials.warmStone, 8);
+      const dummy = new THREE.Object3D();
+      let n = 0;
+      for (const sx of [-1, 1]) for (const wx of [24, 31]) for (const wy of [10, 17.5]) {
+        dummy.position.set(sx * wx, wy + 2.8, 30.3);
+        dummy.updateMatrix();
+        hoods.setMatrixAt(n, dummy.matrix);
+        dummy.position.set(sx * wx, wy + 2.8, 30.55);
+        dummy.updateMatrix();
+        stops.setMatrixAt(n++, dummy.matrix);
+      }
+      hoods.count = n; hoods.name = 'Bourse facade window hood moulds (larmiers)';
+      hoods.castShadow = true; g.add(hoods);
+      stops.count = n; stops.name = 'Bourse hood label stops';
+      g.add(stops);
+    }
+    // Round 49: stone sill brackets under the facade windows.
+    {
+      const sills = new THREE.InstancedMesh(new THREE.ConeGeometry(0.28, 0.35, 4), materials.warmStone, 16);
+      const dummy = new THREE.Object3D();
+      let n = 0;
+      for (const sx of [-1, 1]) for (const wx of [24, 31]) for (const wy of [10, 17.5]) for (const bx of [-1, 1]) {
+        dummy.position.set(sx * wx + bx * 1.1, wy - 2.5, 30.35);
+        dummy.rotation.set(Math.PI, 0, 0);
+        dummy.updateMatrix();
+        sills.setMatrixAt(n++, dummy.matrix);
+      }
+      sills.count = n;
+      sills.name = 'Bourse facade window sill brackets (consoles d\'appui)';
+      g.add(sills);
+    }
+    // Round 50: round attic oculi (oeil-de-boeuf) in the two avant-corps pavilion pediments.
+    for (const sx of [-1, 1]) {
+      const oculus = mesh(g, new THREE.CylinderGeometry(0.9, 0.9, 0.3, 16), materials.glass, sx * 44, 28.2, 40.4, 'Bourse pavilion pediment oculus (oeil-de-boeuf)');
+      oculus.rotation.x = Math.PI / 2;
+      mesh(g, new THREE.TorusGeometry(0.9, 0.12, 6, 16), materials.warmStone, sx * 44, 28.2, 40.4, 'Bourse oculus stone surround');
     }
     // __BOURSE_ROUNDS__
   });

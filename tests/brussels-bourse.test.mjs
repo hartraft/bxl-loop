@@ -246,4 +246,34 @@ testCase('rounds 38-40: side ajouree great arches, roof terrace balustrade, bras
   assert.match(bourse, /'Bourse brass canopy rib'/);
 });
 
+testCase('rounds 41-42: 2023 entrance cut into the blue-stone socle, black granito + gilded brass', () => {
+  assert.match(bourse, /'Bourse 2023 entrance recess in the blue-stone socle \(granito noir\)'/);
+  assert.match(bourse, /'Bourse 2023 entrance gilded brass lintel'/);
+  assert.match(bourse, /'Bourse 2023 entrance brass jamb west'/);
+  assert.match(bourse, /'Bourse 2023 entrance granito floor'/);
+  assert.match(bourse, /'Bourse 2023 entrance brass threshold'/);
+});
+
+testCase('rounds 43-45: socle utility doors with straight lintels, iron grilles, water-table moulding', () => {
+  assert.match(bourse, /'Bourse socle utility doors \(portes a linteau droit\)'/);
+  assert.match(bourse, /doors\.count = 8/);
+  assert.match(bourse, /'Bourse socle basement window iron grilles \(grilles en fer forge\)'/);
+  assert.match(bourse, /grilles\.count = 8/);
+  assert.match(bourse, /'Bourse socle water-table moulding \(bandeau\)'/);
+});
+
+testCase('rounds 46-50: night floodlights, downpipes, hood moulds, sill brackets, pediment oculi', () => {
+  assert.match(bourse, /nightGlowMats\.push\(floodGlow\)/);
+  assert.match(bourse, /'Bourse facade floodlight heads \(night floodlighting, bracket-mounted\)'/);
+  assert.match(bourse, /heads\.count = 10/);
+  assert.match(bourse, /'Bourse facade lead downpipes \(descentes en plomb\)'/);
+  assert.match(bourse, /'Bourse downpipe hopper heads'/);
+  assert.match(bourse, /'Bourse facade window hood moulds \(larmiers\)'/);
+  assert.match(bourse, /'Bourse hood label stops'/);
+  assert.match(bourse, /'Bourse facade window sill brackets/);
+  assert.match(bourse, /sills\.count = n/);
+  assert.match(bourse, /'Bourse pavilion pediment oculus \(oeil-de-boeuf\)'/);
+  assert.match(bourse, /'Bourse oculus stone surround'/);
+});
+
 // __MORE_BOURSE_TESTS__
