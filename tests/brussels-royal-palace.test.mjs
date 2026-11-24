@@ -1177,3 +1177,8 @@ testCase('cast-iron street lamps with globes line the palace-square axis', () =>
   assert.match(palace, /'Square axis street lamp'/);
   assert.match(palace, /'Square axis street lamp globe'/);
 });
+
+testCase('a balustrade parapet crowns the Academy Palace attic', () => {
+  assert.match(palace, /'Academy Palace attic baluster'/);
+  assert.match(palace, /'Academy Palace attic balustrade rail'/);
+});

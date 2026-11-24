@@ -4337,6 +4337,17 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
         mesh(g, new THREE.SphereGeometry(0.28, 10, 8), materials.glass, lx, 3.75, lz, 'Square axis street lamp globe');
       }
     }
+
+    // The Academy Palace attic is crowned by a balustrade parapet.
+    const apBal = new THREE.InstancedMesh(new THREE.BoxGeometry(0.12, 0.7, 0.12), materials.warmStone, 40);
+    const abd = new THREE.Object3D();
+    let abi = 0;
+    for (let bi = 0; bi < 40; bi++) {
+      abd.position.set(-200 + bi * (66 / 39), 21.75, 36); abd.rotation.y = 0; abd.updateMatrix();
+      apBal.setMatrixAt(abi++, abd.matrix);
+    }
+    apBal.count = abi; apBal.name = 'Academy Palace attic baluster'; g.add(apBal);
+    box(g, 66, 0.1, 0.4, -168, 22.15, 36, materials.warmStone, 'Academy Palace attic balustrade rail');
   });
     addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');
