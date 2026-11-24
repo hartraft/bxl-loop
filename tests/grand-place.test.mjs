@@ -108,13 +108,11 @@ test('guild-house rooflines stay varied and instanced', () => {
 });
 
 test('the seven real street mouths stay open, each with its bronze UNESCO plaque', () => {
-  assert.ok(square.includes('UNESCO entrance plaque – Rue au Beurre'));
-  assert.ok(square.includes('Rue de la Tête d’or'));
-  assert.ok(square.includes('Rue des Chapeliers'));
-  assert.ok(square.includes('Rue Charles Buls'));
-  assert.ok(square.includes('Rue de la Colline'));
-  assert.ok(square.includes('Rue d’Arenberg'));
-  assert.ok(square.includes('Rue Chair et Pain'));
+  assert.ok(square.includes('UNESCO entrance plaque – ${street}'));
+  for (const street of ['Rue au Beurre', 'Rue de la Tête d’or', 'Rue des Chapeliers', 'Rue Charles Buls', 'Rue de la Colline', 'Rue d’Arenberg', 'Rue Chair et Pain']) {
+    assert.ok(square.includes(`'${street}'`), `missing plaque street ${street}`);
+  }
+  assert.equal((square.match(/\[west,|\[south,|\[east,|\[north,/g) || []).length, 7, 'exactly seven entrance plaques');
   assert.ok(square.includes('materials.bronze'));
   // west frontage leaves gaps at both ends for Rue au Beurre (north) and Rue de la Tête d'or (south)
   assert.ok(square.includes("x: 23, width: 8.5"));
