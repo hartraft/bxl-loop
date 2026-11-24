@@ -5157,6 +5157,9 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
 
     // A bed moulding crowns the Palace of the Nation cornice.
     box(g, 62, 0.2, 0.5, 0, 23.3, 403.1, materials.warmStone, 'Palace of the Nation cornice bed moulding');
+
+    // A gravel path crosses the Academy Palace garden between the statues.
+    box(g, 3, 0.08, 12, -168, 0.06, 64, materials.pavingB, 'Academy garden path');
   });
     addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');
