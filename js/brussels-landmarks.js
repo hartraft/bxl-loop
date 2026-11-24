@@ -4203,6 +4203,11 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     for (const side of [-1, 1]) {
       box(g, 0.3, 0.25, 0.8, side * 16, 0.125, centralFace + 8.6, moulding, 'Stylobate step side cap');
     }
+
+    // Rings cage the gilded globes of the perron lamps.
+    for (const side of [-1, 1]) {
+      cylinder(g, 0.3, 0.3, 0.06, side * 9.6, 4.5, centralFace + 1.6, bronze, 10).name = 'Perron lamp globe ring';
+    }
   });
   addLandmark('palaceSurroundings', (g) => {
     // Real-world sources: en/fr Wikipedia (Royal Palace of Brussels, Brussels Park, Place des Palais,

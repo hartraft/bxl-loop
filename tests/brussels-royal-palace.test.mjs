@@ -2241,3 +2241,7 @@ testCase('side caps close the ends of the front stylobate step', () => {
 testCase('a kerb borders the rear edge of the peristyle floor', () => {
   assert.match(palace, /'Peristyle floor rear kerb'/);
 });
+
+testCase('rings cage the gilded globes of the perron lamps', () => {
+  assert.match(palace, /'Perron lamp globe ring'/);
+});
