@@ -110,6 +110,12 @@ test('the spire apex carries a gilded orb and St Michael his raised sword', () =
   assert.ok(square.includes("'Saint Michael dragon'"));
 });
 
+test('the Town Hall portal has wooden door leaves, transom bar and kick plate', () => {
+  assert.ok(square.includes("'Portal door leaves'"));
+  assert.ok(square.includes("'Portal door transom bar'"));
+  assert.ok(square.includes("'Portal door kick plate'"));
+});
+
 test('the Town Hall portal has stone entrance steps onto the square', () => {
   assert.equal((square.match(/'Portal entrance step'/g) || []).length, 1);
   assert.ok(square.includes("box(tower, 5.4 - i * 0.8, 0.22, 0.7, 0, 0.11 + i * 0.22, towerW / 2 + 0.55 + i * 0.55, darkStone, 'Portal entrance step')"));

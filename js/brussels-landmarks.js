@@ -874,6 +874,10 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     for (let i = 0; i < 3; i++) {
       box(tower, 5.4 - i * 0.8, 0.22, 0.7, 0, 0.11 + i * 0.22, towerW / 2 + 0.55 + i * 0.55, darkStone, 'Portal entrance step');
     }
+    // Massive wooden door leaves with a gilded transom bar and kick plates.
+    box(tower, 2.3, 3.4, 0.18, 0, 1.9, towerW / 2 + 0.2, materials.dark, 'Portal door leaves');
+    box(tower, 2.3, 0.12, 0.1, 0, 3.68, towerW / 2 + 0.24, materials.gold, 'Portal door transom bar');
+    box(tower, 2.3, 0.3, 0.06, 0, 0.35, towerW / 2 + 0.26, materials.gold, 'Portal door kick plate');
     // Prophet figures in niches above the portal, between the shaft lancets.
     for (const side of [-1, 1]) {
       for (const dx of [1.1, 3.3]) {
