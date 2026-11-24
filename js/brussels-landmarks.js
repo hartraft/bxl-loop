@@ -2299,9 +2299,9 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     // Two escaliers d'honneur flank the monumental porch, climbing from the forecourt up to
     // the corner pavilions that house the Courts of Cassation and Appeal.
     for (const side of [-1, 1]) {
-      // The flight runs from the forecourt landing (z≈100, y≈1) up to the pavilion landing.
+      // The flight runs from the esplanade paving (bottom tread at y=0.30) up to the pavilion landing.
       for (let step = 0; step < 16; step++) {
-        box(g, 14, 0.5, 1.6, side * 40, 1.0 + step * 1.2, 100 - step * 1.6, light, "Escalier d'honneur flight");
+        box(g, 14, 0.5, 1.6, side * 40, 0.53 + step * 1.15, 100 - step * 1.6, light, "Escalier d'honneur flight");
       }
       box(g, 16, 3.2, 14, side * 46, 19.5, 79, stone, 'Honour stair landing at corner pavilion');
     }

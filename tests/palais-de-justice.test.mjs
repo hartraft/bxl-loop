@@ -185,7 +185,8 @@ test('the north and south ranges carry colossal paired pilasters, lintels and al
 test('twin escaliers d\'honneur flank the porch up to the corner pavilions', () => {
   assert.ok(palace.includes("\"Escalier d'honneur flight\""));
   assert.ok(palace.includes('for (let step = 0; step < 16; step++)'));
-  assert.ok(palace.includes('100 - step * 1.6'), 'flight reaches down to the forecourt landing, not floating');
+  assert.ok(palace.includes('100 - step * 1.6'), 'flight reaches down to the forecourt, not floating');
+  assert.ok(palace.includes('0.53 + step * 1.15'), 'lowest tread seated on the esplanade paving (y=0.30)');
   assert.ok(palace.includes("'Honour stair landing at corner pavilion'"));
 });
 
