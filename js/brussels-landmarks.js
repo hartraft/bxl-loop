@@ -2352,6 +2352,14 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     // The Cour d'honneur between the rear wings is a gravelled court, open to the
     // carriage gates north and south.
     box(g, 78, 0.12, 36, 0, 0.02, -37, ashlar, 'Cour d’honneur gravel court');
+
+    // The flattened dome is stiffened by eight stone ribs rising from drum to lantern.
+    for (let ri = 0; ri < 8; ri++) {
+      const ra = ri * Math.PI / 4;
+      const rib = mesh(g, new THREE.TorusGeometry(11.5, 0.22, 6, 20, Math.PI / 2), ashlar, Math.sin(ra) * 0, 29.9, -1, 'Dome rib');
+      rib.rotation.y = ra;
+      rib.rotation.z = Math.PI / 2;
+    }
   });
   addLandmark('palaceSurroundings', (g) => {
     // Brussels Park (Parc de Bruxelles): the rectangular 13.1 ha neoclassical park north of the

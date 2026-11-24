@@ -730,3 +730,9 @@ testCase('the Cour d’honneur is a gravelled court between the rear wings', () 
   assert.match(palace, /gravelled court/);
   assert.match(palace, /'Cour d’honneur gravel court'/);
 });
+
+testCase('eight stone ribs stiffen the flattened dome from drum to lantern', () => {
+  assert.match(palace, /eight stone ribs/);
+  assert.match(palace, /'Dome rib'/);
+  assert.match(palace, /for \(let ri = 0; ri < 8; ri\+\+\)/);
+});
