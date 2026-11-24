@@ -1010,3 +1010,10 @@ testCase('final lock: palace and surroundings both fully present in the landmark
   for (const marker of [...palaceMarkers, ...surroundingsMarkers]) assert.match(palace, marker);
   assert.match(palace, /monument\.heritage\.brussels inventories 30402/);
 });
+
+testCase('the rear English-style garden lives in the surroundings landmark, not the palace bounds', () => {
+  assert.match(palace, /'Rear English-style garden lawn'/);
+  const surStart = palace.indexOf("addLandmark('palaceSurroundings'");
+  const lawnIdx = palace.indexOf("'Rear English-style garden lawn'");
+  assert.ok(surStart !== -1 && lawnIdx > surStart, 'rear garden must be inside the palaceSurroundings slice');
+});

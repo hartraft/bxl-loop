@@ -2219,235 +2219,6 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       }
     }
 
-    // Behind the palace the gardens are English style (Wikipedia: "French style at the
-    // front, English style at the rear") — a lawn with scattered trees on the Coudenberg site.
-    box(g, 200, 0.3, 90, 0, -0.1, -115, materials.green, 'Rear English-style garden lawn');
-    const rearTrunk = new THREE.InstancedMesh(new THREE.CylinderGeometry(0.25, 0.34, 3.6, 6), shadow, 12);
-    const rearCan = new THREE.InstancedMesh(new THREE.SphereGeometry(2.4, 8, 6), materials.green, 12);
-    const rtd = new THREE.Object3D();
-    let rti = 0;
-    for (let i = 0; i < 12; i++) {
-      const rx = -90 + (i % 6) * 36;
-      const rz = -80 - Math.floor(i / 6) * 55;
-      rtd.position.set(rx, 1.8, rz); rtd.rotation.y = 0; rtd.updateMatrix();
-      rearTrunk.setMatrixAt(rti, rtd.matrix);
-      rtd.position.set(rx, 4.6, rz); rtd.updateMatrix();
-      rearCan.setMatrixAt(rti, rtd.matrix);
-      rti++;
-    }
-    rearTrunk.count = rti; rearTrunk.name = 'Rear garden tree trunks'; g.add(rearTrunk);
-    rearCan.count = rti; rearCan.name = 'Rear garden tree canopies'; g.add(rearCan);
-
-    // The portico is roofed: a coffered soffit ceiling spans between the two column rows
-    // under the entablature (classical portico ceiling).
-    box(g, 27, 0.35, 7.2, 0, 21.6, centralFace + 2.8, ashlar, 'Portico soffit ceiling');
-    const cofferGeo = new THREE.BoxGeometry(0.9, 0.12, 0.9);
-    const coffers = new THREE.InstancedMesh(cofferGeo, moulding, 15);
-    const cfd = new THREE.Object3D();
-    let cfi = 0;
-    for (let cx = -10; cx <= 10; cx += 5) {
-      for (let cz = centralFace + 1.4; cz <= centralFace + 4.2; cz += 1.4) {
-        cfd.position.set(cx, 21.38, cz); cfd.rotation.y = 0; cfd.updateMatrix();
-        coffers.setMatrixAt(cfi++, cfd.matrix);
-      }
-    }
-    coffers.count = cfi; coffers.name = 'Portico soffit coffers'; g.add(coffers);
-
-    // The central avant-corps is pierced on its east and west faces too, like the wings —
-    // oblique views from the square never see a blank side wall.
-    for (const side of [-1, 1]) {
-      for (let i = 0; i < 3; i++) {
-        const wz = -6 - i * 5;
-        box(g, 0.2, 3.4, 2.2, side * 17.1, 13.5, wz, glass, 'Central corps side window (piano nobile)');
-        box(g, 0.2, 2.6, 2.2, side * 17.1, 6.5, wz, glass, 'Central corps side window (ground)');
-      }
-    }
-
-    // The dome lantern is crowned by a gilded finial ball and spike.
-    mesh(g, new THREE.SphereGeometry(0.45, 12, 10), gilded, 0, 41.9, -1, 'Dome lantern gilded finial');
-    mesh(g, new THREE.ConeGeometry(0.22, 1.1, 8), gilded, 0, 42.75, -1, 'Dome lantern finial spike');
-
-    // A gravel central walk runs from the garden gate to the perron on the portico axis.
-    box(g, 5, 0.08, 5.6, 0, 0.06, 11.7, ashlar, 'Garden central walk');
-
-    // Each sunken parterre is edged with a clipped boxwood border (jardin d'honneur).
-    for (const p of [{ x: -13.5, w: 9 }, { x: 13.5, w: 9 }, { x: -38, w: 34 }, { x: 38, w: 34 }]) {
-      box(g, p.w + 0.5, 0.34, 0.22, p.x, 0.1, 12.4 - 1.5, lawnMat, 'Parterre boxwood border');
-      box(g, p.w + 0.5, 0.34, 0.22, p.x, 0.1, 12.4 + 1.5, lawnMat, 'Parterre boxwood border');
-      box(g, 0.22, 0.34, 3.2, p.x - p.w / 2 - 0.25, 0.1, 12.4, lawnMat, 'Parterre boxwood border');
-      box(g, 0.22, 0.34, 3.2, p.x + p.w / 2 + 0.25, 0.1, 12.4, lawnMat, 'Parterre boxwood border');
-    }
-
-    // The palace is floodlit at night: bronze floodlight fixtures stand along the garden
-    // wall, aimed up at the façade (registered in facadeWashMats, round 13).
-    for (let fx = -30; fx <= 30; fx += 10) {
-      cylinder(g, 0.07, 0.1, 1.8, fx, 0.9, 13.4, bronze, 8).name = 'Facade floodlight fixture';
-      mesh(g, new THREE.SphereGeometry(0.22, 8, 6), nightGlowMats ? glass : glass, fx, 1.95, 13.4, 'Facade floodlight head');
-    }
-
-    // The Cour d'honneur is accessible by road from the south too: a carriage gate arch
-    // pierces the south avant-corps on the palace axis.
-    const cgArch = new THREE.Shape();
-    cgArch.moveTo(-4, 0); cgArch.lineTo(4, 0); cgArch.lineTo(4, 5.0);
-    cgArch.absarc(0, 5.0, 4, 0, Math.PI, false); cgArch.lineTo(-4, 0); cgArch.closePath();
-    mesh(g, new THREE.ShapeGeometry(cgArch), glass, 0, 0, -63.4, 'Cour d’honneur south carriage gate');
-    box(g, 10, 1.0, 0.8, 0, 9.4, -63.5, ashlar, 'South carriage gate impost');
-
-    // String courses divide the central corps' storeys on the front, as on the wings.
-    box(g, 34.6, 0.3, 0.3, 0, 8.6, centralFace + 0.15, moulding, 'Central first string course');
-    box(g, 34.6, 0.3, 0.3, 0, 16.4, centralFace + 0.15, moulding, 'Central second string course');
-
-    // Every wing window has a projecting moulded surround band (encadrement mouluré),
-    // proud of the wall face — the heritage fiche's "fenêtres à encadrement mouluré".
-    for (const x of wingXs) {
-      for (let i = 0; i < 9; i++) {
-        const bx = x - 22 + i * 5.5;
-        for (const [floorY, winH] of [[9.9, 3.55], [16.0, 3.0]]) {
-          box(g, 2.5, winH + 0.6, 0.12, bx, floorY, facadeZ + 0.3, ashlar, 'Wing window moulded surround');
-        }
-      }
-    }
-
-    // The perron is flanked by stone balustrade ramps on both sides of the steps.
-    for (const side of [-1, 1]) {
-      for (let s = 0; s < 3; s++) {
-        box(g, 0.3, 0.9, 0.7, side * 8.9, 1.1 - s * 0.32, centralFace + 0.3 + s * 0.62, ashlar, 'Perron side balustrade');
-      }
-      box(g, 0.34, 0.14, 2.1, side * 8.9, 1.6, centralFace + 0.6, moulding, 'Perron side rail');
-    }
-
-    // Each terminal pavilion roof is crowned by a gilded finial ball, like the dome lantern.
-    for (const x of [-76, 76]) {
-      mesh(g, new THREE.SphereGeometry(0.5, 12, 10), gilded, x, 26.3, -1, 'Pavilion roof gilded finial');
-    }
-
-    // Ground-floor wing openings are protected by wrought-iron grilles, matching the
-    // palace's ironwork (Suys' balcony, garden railings).
-    for (const x of wingXs) {
-      for (let i = 0; i < 9; i++) {
-        const bx = x - 22 + i * 5.5;
-        box(g, 1.7, 3.1, 0.06, bx, 3.6, facadeZ + 0.22, bronze, 'Wing ground-floor window grille');
-        for (let gk = 0; gk < 5; gk++) {
-          box(g, 0.04, 3.1, 0.04, bx - 0.7 + gk * 0.35, 3.6, facadeZ + 0.26, bronze, 'Wing grille bar');
-        }
-      }
-    }
-
-    // The central entrance carries a gilded fanlight (imposte) above the door, set in the
-    // arch head of the middle portico bay.
-    const fanShape = new THREE.Shape();
-    fanShape.moveTo(-2.2, 0); fanShape.lineTo(2.2, 0);
-    fanShape.absarc(0, 0, 2.2, 0, Math.PI, false); fanShape.closePath();
-    mesh(g, new THREE.ShapeGeometry(fanShape), glass, 0, 6.4, centralFace + 0.3, 'Central entrance gilded fanlight');
-    for (let fk = 0; fk < 4; fk++) {
-      const fa = (fk - 1.5) * 0.55;
-      const fr = box(g, 0.06, 4.0, 0.05, Math.sin(fa) * 1.1, 6.4 + Math.cos(fa) * 1.1, centralFace + 0.32, gilded, 'Central fanlight radial bar');
-      fr.rotation.z = fa;
-    }
-
-    // The rear range and the south avant-corps are roofed with slate, like the rest of the palace.
-    box(g, 103, 1.4, 13, 0, 19.2, -54, roof, 'Rear range slate roof');
-    box(g, 27.5, 1.2, 8, 0, 21.2, -60, roof, 'South avant-corps slate roof');
-
-    // The Cour d'honneur between the rear wings is a gravelled court, open to the
-    // carriage gates north and south.
-    box(g, 78, 0.12, 36, 0, 0.02, -37, ashlar, 'Cour d’honneur gravel court');
-
-    // The flattened dome is stiffened by eight stone ribs rising from drum to lantern.
-    for (let ri = 0; ri < 8; ri++) {
-      const ra = ri * Math.PI / 4;
-      const rib = mesh(g, new THREE.TorusGeometry(11.5, 0.22, 6, 20, Math.PI / 2), ashlar, Math.sin(ra) * 0, 29.9, -1, 'Dome rib');
-      rib.rotation.y = ra;
-      rib.rotation.z = Math.PI / 2;
-    }
-
-    // A moulded cornice band runs at the foot of each wing mansard, where the roof meets
-    // the wall — the mansard's base cornice.
-    for (const x of wingXs) {
-      box(g, wingW + 1.2, 0.5, 0.7, x, 20.6, facadeZ + 0.4, moulding, 'Wing mansard base cornice');
-    }
-
-    // The terminal pavilion cornices carry modillions (corbels), like the main cornice.
-    for (const x of [-76, 76]) {
-      for (let mi2 = 0; mi2 < 7; mi2++) {
-        box(g, 0.4, 0.5, 0.5, x - 4.2 + mi2 * 1.4, 23.0, facadeZ + 0.4, moulding, 'Terminal pavilion modillion');
-      }
-    }
-
-    // The portico stands on a raised paved stylobate floor between and in front of the
-    // column rows — the platform the colonnade stands on.
-    box(g, 30, 0.5, 9.5, 0, 0.25, centralFace + 2.6, ashlar, 'Portico stylobate floor');
-    box(g, 31, 0.18, 10.3, 0, 0.56, centralFace + 2.6, moulding, 'Portico stylobate edge');
-
-    // The main pediment is crowned with acroteria: sculptural figures at the two corners
-    // and the apex of the tympanum frame.
-    for (const [ax, ay] of [[-10.8, 28.9], [10.8, 28.9], [0, 29.9]]) {
-      cylinder(g, 0.42, 0.55, 1.6, ax, ay, centralFace + 0.4, moulding, 10).name = 'Pediment acroterion figure';
-      mesh(g, new THREE.SphereGeometry(0.34, 10, 8), moulding, ax, ay + 1.0, centralFace + 0.4, 'Pediment acroterion head');
-    }
-
-    // The wing end faces are capped by a projecting end cornice (bandeau d'angle) above
-    // the top windows, matching the front cornice.
-    for (const side of [-1, 1]) {
-      box(g, 0.5, 0.6, 20.5, side * 70.1, 20.6, -8, moulding, 'Wing end cornice');
-      box(g, 0.6, 0.3, 21, side * 70.1, 21.0, -8, ashlar, 'Wing end blocking course');
-    }
-
-    // The central portico bay is closed by a bronze double entrance door with recessed
-    // panels, beneath the gilded fanlight.
-    box(g, 4.4, 6.2, 0.18, 0, 3.1, centralFace + 0.24, bronze, 'Central bronze entrance door');
-    for (const dx of [-1.05, 1.05]) {
-      for (const dy of [1.6, 3.6, 5.2]) {
-        box(g, 1.7, 1.3, 0.06, dx, dy, centralFace + 0.3, shadow, 'Central door recessed panel');
-      }
-    }
-    box(g, 4.8, 0.22, 0.3, 0, 6.3, centralFace + 0.26, gilded, 'Central door gilded transom');
-
-    // The pavilion outer faces are capped by an end cornice matching the wing ends.
-    for (const side of [-1, 1]) {
-      box(g, 0.5, 0.6, 21.5, side * 80.1, 23.6, -1, moulding, 'Pavilion outer cornice');
-    }
-
-    // The central garden gate is crowned by a small pediment and gilded urn, matching the
-    // monumental portails of the 1904-09 enclosure.
-    const ggPed = new THREE.Shape();
-    ggPed.moveTo(-3.4, 0); ggPed.lineTo(3.4, 0); ggPed.lineTo(0, 1.4); ggPed.closePath();
-    mesh(g, new THREE.ShapeGeometry(ggPed), ashlar, 0, 3.1, 14, 'Garden central gate pediment');
-    mesh(g, new THREE.SphereGeometry(0.3, 10, 8), gilded, 0, 4.7, 14, 'Garden central gate gilded urn');
-
-    // The rear Cour d'honneur wings are roofed in slate with cornice edges.
-    for (const side of [-1, 1]) {
-      box(g, 12.8, 1.2, 42.8, side * 45, 18.9, -33, roof, 'Rear wing slate roof');
-    }
-
-    // The south avant-corps is capped by an end cornice over its pediment, matching the
-    // central front's cornice.
-    box(g, 27.6, 0.5, 8.2, 0, 21.0, -60, moulding, 'South avant-corps end cornice');
-
-    // Gilded ridge finials mark the ends of each wing mansard ridge.
-    for (const x of wingXs) {
-      for (const side of [-1, 1]) {
-        mesh(g, new THREE.SphereGeometry(0.4, 10, 8), gilded, x + side * 25.4, 23.4, -1, 'Wing mansard ridge finial');
-      }
-    }
-
-    // Each terminal pavilion rises a chimney stack with a stone cap, like the wing roofs.
-    for (const x of [-76, 76]) {
-      box(g, 1.6, 3.2, 1.6, x, 27.6, -6, stone, 'Pavilion chimney stack');
-      box(g, 2.0, 0.4, 2.0, x, 29.4, -6, ashlar, 'Pavilion chimney cap');
-    }
-
-    // A moulded base course runs under the central attic, at the top of the corps wall.
-    box(g, 34.8, 0.4, 0.4, 0, 23.2, centralFace + 0.16, moulding, 'Central attic base course');
-
-    // The two lateral garden gates (in front of the lateral parterres) get small pediments
-    // and gilded urns too, like the central gate.
-    for (const gx of [-38, 38]) {
-      const lgPed = new THREE.Shape();
-      lgPed.moveTo(-2.6, 0); lgPed.lineTo(2.6, 0); lgPed.lineTo(0, 1.1); lgPed.closePath();
-      mesh(g, new THREE.ShapeGeometry(lgPed), ashlar, gx, 3.0, 14, 'Garden lateral gate pediment');
-      mesh(g, new THREE.SphereGeometry(0.26, 10, 8), gilded, gx, 4.3, 14, 'Garden lateral gate gilded urn');
-    }
   });
   addLandmark('palaceSurroundings', (g) => {
     // Real-world sources: en/fr Wikipedia (Royal Palace of Brussels, Brussels Park, Place des Palais,
@@ -2952,6 +2723,237 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     box(g, 16, 0.06, 90, 0, 0.03, 470, materials.pavingA, 'Rue de la Loi north extension to the EU quarter');
     // The Academy Palace portico pediment is crowned by a small sculptural acroterion.
     cylinder(g, 0.3, 0.4, 1.1, -168, 16.0, 19.6, materials.warmStone, 8).name = 'Academy portico pediment acroterion';
+
+    // Behind the palace the gardens are English style (Wikipedia: "French style at the
+    // front, English style at the rear") — a lawn with scattered trees on the Coudenberg site.
+    box(g, 200, 0.3, 90, 0, -0.1, -115, materials.green, 'Rear English-style garden lawn');
+    const rearTrunk = new THREE.InstancedMesh(new THREE.CylinderGeometry(0.25, 0.34, 3.6, 6), shadow, 12);
+    const rearCan = new THREE.InstancedMesh(new THREE.SphereGeometry(2.4, 8, 6), materials.green, 12);
+    const rtd = new THREE.Object3D();
+    let rti = 0;
+    for (let i = 0; i < 12; i++) {
+      const rx = -90 + (i % 6) * 36;
+      const rz = -80 - Math.floor(i / 6) * 55;
+      rtd.position.set(rx, 1.8, rz); rtd.rotation.y = 0; rtd.updateMatrix();
+      rearTrunk.setMatrixAt(rti, rtd.matrix);
+      rtd.position.set(rx, 4.6, rz); rtd.updateMatrix();
+      rearCan.setMatrixAt(rti, rtd.matrix);
+      rti++;
+    }
+    rearTrunk.count = rti; rearTrunk.name = 'Rear garden tree trunks'; g.add(rearTrunk);
+    rearCan.count = rti; rearCan.name = 'Rear garden tree canopies'; g.add(rearCan);
+
+    // The portico is roofed: a coffered soffit ceiling spans between the two column rows
+    // under the entablature (classical portico ceiling).
+    box(g, 27, 0.35, 7.2, 0, 21.6, centralFace + 2.8, ashlar, 'Portico soffit ceiling');
+    const cofferGeo = new THREE.BoxGeometry(0.9, 0.12, 0.9);
+    const coffers = new THREE.InstancedMesh(cofferGeo, moulding, 15);
+    const cfd = new THREE.Object3D();
+    let cfi = 0;
+    for (let cx = -10; cx <= 10; cx += 5) {
+      for (let cz = centralFace + 1.4; cz <= centralFace + 4.2; cz += 1.4) {
+        cfd.position.set(cx, 21.38, cz); cfd.rotation.y = 0; cfd.updateMatrix();
+        coffers.setMatrixAt(cfi++, cfd.matrix);
+      }
+    }
+    coffers.count = cfi; coffers.name = 'Portico soffit coffers'; g.add(coffers);
+
+    // The central avant-corps is pierced on its east and west faces too, like the wings —
+    // oblique views from the square never see a blank side wall.
+    for (const side of [-1, 1]) {
+      for (let i = 0; i < 3; i++) {
+        const wz = -6 - i * 5;
+        box(g, 0.2, 3.4, 2.2, side * 17.1, 13.5, wz, glass, 'Central corps side window (piano nobile)');
+        box(g, 0.2, 2.6, 2.2, side * 17.1, 6.5, wz, glass, 'Central corps side window (ground)');
+      }
+    }
+
+    // The dome lantern is crowned by a gilded finial ball and spike.
+    mesh(g, new THREE.SphereGeometry(0.45, 12, 10), gilded, 0, 41.9, -1, 'Dome lantern gilded finial');
+    mesh(g, new THREE.ConeGeometry(0.22, 1.1, 8), gilded, 0, 42.75, -1, 'Dome lantern finial spike');
+
+    // A gravel central walk runs from the garden gate to the perron on the portico axis.
+    box(g, 5, 0.08, 5.6, 0, 0.06, 11.7, ashlar, 'Garden central walk');
+
+    // Each sunken parterre is edged with a clipped boxwood border (jardin d'honneur).
+    for (const p of [{ x: -13.5, w: 9 }, { x: 13.5, w: 9 }, { x: -38, w: 34 }, { x: 38, w: 34 }]) {
+      box(g, p.w + 0.5, 0.34, 0.22, p.x, 0.1, 12.4 - 1.5, lawnMat, 'Parterre boxwood border');
+      box(g, p.w + 0.5, 0.34, 0.22, p.x, 0.1, 12.4 + 1.5, lawnMat, 'Parterre boxwood border');
+      box(g, 0.22, 0.34, 3.2, p.x - p.w / 2 - 0.25, 0.1, 12.4, lawnMat, 'Parterre boxwood border');
+      box(g, 0.22, 0.34, 3.2, p.x + p.w / 2 + 0.25, 0.1, 12.4, lawnMat, 'Parterre boxwood border');
+    }
+
+    // The palace is floodlit at night: bronze floodlight fixtures stand along the garden
+    // wall, aimed up at the façade (registered in facadeWashMats, round 13).
+    for (let fx = -30; fx <= 30; fx += 10) {
+      cylinder(g, 0.07, 0.1, 1.8, fx, 0.9, 13.4, bronze, 8).name = 'Facade floodlight fixture';
+      mesh(g, new THREE.SphereGeometry(0.22, 8, 6), nightGlowMats ? glass : glass, fx, 1.95, 13.4, 'Facade floodlight head');
+    }
+
+    // The Cour d'honneur is accessible by road from the south too: a carriage gate arch
+    // pierces the south avant-corps on the palace axis.
+    const cgArch = new THREE.Shape();
+    cgArch.moveTo(-4, 0); cgArch.lineTo(4, 0); cgArch.lineTo(4, 5.0);
+    cgArch.absarc(0, 5.0, 4, 0, Math.PI, false); cgArch.lineTo(-4, 0); cgArch.closePath();
+    mesh(g, new THREE.ShapeGeometry(cgArch), glass, 0, 0, -63.4, 'Cour d’honneur south carriage gate');
+    box(g, 10, 1.0, 0.8, 0, 9.4, -63.5, ashlar, 'South carriage gate impost');
+
+    // String courses divide the central corps' storeys on the front, as on the wings.
+    box(g, 34.6, 0.3, 0.3, 0, 8.6, centralFace + 0.15, moulding, 'Central first string course');
+    box(g, 34.6, 0.3, 0.3, 0, 16.4, centralFace + 0.15, moulding, 'Central second string course');
+
+    // Every wing window has a projecting moulded surround band (encadrement mouluré),
+    // proud of the wall face — the heritage fiche's "fenêtres à encadrement mouluré".
+    for (const x of wingXs) {
+      for (let i = 0; i < 9; i++) {
+        const bx = x - 22 + i * 5.5;
+        for (const [floorY, winH] of [[9.9, 3.55], [16.0, 3.0]]) {
+          box(g, 2.5, winH + 0.6, 0.12, bx, floorY, facadeZ + 0.3, ashlar, 'Wing window moulded surround');
+        }
+      }
+    }
+
+    // The perron is flanked by stone balustrade ramps on both sides of the steps.
+    for (const side of [-1, 1]) {
+      for (let s = 0; s < 3; s++) {
+        box(g, 0.3, 0.9, 0.7, side * 8.9, 1.1 - s * 0.32, centralFace + 0.3 + s * 0.62, ashlar, 'Perron side balustrade');
+      }
+      box(g, 0.34, 0.14, 2.1, side * 8.9, 1.6, centralFace + 0.6, moulding, 'Perron side rail');
+    }
+
+    // Each terminal pavilion roof is crowned by a gilded finial ball, like the dome lantern.
+    for (const x of [-76, 76]) {
+      mesh(g, new THREE.SphereGeometry(0.5, 12, 10), gilded, x, 26.3, -1, 'Pavilion roof gilded finial');
+    }
+
+    // Ground-floor wing openings are protected by wrought-iron grilles, matching the
+    // palace's ironwork (Suys' balcony, garden railings).
+    for (const x of wingXs) {
+      for (let i = 0; i < 9; i++) {
+        const bx = x - 22 + i * 5.5;
+        box(g, 1.7, 3.1, 0.06, bx, 3.6, facadeZ + 0.22, bronze, 'Wing ground-floor window grille');
+        for (let gk = 0; gk < 5; gk++) {
+          box(g, 0.04, 3.1, 0.04, bx - 0.7 + gk * 0.35, 3.6, facadeZ + 0.26, bronze, 'Wing grille bar');
+        }
+      }
+    }
+
+    // The central entrance carries a gilded fanlight (imposte) above the door, set in the
+    // arch head of the middle portico bay.
+    const fanShape = new THREE.Shape();
+    fanShape.moveTo(-2.2, 0); fanShape.lineTo(2.2, 0);
+    fanShape.absarc(0, 0, 2.2, 0, Math.PI, false); fanShape.closePath();
+    mesh(g, new THREE.ShapeGeometry(fanShape), glass, 0, 6.4, centralFace + 0.3, 'Central entrance gilded fanlight');
+    for (let fk = 0; fk < 4; fk++) {
+      const fa = (fk - 1.5) * 0.55;
+      const fr = box(g, 0.06, 4.0, 0.05, Math.sin(fa) * 1.1, 6.4 + Math.cos(fa) * 1.1, centralFace + 0.32, gilded, 'Central fanlight radial bar');
+      fr.rotation.z = fa;
+    }
+
+    // The rear range and the south avant-corps are roofed with slate, like the rest of the palace.
+    box(g, 103, 1.4, 13, 0, 19.2, -54, roof, 'Rear range slate roof');
+    box(g, 27.5, 1.2, 8, 0, 21.2, -60, roof, 'South avant-corps slate roof');
+
+    // The Cour d'honneur between the rear wings is a gravelled court, open to the
+    // carriage gates north and south.
+    box(g, 78, 0.12, 36, 0, 0.02, -37, ashlar, 'Cour d’honneur gravel court');
+
+    // The flattened dome is stiffened by eight stone ribs rising from drum to lantern.
+    for (let ri = 0; ri < 8; ri++) {
+      const ra = ri * Math.PI / 4;
+      const rib = mesh(g, new THREE.TorusGeometry(11.5, 0.22, 6, 20, Math.PI / 2), ashlar, Math.sin(ra) * 0, 29.9, -1, 'Dome rib');
+      rib.rotation.y = ra;
+      rib.rotation.z = Math.PI / 2;
+    }
+
+    // A moulded cornice band runs at the foot of each wing mansard, where the roof meets
+    // the wall — the mansard's base cornice.
+    for (const x of wingXs) {
+      box(g, wingW + 1.2, 0.5, 0.7, x, 20.6, facadeZ + 0.4, moulding, 'Wing mansard base cornice');
+    }
+
+    // The terminal pavilion cornices carry modillions (corbels), like the main cornice.
+    for (const x of [-76, 76]) {
+      for (let mi2 = 0; mi2 < 7; mi2++) {
+        box(g, 0.4, 0.5, 0.5, x - 4.2 + mi2 * 1.4, 23.0, facadeZ + 0.4, moulding, 'Terminal pavilion modillion');
+      }
+    }
+
+    // The portico stands on a raised paved stylobate floor between and in front of the
+    // column rows — the platform the colonnade stands on.
+    box(g, 30, 0.5, 9.5, 0, 0.25, centralFace + 2.6, ashlar, 'Portico stylobate floor');
+    box(g, 31, 0.18, 10.3, 0, 0.56, centralFace + 2.6, moulding, 'Portico stylobate edge');
+
+    // The main pediment is crowned with acroteria: sculptural figures at the two corners
+    // and the apex of the tympanum frame.
+    for (const [ax, ay] of [[-10.8, 28.9], [10.8, 28.9], [0, 29.9]]) {
+      cylinder(g, 0.42, 0.55, 1.6, ax, ay, centralFace + 0.4, moulding, 10).name = 'Pediment acroterion figure';
+      mesh(g, new THREE.SphereGeometry(0.34, 10, 8), moulding, ax, ay + 1.0, centralFace + 0.4, 'Pediment acroterion head');
+    }
+
+    // The wing end faces are capped by a projecting end cornice (bandeau d'angle) above
+    // the top windows, matching the front cornice.
+    for (const side of [-1, 1]) {
+      box(g, 0.5, 0.6, 20.5, side * 70.1, 20.6, -8, moulding, 'Wing end cornice');
+      box(g, 0.6, 0.3, 21, side * 70.1, 21.0, -8, ashlar, 'Wing end blocking course');
+    }
+
+    // The central portico bay is closed by a bronze double entrance door with recessed
+    // panels, beneath the gilded fanlight.
+    box(g, 4.4, 6.2, 0.18, 0, 3.1, centralFace + 0.24, bronze, 'Central bronze entrance door');
+    for (const dx of [-1.05, 1.05]) {
+      for (const dy of [1.6, 3.6, 5.2]) {
+        box(g, 1.7, 1.3, 0.06, dx, dy, centralFace + 0.3, shadow, 'Central door recessed panel');
+      }
+    }
+    box(g, 4.8, 0.22, 0.3, 0, 6.3, centralFace + 0.26, gilded, 'Central door gilded transom');
+
+    // The pavilion outer faces are capped by an end cornice matching the wing ends.
+    for (const side of [-1, 1]) {
+      box(g, 0.5, 0.6, 21.5, side * 80.1, 23.6, -1, moulding, 'Pavilion outer cornice');
+    }
+
+    // The central garden gate is crowned by a small pediment and gilded urn, matching the
+    // monumental portails of the 1904-09 enclosure.
+    const ggPed = new THREE.Shape();
+    ggPed.moveTo(-3.4, 0); ggPed.lineTo(3.4, 0); ggPed.lineTo(0, 1.4); ggPed.closePath();
+    mesh(g, new THREE.ShapeGeometry(ggPed), ashlar, 0, 3.1, 14, 'Garden central gate pediment');
+    mesh(g, new THREE.SphereGeometry(0.3, 10, 8), gilded, 0, 4.7, 14, 'Garden central gate gilded urn');
+
+    // The rear Cour d'honneur wings are roofed in slate with cornice edges.
+    for (const side of [-1, 1]) {
+      box(g, 12.8, 1.2, 42.8, side * 45, 18.9, -33, roof, 'Rear wing slate roof');
+    }
+
+    // The south avant-corps is capped by an end cornice over its pediment, matching the
+    // central front's cornice.
+    box(g, 27.6, 0.5, 8.2, 0, 21.0, -60, moulding, 'South avant-corps end cornice');
+
+    // Gilded ridge finials mark the ends of each wing mansard ridge.
+    for (const x of wingXs) {
+      for (const side of [-1, 1]) {
+        mesh(g, new THREE.SphereGeometry(0.4, 10, 8), gilded, x + side * 25.4, 23.4, -1, 'Wing mansard ridge finial');
+      }
+    }
+
+    // Each terminal pavilion rises a chimney stack with a stone cap, like the wing roofs.
+    for (const x of [-76, 76]) {
+      box(g, 1.6, 3.2, 1.6, x, 27.6, -6, stone, 'Pavilion chimney stack');
+      box(g, 2.0, 0.4, 2.0, x, 29.4, -6, ashlar, 'Pavilion chimney cap');
+    }
+
+    // A moulded base course runs under the central attic, at the top of the corps wall.
+    box(g, 34.8, 0.4, 0.4, 0, 23.2, centralFace + 0.16, moulding, 'Central attic base course');
+
+    // The two lateral garden gates (in front of the lateral parterres) get small pediments
+    // and gilded urns too, like the central gate.
+    for (const gx of [-38, 38]) {
+      const lgPed = new THREE.Shape();
+      lgPed.moveTo(-2.6, 0); lgPed.lineTo(2.6, 0); lgPed.lineTo(0, 1.1); lgPed.closePath();
+      mesh(g, new THREE.ShapeGeometry(lgPed), ashlar, gx, 3.0, 14, 'Garden lateral gate pediment');
+      mesh(g, new THREE.SphereGeometry(0.26, 10, 8), gilded, gx, 4.3, 14, 'Garden lateral gate gilded urn');
+    }
+
   });
     addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');
