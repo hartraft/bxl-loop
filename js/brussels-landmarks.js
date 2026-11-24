@@ -5560,6 +5560,9 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
         box(g, 0.3, 0.5, 1.2, side * cw, 0.25, cz, materials.pavingEdge, 'Palace of the Nation step kerb');
       }
     }
+
+    // A ridge strip crowns the Academy stables hipped roof.
+    box(g, 0.4, 0.25, 26, -168, 20.3, 82, materials.roof, 'Academy stables roof ridge');
   });
     addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');

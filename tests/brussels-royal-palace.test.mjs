@@ -2102,3 +2102,7 @@ testCase('kerbs edge both sides of the Palace of the Nation peristyle steps', ()
 testCase('a bronze threshold plate spans the portico main door', () => {
   assert.match(palace, /'Portico door threshold plate'/);
 });
+
+testCase('a ridge strip crowns the Academy stables hipped roof', () => {
+  assert.match(palace, /'Academy stables roof ridge'/);
+});
