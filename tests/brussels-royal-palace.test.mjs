@@ -2081,3 +2081,8 @@ testCase('kerbs flank the east radiating avenue from the main pond', () => {
 testCase('a sill bar closes the foot of the portico door fanlight', () => {
   assert.match(palace, /'Fanlight sill bar'/);
 });
+
+testCase('a gate opens in the Royal Stables courtyard wall', () => {
+  assert.match(palace, /'Royal Stables yard gate pier'/);
+  assert.match(palace, /'Royal Stables yard gate lintel'/);
+});

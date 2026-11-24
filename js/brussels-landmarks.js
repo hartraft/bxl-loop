@@ -5534,6 +5534,12 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       const kerb = box(g, 0.4, 0.18, 92, midEx + perpEx * off, 0.09, midEz + perpEz * off, materials.pavingEdge, 'Radiating avenue east kerb');
       kerb.rotation.y = Math.PI / 2 - raE;
     }
+
+    // A gate with piers and lintel opens in the Royal Stables courtyard wall.
+    for (const gx of [-73, -67]) {
+      box(g, 0.8, 1.8, 0.5, gx, 0.9, -98, materials.ochre, 'Royal Stables yard gate pier');
+    }
+    box(g, 7, 0.4, 0.5, -70, 1.9, -98, materials.warmStone, 'Royal Stables yard gate lintel');
   });
     addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');
