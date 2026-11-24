@@ -5352,6 +5352,128 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       oculus.rotation.x = Math.PI / 2;
       mesh(g, new THREE.TorusGeometry(0.9, 0.12, 6, 16), materials.warmStone, sx * 44, 28.2, 40.4, 'Bourse oculus stone surround');
     }
+    // Round 81: Corinthian capitals carry two rows of acanthus leaves and four corner volutes.
+    {
+      const leaves = new THREE.InstancedMesh(new THREE.ConeGeometry(0.16, 0.5, 4), materials.warmStone, 8 * 10);
+      const volutes = new THREE.InstancedMesh(new THREE.SphereGeometry(0.16, 8, 6), materials.warmStone, 8 * 4);
+      const dummy = new THREE.Object3D();
+      let n = 0, v = 0;
+      for (const cx of peristyleX) {
+        for (let k = 0; k < 10; k++) {
+          const a = k * Math.PI / 5;
+          dummy.position.set(cx + Math.cos(a) * 0.95, 5.4 + 14 + 0.62, 36 + Math.sin(a) * 0.95);
+          dummy.rotation.set(Math.PI / 2 - 0.5, 0, -a);
+          dummy.updateMatrix();
+          leaves.setMatrixAt(n++, dummy.matrix);
+        }
+        for (const a of [Math.PI / 4, 3 * Math.PI / 4, 5 * Math.PI / 4, 7 * Math.PI / 4]) {
+          dummy.position.set(cx + Math.cos(a) * 1.15, 5.4 + 14 + 0.72, 36 + Math.sin(a) * 1.15);
+          dummy.updateMatrix();
+          volutes.setMatrixAt(v++, dummy.matrix);
+        }
+      }
+      leaves.count = n; leaves.name = 'Bourse Corinthian capital acanthus leaves (2 rows, 8 columns)';
+      leaves.castShadow = true; g.add(leaves);
+      volutes.count = v; volutes.name = 'Bourse Corinthian capital corner volutes (volutes d\'angle)';
+      volutes.castShadow = true; g.add(volutes);
+    }
+    // Round 82: a necking ring (annelet) below each capital's abacus.
+    {
+      const rings = new THREE.InstancedMesh(new THREE.TorusGeometry(0.85, 0.08, 6, 14), materials.warmStone, 8);
+      const dummy = new THREE.Object3D();
+      for (let i = 0; i < 8; i++) {
+        dummy.position.set(peristyleX[i], 5.4 + 14 + 0.42, 36);
+        dummy.rotation.set(Math.PI / 2, 0, 0);
+        dummy.updateMatrix();
+        rings.setMatrixAt(i, dummy.matrix);
+      }
+      rings.count = 8;
+      rings.name = 'Bourse capital necking rings (annelets)';
+      g.add(rings);
+    }
+    // Round 83: the entablature carries cyma recta and cyma reversa mouldings above and below
+    // the frieze (classical order mouldings).
+    box(g, 104, 0.3, 9.4, 0, 23.35, 32.5, materials.warmStone, 'Bourse cornice cyma recta (moulure superieure)');
+    box(g, 104, 0.3, 9.4, 0, 20.05, 32.5, materials.warmStone, 'Bourse architrave cyma reversa (moulure inferieure)');
+    // Round 84: the projecting corona slab and bed moulding of the main cornice.
+    box(g, 104.6, 0.22, 9.8, 0, 23.6, 32.5, materials.paleStone, 'Bourse cornice corona (tablette saillante)');
+    box(g, 104.3, 0.18, 9.6, 0, 23.75, 32.5, materials.warmStone, 'Bourse cornice bed moulding');
+    // Round 85: round medallions set in the frieze between the abundance garlands.
+    {
+      const medallions = new THREE.InstancedMesh(new THREE.CylinderGeometry(0.55, 0.55, 0.15, 16), materials.warmStone, 20);
+      const dummy = new THREE.Object3D();
+      for (let i = 0; i < 20; i++) {
+        dummy.position.set(-47.5 + i * 5, 21.9, 37.12);
+        dummy.rotation.x = Math.PI / 2;
+        dummy.updateMatrix();
+        medallions.setMatrixAt(i, dummy.matrix);
+      }
+      medallions.count = 20;
+      medallions.name = 'Bourse frieze medallions (medaillons) between the garlands';
+      medallions.castShadow = true;
+      g.add(medallions);
+    }
+    // Round 86: garland swags (guirlandes en feston) draped between the medallions.
+    {
+      const swags = new THREE.InstancedMesh(new THREE.TorusGeometry(1.15, 0.09, 6, 12, Math.PI), materials.ochre, 20);
+      const dummy = new THREE.Object3D();
+      for (let i = 0; i < 20; i++) {
+        dummy.position.set(-45 + i * 5, 22.15, 37.1);
+        dummy.rotation.set(0, 0, Math.PI);
+        dummy.updateMatrix();
+        swags.setMatrixAt(i, dummy.matrix);
+      }
+      swags.count = 20;
+      swags.name = 'Bourse frieze garland swags (guirlandes en feston)';
+      swags.castShadow = true;
+      g.add(swags);
+    }
+    // Round 87: the central archivolt is built of voussoir wedges.
+    {
+      const voussoirs = new THREE.InstancedMesh(new THREE.BoxGeometry(0.55, 0.6, 0.55), materials.warmStone, 9);
+      const dummy = new THREE.Object3D();
+      for (let i = 0; i < 9; i++) {
+        const a = (i / 8) * Math.PI;
+        dummy.position.set(Math.sin(a) * 4.3, 15.9 + Math.cos(a) * 4.3, 30.35);
+        dummy.rotation.set(0, 0, -a);
+        dummy.updateMatrix();
+        voussoirs.setMatrixAt(i, dummy.matrix);
+      }
+      voussoirs.count = 9;
+      voussoirs.name = 'Bourse central archivolt voussoirs (voussoirs)';
+      voussoirs.castShadow = true;
+      g.add(voussoirs);
+    }
+    // Round 88: the archivolt's keystone is a larger wedge at the crown.
+    mesh(g, new THREE.BoxGeometry(0.9, 1.0, 0.6), materials.warmStone, 0, 20.35, 30.35, 'Bourse archivolt keystone (clef d\'arc)');
+    // Round 89: the tympanum relief sits on a plinth slab with two attendant figures flanking
+    // la Belgique.
+    box(g, 30, 0.5, 0.4, 0, 24.2, 37.2, materials.warmStone, 'Bourse tympanum relief plinth slab');
+    for (const sx of [-1, 1]) {
+      const att = new THREE.Group();
+      att.name = 'Bourse tympanum attendant figure ' + (sx < 0 ? 'west' : 'east');
+      att.position.set(sx * 13.5, 25.2, 36.7);
+      box(att, 0.8, 1.6, 0.35, 0, 0.8, 0, materials.warmStone, 'attendant body');
+      mesh(att, new THREE.SphereGeometry(0.3, 8, 6), materials.warmStone, 0, 1.85, 0, 'attendant head');
+      g.add(att);
+    }
+    // Round 90: dentils along the pediment's raking cornice.
+    {
+      const dentils = new THREE.InstancedMesh(new THREE.BoxGeometry(0.2, 0.28, 0.3), materials.warmStone, 36);
+      const dummy = new THREE.Object3D();
+      const slope = Math.atan2(8.5, 19);
+      for (let i = 0; i < 18; i++) {
+        for (const sx of [-1, 1]) {
+          dummy.position.set(sx * (1 + i * 1.02), 23.5 + (1 + i * 1.02) * Math.tan(slope), 37.1);
+          dummy.rotation.set(sx * -slope, 0, 0);
+          dummy.updateMatrix();
+          dentils.setMatrixAt(i * 2 + (sx < 0 ? 0 : 1), dummy.matrix);
+        }
+      }
+      dentils.count = 36;
+      dentils.name = 'Bourse pediment raking cornice dentils';
+      g.add(dentils);
+    }
     // __BOURSE_ROUNDS__
   });
   addLandmark('bourseSurroundings', (g) => {

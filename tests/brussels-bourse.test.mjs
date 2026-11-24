@@ -368,4 +368,34 @@ testCase('rounds 76-80: premetro ventilation grilles, Bruxella 1238 plaque, terr
   assert.match(surroundings, /facades\.count = 5/);
 });
 
+testCase('rounds 81-82: Corinthian acanthus leaves + corner volutes, necking rings', () => {
+  assert.match(bourse, /'Bourse Corinthian capital acanthus leaves \(2 rows, 8 columns\)'/);
+  assert.match(bourse, /leaves\.count = n/);
+  assert.match(bourse, /'Bourse Corinthian capital corner volutes/);
+  assert.match(bourse, /volutes\.count = v/);
+  assert.match(bourse, /'Bourse capital necking rings \(annelets\)'/);
+  assert.match(bourse, /rings\.count = 8/);
+});
+
+testCase('rounds 83-86: cyma mouldings, corona slab, frieze medallions, garland swags', () => {
+  assert.match(bourse, /'Bourse cornice cyma recta/);
+  assert.match(bourse, /'Bourse architrave cyma reversa/);
+  assert.match(bourse, /'Bourse cornice corona/);
+  assert.match(bourse, /'Bourse cornice bed moulding'/);
+  assert.match(bourse, /'Bourse frieze medallions \(medaillons\) between the garlands'/);
+  assert.match(bourse, /medallions\.count = 20/);
+  assert.match(bourse, /'Bourse frieze garland swags \(guirlandes en feston\)'/);
+  assert.match(bourse, /swags\.count = 20/);
+});
+
+testCase('rounds 87-90: archivolt voussoirs + keystone, tympanum plinth + attendants, raking dentils', () => {
+  assert.match(bourse, /'Bourse central archivolt voussoirs \(voussoirs\)'/);
+  assert.match(bourse, /voussoirs\.count = 9/);
+  assert.match(bourse, /'Bourse archivolt keystone/);
+  assert.match(bourse, /'Bourse tympanum relief plinth slab'/);
+  assert.match(bourse, /'Bourse tympanum attendant figure '/);
+  assert.match(bourse, /'Bourse pediment raking cornice dentils'/);
+  assert.match(bourse, /dentils\.count = 36/);
+});
+
 // __MORE_BOURSE_TESTS__
