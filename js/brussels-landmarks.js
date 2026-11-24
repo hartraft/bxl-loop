@@ -4977,6 +4977,12 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       box(g, 0.4, 1.0, 0.4, side * 3.5, 9.5, 402.4, materials.bronze, 'Palace of the Nation entrance lantern');
       mesh(g, new THREE.SphereGeometry(0.24, 10, 8), materials.glass, side * 3.5, 9.6, 402.4, 'Palace of the Nation entrance lantern glass');
     }
+
+    // Keystones crown the BELvue piano nobile windows.
+    for (let i = 0; i < 5; i++) {
+      const wx = 168 - 13 + i * 6.5;
+      box(g, 0.45, 0.6, 0.3, wx, 17.6, 22.15, materials.warmStone, 'BELvue window keystone');
+    }
   });
     addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');
