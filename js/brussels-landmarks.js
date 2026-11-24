@@ -4374,6 +4374,13 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       }
     }
     bossMesh.count = bossIdx; bossMesh.name = 'BELvue ground floor bossage'; g.add(bossMesh);
+
+    // Both wings of the Palace of the Nation carry rows of tall facade windows.
+    for (const side of [-1, 1]) {
+      for (let i = 0; i < 4; i++) {
+        box(g, 2.4, 7, 0.2, side * 70 - 15 + i * 10, 8, 406.9, materials.glass, 'Palace of the Nation wing window');
+      }
+    }
   });
     addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');

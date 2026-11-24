@@ -1195,3 +1195,7 @@ testCase('the BELvue ground floor is bossaged with rusticated blocks', () => {
   assert.match(palace, /'BELvue ground floor bossage'/);
   assert.match(palace, /bossMesh.count = bossIdx/);
 });
+
+testCase('both Palace of the Nation wings carry rows of facade windows', () => {
+  assert.match(palace, /'Palace of the Nation wing window'/);
+});
