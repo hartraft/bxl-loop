@@ -1587,3 +1587,7 @@ testCase('stone sills sit under each Palace of the Nation wing window', () => {
 testCase('bronze threshold plates span each central French door', () => {
   assert.match(palace, /'French door threshold'/);
 });
+
+testCase('windows pierce the Academy Palace attic storey', () => {
+  assert.match(palace, /'Academy Palace attic window'/);
+});
