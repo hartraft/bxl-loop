@@ -1039,3 +1039,8 @@ testCase('each central ground-floor arch is ringed by an archivolt', () => {
   assert.match(palace, /archivolt of voussoirs/);
   assert.match(palace, /'Central arcade archivolt'/);
 });
+
+testCase('the wing ground-floor arches carry archivolt rings too', () => {
+  assert.match(palace, /same archivolt rings/);
+  assert.match(palace, /'Wing arcade archivolt'/);
+});

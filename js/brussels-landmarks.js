@@ -3595,6 +3595,14 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       const av = mesh(g, new THREE.TorusGeometry(1.9, 0.16, 6, 18, Math.PI), ashlar, cx, 4.4, centralFace + 0.2, 'Central arcade archivolt');
       av.rotation.x = 0;
     }
+
+    // The wing ground-floor arches carry the same archivolt rings as the central corps.
+    for (const x of wingXs) {
+      for (let i = 0; i < 9; i++) {
+        const bx = x - 22 + i * 5.5;
+        mesh(g, new THREE.TorusGeometry(1.35, 0.14, 6, 16, Math.PI), ashlar, bx, 4.0, facadeZ + 0.2, 'Wing arcade archivolt');
+      }
+    }
   });
   addLandmark('palaceSurroundings', (g) => {
     // Real-world sources: en/fr Wikipedia (Royal Palace of Brussels, Brussels Park, Place des Palais,
