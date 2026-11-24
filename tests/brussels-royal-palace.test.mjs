@@ -2201,3 +2201,7 @@ testCase('cap slabs finish the central balcony corbels', () => {
 testCase('a kerb borders the front edge of the peristyle floor', () => {
   assert.match(palace, /'Peristyle floor border kerb'/);
 });
+
+testCase('a mid post stiffens each perron side rail', () => {
+  assert.match(palace, /'Perron rail mid post'/);
+});
