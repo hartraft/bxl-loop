@@ -276,6 +276,21 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     shutters.count = index * 2;
     shutters.name = name + ' window shutters';
     root.add(shutters);
+    // Gilded hinge straps fasten each folded-back shutter to the window frame.
+    const hinges = new THREE.InstancedMesh(new THREE.BoxGeometry(0.06, 0.3, 0.1), materials.gold, bays * floors);
+    let hg = 0;
+    for (let floor = 1; floor <= floors; floor++) {
+      const wy = 4.4 + (floor - 1) * ((height - 6.6) / Math.max(1, floors - 1));
+      for (let bay = 0; bay < bays; bay++) {
+        const wx = (bay - (bays - 1) / 2) * (width - 2.8) / Math.max(1, bays - 1);
+        dummy.position.set(wx - 0.62, wy + 0.3, 0.12);
+        dummy.updateMatrix();
+        hinges.setMatrixAt(hg++, dummy.matrix);
+      }
+    }
+    hinges.count = hg;
+    hinges.name = name + ' shutter hinge straps';
+    root.add(hinges);
     windows.name = name + ' windows';
     frames.name = name + ' gilded window surrounds';
     mullionV.name = mullionH.name = name + ' window stone cross-mullions';
@@ -351,6 +366,19 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     const fanlight = cylinder(root, 0.4, 0.4, 0.08, 0, 3.02, 0.44, materials.gold, 16);
     fanlight.name = name + ' door fanlight';
     fanlight.rotation.x = Math.PI / 2;
+    // Gilded fanlight ray spokes radiating over the door leaf, as on the real fanlights.
+    const fanRays = new THREE.InstancedMesh(new THREE.BoxGeometry(0.04, 0.34, 0.04), materials.gold, 5);
+    for (let i = 0; i < 5; i++) {
+      const a = Math.PI * (0.15 + 0.7 * (i / 4));
+      arcDummy.position.set(Math.cos(a) * 0.36, 3.02 + Math.sin(a) * 0.36, 0.46);
+      arcDummy.rotation.z = a - Math.PI / 2;
+      arcDummy.updateMatrix();
+      fanRays.setMatrixAt(i, arcDummy.matrix);
+      arcDummy.rotation.z = 0;
+    }
+    fanRays.count = 5;
+    fanRays.name = name + ' door fanlight rays';
+    root.add(fanRays);
     // Rebuild-date cartouche beside the door — the real houses carry "Anno 1697" etc. after the
     // 1695 bombardment — and a small pediment crowns the doorway.
     box(root, 0.8, 0.3, 0.1, width / 2 - 1.3, 3.9, 0.34, materials.dark, name + ' rebuild date cartouche');
@@ -1065,6 +1093,16 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     wingBalusters.count = wb;
     wingBalusters.name = 'Wing-connecting balcony balusters';
     root.add(wingBalusters);
+    // Historiated corbels carry the wing-connecting balcony along its length.
+    const balconyCorbels = new THREE.InstancedMesh(new THREE.BoxGeometry(0.3, 0.45, 0.5), darkStone, 16);
+    for (let i = 0; i < 16; i++) {
+      wbd.position.set(-width / 2 + 1.5 + i * (width - 3) / 15, 8.25, 0.85);
+      wbd.updateMatrix();
+      balconyCorbels.setMatrixAt(i, wbd.matrix);
+    }
+    balconyCorbels.count = 16;
+    balconyCorbels.name = 'Wing balcony historiated corbels';
+    root.add(balconyCorbels);
     // Small gabled canopy hoods shelter the statues standing above the arcade arch heads.
     const canopyShape = new THREE.Shape();
     canopyShape.moveTo(-0.45, 0); canopyShape.lineTo(0, 0.4); canopyShape.lineTo(0.45, 0); canopyShape.closePath();
@@ -1457,6 +1495,18 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     galleryBalusters.count = 8;
     galleryBalusters.name = 'Tower gallery balustrade panels';
     tower.add(galleryBalusters);
+    // Merlons crown the tower gallery parapet between the balustrade panels.
+    const galleryMerlons = new THREE.InstancedMesh(new THREE.BoxGeometry(0.4, 0.55, 0.24), trim, 8);
+    for (let i = 0; i < 8; i++) {
+      const a = i * Math.PI / 4 + Math.PI / 8;
+      gbd.position.set(Math.cos(a) * 5.7, 58.0, Math.sin(a) * 5.7);
+      gbd.rotation.y = -a;
+      gbd.updateMatrix();
+      galleryMerlons.setMatrixAt(i, gbd.matrix);
+    }
+    galleryMerlons.count = 8;
+    galleryMerlons.name = 'Tower gallery parapet merlons';
+    tower.add(galleryMerlons);
     // Three-tier openwork octagonal lantern: slender piers, pointed arch ribs, parapets.
     cylinder(tower, 4.9, 5.3, 2.0, 0, 59.6, 0, darkStone, 8).name = 'Openwork octagonal lantern base';
     for (let level = 0; level < 3; level++) {
@@ -1660,6 +1710,16 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     khQuoins.name = 'King’s House corner quoins';
     khMods.name = 'King’s House cornice modillions';
     root.add(khQuoins, khMods);
+    // Dentil teeth under the upper cornice of the real Broodhuis.
+    const khDentils = new THREE.InstancedMesh(new THREE.BoxGeometry(0.18, 0.22, 0.2), darkStone, 26);
+    for (let i = 0; i < 26; i++) {
+      khQd.position.set(-width / 2 + 0.6 + i * (width - 1.2) / 25, height - 0.92, 0.28);
+      khQd.updateMatrix();
+      khDentils.setMatrixAt(i, khQd.matrix);
+    }
+    khDentils.count = 26;
+    khDentils.name = 'King’s House upper cornice dentils';
+    root.add(khDentils);
 
     // Ground-floor arcade gallery: recessed arched openings between piers, pointed heads.
     const bays = 9, bayW = width / bays;
@@ -1711,6 +1771,17 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       box(root, 1.5, 4.2, 0.2, x, 10.6, 0.22, glass, 'King’s House first-floor gallery arch');
       box(root, 1.7, 0.24, 0.3, x, 13.1, 0.22, trim, 'First gallery window hood');
     }
+    // Stone sills project under every first-floor gallery window, as on the real Broodhuis.
+    const khSills = new THREE.InstancedMesh(new THREE.BoxGeometry(1.8, 0.18, 0.34), darkStone, bays);
+    const khSd = new THREE.Object3D();
+    for (let i = 0; i < bays; i++) {
+      khSd.position.set(-width / 2 + bayW * (i + 0.5), 8.55, 0.32);
+      khSd.updateMatrix();
+      khSills.setMatrixAt(i, khSd.matrix);
+    }
+    khSills.count = bays;
+    khSills.name = 'King’s House first-gallery window sills';
+    root.add(khSills);
     // Keystones at every gallery arch apex and quatrefoil oculi above the first-floor gallery
     // arches — the neo-Gothic galleries of the real Broodhuis are tracery-dressed.
     const khKeystones = new THREE.InstancedMesh(new THREE.BoxGeometry(0.2, 0.4, 0.34), darkStone, bays * 2);

@@ -777,3 +777,18 @@ test('rounds 125-130: Broodhuis plinth rustication + gable cross, paving repairs
   assert.ok(square.includes('gable shoulder volute scrolls'));
   assert.ok(square.includes('volutes.count = 2'));
 });
+
+test('rounds 131-136: shutter hinge straps, Broodhuis gallery sills, balcony corbels, gallery merlons, Broodhuis dentils, fanlight rays', () => {
+  assert.ok(square.includes('shutter hinge straps'));
+  assert.ok(square.includes('hinges.count = hg'));
+  assert.ok(square.includes('King’s House first-gallery window sills'));
+  assert.ok(square.includes('khSills.count = bays'));
+  assert.ok(square.includes('Wing balcony historiated corbels'));
+  assert.ok(square.includes('balconyCorbels.count = 16'));
+  assert.ok(square.includes('Tower gallery parapet merlons'));
+  assert.ok(square.includes('galleryMerlons.count = 8'));
+  assert.ok(square.includes('King’s House upper cornice dentils'));
+  assert.ok(square.includes('khDentils.count = 26'));
+  assert.ok(square.includes('door fanlight rays'));
+  assert.ok(square.includes('fanRays.count = 5'));
+});
