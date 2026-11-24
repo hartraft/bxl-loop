@@ -1491,3 +1491,7 @@ testCase('a tall window pierces the Royal Stables gatehouse above the gate', () 
   assert.match(palace, /'Royal Stables gatehouse window'/);
   assert.match(palace, /'Royal Stables gatehouse window lintel'/);
 });
+
+testCase('a stone threshold spans the gilded garden gate', () => {
+  assert.match(palace, /'Garden gate threshold'/);
+});

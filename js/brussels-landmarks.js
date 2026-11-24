@@ -3840,6 +3840,9 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
 
     // The central balcony rail sits on a stone slab projecting from the facade.
     box(g, 3.2, 0.12, 1.0, 0, 11.38, centralFace + 0.72, ashlar, 'Central balcony slab');
+
+    // A stone threshold spans the gilded garden gate.
+    box(g, 8.4, 0.18, 0.6, 0, 0.09, 14, stone, 'Garden gate threshold');
   });
   addLandmark('palaceSurroundings', (g) => {
     // Real-world sources: en/fr Wikipedia (Royal Palace of Brussels, Brussels Park, Place des Palais,
