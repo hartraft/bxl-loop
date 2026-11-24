@@ -1702,12 +1702,13 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
         box(g, 2.1, 8, 0.35, x + bay * 7, 18, z + (z > 0 ? 13.7 : -13.7), recess, 'Corner pavilion tall window');
       }
     }
-    // North principal façade: broad stair, double Doric peristyle and projecting portico.
-    box(g, 58, 1.2, 18, 0, 4.1, 91, weathered, 'Place Poelaert forecourt landing');
-    for (let step = 0; step < 9; step++) {
-      box(g, 62 + step * 1.8, 0.55, 2.2, 0, 4.3 + step * 0.42, 82 - step * 2.15, light, 'Monumental entrance stair');
+    // North principal façade: the peristyle is preceded by an emmarchement across its
+    // full width, rising from the Place Poelaert esplanade up to the entrance terrace.
+    box(g, 60, 1.2, 16, 0, 0.9, 96, weathered, 'Place Poelaert forecourt landing');
+    for (let step = 0; step < 14; step++) {
+      box(g, 56 + step * 0.7, 0.46, 1.45, 0, 0.55 + step * 0.44, 95 - step * 1.35, light, 'Monumental entrance stair (full-width emmarchement)');
     }
-    box(g, 52, 3.0, 18, 0, 5.0, 80, stone, 'Main entrance terrace');
+    box(g, 58, 3.0, 20, 0, 5.0, 78, stone, 'Main entrance terrace');
     box(g, 48, 2.0, 14, 0, 22.0, 76, light, 'Principal portico entablature');
     for (const z of [70, 78]) {
       for (let i = 0; i < 12; i++) {
@@ -1785,8 +1786,8 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       for (let i = 0; i < 7; i++) box(g, 22, 0.45, 1.8, x * (78 - i * 1.3), 5 + i * 0.45, -1, light, 'Side monumental stair');
     }
     // Terrace balustrade and retaining edge, kept distinct from the surrounding streets.
-    for (let x = -82; x <= 82; x += 4) {
-      box(g, 0.5, 1.2, 0.5, x, 5.1, 91, weathered, 'Forecourt terrace baluster');
+    for (let x = -88; x <= 88; x += 4) {
+      box(g, 0.5, 1.2, 0.5, x, 3.9, 88.5, weathered, 'Forecourt terrace baluster');
     }
     box(g, 178, 1.8, 3, 0, 1.6, 90, weathered, 'Place Poelaert retaining wall');
     // The real terrace rests on a massive retaining massif, plainly visible from
