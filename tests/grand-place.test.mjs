@@ -1281,3 +1281,23 @@ test('rounds 373-382: string-course medallions, wing eave gutters, Broodhuis rid
   assert.ok(square.includes('ruts.count = 4'));
   assert.ok(source.includes('Manneken Pis railing post base plate'));
 });
+
+test('rounds 383-392: lantern cross, Broodhuis soffits, pilaster gold strips, paving chips, terrace rope barriers, wing cornice trim, facade stars, edge cap stones, gallery label stops, pinnacle base balls', () => {
+  assert.ok(square.includes('Lantern crown cross vertical'));
+  assert.ok(square.includes('King’s House arcade soffit panels'));
+  assert.ok(square.includes('khSoffits.count = bays'));
+  assert.ok(square.includes('pilaster gold dress strips'));
+  assert.ok(square.includes('goldStrips.count = pilasterStripCount'));
+  assert.ok(square.includes('Grand-Place paving chips and spalls'));
+  assert.ok(square.includes('chips.count = 30'));
+  assert.ok(square.includes('terrace rope barrier'));
+  assert.ok(square.includes('ropePosts.count = bays + 1'));
+  assert.ok(square.includes('Wing cornice gold trim'));
+  assert.ok(square.includes('Upper-storey gilded stars'));
+  assert.ok(square.includes('facadeStars.count = fs'));
+  assert.ok(square.includes('Grand-Place outer edge cap stones'));
+  assert.ok(square.includes('edgeCaps.count = ec'));
+  assert.ok(square.includes('King’s House first-gallery arch label stops'));
+  assert.ok(square.includes('khGalLabelStops.count = kls'));
+  assert.ok(square.includes('Gallery pinnacle base ball'));
+});
