@@ -5203,6 +5203,10 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     }
     bvAb.count = bvAi; bvAb.name = 'BELvue attic baluster'; g.add(bvAb);
     box(g, 38, 0.1, 0.35, 168, 23.1, 36, materials.warmStone, 'BELvue attic balustrade rail');
+
+    // A door pierces the west wing facade of the Palace of the Nation.
+    box(g, 3.0, 6.0, 0.3, -70, 3.0, 406.85, materials.dark, 'Palace of the Nation wing door');
+    box(g, 3.4, 0.22, 0.4, -70, 6.2, 406.8, materials.warmStone, 'Palace of the Nation wing door lintel');
   });
     addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');

@@ -1808,3 +1808,8 @@ testCase('a balustrade crowns the BELvue attic storey', () => {
 testCase('flower bands border the central garden walk', () => {
   assert.match(palace, /'Garden walk flower band'/);
 });
+
+testCase('a door with lintel pierces the west wing of the Palace of the Nation', () => {
+  assert.match(palace, /'Palace of the Nation wing door'/);
+  assert.match(palace, /'Palace of the Nation wing door lintel'/);
+});
