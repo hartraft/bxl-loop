@@ -812,3 +812,8 @@ testCase('the main pediment is crowned with corner and apex acroteria', () => {
   assert.match(palace, /'Pediment acroterion figure'/);
   assert.match(palace, /'Pediment acroterion head'/);
 });
+
+testCase('the Rue Royale extends south from the park toward the Place Royale', () => {
+  assert.match(palace, /Rue Royale runs south from the park/);
+  assert.match(palace, /'Rue Royale south extension to Place Royale'/);
+});
