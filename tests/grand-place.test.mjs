@@ -1262,3 +1262,22 @@ test('rounds 363-372: wing-end pilasters, tower side dripstones, Broodhuis corni
   assert.ok(square.includes('innerRing.count = ir'));
   assert.ok(source.includes('Manneken Pis railing mid hoop'));
 });
+
+test('rounds 373-382: string-course medallions, wing eave gutters, Broodhuis ridge balls, valance scallop balls, sign board bolts, bell rope, pavilion quoin caps, house eave gutters, wheel-rut grooves, railing base plates', () => {
+  assert.ok(square.includes('string course center medallions'));
+  assert.ok(square.includes('scMedallions.count = sc'));
+  assert.ok(square.includes('Wing front eave gutter'));
+  assert.ok(square.includes('King’s House ridge crest balls'));
+  assert.ok(square.includes('khRidgeBalls.count = 5'));
+  assert.ok(square.includes('awning valance scallop balls'));
+  assert.ok(square.includes('valanceBalls.count = bays * 3'));
+  assert.ok(square.includes('Street sign board bolts'));
+  assert.ok(square.includes('signBolts.count = sb2'));
+  assert.ok(square.includes('Bell rope'));
+  assert.ok(square.includes('King’s House pavilion quoin gold caps'));
+  assert.ok(square.includes('pvCaps.count = 2'));
+  assert.ok(square.includes('front eave gutter'));
+  assert.ok(square.includes('Grand-Place wheel-rut wear grooves'));
+  assert.ok(square.includes('ruts.count = 4'));
+  assert.ok(source.includes('Manneken Pis railing post base plate'));
+});

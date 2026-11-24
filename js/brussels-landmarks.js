@@ -261,6 +261,8 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     eggDart.count = modillionCount;
     eggDart.name = name + ' cornice gilded egg-and-dart row';
     root.add(eggDart);
+    // A lead gutter runs along the front eave under each house cornice, as on the real roofs.
+    box(root, width + 0.9, 0.1, 0.16, 0, height - 0.05, 0.42, materials.dark, name + ' front eave gutter');
     const rustication = new THREE.InstancedMesh(new THREE.BoxGeometry(width + 0.3, 0.05, 0.06), materials.dark, 2);
     for (let i = 0; i < 2; i++) {
       modDummy.position.set(0, 0.8 + i * 0.55, 0.31);
@@ -308,6 +310,17 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     scTrim.count = sc;
     scTrim.name = name + ' string course gilded trim';
     root.add(scTrim);
+    // A gilded medallion centres each string course, as on the real facades.
+    const scMedallions = new THREE.InstancedMesh(new THREE.CylinderGeometry(0.3, 0.3, 0.08, 14).rotateX(Math.PI / 2), materials.gold, floors);
+    for (let floor = 2; floor <= floors; floor++) {
+      const wy = 4.4 + (floor - 1) * ((height - 6.6) / Math.max(1, floors - 1));
+      scd.position.set(0, wy - 1.24, 0.2);
+      scd.updateMatrix();
+      scMedallions.setMatrixAt(floor - 2, scd.matrix);
+    }
+    scMedallions.count = sc;
+    scMedallions.name = name + ' string course center medallions';
+    root.add(scMedallions);
 
     const bays = Math.max(3, Math.round(width / 2.8));
     const windowGeo = new THREE.BoxGeometry(1.05, 1.45, 0.16);
@@ -763,6 +776,19 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       awnArms.name = name + ' awning support arms';
       awnPoles.name = name + ' awning front poles';
       root.add(awnArms, awnPoles);
+      // Canvas scallop balls hang along each awning valance edge, as on the real valances.
+      const valanceBalls = new THREE.InstancedMesh(new THREE.SphereGeometry(0.06, 6, 5), materials.canvas, bays * 3);
+      for (let bay = 0; bay < bays; bay++) {
+        const wx = (bay - (bays - 1) / 2) * (width - 2.8) / Math.max(1, bays - 1);
+        for (let s3 = 0; s3 < 3; s3++) {
+          arcDummy.position.set(wx - ((width - 2.8) / bays) / 2 + 0.25 + s3 * (((width - 2.8) / bays) - 0.5) / 2, 3.58, 1.62);
+          arcDummy.updateMatrix();
+          valanceBalls.setMatrixAt(bay * 3 + s3, arcDummy.matrix);
+        }
+      }
+      valanceBalls.count = bays * 3;
+      valanceBalls.name = name + ' awning valance scallop balls';
+      root.add(valanceBalls);
       // Terrace furniture set out on the square in front of the awnings — the real brasseries
       // (Le Roy d'Espagne's parasols in the house colours, etc.) line the plaza with tables,
       // chairs and parasols. All instanced per house.
@@ -2277,6 +2303,10 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     roofGargoyles.count = 4;
     roofGargoyles.name = 'Wing roof corner gargoyles';
     root.add(roofGargoyles);
+    // Lead gutters run along both wing front eaves, as on the real roofs.
+    for (const wx of [eastWingX, westWingX]) {
+      box(root, (wx === eastWingX ? 15 : 32) + 1, 0.12, 0.2, wx, eaveY + 0.05, 0.6, materials.dark, 'Wing front eave gutter');
+    }
 
     // Dormers and small roof turrets make the skyline read as a Gothic civic palace.
     for (let i = 0; i < 11; i++) {
@@ -2826,6 +2856,8 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     box(tower, 1.4, 0.14, 1.4, 0, 69.2, 0, materials.dark, 'Belfry bell-frame beam');
     box(tower, 0.08, 0.5, 0.08, 0, 66.9, 0, materials.dark, 'Bell clapper');
     tower.add(bellFrame);
+    // The bell rope drops from the great bell down the belfry, as on the real tower.
+    box(tower, 0.05, 8, 0.05, 0, 62.5, 0, materials.dark, 'Bell rope');
     // Four buttressed octagonal corner turrets and four slender side pinnacles, tied to
     // the shaft by flying buttresses.
     const up = new THREE.Vector3(0, 1, 0);
@@ -3602,6 +3634,16 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     pvQuoins.count = pvq;
     pvQuoins.name = 'King’s House pavilion corner quoins';
     root.add(pvQuoins);
+    // Gilded balls cap the top quoins of the Broodhuis central pavilion.
+    const pvCaps = new THREE.InstancedMesh(new THREE.SphereGeometry(0.22, 8, 6), materials.gold, 2);
+    for (let i = 0; i < 2; i++) {
+      khQd.position.set((i === 0 ? -1 : 1) * 5.3, height + 2.5 - 0.4, 0.2);
+      khQd.updateMatrix();
+      pvCaps.setMatrixAt(i, khQd.matrix);
+    }
+    pvCaps.count = 2;
+    pvCaps.name = 'King’s House pavilion quoin gold caps';
+    root.add(pvCaps);
     const gw = 11, gh = 4.5;
     const gable = new THREE.Shape();
     gable.moveTo(-gw / 2, 0); gable.lineTo(-gw / 2, 1.1); gable.lineTo(-gw / 2 + 1.2, 1.1);
@@ -3874,6 +3916,16 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     khRidge.count = 11;
     khRidge.name = 'King’s House roof ridge cresting';
     root.add(khRidge);
+    // Gilded balls crown the Broodhuis ridge cresting at intervals, as on the real roof.
+    const khRidgeBalls = new THREE.InstancedMesh(new THREE.SphereGeometry(0.1, 8, 6), materials.gold, 5);
+    for (let i = 0; i < 5; i++) {
+      khRd.position.set(-width / 2 + 3 + i * 6.2, ridgeY + 0.65, -depth / 2);
+      khRd.updateMatrix();
+      khRidgeBalls.setMatrixAt(i, khRd.matrix);
+    }
+    khRidgeBalls.count = 5;
+    khRidgeBalls.name = 'King’s House ridge crest balls';
+    root.add(khRidgeBalls);
   }
 
   function grandPlace(g) {
@@ -4052,6 +4104,18 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     khForecourt.count = 10;
     khForecourt.name = 'Grand-Place Broodhuis forecourt setts';
     plaza.add(khForecourt);
+    // Wheel-rut wear grooves score the main east-west desire line across the square, as on
+    // the real worn paving.
+    const ruts = new THREE.InstancedMesh(new THREE.BoxGeometry(108, 0.02, 0.16), materials.pavingEdge, 4);
+    for (let i = 0; i < 4; i++) {
+      dummy.position.set(0, 0.014, -0.7 + i * 0.45);
+      dummy.rotation.y = 0;
+      dummy.updateMatrix();
+      ruts.setMatrixAt(i, dummy.matrix);
+    }
+    ruts.count = 4;
+    ruts.name = 'Grand-Place wheel-rut wear grooves';
+    plaza.add(ruts);
     // Two bollards flank the Town Hall portal steps on the square, as at the real entrance.
     for (const side of [-1, 1]) {
       const pb = box(plaza, 0.28, 0.9, 0.28, 8.5 + side * 4.4, 0.45, 27.6, materials.dark, 'Town Hall portal bollard');
@@ -4622,6 +4686,22 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     signFinials.name = 'Street sign post finial balls';
     signRings.name = 'Street sign sett rings';
     plaza.add(signCollars, signFinials, signRings);
+    // Four dark bolts fix each enamel sign board to its white rim, as on the real signs.
+    const signBolts = new THREE.InstancedMesh(new THREE.BoxGeometry(0.06, 0.06, 0.1), materials.dark, plaques.length * 4);
+    let sb2 = 0;
+    for (let i = 0; i < plaques.length; i++) {
+      const [front, x] = plaques[i];
+      front.updateWorldMatrix(true, false);
+      for (const [bx, by] of [[-0.68, 0.16], [0.68, 0.16], [-0.68, -0.16], [0.68, -0.16]]) {
+        sv.set(x + bx, 2.52 + by, 1.72).applyMatrix4(front.matrixWorld);
+        sgd.position.copy(sv);
+        sgd.updateMatrix();
+        signBolts.setMatrixAt(sb2++, sgd.matrix);
+      }
+    }
+    signBolts.count = sb2;
+    signBolts.name = 'Street sign board bolts';
+    plaza.add(signBolts);
   }
 
   addLandmark('grandPlace', grandPlace);
@@ -4677,6 +4757,11 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     // A mid-height hoop ties the railing posts together, as on the real 1851 railings.
     const hoop2 = mesh(g, new THREE.TorusGeometry(1.55, 0.03, 6, 20), materials.dark, 0, 0.45, 0, 'Manneken Pis railing mid hoop');
     hoop2.rotation.x = Math.PI / 2;
+    // Base plates anchor each railing post, as on the real railings.
+    for (let i = 0; i < 4; i++) {
+      const a = i * Math.PI / 2 + Math.PI / 4;
+      box(g, 0.14, 0.05, 0.14, Math.cos(a) * 1.55, 0.03, Math.sin(a) * 1.55, materials.dark, 'Manneken Pis railing post base plate');
+    }
     box(g, 0.5, 0.3, 0.05, 0, 1.6, -0.62, materials.bronze, 'Manneken Pis commemorative plaque');
     // A bronze border frames the commemorative plaque.
     box(g, 0.58, 0.06, 0.03, 0, 1.77, -0.645, materials.bronze, 'Manneken Pis plaque frame');
