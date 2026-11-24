@@ -4061,6 +4061,14 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
         box(g, 0.14, 0.1, 0.14, side * 8.4, 0.05, centralFace + pz, bronze, 'Perron rail post shoe');
       }
     }
+
+    // Brackets carry the wing balcony flower boxes.
+    for (const side of wingXs) {
+      for (let k = 0; k < 5; k++) {
+        const bx = side - 16 + k * 8;
+        box(g, 0.15, 0.2, 0.4, bx, 7.35, facadeZ + 0.85, bronze, 'Wing flower box bracket');
+      }
+    }
   });
   addLandmark('palaceSurroundings', (g) => {
     // Real-world sources: en/fr Wikipedia (Royal Palace of Brussels, Brussels Park, Place des Palais,

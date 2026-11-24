@@ -1936,3 +1936,7 @@ testCase('shoes anchor the perron side rail posts', () => {
 testCase('jambs frame the Palace of the Nation east wing door', () => {
   assert.match(palace, /'Palace of the Nation east wing door jamb'/);
 });
+
+testCase('brackets carry the wing balcony flower boxes', () => {
+  assert.match(palace, /'Wing flower box bracket'/);
+});
