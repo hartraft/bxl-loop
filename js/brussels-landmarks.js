@@ -1722,8 +1722,10 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     // North principal façade: the peristyle is preceded by an emmarchement across its
     // full width, rising from the Place Poelaert esplanade up to the entrance terrace.
     box(g, 60, 1.2, 16, 0, 0.9, 96, weathered, 'Place Poelaert forecourt landing');
-    for (let step = 0; step < 14; step++) {
-      box(g, 56 + step * 0.7, 0.46, 1.45, 0, 0.55 + step * 0.44, 95 - step * 1.35, light, 'Monumental entrance stair (full-width emmarchement)');
+    // The flight stops at the terrace's north edge (z=88): the top tread meets the terrace
+    // face instead of disappearing inside the opaque terrace volume.
+    for (let step = 0; step < 12; step++) {
+      box(g, 56 + step * 0.7, 0.46, 0.7, 0, 0.5 + step * 0.5, 95 - step * 0.6, light, 'Monumental entrance stair (full-width emmarchement)');
     }
     box(g, 58, 3.0, 20, 0, 5.0, 78, stone, 'Main entrance terrace');
     // Four monumental marble statues of the great orators and legislators of Antiquity stand

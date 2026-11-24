@@ -231,7 +231,8 @@ test('the monumental dome stack exists: square drum, circular drum, copper dome,
 
 test('the Place Poelaert front carries the monumental stair and the double-colonnade peristyle', () => {
   assert.ok(palace.includes("'Monumental entrance stair (full-width emmarchement)'"));
-  assert.ok(palace.includes('for (let step = 0; step < 14; step++)'), 'the emmarchement runs the full width of the portico');
+  assert.ok(palace.includes('for (let step = 0; step < 12; step++)'), 'the emmarchement runs the full width of the portico');
+  assert.ok(palace.includes('95 - step * 0.6'), 'the flight stops at the terrace north edge (z=88), not inside it');
   assert.ok(palace.includes("'Principal portico entablature'"));
   assert.ok(palace.includes("'Portico architrave'"));
   assert.ok(palace.includes("'Doric abacus'"), 'Doric order: echinus + square abacus');
