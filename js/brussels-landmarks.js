@@ -2450,6 +2450,9 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     }
   });
   addLandmark('palaceSurroundings', (g) => {
+    // Real-world sources: en/fr Wikipedia (Royal Palace of Brussels, Brussels Park, Place des Palais,
+    // Academy Palace, BELvue, Palace of the Nation, Royal Park Theatre, equestrian statue of Leopold II,
+    // Parc metro, Rue de la Loi) and monument.heritage.brussels inventories 30402 / 30098 / 10001113 / 10001073.
     // Brussels Park (Parc de Bruxelles): the rectangular 13.1 ha neoclassical park north of the
     // Place des Palais, laid out 1776-83 by Guimard and Zinner around the palace-parliament axis.
     box(g, 344, 0.24, 340, 0, 0.0, 232, materials.green, 'Brussels Park lawn');

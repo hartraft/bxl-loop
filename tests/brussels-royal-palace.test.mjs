@@ -971,3 +971,42 @@ testCase('the lateral garden gates carry pediments and gilded urns like the cent
   assert.match(palace, /'Garden lateral gate gilded urn'/);
   assert.match(palace, /for \(const gx of \[-38, 38\]\)/);
 });
+
+testCase('final lock: palace and surroundings both fully present in the landmarks source', () => {
+  const palaceMarkers = [
+    /'Portico column fluting'/,
+    /'Piano nobile window pediment'/,
+    /'Pavilion dormer pavilion roof'/,
+    /'Central attic oculus'/,
+    /'Central corps roof terrasson'/,
+    /'Wing end pilaster'/,
+    /'Curved gallery column'/,
+    /'Portico soffit coffers'/,
+    /'Central corps side window \(piano nobile\)'/,
+    /'Dome lantern gilded finial'/,
+    /'Garden central walk'/,
+    /'Facade floodlight fixture'/,
+    /'Cour d’honneur south carriage gate'/,
+    /'Portico stylobate floor'/,
+    /'Pediment acroterion figure'/,
+    /'Central bronze entrance door'/,
+    /'Wing mansard base cornice'/,
+    /'Terminal pavilion modillion'/,
+    /'Rear wing slate roof'/,
+    /'Wing mansard ridge finial'/,
+    /'Pavilion chimney cap'/,
+    /'Central attic base course'/,
+    /'Garden lateral gate pediment'/,
+  ];
+  const surroundingsMarkers = [
+    /addLandmark\('palaceSurroundings'/,
+    /'Brussels Park lawn'/,
+    /'Palace of the Nation central block'/,
+    /'Academy Palace main block'/,
+    /'BELvue Hôtel Belle-Vue block'/,
+    /'Place des Palais full-width sett paving'/,
+    /'Leopold II equestrian horse'/,
+  ];
+  for (const marker of [...palaceMarkers, ...surroundingsMarkers]) assert.match(palace, marker);
+  assert.match(palace, /monument\.heritage\.brussels inventories 30402/);
+});
