@@ -4496,6 +4496,12 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       box(g, 0.5, 0.7, 0.5, gx, 3.75, 402, materials.bronze, 'Park north gate lantern');
       mesh(g, new THREE.SphereGeometry(0.22, 10, 8), materials.glass, gx, 3.75, 402, 'Park north gate lantern glass');
     }
+
+    // A top rail closes the BELvue roof terrace balustrade ring.
+    box(g, 0.3, 0.12, 9.4, 168 - 4.5, 30.05, 36, materials.warmStone, 'BELvue roof terrace rail');
+    box(g, 0.3, 0.12, 9.4, 168 + 4.5, 30.05, 36, materials.warmStone, 'BELvue roof terrace rail');
+    box(g, 9.4, 0.12, 0.3, 168, 30.05, 36 - 4.5, materials.warmStone, 'BELvue roof terrace rail');
+    box(g, 9.4, 0.12, 0.3, 168, 30.05, 36 + 4.5, materials.warmStone, 'BELvue roof terrace rail');
   });
     addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');

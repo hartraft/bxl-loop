@@ -1286,3 +1286,7 @@ testCase('lanterns crown the piers of the park north gate', () => {
   assert.match(palace, /'Park north gate lantern'/);
   assert.match(palace, /'Park north gate lantern glass'/);
 });
+
+testCase('a top rail closes the BELvue roof terrace balustrade', () => {
+  assert.match(palace, /'BELvue roof terrace rail'/);
+});
