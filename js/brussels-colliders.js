@@ -106,7 +106,10 @@ const bourseSurroundings = [
   // Round 220: the three Bourse/Beurs premetro surface accesses (6, 7, 8).
   { name: 'premetro access 7 kiosk', x: -52, z: 103, hx: 2.0, hz: 2.0, maxY: 3.2 },
   { name: 'premetro access 8 kiosk', x: -40, z: 103, hx: 2.0, hz: 2.0, maxY: 3.2 },
-  { name: 'premetro access 6 kiosk', x: 18, z: 100, hx: 2.0, hz: 2.0, maxY: 3.2 }
+  { name: 'premetro access 6 kiosk', x: 18, z: 100, hx: 2.0, hz: 2.0, maxY: 3.2 },
+  // Round 260: the Ancienne Belgique concert hall and the Cafe de la Bourse blocks.
+  { name: 'Ancienne Belgique block', x: -34, z: 142, hx: 13, hz: 8, maxY: 27 },
+  { name: 'Cafe de la Bourse no. 78', x: 34, z: 130, hx: 15, hz: 8, maxY: 25 }
 ];
 
 export const BRUSSELS_LANDMARK_COLLIDER_LAYOUT = Object.freeze({

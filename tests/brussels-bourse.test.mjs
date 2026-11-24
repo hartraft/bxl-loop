@@ -794,4 +794,26 @@ testCase('rounds 246-250: extra dome glazing bars, lantern panes, terrace bulkhe
   assert.match(bourse, /poles\.count = 4/);
 });
 
+testCase('rounds 251-256: junction chamfers, boulevard north + south continuations, Paul Devaux + Van Praet rows, AB side elevation', () => {
+  assert.match(surroundings, /'Square-boulevard junction chamfer stones \(pierres biaises\)'/);
+  assert.match(surroundings, /chamfers\.count = 4/);
+  assert.match(surroundings, /'Boulevard Anspach north continuation \(vers De Brouckere\)'/);
+  assert.match(surroundings, /'Boulevard Anspach south continuation \(vers Fontainas \/ Lemonnier\)'/);
+  assert.match(surroundings, /'Rue Paul Devaux facade row \(north side\)'/);
+  assert.match(surroundings, /'Rue Jules Van Praet facade row'/);
+  assert.match(surroundings, /'Ancienne Belgique side elevation \(pignon lateral\)'/);
+  assert.match(surroundings, /'Ancienne Belgique side windows'/);
+});
+
+testCase('rounds 257-260: 1949 rear windows, Cafe terrace paving, spine drainage channel, AB + Cafe colliders', () => {
+  assert.match(surroundings, /'1949 building rear windows \(face nord\)'/);
+  assert.match(surroundings, /'Cafe de la Bourse terrace paving \(terrasse\)'/);
+  assert.match(surroundings, /'Boulevard spine drainage channel \(caniveau central\)'/);
+  const layout = readFileSync(new URL('../js/brussels-colliders.js', import.meta.url), 'utf8');
+  assert.match(layout, /Ancienne Belgique block/);
+  assert.match(layout, /Cafe de la Bourse no\. 78/);
+  const sur2 = createBrusselsLandmarkColliders('bourseSurroundings', brusselsToWorld(BRUSSELS_LANDMARK_ANCHORS.bourseSurroundings.lat, BRUSSELS_LANDMARK_ANCHORS.bourseSurroundings.lon), BOURSE_ROTATION, 0);
+  assert.ok(sur2.length >= 9, 'AB + Cafe + kiosks + buildings registered');
+});
+
 // __MORE_BOURSE_TESTS__

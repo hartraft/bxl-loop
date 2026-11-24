@@ -7806,6 +7806,88 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
         box(stop, 1.0, 1.4, 0.08, 2.2, 1.4, -0.8, materials.glass, 'timetable case (fiche horaire)');
       }
     }
+    // Round 251: chamfer corner stones where the square meets the boulevard's north edge.
+    {
+      const chamfers = new THREE.InstancedMesh(new THREE.BoxGeometry(1.6, 0.3, 1.6), materials.pavingEdge, 4);
+      const dummy = new THREE.Object3D();
+      for (let i = 0; i < 4; i++) {
+        dummy.position.set([-62, -52, 52, 62][i], 0.1, 113.5);
+        dummy.updateMatrix();
+        chamfers.setMatrixAt(i, dummy.matrix);
+      }
+      chamfers.count = 4;
+      chamfers.name = 'Square-boulevard junction chamfer stones (pierres biaises)';
+      chamfers.castShadow = true;
+      g.add(chamfers);
+    }
+    // Round 252: the boulevard continues north from the square toward De Brouckere.
+    box(g, 36, 0.28, 30, 0, -0.14, 100, materials.pavingB, 'Boulevard Anspach north continuation (vers De Brouckere)');
+    // Round 253: the boulevard continues south from the square toward Place Fontainas /
+    // Boulevard Maurice Lemonnier.
+    box(g, 36, 0.28, 26, 0, -0.14, 147, materials.pavingB, 'Boulevard Anspach south continuation (vers Fontainas / Lemonnier)');
+    // Round 254: facade row on the north side of the rue Paul Devaux.
+    {
+      const rows = new THREE.InstancedMesh(new THREE.BoxGeometry(12, 16, 0.8), materials.plaster, 3);
+      const dummy = new THREE.Object3D();
+      for (let i = 0; i < 3; i++) {
+        dummy.position.set(-70 + i * 14, 8, 112);
+        dummy.updateMatrix();
+        rows.setMatrixAt(i, dummy.matrix);
+      }
+      rows.count = 3;
+      rows.name = 'Rue Paul Devaux facade row (north side)';
+      rows.castShadow = true;
+      g.add(rows);
+    }
+    // Round 255: facade row on the rue Jules Van Praet.
+    {
+      const rows = new THREE.InstancedMesh(new THREE.BoxGeometry(12, 15, 0.8), materials.ochre, 3);
+      const dummy = new THREE.Object3D();
+      for (let i = 0; i < 3; i++) {
+        dummy.position.set(-38 + i * 13, 7.5, 112);
+        dummy.updateMatrix();
+        rows.setMatrixAt(i, dummy.matrix);
+      }
+      rows.count = 3;
+      rows.name = 'Rue Jules Van Praet facade row';
+      rows.castShadow = true;
+      g.add(rows);
+    }
+    // Round 256: the Ancienne Belgique's side elevation faces the rue des Bogards side.
+    {
+      box(g, 0.8, 24, 18, -43, 12, 142, materials.warmStone, 'Ancienne Belgique side elevation (pignon lateral)');
+      const wins = new THREE.InstancedMesh(new THREE.BoxGeometry(0.3, 4, 2.2), materials.glass, 6);
+      const dummy = new THREE.Object3D();
+      for (let i = 0; i < 6; i++) {
+        dummy.position.set(-43.5, 7 + i * 3.2, 138 + (i % 2) * 8);
+        dummy.updateMatrix();
+        wins.setMatrixAt(i, dummy.matrix);
+      }
+      wins.count = 6;
+      wins.name = 'Ancienne Belgique side windows';
+      g.add(wins);
+    }
+    // Round 257: rear (north) face of the 1949 building with window rows.
+    {
+      const wins = new THREE.InstancedMesh(new THREE.BoxGeometry(1.8, 2.6, 0.3), materials.glass, 15);
+      const dummy = new THREE.Object3D();
+      let n = 0;
+      for (let f = 0; f < 5; f++) for (let i = 0; i < 3; i++) {
+        dummy.position.set(-70 + i * 6, 5 + f * 5, 84.8);
+        dummy.updateMatrix();
+        wins.setMatrixAt(n++, dummy.matrix);
+      }
+      wins.count = n;
+      wins.name = '1949 building rear windows (face nord)';
+      wins.castShadow = true;
+      g.add(wins);
+    }
+    // Round 258: a paved terrace area in front of the Cafe de la Bourse.
+    box(g, 24, 0.24, 8, 34, -0.12, 142, materials.pavingA, 'Cafe de la Bourse terrace paving (terrasse)');
+    // Round 259: a drainage channel (caniveau) along the boulevard spine.
+    box(g, 170, 0.06, 0.5, 0, -0.05, 122, materials.dark, 'Boulevard spine drainage channel (caniveau central)');
+    // Round 260: register colliders for the Ancienne Belgique and the Cafe de la Bourse blocks
+    // (layout entries in js/brussels-colliders.js).
     // __SURROUNDINGS_ROUNDS__
   });
 
