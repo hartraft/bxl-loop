@@ -21,7 +21,7 @@ const palaisDeJustice = [
   { name: 'entrance range east wing', x: 57, z: 66.5, hx: 23, hz: 8.5, maxY: 33 },
   { name: 'west range', x: 71.5, z: 0, hx: 8.5, hz: 58, maxY: 33 },
   { name: 'east range', x: -71.5, z: 0, hx: 8.5, hz: 58, maxY: 33 },
-  { name: 'central hall', x: 0, z: 0, hx: 26, hz: 24, maxY: 48 },
+  { name: 'central hall', x: 0, z: 0, hx: 28, hz: 11, maxY: 48 },
   { name: 'dome drum', x: 0, z: 0, hx: 20, hz: 20, maxY: 122 },
   // The four corner pavilions with their hipped roofs (top ~47.3 m).
   { name: 'corner pavilion', x: -66, z: 64, hx: 14, hz: 15, maxY: 48 },

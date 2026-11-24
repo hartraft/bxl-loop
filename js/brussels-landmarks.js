@@ -1704,9 +1704,14 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     box(g, 160, wingH, wingD, 0, wingY, -66.5, stone, 'South range above Rue de Wynants');
     box(g, wingD, wingH, 116, 71.5, wingY, 0, stone, 'West range Rue des Minimes');
     box(g, wingD, wingH, 116, -71.5, wingY, 0, stone, 'East range Rue aux Laines');
-    for (const z of [-37.5, 0, 37.5]) {
+    for (const z of [-37.5, 37.5]) {
       box(g, 126, 26, 10, 0, 15, z, light, 'Courthouse transverse gallery');
       box(g, 127, 1.0, 10.8, 0, 26.5, z, zinc, 'Transverse gallery zinc roof');
+    }
+    // The z=0 gallery is split around the central hall (x within ±28).
+    for (const side of [-1, 1]) {
+      box(g, 35, 26, 10, side * 45.5, 15, 0, light, 'Courthouse transverse gallery wing');
+      box(g, 36, 1.0, 10.8, side * 45.5, 26.5, 0, zinc, 'Transverse gallery zinc roof');
     }
     // Flat zinc roofs over the four perimeter ranges; the corner pavilions wear slate hips.
     for (const z of [66.5, -66.5]) box(g, 161, 1.2, 17.8, 0, 33.6, z, zinc, 'Range zinc roof');
@@ -1835,7 +1840,7 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     // Eight courts: low paved floors and arcaded inner galleries make the plan readable from above.
     for (let row = 0; row < 2; row++) for (let col = 0; col < 4; col++) {
       const x = -45 + col * 30;
-      const z = -19 + row * 38;
+      const z = -24 + row * 48;
       box(g, 24, 0.28, 22, x, 3.45, z, materials.pavingB, 'Interior courthouse court paving');
       // Arcaded galleries on all four sides of every court, as in the real plan.
       for (const edge of [-1, 1]) {
@@ -1849,7 +1854,7 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     }
     // Central hall and the monumental dome's stepped stylobate. The Salle des Pas Perdus is a
     // 48 x 22 m hall running east-west directly under the dome.
-    box(g, 56, 42, 30, 0, 27, 0, light, 'Salle des Pas Perdus central mass (48 x 22 m hall)');
+    box(g, 56, 42, 22, 0, 27, 0, light, 'Salle des Pas Perdus central mass (48 x 22 m hall)');
     box(g, 58, 3.0, 54, 0, 48, 0, weathered, 'Dome stylobate lower step');
     box(g, 50, 3.0, 48, 0, 51, 0, light, 'Dome stylobate upper step');
     // Dome stylobate on a Greek-cross plan, rhythmically pierced by paired pilasters
