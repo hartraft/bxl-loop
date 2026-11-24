@@ -835,3 +835,10 @@ testCase('the Palace of the Nation peristyle has an entablature and portico step
   assert.match(palace, /'Palace of the Nation portico step'/);
   assert.match(palace, /for \(let s = 0; s < 4; s\+\+\)/);
 });
+
+testCase('the central portico bay has a bronze double door with panels and gilded transom', () => {
+  assert.match(palace, /bronze double entrance door/);
+  assert.match(palace, /'Central bronze entrance door'/);
+  assert.match(palace, /'Central door recessed panel'/);
+  assert.match(palace, /'Central door gilded transom'/);
+});

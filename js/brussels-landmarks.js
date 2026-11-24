@@ -2392,6 +2392,16 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       box(g, 0.5, 0.6, 20.5, side * 70.1, 20.6, -8, moulding, 'Wing end cornice');
       box(g, 0.6, 0.3, 21, side * 70.1, 21.0, -8, ashlar, 'Wing end blocking course');
     }
+
+    // The central portico bay is closed by a bronze double entrance door with recessed
+    // panels, beneath the gilded fanlight.
+    box(g, 4.4, 6.2, 0.18, 0, 3.1, centralFace + 0.24, bronze, 'Central bronze entrance door');
+    for (const dx of [-1.05, 1.05]) {
+      for (const dy of [1.6, 3.6, 5.2]) {
+        box(g, 1.7, 1.3, 0.06, dx, dy, centralFace + 0.3, shadow, 'Central door recessed panel');
+      }
+    }
+    box(g, 4.8, 0.22, 0.3, 0, 6.3, centralFace + 0.26, gilded, 'Central door gilded transom');
   });
   addLandmark('palaceSurroundings', (g) => {
     // Brussels Park (Parc de Bruxelles): the rectangular 13.1 ha neoclassical park north of the
