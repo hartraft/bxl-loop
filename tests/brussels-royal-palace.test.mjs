@@ -2149,3 +2149,7 @@ testCase('a moulded edge finishes the front of the perron top landing', () => {
 testCase('a lintel spans the palace-park gate in the Place du Trone fence', () => {
   assert.match(palace, /'Place du Trone gate lintel'/);
 });
+
+testCase('stone steps lead down to the main pond rim on the north side', () => {
+  assert.match(palace, /'Main pond north access step'/);
+});

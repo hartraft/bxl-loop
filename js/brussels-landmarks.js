@@ -5626,6 +5626,11 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
 
     // A lintel spans the palace-park gate in the Place du Trone fence.
     box(g, 10, 0.4, 0.5, -120, 3.6, -46, materials.dark, 'Place du Trone gate lintel');
+
+    // Stone access steps lead down to the main pond rim on the north side of the axis.
+    for (let s = 0; s < 3; s++) {
+      box(g, 6, 0.25, 0.9, 0, 0.9 - s * 0.25, 134.0 + s * 0.9, materials.paleStone, 'Main pond north access step');
+    }
   });
     addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');
