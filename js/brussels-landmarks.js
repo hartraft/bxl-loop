@@ -5694,6 +5694,9 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
 
     // A sett field paves the north strip of the Place des Palais by the park gate.
     box(g, 300, 0.1, 8, 0, 0.02, 54, materials.pavingA, 'Place des Palais north sett field');
+
+    // A step leads up to the Academy stables great door.
+    box(g, 4.0, 0.25, 1.0, -168, 0.12, 70.9, materials.pavingEdge, 'Academy stables door step');
   });
     addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');

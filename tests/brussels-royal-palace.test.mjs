@@ -2213,3 +2213,7 @@ testCase('cap courses finish the Academy garden side walls', () => {
 testCase('a sett field paves the north strip of the Place des Palais', () => {
   assert.match(palace, /'Place des Palais north sett field'/);
 });
+
+testCase('a step leads up to the Academy stables great door', () => {
+  assert.match(palace, /'Academy stables door step'/);
+});
