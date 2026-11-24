@@ -1344,3 +1344,26 @@ test('rounds 403-412: base-buttress gold caps, Broodhuis pier capital balls, par
   assert.ok(square.includes('King’s House shaft side lancet hood balls'));
   assert.ok(square.includes('shaftSideBalls.count = 4'));
 });
+
+test('rounds 413-422: window reveal/sill gold trim, door fanlight gold ring, arcade pier capital gold trim, wing balcony corbel gold caps, tower shaft-top parapet ring, lantern crown gold ring, belfry tier gold floor rings, Broodhuis gallery keystones/impost/upper-niche gold trim, street-sign wall brackets', () => {
+  assert.ok(square.includes(' window reveal gold trim'));
+  assert.ok(square.includes('revealTrim.count = rt'));
+  assert.ok(square.includes(' window sill gold trim'));
+  assert.ok(square.includes('sillTrim.count = st3'));
+  assert.ok(square.includes(' door fanlight gold ring'));
+  assert.ok(square.includes('Arcade pier capital gold trim'));
+  assert.ok(square.includes('capTrim.count = ct'));
+  assert.ok(square.includes('Wing balcony corbel gold caps'));
+  assert.ok(square.includes('corbelCaps.count = 16'));
+  assert.ok(square.includes('Tower shaft-top parapet ring'));
+  assert.ok(square.includes('Lantern crown gold ring'));
+  assert.ok(square.includes('Belfry tier gold floor ring'));
+  assert.ok(square.includes('King\u2019s House first-gallery arch gold keystones'));
+  assert.ok(square.includes('khGalKeys.count = bays'));
+  assert.ok(square.includes('King\u2019s House impost gold trim'));
+  assert.ok(square.includes('impostTrim.count = it2'));
+  assert.ok(square.includes('King\u2019s House upper niche gold trim'));
+  assert.ok(square.includes('upperNicheTrim.count = unt'));
+  assert.ok(square.includes('Street sign wall brackets'));
+  assert.ok(square.includes('signBrackets.count = plaques.length'));
+});
