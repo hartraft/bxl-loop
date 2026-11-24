@@ -2257,3 +2257,7 @@ testCase('stone steps lead down to the octagonal basin rim on its east side', ()
 testCase('balls finish the ends of the wing balcony rail caps', () => {
   assert.match(palace, /'Wing balcony rail end ball'/);
 });
+
+testCase('stone steps lead down to the octagonal basin rim on its west side', () => {
+  assert.match(palace, /'Octagonal basin west access step'/);
+});

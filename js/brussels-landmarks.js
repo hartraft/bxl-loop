@@ -5741,6 +5741,11 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     for (let s = 0; s < 3; s++) {
       box(g, 0.9, 0.25, 5, 14.0 + s * 0.9, 0.9 - s * 0.25, 262, materials.paleStone, 'Octagonal basin east access step');
     }
+
+    // Stone access steps lead down to the octagonal basin rim on its west side.
+    for (let s = 0; s < 3; s++) {
+      box(g, 0.9, 0.25, 5, -14.0 - s * 0.9, 0.9 - s * 0.25, 262, materials.paleStone, 'Octagonal basin west access step');
+    }
   });
     addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');
