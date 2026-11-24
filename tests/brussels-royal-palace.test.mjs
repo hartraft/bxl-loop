@@ -1371,3 +1371,8 @@ testCase('stone surrounds frame the BELvue piano nobile windows', () => {
 testCase('a glazed fanlight crowns the portico main door', () => {
   assert.match(palace, /'Portico door fanlight'/);
 });
+
+testCase('a dovecote crowns the Royal Stables hipped roof', () => {
+  assert.match(palace, /'Royal Stables dovecote'/);
+  assert.match(palace, /'Royal Stables dovecote roof'/);
+});

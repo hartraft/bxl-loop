@@ -4629,6 +4629,10 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       const wx = 168 - 13 + i * 6.5;
       box(g, 2.4, 4.6, 0.16, wx, 15, 22.05, materials.warmStone, 'BELvue piano nobile surround');
     }
+
+    // A small dovecote crowns the Royal Stables hipped roof.
+    cylinder(g, 1.2, 1.5, 2.5, -70, 20.2, -85, materials.paleStone, 10).name = 'Royal Stables dovecote';
+    mesh(g, new THREE.ConeGeometry(1.6, 1.2, 10), materials.roof, -70, 21.9, -85, 'Royal Stables dovecote roof');
   });
     addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');
