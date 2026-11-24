@@ -5062,6 +5062,11 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       const wx = 168 - 13 + i * 6.5;
       box(g, 0.08, 3.2, 0.06, wx, 7.5, 22.2, materials.warmStone, 'BELvue ground window mullion');
     }
+
+    // Keystones crown the arched windows of the Royal Stables range.
+    for (let i = 0; i < 5; i++) {
+      box(g, 0.45, 0.6, 0.3, -70 - 16 + i * 8, 8.7, -73.0, materials.warmStone, 'Royal Stables window keystone');
+    }
   });
     addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');

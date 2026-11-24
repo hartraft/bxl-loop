@@ -1704,3 +1704,7 @@ testCase('mullions divide the BELvue ground-floor windows', () => {
 testCase('a transom bar crosses each central French door near its head', () => {
   assert.match(palace, /'Central French door transom bar'/);
 });
+
+testCase('keystones crown the Royal Stables arched windows', () => {
+  assert.match(palace, /'Royal Stables window keystone'/);
+});
