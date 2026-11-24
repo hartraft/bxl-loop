@@ -396,3 +396,10 @@ testCase('the main park pond with its 1855 fountain stands at the end of the cen
   assert.match(palace, /'Park main pond water'/);
   assert.match(palace, /'Park main fountain jet'/);
 });
+
+testCase('the octagonal basin (1780) with eight Hermes busts rings the north end of the axis', () => {
+  assert.match(palace, /octagonal basin \(1780\)/);
+  assert.match(palace, /'Park octagonal basin rim'/);
+  assert.match(palace, /'Park Hermes bust'/);
+  assert.match(palace, /for \(let hk = 0; hk < 8; hk\+\+\)/);
+});

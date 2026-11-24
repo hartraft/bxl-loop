@@ -2231,6 +2231,13 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     cylinder(g, 15.4, 15.4, 0.5, 0, 0.55, 150, parkWater, 28).name = 'Park main pond water';
     cylinder(g, 0.22, 0.55, 6.5, 0, 3.4, 150, parkWater, 10).name = 'Park main fountain jet';
     mesh(g, new THREE.ConeGeometry(1.6, 2.2, 10), parkWater, 0, 6.6, 150, 'Park main fountain spray');
+    // The octagonal basin (1780) ringed by eight busts of Hermes stands north of the main pond on the axis.
+    cylinder(g, 13, 13.6, 0.9, 0, 0.45, 262, materials.paleStone, 8).name = 'Park octagonal basin rim';
+    cylinder(g, 12.4, 12.4, 0.4, 0, 0.5, 262, parkWater, 8).name = 'Park octagonal basin water';
+    for (let hk = 0; hk < 8; hk++) {
+      const ha = hk * Math.PI / 4;
+      mesh(g, new THREE.SphereGeometry(0.5, 10, 8), materials.paleStone, Math.cos(ha) * 13.6, 1.5, 262 + Math.sin(ha) * 13.6, 'Park Hermes bust');
+    }
   });
     addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');
