@@ -1606,6 +1606,33 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       }
     }
 
+    // Suys' wrought-iron balcony parapet surrounds the ENTIRE first floor of the real
+    // palace (preserved through Maquet's 1904–09 reconstruction): one continuous iron
+    // rail and balustrade runs the full ~160 m frontage at piano nobile level, stepping
+    // forward across the projecting central corps de logis.
+    const ironRail = new THREE.InstancedMesh(new THREE.BoxGeometry(2.4, 0.07, 0.07), bronze, 66);
+    const ironBalusters = new THREE.InstancedMesh(new THREE.BoxGeometry(0.045, 0.5, 0.055), bronze, 66 * 9);
+    const igd = new THREE.Object3D();
+    let ii = 0, ib = 0;
+    for (let x = -78.6; x <= 78.61; x += 2.4) {
+      const fz = Math.abs(x + 1.2) < 18 ? centralFace : facadeZ;
+      igd.position.set(x + 1.2, 8.18, fz + 0.66);
+      igd.rotation.y = 0;
+      igd.updateMatrix();
+      ironRail.setMatrixAt(ii++, igd.matrix);
+      for (let k = 0; k < 9; k++) {
+        igd.position.set(x + 0.24 + k * 0.24, 7.92, fz + 0.84);
+        igd.updateMatrix();
+        ironBalusters.setMatrixAt(ib++, igd.matrix);
+      }
+    }
+    ironRail.count = ii;
+    ironBalusters.count = ib;
+    ironRail.name = 'First-floor wrought-iron balcony rail';
+    ironBalusters.name = 'First-floor wrought-iron balusters';
+    ironRail.castShadow = ironBalusters.castShadow = true;
+    g.add(ironRail, ironBalusters);
+
     // Central attic: five smaller windows, sculpted panels and a continuous balustrade.
     box(g, 36.5, 1.0, 23.5, 0, 22.9, -1, ashlar, 'Central entablature');
     for (let i = 0; i < 5; i++) {
