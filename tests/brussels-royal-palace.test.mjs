@@ -1363,3 +1363,7 @@ testCase('a low railing rings the Vauxhall bandstand', () => {
 testCase('capitals finish the pilasters on both wing end faces', () => {
   assert.match(palace, /'Wing end pilaster capital'/);
 });
+
+testCase('stone surrounds frame the BELvue piano nobile windows', () => {
+  assert.match(palace, /'BELvue piano nobile surround'/);
+});

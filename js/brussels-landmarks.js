@@ -4620,6 +4620,12 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       vhRail.setMatrixAt(vhi++, vhd.matrix);
     }
     vhRail.count = vhi; vhRail.name = 'Vauxhall bandstand railing'; g.add(vhRail);
+
+    // Stone surrounds frame the BELvue piano nobile windows.
+    for (let i = 0; i < 5; i++) {
+      const wx = 168 - 13 + i * 6.5;
+      box(g, 2.4, 4.6, 0.16, wx, 15, 22.05, materials.warmStone, 'BELvue piano nobile surround');
+    }
   });
     addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');
