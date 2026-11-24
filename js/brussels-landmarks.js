@@ -1777,13 +1777,23 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       }
       box(g, 16, 3.2, 14, side * 46, 19.5, 79, stone, 'Honour stair landing at corner pavilion');
     }
-    // Repeated pilasters, deep window reveals and three storey bands on the outer ranges.
+    // Colossal-order articulation on the north and south ranges: paired pilasters, deep window
+    // reveals with lintels and alternating pediments; the monumental porch zone stays clear.
     for (const side of [-1, 1]) {
       for (let i = 0; i < 21; i++) {
         const x = -72 + i * 7.2;
-        box(g, 2.8, 10.5, 0.32, x, 11.5, side < 0 ? -75 : 75, recess, 'Courthouse lower window');
-        box(g, 2.8, 9.5, 0.32, x, 25, side < 0 ? -75 : 75, recess, 'Courthouse upper window');
-        box(g, 0.35, 29, 0.5, x - 2.0, 18, side < 0 ? -75.2 : 75.2, light, 'Courthouse façade pilaster');
+        if (side > 0 && Math.abs(x) < 30) continue;
+        const z = side < 0 ? -75 : 75;
+        box(g, 2.8, 10.5, 0.32, x, 11.5, z, recess, 'Courthouse lower window');
+        box(g, 2.8, 9.5, 0.32, x, 25, z, recess, 'Courthouse upper window');
+        box(g, 3.4, 0.4, 0.5, x, 30.2, z, light, 'Upper window lintel');
+        if (i % 2 === 0) {
+          const p = new THREE.Shape();
+          p.moveTo(-1.8, 0); p.lineTo(0, 1.1); p.lineTo(1.8, 0); p.closePath();
+          mesh(g, new THREE.ExtrudeGeometry(p, { depth: 0.25, bevelEnabled: false }), light, x, 30.6, z, 'Alternating window pediment');
+        }
+        box(g, 0.5, 29, 0.5, x - 1.7, 18, side < 0 ? -75.2 : 75.2, light, 'Courthouse paired pilaster west');
+        box(g, 0.5, 29, 0.5, x + 1.7, 18, side < 0 ? -75.2 : 75.2, light, 'Courthouse paired pilaster east');
       }
     }
     // Eight courts: low paved floors and arcaded inner galleries make the plan readable from above.

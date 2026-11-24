@@ -64,6 +64,14 @@ test('the massing matches the real hors tout 186 x 177 m podium on the 160 x 150
   assert.ok(palace.includes('for (const x of [-66, 66]) for (const z of [-61.5, 64])'));
 });
 
+test('the north and south ranges carry colossal paired pilasters, lintels and alternating pediments', () => {
+  assert.ok(palace.includes("'Courthouse paired pilaster west'"));
+  assert.ok(palace.includes("'Courthouse paired pilaster east'"));
+  assert.ok(palace.includes("'Upper window lintel'"));
+  assert.ok(palace.includes("'Alternating window pediment'"));
+  assert.ok(palace.includes('if (side > 0 && Math.abs(x) < 30) continue;'), 'porch zone stays clear of windows');
+});
+
 test('twin escaliers d\'honneur flank the porch up to the corner pavilions', () => {
   assert.ok(palace.includes("\"Escalier d'honneur flight\""));
   assert.ok(palace.includes('for (let step = 0; step < 10; step++)'));
