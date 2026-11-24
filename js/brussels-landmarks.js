@@ -3987,6 +3987,11 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     for (const side of [-1, 1]) {
       box(g, 1.5, 0.18, 0.4, side * 3.3, 11.2, centralFace + 0.3, moulding, 'Portico side light sill');
     }
+
+    // Mullions divide the portico door side lights.
+    for (const side of [-1, 1]) {
+      box(g, 0.06, 6.6, 0.05, side * 3.3, 14.6, centralFace + 0.24, bronze, 'Portico side light mullion');
+    }
   });
   addLandmark('palaceSurroundings', (g) => {
     // Real-world sources: en/fr Wikipedia (Royal Palace of Brussels, Brussels Park, Place des Palais,

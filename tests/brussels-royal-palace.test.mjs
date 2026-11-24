@@ -1770,3 +1770,7 @@ testCase('stone sills sit under the portico door side lights', () => {
 testCase('mullions divide the Royal Stables arched windows', () => {
   assert.match(palace, /'Royal Stables window mullion'/);
 });
+
+testCase('mullions divide the portico door side lights', () => {
+  assert.match(palace, /'Portico side light mullion'/);
+});
