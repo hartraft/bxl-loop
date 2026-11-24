@@ -1826,10 +1826,11 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
         }
       }
     }
-    // Central hall and the monumental dome's stepped square stylobate.
-    box(g, 52, 42, 48, 0, 27, -1, light, 'Salle des Pas Perdus central mass');
-    box(g, 58, 3.0, 54, 0, 48, -1, weathered, 'Dome stylobate lower step');
-    box(g, 50, 3.0, 48, 0, 51, -1, light, 'Dome stylobate upper step');
+    // Central hall and the monumental dome's stepped stylobate. The Salle des Pas Perdus is a
+    // 48 x 22 m hall running east-west directly under the dome.
+    box(g, 56, 42, 30, 0, 27, 0, light, 'Salle des Pas Perdus central mass (48 x 22 m hall)');
+    box(g, 58, 3.0, 54, 0, 48, 0, weathered, 'Dome stylobate lower step');
+    box(g, 50, 3.0, 48, 0, 51, 0, light, 'Dome stylobate upper step');
     // Square first drum with open colonnades on all four sides.
     box(g, 39, 7, 39, 0, 56, -1, stone, 'Square dome drum');
     for (let side = 0; side < 4; side++) {
