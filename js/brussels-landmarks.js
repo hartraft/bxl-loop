@@ -1748,6 +1748,27 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     for (let x = -78; x <= 78; x += 3.2) {
       box(g, 0.55, 1.5, 0.55, x, 35.4, 75.2, weathered, 'North façade balustrade');
     }
+    // Inside the porch: Corinthian columns crowned with Boure's winged lions, the monumental
+    // bronze door (Houtstont after Van Mansfeld, 1896), and the bust of the architect
+    // Joseph Poelaert (Cuypers, 1887) to the left of the entrance.
+    box(g, 10, 14, 0.8, 0, 13.5, 74.6, bronze, 'Bronze entrance door (Houtstont after Van Mansfeld)');
+    box(g, 11, 1.2, 1.6, 0, 7.1, 74.4, weathered, 'Bronze door threshold');
+    for (const side of [-1, 1]) {
+      cylinder(g, 0.5, 0.6, 13.5, side * 6, 13.25, 72, light, 16);
+      cylinder(g, 0.85, 0.85, 0.5, side * 6, 20.2, 72, light, 16);
+      box(g, 1.7, 0.4, 1.7, side * 6, 20.65, 72, light, 'Corinthian capital');
+      const lion = new THREE.Group();
+      lion.position.set(side * 6, 21.0, 72);
+      mesh(lion, new THREE.SphereGeometry(0.85, 12, 10), bronze, 0, 0.9, 0, 'Winged lion body (A.F. Boure)');
+      mesh(lion, new THREE.SphereGeometry(0.45, 10, 8), bronze, 0, 1.9, 0.35, 'Winged lion head (A.F. Boure)');
+      for (const w of [-1, 1]) {
+        const wing = mesh(lion, new THREE.BoxGeometry(0.12, 1.6, 2.2), bronze, w * 0.9, 1.2, -0.2, 'Winged lion wing');
+        wing.rotation.z = w * 0.5;
+      }
+      g.add(lion);
+    }
+    box(g, 1.8, 2.2, 1.2, -8, 7.6, 73.5, weathered, 'Poelaert bust pedestal (Cuypers 1887)');
+    mesh(g, new THREE.SphereGeometry(0.55, 12, 10), marble, -8, 9.3, 73.5, 'Bust of architect Joseph Poelaert');
     // Repeated pilasters, deep window reveals and three storey bands on the outer ranges.
     for (const side of [-1, 1]) {
       for (let i = 0; i < 21; i++) {

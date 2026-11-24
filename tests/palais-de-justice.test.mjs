@@ -64,6 +64,15 @@ test('the massing matches the real hors tout 186 x 177 m podium on the 160 x 150
   assert.ok(palace.includes('for (const x of [-66, 66]) for (const z of [-61.5, 64])'));
 });
 
+test('the porch holds the bronze door, Boure winged lions and the Poelaert bust', () => {
+  assert.ok(palace.includes("'Bronze entrance door (Houtstont after Van Mansfeld)'"));
+  assert.ok(palace.includes("'Winged lion body (A.F. Boure)'"));
+  assert.ok(palace.includes("'Winged lion wing'"));
+  assert.ok(palace.includes("'Corinthian capital'"));
+  assert.ok(palace.includes("'Bust of architect Joseph Poelaert'"));
+  assert.ok(palace.includes("'Poelaert bust pedestal (Cuypers 1887)'"));
+});
+
 test('four monumental marble jurist statues stand at the foot of the grand stairs', () => {
   assert.ok(palace.includes("'Jurist statue plinth'"));
   assert.ok(palace.includes('const marble = new THREE.MeshStandardMaterial({ color: 0xe6deca, roughness: 0.7 })'));
