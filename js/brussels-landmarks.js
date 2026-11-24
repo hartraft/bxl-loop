@@ -1966,6 +1966,27 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       }
     }
 
+    // The Place des Palais in front of the palace is entirely paved — a 70 x 350 m
+    // square of blue-stone setts (pierre bleue). Lay the palace's paved frontage apron
+    // beyond the gilded garden railing.
+    box(g, 170, 0.3, 44, 0, -0.15, 36, materials.pavingEdge, 'Place des Palais paved apron');
+    const settGeo = new THREE.BoxGeometry(0.9, 0.07, 0.9);
+    const setts = new THREE.InstancedMesh(settGeo, materials.pavingB, 44 * 60);
+    const psd = new THREE.Object3D();
+    let psi = 0;
+    for (let row = 0; row < 44; row++) {
+      for (let col = 0; col < 60; col++) {
+        psd.position.set(-84 + col * 2.9 + (row % 2) * 0.3, -0.02, 15 + row * 0.95);
+        psd.rotation.y = (row + col) % 3 * 0.02;
+        psd.updateMatrix();
+        setts.setMatrixAt(psi++, psd.matrix);
+      }
+    }
+    setts.count = psi;
+    setts.name = 'Place des Palais sett paving';
+    setts.receiveShadow = true;
+    g.add(setts);
+
     // The real palace wraps a quadrangle to the south: the east and west wings (aile
     // Est / aile Ouest) enclose the Cour du Roi — today's Cour d'honneur — closed by
     // a rear range. The wings run tall to the ground so they sit on the sloping site.
