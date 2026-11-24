@@ -221,6 +221,19 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     rustication.name = name + ' plinth rustication grooves';
     root.add(rustication);
     box(root, width + 0.45, 0.45, 0.35, 0, 1.15, 0.12, materials.warmStone, name + ' plinth');
+    // Sloped water table caps the plinth, and end blocks terminate each string course —
+    // standard weathering details of the real facades.
+    const waterTable = box(root, width + 0.55, 0.07, 0.5, 0, 1.4, 0.12, materials.dark, name + ' plinth water table');
+    waterTable.rotation.x = 0.12;
+    const scEnds = new THREE.InstancedMesh(new THREE.BoxGeometry(0.3, 0.2, 0.2), materials.warmStone, 2);
+    for (let i = 0; i < 2; i++) {
+      modDummy.position.set((i === 0 ? -1 : 1) * (width / 2 - 0.2), 3.6, 0.38);
+      modDummy.updateMatrix();
+      scEnds.setMatrixAt(i, modDummy.matrix);
+    }
+    scEnds.count = 2;
+    scEnds.name = name + ' string course end blocks';
+    root.add(scEnds);
     // Horizontal string-course bands between the window storeys, as on the real facades.
     const stringCourses = new THREE.InstancedMesh(new THREE.BoxGeometry(width - 0.4, 0.14, 0.12), materials.warmStone, floors);
     const scd = new THREE.Object3D();
@@ -311,6 +324,21 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     pilasterStrips.count = pilasterStripCount;
     pilasterStrips.name = name + ' facade pilaster strips';
     root.add(pilasterStrips);
+    // Keystones crown every window frame, as on the real facades.
+    const winKeystones = new THREE.InstancedMesh(new THREE.BoxGeometry(0.2, 0.34, 0.18), materials.warmStone, bays * floors);
+    let wk = 0;
+    for (let floor = 1; floor <= floors; floor++) {
+      const wy = 4.4 + (floor - 1) * ((height - 6.6) / Math.max(1, floors - 1));
+      for (let bay = 0; bay < bays; bay++) {
+        const wx = (bay - (bays - 1) / 2) * (width - 2.8) / Math.max(1, bays - 1);
+        dummy.position.set(wx, wy + 0.95, 0.16);
+        dummy.updateMatrix();
+        winKeystones.setMatrixAt(wk++, dummy.matrix);
+      }
+    }
+    winKeystones.count = wk;
+    winKeystones.name = name + ' window keystones';
+    root.add(winKeystones);
     // Stone corbels under every window sill, carrying the sills of the real facades.
     const sillCorbels = new THREE.InstancedMesh(new THREE.BoxGeometry(0.2, 0.18, 0.24), materials.warmStone, bays * floors * 2);
     let scc = 0;
@@ -362,6 +390,27 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     keystones.count = bays;
     keystones.name = name + ' arcade keystones';
     root.add(keystones);
+    // Dark soffit panels behind the arcade openings, and glazing bars dividing the
+    // shopfront glass of the real ground-floor arcades.
+    const soffits = new THREE.InstancedMesh(new THREE.BoxGeometry(1.5, 0.1, 0.12), materials.dark, bays);
+    const glazingBars = new THREE.InstancedMesh(new THREE.BoxGeometry(0.05, 2.6, 0.06), materials.dark, bays * 3);
+    let sf = 0, gb = 0;
+    for (let bay = 0; bay < bays; bay++) {
+      const wx = (bay - (bays - 1) / 2) * (width - 2.8) / Math.max(1, bays - 1);
+      arcDummy.position.set(wx, 3.12, 0.48);
+      arcDummy.updateMatrix();
+      soffits.setMatrixAt(sf++, arcDummy.matrix);
+      for (let g = 0; g < 3; g++) {
+        arcDummy.position.set(wx - 0.45 + g * 0.45, 1.8, 0.46);
+        arcDummy.updateMatrix();
+        glazingBars.setMatrixAt(gb++, arcDummy.matrix);
+      }
+    }
+    soffits.count = sf;
+    glazingBars.count = gb;
+    soffits.name = name + ' arcade soffit panels';
+    glazingBars.name = name + ' shopfront glazing bars';
+    root.add(soffits, glazingBars);
     // Arched door leaf with a gilded fanlight in the centre arcade bay of every house.
     box(root, 0.95, 2.5, 0.12, 0, 1.55, 0.42, materials.dark, name + ' arched door leaf');
     const fanlight = cylinder(root, 0.4, 0.4, 0.08, 0, 3.02, 0.44, materials.gold, 16);
@@ -389,6 +438,9 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     const doorPed = new THREE.Shape();
     doorPed.moveTo(-0.35, 0); doorPed.lineTo(0, 0.32); doorPed.lineTo(0.35, 0); doorPed.closePath();
     mesh(root, new THREE.ShapeGeometry(doorPed), stone, 0, 3.32, 0.42, name + ' door surround pediment');
+    // Stone threshold and a single step at every doorway, worn by centuries of use.
+    box(root, 1.2, 0.12, 0.4, 0, 0.06, 0.55, materials.warmStone, name + ' door threshold stone');
+    box(root, 1.6, 0.14, 0.5, 0, 0.07, 0.85, materials.warmStone, name + ' door step');
     // Small attic windows in the gable base, flanking the oculus.
     const atticWindows = new THREE.InstancedMesh(new THREE.BoxGeometry(0.5, 0.7, 0.1), spec.windowMat || glowGlass, 2);
     for (let i = 0; i < 2; i++) {
@@ -398,6 +450,18 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     }
     atticWindows.count = 2;
     atticWindows.name = name + ' gable attic windows';
+    // Tiny shutters flank each gable attic window, as on the real houses.
+    const atticShutters = new THREE.InstancedMesh(new THREE.BoxGeometry(0.2, 0.72, 0.05), materials.dark, 4);
+    for (let i = 0; i < 2; i++) {
+      for (const side of [-1, 1]) {
+        modDummy.position.set((i === 0 ? -1 : 1) * 0.55 + side * 0.38, height + 1.25, 0.14);
+        modDummy.updateMatrix();
+        atticShutters.setMatrixAt(i * 2 + (side > 0 ? 1 : 0), modDummy.matrix);
+      }
+    }
+    atticShutters.count = 4;
+    atticShutters.name = name + ' attic window shutters';
+    root.add(atticShutters);
     root.add(atticWindows);
     if (terrace) {
       // Café awning sloping over each ground-floor arcade bay — the real square's
@@ -718,6 +782,12 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
         wing.rotation.z = 0.35;
       }
     }
+    // Gilded ray ring behind every gable emblem — the real emblems are set in radiant discs.
+    if (emblem) {
+      const rayRing = cylinder(root, 0.62, 0.62, 0.06, 0, height + gableHeight + 1.7, 0.06, materials.gold, 16);
+      rayRing.name = name + ' gilded emblem ray ring';
+      rayRing.rotation.x = Math.PI / 2;
+    }
     if (balustradeStatues) {
       // Le Roy d'Espagne: six statues on the balustrade, the six ingredients of bread.
       for (let i = 0; i < 6; i++) {
@@ -919,10 +989,11 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     if (spec.dukeBusts) {
       // Maison des Ducs de Brabant (east side, nos. 13-19 behind a single facade): stone busts
       // of the dukes of Brabant line the pilasters of the facade.
-      const bustDiscs = new THREE.InstancedMesh(new THREE.CylinderGeometry(0.3, 0.3, 0.1, 12).rotateX(Math.PI / 2), materials.warmStone, 6);
-      const bustHeads = new THREE.InstancedMesh(new THREE.SphereGeometry(0.17, 8, 6), stone, 6);
-      for (let i = 0; i < 6; i++) {
-        const bx = -width / 2 + 0.8 + i * (width - 1.6) / 5;
+      // Nineteen busts of the dukes of Brabant line the pilasters of the real Dukes facade.
+      const bustDiscs = new THREE.InstancedMesh(new THREE.CylinderGeometry(0.26, 0.26, 0.1, 12).rotateX(Math.PI / 2), materials.warmStone, 19);
+      const bustHeads = new THREE.InstancedMesh(new THREE.SphereGeometry(0.15, 8, 6), stone, 19);
+      for (let i = 0; i < 19; i++) {
+        const bx = -width / 2 + 0.7 + i * (width - 1.4) / 18;
         pedDummy.position.set(bx, height * 0.55, 0.18);
         pedDummy.updateMatrix();
         bustDiscs.setMatrixAt(i, pedDummy.matrix);
@@ -930,7 +1001,7 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
         pedDummy.updateMatrix();
         bustHeads.setMatrixAt(i, pedDummy.matrix);
       }
-      bustDiscs.count = bustHeads.count = 6;
+      bustDiscs.count = bustHeads.count = 19;
       bustDiscs.name = name + ' duke bust discs';
       bustHeads.name = name + ' Dukes of Brabant busts';
       root.add(bustDiscs, bustHeads);

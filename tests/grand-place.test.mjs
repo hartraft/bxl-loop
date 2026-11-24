@@ -346,7 +346,7 @@ test('the east frontage is the Maison des Ducs de Brabant: duke busts + Abundanc
   assert.equal((square.match(/dukeBusts: true/g) || []).length, 3, 'all three east houses carry duke busts');
   assert.ok(square.includes(" Dukes of Brabant busts'"));
   assert.ok(square.includes(" duke bust discs'"));
-  assert.ok(square.includes('bustDiscs.count = bustHeads.count = 6'));
+  assert.ok(square.includes('bustDiscs.count = bustHeads.count = 19'));
   assert.ok(square.includes('abundance: true }'));
   assert.ok(square.includes(" Abundance allegory'"));
 });
@@ -903,4 +903,22 @@ test('rounds 181-188: Broodhuis window side mouldings, gable panel + gold flashi
   assert.ok(square.includes('khMerlons.count = 26'));
   assert.ok(square.includes('King’s House gallery pier capitals'));
   assert.ok(square.includes('khPierCaps.count = kpc'));
+});
+
+test('rounds 189-196: emblem ray rings, 19 Dukes of Brabant busts, attic shutters, window keystones, door threshold/step, arcade soffits + glazing bars, plinth water table + string-course ends', () => {
+  assert.ok(square.includes('gilded emblem ray ring'));
+  assert.ok(square.includes('bustDiscs.count = bustHeads.count = 19'));
+  assert.ok(square.includes('for (let i = 0; i < 19; i++)'));
+  assert.ok(square.includes('attic window shutters'));
+  assert.ok(square.includes('atticShutters.count = 4'));
+  assert.ok(square.includes('window keystones'));
+  assert.ok(square.includes('winKeystones.count = wk'));
+  assert.ok(square.includes('door threshold stone'));
+  assert.ok(square.includes('door step'));
+  assert.ok(square.includes('arcade soffit panels'));
+  assert.ok(square.includes('shopfront glazing bars'));
+  assert.ok(square.includes('glazingBars.count = gb'));
+  assert.ok(square.includes('plinth water table'));
+  assert.ok(square.includes('string course end blocks'));
+  assert.ok(square.includes('scEnds.count = 2'));
 });
