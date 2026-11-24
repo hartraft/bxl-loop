@@ -1240,3 +1240,7 @@ testCase('dressed stone cheek walls flank both sides of the perron', () => {
 testCase('hayloft windows pierce the Royal Stables range under the eaves', () => {
   assert.match(palace, /'Royal Stables hayloft window'/);
 });
+
+testCase('a low stone wall encloses the Academy Palace garden toward the square', () => {
+  assert.match(palace, /'Academy garden front wall'/);
+});

@@ -4443,6 +4443,9 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     for (let i = 0; i < 5; i++) {
       box(g, 1.2, 1.2, 0.2, -70 - 16 + i * 8, 10, -72.9, materials.glass, 'Royal Stables hayloft window');
     }
+
+    // A low stone wall encloses the Academy Palace garden toward the square.
+    box(g, 56, 0.8, 0.4, -168, 0.4, 56, materials.paleStone, 'Academy garden front wall');
   });
     addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');
