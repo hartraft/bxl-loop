@@ -1671,12 +1671,18 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     const roof = new THREE.MeshStandardMaterial({ color: 0x454947, roughness: 0.9 });
     const recess = new THREE.MeshStandardMaterial({ color: 0x414342, roughness: 0.9 });
     const bronze = new THREE.MeshStandardMaterial({ color: 0x75664b, metalness: 0.42, roughness: 0.65 });
+    // The real soubassement is pierre bleue (Belgian bluestone), a dark base under the pale stone.
+    const bluestone = new THREE.MeshStandardMaterial({ color: 0x3d444c, roughness: 0.92 });
 
     // Broad podium and perimeter terrace: the courthouse sits above the Marolles escarpment.
     // Hors tout 186 x 177 m (UNESCO tentative list 5357); the building plan itself is 160 x 150 m.
     box(g, 186, 4.2, 177, 0, -1.0, 0, weathered, 'Palais de Justice monumental podium');
     terrainFoundationSkirt(g, g, brusselsToWorld(BRUSSELS_LANDMARK_ANCHORS.palaisDeJustice.lat, BRUSSELS_LANDMARK_ANCHORS.palaisDeJustice.lon), 186, 177, -3.1, weathered, 'Palais de Justice terrain retaining skirt');
     box(g, 178, 2.2, 169, 0, 2.2, 0, light, 'Courthouse podium coping');
+    // Dark bluestone soubassement band wrapping the terrace edge and the range plinths.
+    box(g, 186.6, 2.4, 177.6, 0, 2.0, 0, bluestone, 'Palais de Justice bluestone soubassement band');
+    for (const z of [66.5, -66.5]) box(g, 160, 4.5, 17.8, 0, 5.2, z, bluestone, 'Range bluestone plinth');
+    for (const x of [71.5, -71.5]) box(g, 17.8, 4.5, 116, x, 5.2, 0, bluestone, 'Range bluestone plinth');
     // Eight internal courts are left open. Four long ranges and cross-ranges create
     // a legible courtyard plan instead of a single opaque rectangular mass.
     const wingY = 17.5, wingH = 31, wingD = 17;

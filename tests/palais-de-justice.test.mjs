@@ -41,6 +41,12 @@ test('the plan keeps the real eight inner courtyards open between the ranges', (
   assert.ok(palace.includes("'Court inner arcade'"));
 });
 
+test('the soubassement is the real dark Belgian bluestone (pierre bleue)', () => {
+  assert.ok(palace.includes('const bluestone = new THREE.MeshStandardMaterial({ color: 0x3d444c, roughness: 0.92 })'));
+  assert.ok(palace.includes("'Palais de Justice bluestone soubassement band'"));
+  assert.ok((palace.match(/'Range bluestone plinth'/g) || []).length === 2);
+});
+
 test('the massing matches the real hors tout 186 x 177 m podium on the 160 x 150 m plan', () => {
   assert.ok(palace.includes("box(g, 186, 4.2, 177, 0, -1.0, 0, weathered, 'Palais de Justice monumental podium')"));
   assert.ok(palace.includes('terrainFoundationSkirt(g, g, brusselsToWorld(BRUSSELS_LANDMARK_ANCHORS.palaisDeJustice.lat, BRUSSELS_LANDMARK_ANCHORS.palaisDeJustice.lon), 186, 177, -3.1'));
