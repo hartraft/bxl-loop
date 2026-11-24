@@ -456,7 +456,7 @@ function createTreeMaterial(leafAtlas) {
   // `alphaTest`: the shadow passes copy each caster's `alphaTest` onto one shared shadow material, and every switch
   // between 0 and > 0 bumps its version, which made three.js re-hash the node graphs of all the casters' shadow render
   // objects every frame (~10 ms of CPU). The trees were the only alpha-tested casters.
-  const mat = new TreeNodeMaterial({
+  const mat = new THREE.MeshSSSNodeMaterial({
     side: THREE.DoubleSide,
     alphaToCoverage: true,
     metalness: 0.0,
@@ -528,7 +528,7 @@ function createTreeMaterial(leafAtlas) {
   mat.aoNode = canyonSkyAONode().mul(crownAO.mul(0.75).add(0.25));
 
   // Light through the leaves: yellow-green, strongest out on the thin shell
-  mat.translucencyNode = aData.xyz.mul(vec3(1.0, 1.2, 0.45)).mul(leaf.r.mul(1.5)).mul(crownAO.mul(0.8).add(0.2)).mul(isLeaf);
+  mat.thicknessColorNode = aData.xyz.mul(vec3(1.0, 1.2, 0.45)).mul(leaf.r.mul(1.5)).mul(crownAO.mul(0.8).add(0.2)).mul(isLeaf);
 
   return mat;
 }
