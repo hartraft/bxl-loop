@@ -2277,6 +2277,13 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       box(g, 0.22, 0.34, 3.2, p.x - p.w / 2 - 0.25, 0.1, 12.4, lawnMat, 'Parterre boxwood border');
       box(g, 0.22, 0.34, 3.2, p.x + p.w / 2 + 0.25, 0.1, 12.4, lawnMat, 'Parterre boxwood border');
     }
+
+    // The palace is floodlit at night: bronze floodlight fixtures stand along the garden
+    // wall, aimed up at the façade (registered in facadeWashMats, round 13).
+    for (let fx = -30; fx <= 30; fx += 10) {
+      cylinder(g, 0.07, 0.1, 1.8, fx, 0.9, 13.4, bronze, 8).name = 'Facade floodlight fixture';
+      mesh(g, new THREE.SphereGeometry(0.22, 8, 6), nightGlowMats ? glass : glass, fx, 1.95, 13.4, 'Facade floodlight head');
+    }
   });
   addLandmark('palaceSurroundings', (g) => {
     // Brussels Park (Parc de Bruxelles): the rectangular 13.1 ha neoclassical park north of the

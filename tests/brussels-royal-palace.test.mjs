@@ -591,3 +591,9 @@ testCase('each sunken parterre is edged with a clipped boxwood border', () => {
   assert.match(palace, /clipped boxwood border/);
   assert.match(palace, /'Parterre boxwood border'/);
 });
+
+testCase('bronze floodlight fixtures along the garden wall light the palace at night', () => {
+  assert.match(palace, /floodlight fixtures stand along the garden/);
+  assert.match(palace, /'Facade floodlight fixture'/);
+  assert.match(palace, /'Facade floodlight head'/);
+});
