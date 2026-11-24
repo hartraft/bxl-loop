@@ -35,6 +35,16 @@ testCase('Royal Palace centre has a sculpted pediment, domed drum and Belgian fl
   assert.match(palace, /Belgian flag stripe/);
 });
 
+testCase('the front garden holds the real three sunken parterres (central on the portico axis, two lateral)', () => {
+  assert.match(palace, /three sunken parterres/);
+  assert.equal((palace.match(/'Sunken parterre retaining edge'/g) || []).length, 3);
+  assert.equal((palace.match(/'Sunken parterre lawn'/g) || []).length, 3);
+  assert.equal((palace.match(/'Parterre flower band'/g) || []).length, 3);
+  assert.match(palace, /\{ x: 0, w: 22, z: 12\.4, d: 2\.6 \}/);
+  assert.match(palace, /\{ x: -38, w: 34, z: 12\.4, d: 2\.6 \}/);
+  assert.match(palace, /\{ x: 38, w: 34, z: 12\.4, d: 2\.6 \}/);
+});
+
 testCase('the ground storey is a rusticated soubassement with bossage blocks on every arcade pier', () => {
   assert.match(palace, /rusticated soubassement/);
   assert.match(palace, /'Ground-floor rusticated bossage blocks'/);
