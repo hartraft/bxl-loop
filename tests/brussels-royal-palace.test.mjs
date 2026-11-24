@@ -68,6 +68,15 @@ testCase('the front garden holds the real three sunken parterres (central on the
   assert.match(palace, /\{ x: 38, w: 34, z: 12\.4, d: 2\.6 \}/);
 });
 
+testCase('the central corps carries a dormered slate mansard roof (toiture à lucarne)', () => {
+  assert.match(palace, /dormered roof/);
+  assert.match(palace, /'Central corps mansard roof'/);
+  assert.match(palace, /'Central mansard dormer'/);
+  assert.match(palace, /'Central mansard dormer window'/);
+  assert.match(palace, /'Central dormer pediment'/);
+  assert.match(palace, /for \(let i = 0; i < 3; i\+\+\)/);
+});
+
 testCase('chimney stacks with stone caps rise from the wing slate roofs', () => {
   assert.match(palace, /Chimney stacks/);
   assert.match(palace, /'Palace roof chimney stacks'/);

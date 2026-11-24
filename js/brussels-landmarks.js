@@ -1729,6 +1729,22 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
 
     // Central attic: five smaller windows, sculpted panels and a continuous balustrade.
     box(g, 36.5, 1.0, 23.5, 0, 22.9, -1, ashlar, 'Central entablature');
+
+    // Maquet crowned the main pavilion with a dormered roof ("toiture à lucarne"):
+    // a slate mansard over the central corps pierced by three pedimented dormers.
+    const cmShape = new THREE.Shape();
+    cmShape.moveTo(-17, 0); cmShape.lineTo(17, 0); cmShape.lineTo(15, 2.4); cmShape.lineTo(-15, 2.4); cmShape.closePath();
+    const cmGeo = new THREE.ExtrudeGeometry(cmShape, { depth: 17, bevelEnabled: false });
+    cmGeo.translate(0, 24.0, -10.0);
+    mesh(g, cmGeo, roof, 0, 0, -1.5, 'Central corps mansard roof');
+    for (let i = 0; i < 3; i++) {
+      const dx = -10 + i * 10;
+      box(g, 2.0, 2.2, 0.3, dx, 24.4, 5.9, stone, 'Central mansard dormer');
+      box(g, 1.4, 1.6, 0.34, dx, 24.4, 5.95, glass, 'Central mansard dormer window');
+      const dPed = new THREE.Shape();
+      dPed.moveTo(-1.2, 0); dPed.lineTo(1.2, 0); dPed.lineTo(0, 0.8); dPed.closePath();
+      mesh(g, new THREE.ShapeGeometry(dPed), moulding, dx, 25.55, 5.9, 'Central dormer pediment');
+    }
     for (let i = 0; i < 5; i++) {
       const x = -12 + i * 6;
       box(g, 1.55, 1.55, 0.18, x, 24.15, centralFace + 0.12, glass, 'Central attic window');
