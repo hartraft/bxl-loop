@@ -569,3 +569,9 @@ testCase('the portico carries a coffered soffit ceiling under the entablature', 
   assert.match(palace, /'Portico soffit coffers'/);
   assert.match(palace, /coffers\.count = cfi/);
 });
+
+testCase('the central avant-corps carries windows on its side faces too', () => {
+  assert.match(palace, /oblique views from the square never see a blank side wall/);
+  assert.match(palace, /'Central corps side window \(piano nobile\)'/);
+  assert.match(palace, /'Central corps side window \(ground\)'/);
+});

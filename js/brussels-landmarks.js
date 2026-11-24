@@ -2252,6 +2252,16 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       }
     }
     coffers.count = cfi; coffers.name = 'Portico soffit coffers'; g.add(coffers);
+
+    // The central avant-corps is pierced on its east and west faces too, like the wings —
+    // oblique views from the square never see a blank side wall.
+    for (const side of [-1, 1]) {
+      for (let i = 0; i < 3; i++) {
+        const wz = -6 - i * 5;
+        box(g, 0.2, 3.4, 2.2, side * 17.1, 13.5, wz, glass, 'Central corps side window (piano nobile)');
+        box(g, 0.2, 2.6, 2.2, side * 17.1, 6.5, wz, glass, 'Central corps side window (ground)');
+      }
+    }
   });
   addLandmark('palaceSurroundings', (g) => {
     // Brussels Park (Parc de Bruxelles): the rectangular 13.1 ha neoclassical park north of the
