@@ -2237,6 +2237,21 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     }
     rearTrunk.count = rti; rearTrunk.name = 'Rear garden tree trunks'; g.add(rearTrunk);
     rearCan.count = rti; rearCan.name = 'Rear garden tree canopies'; g.add(rearCan);
+
+    // The portico is roofed: a coffered soffit ceiling spans between the two column rows
+    // under the entablature (classical portico ceiling).
+    box(g, 27, 0.35, 7.2, 0, 21.6, centralFace + 2.8, ashlar, 'Portico soffit ceiling');
+    const cofferGeo = new THREE.BoxGeometry(0.9, 0.12, 0.9);
+    const coffers = new THREE.InstancedMesh(cofferGeo, moulding, 15);
+    const cfd = new THREE.Object3D();
+    let cfi = 0;
+    for (let cx = -10; cx <= 10; cx += 5) {
+      for (let cz = centralFace + 1.4; cz <= centralFace + 4.2; cz += 1.4) {
+        cfd.position.set(cx, 21.38, cz); cfd.rotation.y = 0; cfd.updateMatrix();
+        coffers.setMatrixAt(cfi++, cfd.matrix);
+      }
+    }
+    coffers.count = cfi; coffers.name = 'Portico soffit coffers'; g.add(coffers);
   });
   addLandmark('palaceSurroundings', (g) => {
     // Brussels Park (Parc de Bruxelles): the rectangular 13.1 ha neoclassical park north of the

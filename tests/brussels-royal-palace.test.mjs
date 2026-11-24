@@ -562,3 +562,10 @@ testCase('the palace rear gardens are English style with lawn and scattered tree
   assert.match(palace, /'Rear English-style garden lawn'/);
   assert.match(palace, /'Rear garden tree canopies'/);
 });
+
+testCase('the portico carries a coffered soffit ceiling under the entablature', () => {
+  assert.match(palace, /coffered soffit ceiling/);
+  assert.match(palace, /'Portico soffit ceiling'/);
+  assert.match(palace, /'Portico soffit coffers'/);
+  assert.match(palace, /coffers\.count = cfi/);
+});
