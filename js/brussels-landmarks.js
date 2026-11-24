@@ -5597,6 +5597,9 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       apPd.setMatrixAt(apPi++, apPdd.matrix);
     }
     apPd.count = apPi; apPd.name = 'Academy portico dentil'; g.add(apPd);
+
+    // A bronze kick plate protects the foot of the BELvue entrance door.
+    box(g, 3.4, 0.45, 0.06, 168, 0.35, 21.82, materials.bronze, 'BELvue door kick plate');
   });
     addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');

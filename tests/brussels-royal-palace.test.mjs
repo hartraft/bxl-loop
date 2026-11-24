@@ -2124,3 +2124,7 @@ testCase('a dentil course runs under the Academy portico architrave', () => {
 testCase('scroll ends finish both ends of each wing balcony rail', () => {
   assert.match(palace, /'Wing balcony scroll end'/);
 });
+
+testCase('a bronze kick plate protects the foot of the BELvue door', () => {
+  assert.match(palace, /'BELvue door kick plate'/);
+});
