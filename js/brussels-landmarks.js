@@ -634,6 +634,33 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     knightStatues.name = 'Arcade pillar knight statues (Noble Houses)';
     knightStatues.castShadow = true;
     root.add(knightStatues);
+    // A stone balcony connects the two wings across the facade above the arcade, on a row of
+    // balusters — as on the real elevation.
+    box(root, width + 1.2, 0.4, 1.3, 0, 8.7, 0.55, trim, 'Wing-connecting balcony');
+    const wingBalusters = new THREE.InstancedMesh(new THREE.BoxGeometry(0.14, 0.55, 0.14), trim, 48);
+    const wbd = new THREE.Object3D();
+    let wb = 0;
+    for (let i = 0; i < 48; i++) {
+      wbd.position.set(-width / 2 + 0.7 + i * (width - 1.4) / 47, 9.15, 1.05);
+      wbd.updateMatrix();
+      wingBalusters.setMatrixAt(wb++, wbd.matrix);
+    }
+    wingBalusters.count = wb;
+    wingBalusters.name = 'Wing-connecting balcony balusters';
+    root.add(wingBalusters);
+    // Small gabled canopy hoods shelter the statues standing above the arcade arch heads.
+    const canopyShape = new THREE.Shape();
+    canopyShape.moveTo(-0.45, 0); canopyShape.lineTo(0, 0.4); canopyShape.lineTo(0.45, 0); canopyShape.closePath();
+    const canopies = new THREE.InstancedMesh(new THREE.ShapeGeometry(canopyShape), trim, bays);
+    let cn = 0;
+    for (let i = 0; i < bays; i++) {
+      wbd.position.set(-width / 2 + bayW * (i + 0.5), 9.85, 0.3);
+      wbd.updateMatrix();
+      canopies.setMatrixAt(cn++, wbd.matrix);
+    }
+    canopies.count = cn;
+    canopies.name = 'Arcade statue canopy hoods';
+    root.add(canopies);
 
     // Upper storeys: paired lancets with stone mouldings, balconies, a buttress rhythm at
     // alternating bay joints, and a gilded statue in a niche at the remaining joints — the

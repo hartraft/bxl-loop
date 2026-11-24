@@ -127,6 +127,14 @@ test('the Town Hall base lancets sit under trefoil tympana', () => {
   assert.ok(square.includes('new THREE.CylinderGeometry(0.32, 0.32, 0.14, 12).rotateX(Math.PI / 2), trim, 12)'));
 });
 
+test('a balustraded balcony connects the Town Hall wings; statues have canopy hoods', () => {
+  assert.ok(square.includes("'Wing-connecting balcony'"));
+  assert.ok(square.includes("'Wing-connecting balcony balusters'"));
+  assert.ok(square.includes('wingBalusters.count = wb'));
+  assert.ok(square.includes("'Arcade statue canopy hoods'"));
+  assert.ok(square.includes('canopies.count = cn'));
+});
+
 test('the Town Hall tower shaft is chained with corner quoins', () => {
   assert.ok(square.includes("'Town Hall tower corner quoins'"));
   assert.ok(square.includes('towerQuoins.count = tq'));
