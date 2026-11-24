@@ -2242,11 +2242,11 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     // at the foot of the grand stairs: Demosthenes and Lycurgus (A. Cattier) on the west side,
     // Cicero and Ulpian (A.F. Boure) on the east side.
     const marble = new THREE.MeshStandardMaterial({ color: 0xe6deca, roughness: 0.7 });
-    for (const [figure, x] of [['Demosthenes', -38], ['Lycurgus', -31], ['Cicero', 31], ['Ulpian', 38]]) {
-      box(g, 2.8, 1.2, 2.8, x, 1.9, 93, weathered, 'Jurist statue plinth');
-      cylinder(g, 0.55, 0.78, 4.6, x, 5.5, 93, marble, 10);
-      mesh(g, new THREE.SphereGeometry(0.5, 12, 10), marble, x, 8.0, 93, figure + ' statue head');
-      box(g, 0.5, 2.2, 0.3, x + 0.8, 6.2, 93, marble, figure + ' statue arm');
+    for (const [figure, x] of [['Demosthenes', -59], ['Lycurgus', -52], ['Cicero', 52], ['Ulpian', 59]]) {
+      box(g, 2.8, 1.2, 2.8, x, 0.9, 97, weathered, 'Jurist statue plinth');
+      cylinder(g, 0.55, 0.78, 4.6, x, 4.4, 97, marble, 10);
+      mesh(g, new THREE.SphereGeometry(0.5, 12, 10), marble, x, 7.0, 97, figure + ' statue head');
+      box(g, 0.5, 2.2, 0.3, x + 0.8, 5.2, 97, marble, figure + ' statue arm');
     }
     // Double colonnade of Doric columns on the entrance terrace: base, shaft, echinus, abacus,
     // then architrave and entablature carrying the pediment.
@@ -2299,8 +2299,9 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     // Two escaliers d'honneur flank the monumental porch, climbing from the forecourt up to
     // the corner pavilions that house the Courts of Cassation and Appeal.
     for (const side of [-1, 1]) {
-      for (let step = 0; step < 10; step++) {
-        box(g, 14, 0.5, 1.6, side * 40, 6.8 + step * 1.35, 92 - step * 1.7, light, "Escalier d'honneur flight");
+      // The flight runs from the esplanade paving (bottom tread at y=0.30) up to the pavilion landing.
+      for (let step = 0; step < 16; step++) {
+        box(g, 14, 0.5, 1.6, side * 40, 0.53 + step * 1.15, 100 - step * 1.6, light, "Escalier d'honneur flight");
       }
       box(g, 16, 3.2, 14, side * 46, 19.5, 79, stone, 'Honour stair landing at corner pavilion');
     }
