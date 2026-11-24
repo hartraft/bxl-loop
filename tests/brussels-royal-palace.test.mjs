@@ -754,3 +754,8 @@ testCase('the Palace of the Nation closes its U around the Place de la Nation co
   assert.match(palace, /'Palace of the Nation rear range'/);
   assert.match(palace, /'Place de la Nation courtyard paving'/);
 });
+
+testCase('a transverse walk crosses Brussels Park east-west at mid-depth', () => {
+  assert.match(palace, /transverse walk crosses the park east-west/);
+  assert.match(palace, /'Park transverse walk'/);
+});

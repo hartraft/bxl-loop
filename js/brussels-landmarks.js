@@ -2767,6 +2767,9 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     box(g, 80, 18, 16, 0, 9, 446, materials.plaster, 'Palace of the Nation rear range');
     box(g, 82, 1.0, 18, 0, 18.5, 446, materials.warmStone, 'Palace of the Nation rear cornice');
     box(g, 150, 0.14, 22, 0, 0.05, 438, materials.pavingEdge, 'Place de la Nation courtyard paving');
+    // A transverse walk crosses the park east-west at mid-depth, completing the star-shaped
+    // alley pattern with the central and radiating avenues.
+    box(g, 320, 0.07, 8, 0, 0.07, 232, materials.pavingA, 'Park transverse walk');
   });
     addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');
