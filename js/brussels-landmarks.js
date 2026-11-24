@@ -2456,6 +2456,22 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     const pgPed = new THREE.Shape();
     pgPed.moveTo(-8, 0); pgPed.lineTo(8, 0); pgPed.lineTo(0, 1.8); pgPed.closePath();
     mesh(g, new THREE.ShapeGeometry(pgPed), materials.warmStone, 0, 4.1, 62, 'Poelaert south gate pediment');
+    // In the 1930s the park was fitted with Art Deco lampposts along its avenues.
+    const lampPole = new THREE.InstancedMesh(new THREE.CylinderGeometry(0.09, 0.13, 4.6, 6), materials.dark, 26);
+    const lampHead = new THREE.InstancedMesh(new THREE.SphereGeometry(0.34, 10, 8), materials.gold, 26);
+    const lpd = new THREE.Object3D();
+    let lpi = 0;
+    for (let lz = 70; lz <= 390; lz += 32) {
+      for (const lx of [-7, 7]) {
+        lpd.position.set(lx, 2.3, lz); lpd.rotation.y = 0; lpd.updateMatrix();
+        lampPole.setMatrixAt(lpi, lpd.matrix);
+        lpd.position.set(lx, 4.8, lz); lpd.updateMatrix();
+        lampHead.setMatrixAt(lpi, lpd.matrix);
+        lpi++;
+      }
+    }
+    lampPole.count = lpi; lampPole.name = 'Park Art Deco lamppost poles'; g.add(lampPole);
+    lampHead.count = lpi; lampHead.name = 'Park Art Deco lamp heads'; g.add(lampHead);
   });
     addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');

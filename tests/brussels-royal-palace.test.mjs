@@ -529,3 +529,10 @@ testCase('the Poelaert south gatehouse (1857) crowns the park central path entra
   assert.match(palace, /'Poelaert south gate entablature'/);
   assert.match(palace, /'Poelaert south gate pediment'/);
 });
+
+testCase('Art Deco lampposts (1930s) line the park avenues', () => {
+  assert.match(palace, /Art Deco lampposts/);
+  assert.match(palace, /'Park Art Deco lamppost poles'/);
+  assert.match(palace, /'Park Art Deco lamp heads'/);
+  assert.match(palace, /lampPole\.count = lpi/);
+});
