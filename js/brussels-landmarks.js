@@ -2315,6 +2315,11 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       }
       box(g, 0.34, 0.14, 2.1, side * 8.9, 1.6, centralFace + 0.6, moulding, 'Perron side rail');
     }
+
+    // Each terminal pavilion roof is crowned by a gilded finial ball, like the dome lantern.
+    for (const x of [-76, 76]) {
+      mesh(g, new THREE.SphereGeometry(0.5, 12, 10), gilded, x, 26.3, -1, 'Pavilion roof gilded finial');
+    }
   });
   addLandmark('palaceSurroundings', (g) => {
     // Brussels Park (Parc de Bruxelles): the rectangular 13.1 ha neoclassical park north of the

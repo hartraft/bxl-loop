@@ -701,3 +701,9 @@ testCase('the perron is flanked by stone balustrade ramps', () => {
   assert.match(palace, /'Perron side balustrade'/);
   assert.match(palace, /'Perron side rail'/);
 });
+
+testCase('the terminal pavilion roofs are crowned by gilded finial balls', () => {
+  assert.match(palace, /gilded finial ball, like the dome lantern/);
+  assert.match(palace, /'Pavilion roof gilded finial'/);
+  assert.match(palace, /for \(const x of \[-76, 76\]\)/);
+});
