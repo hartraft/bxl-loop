@@ -5696,6 +5696,150 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       crests.castShadow = true;
       g.add(crests);
     }
+    // Round 111: the side-facade arcades are crowned by small pediments (frontons sur baies).
+    {
+      const peds = new THREE.InstancedMesh(new THREE.BoxGeometry(4.2, 0.9, 0.6), materials.paleStone, 24);
+      const dummy = new THREE.Object3D();
+      let n = 0;
+      for (const wx of [-53.3, 53.3]) for (let i = 0; i < 12; i++) {
+        dummy.position.set(wx, 17.8, -14 + i * 4.6 + 2.3);
+        dummy.updateMatrix();
+        peds.setMatrixAt(n++, dummy.matrix);
+      }
+      peds.count = n;
+      peds.name = 'Bourse side facade arcade pediments (frontons sur baies)';
+      peds.castShadow = true;
+      g.add(peds);
+    }
+    // Round 112: balcony balustrades on the side facades' etage level.
+    {
+      const balusters = new THREE.InstancedMesh(new THREE.BoxGeometry(0.14, 0.85, 0.14), materials.warmStone, 2 * 11 * 10);
+      const rails = new THREE.InstancedMesh(new THREE.BoxGeometry(11, 0.12, 0.2), materials.warmStone, 20);
+      const dummy = new THREE.Object3D();
+      let b = 0, r = 0;
+      for (const wx of [-53.3, 53.3]) {
+        for (let i = 0; i < 10; i++) {
+          dummy.position.set(wx, 18.9, -14 + i * 4.6 + 1.1);
+          dummy.updateMatrix();
+          rails.setMatrixAt(r++, dummy.matrix);
+          for (let k = 0; k < 11; k++) {
+            dummy.position.set(wx, 18.45, -14 + i * 4.6 + 0.6 + k * 0.95);
+            dummy.updateMatrix();
+            balusters.setMatrixAt(b++, dummy.matrix);
+          }
+        }
+      }
+      balusters.count = b;
+      balusters.name = 'Bourse side facade balcony balusters (balustres)';
+      g.add(balusters);
+      rails.count = r;
+      rails.name = 'Bourse side facade balcony top rails';
+      rails.castShadow = true;
+      g.add(rails);
+    }
+    // Round 113: the rear facade (rue du Midi) carries window rows under a full cornice.
+    {
+      const wins = new THREE.InstancedMesh(new THREE.BoxGeometry(2.4, 4.2, 0.4), materials.glass, 18);
+      const dummy = new THREE.Object3D();
+      let n = 0;
+      for (let f = 0; f < 3; f++) for (let i = 0; i < 6; i++) {
+        dummy.position.set(-12.5 + i * 5, 9 + f * 6, -41.3);
+        dummy.updateMatrix();
+        wins.setMatrixAt(n++, dummy.matrix);
+      }
+      wins.count = n;
+      wins.name = 'Bourse rear facade windows (rue du Midi)';
+      wins.castShadow = true;
+      g.add(wins);
+      box(g, 34, 1.1, 0.8, 0, 26.6, -41.2, materials.warmStone, 'Bourse rear facade cornice');
+    }
+    // Round 114: the rear upper level repeats the three arched bays whose trumeaux carry the
+    // caryatids (heritage inventory: "mur ajoure de trois baies cintrees a l'etage").
+    for (const bx of [-7.5, 0, 7.5]) {
+      box(g, 4.6, 5.4, 0.4, bx, 23, -41.3, materials.glass, 'Bourse rear upper arched bay');
+      const arch = mesh(g, new THREE.CylinderGeometry(2.3, 2.3, 0.4, 14, 1, false, 0, Math.PI), materials.glass, bx, 25.7, -41.3, 'Bourse rear upper bay arch');
+      arch.rotation.z = Math.PI / 2;
+    }
+    // Round 115: modillions under the side facades' cornices.
+    {
+      const mods = new THREE.InstancedMesh(new THREE.BoxGeometry(0.4, 0.5, 0.4), materials.warmStone, 2 * 16);
+      const dummy = new THREE.Object3D();
+      let n = 0;
+      for (const wx of [-53.3, 53.3]) for (let i = 0; i < 16; i++) {
+        dummy.position.set(wx, 26.2, -15 + i * 4.6);
+        dummy.updateMatrix();
+        mods.setMatrixAt(n++, dummy.matrix);
+      }
+      mods.count = n;
+      mods.name = 'Bourse side facade cornice modillions';
+      mods.castShadow = true;
+      g.add(mods);
+    }
+    // Round 116: mullions (meneaux) divide the great side arches.
+    {
+      const mull = new THREE.InstancedMesh(new THREE.BoxGeometry(0.14, 11, 0.2), materials.dark, 6);
+      const dummy = new THREE.Object3D();
+      let n = 0;
+      for (const wx of [-53.35, 53.35]) for (let i = 0; i < 3; i++) {
+        dummy.position.set(wx, 13, -8 + i * 8);
+        dummy.updateMatrix();
+        mull.setMatrixAt(n++, dummy.matrix);
+      }
+      mull.count = n;
+      mull.name = 'Bourse great arch mullions (meneaux)';
+      g.add(mull);
+    }
+    // Round 117: iron grilles close the ground-floor arcades (offices behind them).
+    {
+      const grilles = new THREE.InstancedMesh(new THREE.BoxGeometry(3.2, 8.5, 0.15), materials.dark, 16);
+      const dummy = new THREE.Object3D();
+      let n = 0;
+      for (const wx of [-53.35, 53.35]) for (let i = 0; i < 8; i++) {
+        dummy.position.set(wx, 9, -14 + i * 4.6);
+        dummy.updateMatrix();
+        grilles.setMatrixAt(n++, dummy.matrix);
+      }
+      grilles.count = n;
+      grilles.name = 'Bourse ground-floor arcade iron grilles (grilles des bureaux)';
+      g.add(grilles);
+    }
+    // Round 118: colossal pilasters frame the side facade bays.
+    {
+      const pil = new THREE.InstancedMesh(new THREE.BoxGeometry(0.9, 21, 0.7), materials.paleStone, 2 * 9);
+      const caps = new THREE.InstancedMesh(new THREE.BoxGeometry(1.2, 0.5, 1.0), materials.warmStone, 2 * 9);
+      const dummy = new THREE.Object3D();
+      let n = 0;
+      for (const wx of [-53.4, 53.4]) for (let i = 0; i < 9; i++) {
+        dummy.position.set(wx, 15.5, -16.2 + i * 4.6);
+        dummy.updateMatrix();
+        pil.setMatrixAt(n, dummy.matrix);
+        dummy.position.set(wx, 26.1, -16.2 + i * 4.6);
+        dummy.updateMatrix();
+        caps.setMatrixAt(n++, dummy.matrix);
+      }
+      pil.count = n;
+      pil.name = 'Bourse side facade colossal pilasters (pilastres colossaux)';
+      pil.castShadow = true;
+      g.add(pil);
+      caps.count = n;
+      caps.name = 'Bourse pilaster capitals';
+      g.add(caps);
+    }
+    // Round 119: string courses on the side facades between registers.
+    for (const wx of [-53.45, 53.45]) {
+      box(g, 0.25, 0.35, 34, wx, 13.5, 0, materials.warmStone, 'Bourse side facade first string course');
+      box(g, 0.25, 0.35, 34, wx, 19.5, 0, materials.warmStone, 'Bourse side facade second string course');
+    }
+    // Round 120: the lateral entrance on the rear facade (rue du Midi side) — widened in the
+    // 2020-2023 restoration — with stone surround, arched head and steps (nl.wikipedia Beurspaleis).
+    {
+      box(g, 5, 8, 0.7, 0, 9, -41.4, materials.dark, 'Bourse rear lateral entrance door (entree laterale, élargie 2023)');
+      const arch = mesh(g, new THREE.CylinderGeometry(2.5, 2.5, 0.7, 14, 1, false, 0, Math.PI), materials.dark, 0, 13, -41.4, 'Bourse rear entrance arch');
+      arch.rotation.z = Math.PI / 2;
+      box(g, 6.4, 0.4, 1.1, 0, 13.4, -41.5, materials.warmStone, 'Bourse rear entrance lintel band');
+      box(g, 5.6, 0.3, 2.2, 0, 0.15, -42.2, materials.pavingEdge, 'Bourse rear entrance step');
+      box(g, 6.2, 0.3, 3.0, 0, 0.45, -42.8, materials.pavingEdge, 'Bourse rear entrance landing');
+    }
     // __BOURSE_ROUNDS__
   });
   addLandmark('bourseSurroundings', (g) => {

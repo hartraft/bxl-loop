@@ -453,4 +453,31 @@ testCase('rounds 109-110: slate tile courses + gilded ridge cresting on the arm 
   assert.match(bourse, /crests\.count = n/);
 });
 
+testCase('rounds 111-114: side arcade pediments, balcony balustrades, rear windows + cornice, rear arched bays', () => {
+  assert.match(bourse, /'Bourse side facade arcade pediments \(frontons sur baies\)'/);
+  assert.match(bourse, /peds\.count = n/);
+  assert.match(bourse, /'Bourse side facade balcony balusters \(balustres\)'/);
+  assert.match(bourse, /balusters\.count = b/);
+  assert.match(bourse, /'Bourse side facade balcony top rails'/);
+  assert.match(bourse, /'Bourse rear facade windows \(rue du Midi\)'/);
+  assert.match(bourse, /'Bourse rear facade cornice'/);
+  assert.match(bourse, /'Bourse rear upper arched bay'/);
+  assert.match(bourse, /'Bourse rear upper bay arch'/);
+});
+
+testCase('rounds 115-120: side modillions, arch mullions, arcade grilles, colossal pilasters, string courses, rear entrance', () => {
+  assert.match(bourse, /'Bourse side facade cornice modillions'/);
+  assert.match(bourse, /mods\.count = n/);
+  assert.match(bourse, /'Bourse great arch mullions \(meneaux\)'/);
+  assert.match(bourse, /mull\.count = n/);
+  assert.match(bourse, /'Bourse ground-floor arcade iron grilles \(grilles des bureaux\)'/);
+  assert.match(bourse, /grilles\.count = n/);
+  assert.match(bourse, /'Bourse side facade colossal pilasters \(pilastres colossaux\)'/);
+  assert.match(bourse, /pil\.count = n/);
+  assert.match(bourse, /'Bourse side facade first string course'/);
+  assert.match(bourse, /'Bourse rear lateral entrance door \(entree laterale, élargie 2023\)'/);
+  assert.match(bourse, /'Bourse rear entrance arch'/);
+  assert.match(bourse, /'Bourse rear entrance landing'/);
+});
+
 // __MORE_BOURSE_TESTS__
