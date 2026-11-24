@@ -1634,3 +1634,8 @@ testCase('corner quoins strengthen the palace facade corners', () => {
 testCase('urns stand at the four corners of the BELvue roof terrace', () => {
   assert.match(palace, /'BELvue roof terrace urn'/);
 });
+
+testCase('lanterns flank the main door of the Palace of the Nation', () => {
+  assert.match(palace, /'Palace of the Nation entrance lantern'/);
+  assert.match(palace, /'Palace of the Nation entrance lantern glass'/);
+});

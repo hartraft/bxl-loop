@@ -4966,6 +4966,12 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
         mesh(g, new THREE.SphereGeometry(0.3, 10, 8), materials.warmStone, 168 + ux, 30.2, 36 + uz, 'BELvue roof terrace urn');
       }
     }
+
+    // Lanterns flank the main door of the Palace of the Nation.
+    for (const side of [-1, 1]) {
+      box(g, 0.4, 1.0, 0.4, side * 3.5, 9.5, 402.4, materials.bronze, 'Palace of the Nation entrance lantern');
+      mesh(g, new THREE.SphereGeometry(0.24, 10, 8), materials.glass, side * 3.5, 9.6, 402.4, 'Palace of the Nation entrance lantern glass');
+    }
   });
     addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');
