@@ -1203,3 +1203,22 @@ test('rounds 333-342: gallery corbels, dormer sills, ridge end caps, forecourt s
   assert.ok(square.includes('khUpperNiches.count = khUpperStatues.count = kun'));
   assert.ok(source.includes('Manneken Pis brass tap'));
 });
+
+test('rounds 343-352: lantern drip ring, spire base plate, blind-niche figures, Broodhuis eave crests, string-course gold trim, portal bollards, corner stones, niche recess panel, inner shutters, portal door studs', () => {
+  assert.ok(square.includes('Lantern base drip ring'));
+  assert.ok(square.includes('Spire apex base plate'));
+  assert.ok(square.includes('Blind niche gilded figures'));
+  assert.ok(square.includes('blindFigs.count = bf'));
+  assert.ok(square.includes('King’s House eave cresting finials'));
+  assert.ok(square.includes('khEaveCrests.count = 13'));
+  assert.ok(square.includes('string course gilded trim'));
+  assert.ok(square.includes('scTrim.count = sc'));
+  assert.ok(square.includes('Town Hall portal bollard'));
+  assert.ok(square.includes('Grand-Place granite corner stones'));
+  assert.ok(square.includes('cornerStones.count = 4'));
+  assert.ok(source.includes('Manneken Pis niche recess panel'));
+  assert.ok(square.includes('inner shutter leaves'));
+  assert.ok(square.includes('innerShutters.count = ish'));
+  assert.ok(square.includes('King’s House portal door studs'));
+  assert.ok(square.includes('doorStuds.count = 8'));
+});
