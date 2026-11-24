@@ -4198,6 +4198,11 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     for (const side of [-1, 1]) {
       box(g, 0.16, 0.08, 0.16, side * 8.4, 1.24, centralFace + 1.3, bronze, 'Perron mid post cap');
     }
+
+    // Side caps close the ends of the front stylobate step.
+    for (const side of [-1, 1]) {
+      box(g, 0.3, 0.25, 0.8, side * 16, 0.125, centralFace + 8.6, moulding, 'Stylobate step side cap');
+    }
   });
   addLandmark('palaceSurroundings', (g) => {
     // Real-world sources: en/fr Wikipedia (Royal Palace of Brussels, Brussels Park, Place des Palais,

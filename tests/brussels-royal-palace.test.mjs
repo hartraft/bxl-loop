@@ -2233,3 +2233,7 @@ testCase('a cap course finishes the Academy stables yard wall', () => {
 testCase('side kerbs border the Palace of the Nation peristyle floor', () => {
   assert.match(palace, /'Peristyle floor side kerb'/);
 });
+
+testCase('side caps close the ends of the front stylobate step', () => {
+  assert.match(palace, /'Stylobate step side cap'/);
+});
