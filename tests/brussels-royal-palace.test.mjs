@@ -503,3 +503,9 @@ testCase('the equestrian statue of Leopold II stands on the Place du Trône sout
   assert.match(palace, /'Leopold II equestrian horse'/);
   assert.match(palace, /'Leopold II pedestal dedication plaque'/);
 });
+
+testCase('the Place du Trône carries three parterres from Balat 1868-69 design', () => {
+  assert.match(palace, /three parterres and a monumental fence/);
+  assert.match(palace, /'Place du Trône parterre bed'/);
+  assert.match(palace, /'Place du Trône paving'/);
+});

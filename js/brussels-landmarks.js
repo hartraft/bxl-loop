@@ -2430,6 +2430,13 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     cylinder(g, 1.1, 1.4, 6.5, -120, 8.2, -60, materials.bronze, 10).name = 'Leopold II equestrian horse';
     mesh(g, new THREE.SphereGeometry(0.8, 10, 8), materials.bronze, -120, 12.2, -60, 'Leopold II equestrian rider');
     box(g, 3.2, 0.2, 2.0, -120, 3.4, -56.9, materials.bronze, 'Leopold II pedestal dedication plaque');
+    // The Place du Trône got three parterres and a monumental fence with an entrance to the
+    // palace park in 1868-69, to a design by Alphonse Balat (heritage inventory 10001113).
+    for (const px of [-132, -120, -108]) {
+      box(g, 14, 0.5, 14, px, 0.25, -72, materials.green, 'Place du Trône parterre bed');
+      box(g, 14.6, 0.18, 14.6, px, 0.52, -72, materials.pavingEdge, 'Place du Trône parterre edging');
+    }
+    box(g, 60, 0.3, 40, -120, -0.1, -60, materials.pavingEdge, 'Place du Trône paving');
   });
     addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');
