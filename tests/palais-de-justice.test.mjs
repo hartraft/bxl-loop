@@ -127,6 +127,10 @@ test('the monumental dome stack exists: square drum, circular drum, copper dome,
   assert.ok(palace.includes("'Square drum base a gradins upper tier'"));
   assert.ok(palace.includes("'Square dome drum corner pier'"));
   assert.ok(palace.includes("'Square dome drum top ring'"));
+  assert.ok(palace.includes("const drumStatues = ['Loi', 'Justice', 'Force', 'Clemence'];"), 'four bronze allegories at the drum angles');
+  assert.ok(palace.includes("'Drum angle statue plinth'"));
+  assert.ok(palace.includes("drumStatues[k] + ' drum statue pediment'"), 'each under a triangular pediment');
+  assert.ok(palace.includes('cylinder(g, 0.6, 0.85, 5.55, x, 90.0, z, bronze, 10)'), '5.55 m statues');
   assert.ok(palace.includes("'Stylobate cross arm north-south'"), 'Greek-cross stylobate');
   assert.ok(palace.includes("'Stylobate paired pilaster'"));
   assert.ok(palace.includes("'Copper courthouse dome'"));

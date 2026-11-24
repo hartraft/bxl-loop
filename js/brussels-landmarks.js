@@ -1857,8 +1857,21 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     }
     box(g, 41, 1.6, 41, 0, 63.4, 0, stone, 'Square dome drum top ring');
     box(g, 34, 1.5, 34, 0, 69, 0, weathered, 'Upper dome cornice');
-    // Circular upper drum and copper dome; the high lantern is the city's defining silhouette.
+    // Circular upper drum, marked at its four angles by 5.55 m bronze statues under
+    // triangular pediments: the Loi, Justice, Force and Clemence.
     cylinder(g, 17.5, 19.5, 15, 0, 77, 0, light, 32);
+    const drumStatues = ['Loi', 'Justice', 'Force', 'Clemence'];
+    for (let k = 0; k < 4; k++) {
+      const a = Math.PI / 4 + k * Math.PI / 2;
+      const x = Math.cos(a) * 19.5, z = Math.sin(a) * 19.5;
+      box(g, 3.2, 1.5, 3.2, x, 86.5, z, weathered, 'Drum angle statue plinth');
+      cylinder(g, 0.6, 0.85, 5.55, x, 90.0, z, bronze, 10);
+      mesh(g, new THREE.SphereGeometry(0.55, 10, 8), bronze, x, 93.2, z, drumStatues[k] + ' drum statue head');
+      const dp = new THREE.Shape();
+      dp.moveTo(-2.4, 0); dp.lineTo(0, 1.8); dp.lineTo(2.4, 0); dp.closePath();
+      const dpMesh = mesh(g, new THREE.ExtrudeGeometry(dp, { depth: 2.6, bevelEnabled: false }), weathered, x, 94.0, z, drumStatues[k] + ' drum statue pediment');
+      dpMesh.rotation.y = Math.PI / 2 - a;
+    }
     for (let i = 0; i < 24; i++) {
       const a = i * Math.PI * 2 / 24;
       const x = Math.cos(a) * 18.3, z = Math.sin(a) * 18.3;
