@@ -5304,6 +5304,9 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
 
     // A stylobate platform carries the Academy Palace portico columns.
     box(g, 20, 0.4, 3.5, -168, 0.2, 19.8, materials.paleStone, 'Academy portico stylobate');
+
+    // A recessed panel surrounds the BELvue entrance door on the square facade.
+    box(g, 5.2, 7.0, 0.2, 168, 3.5, 21.95, materials.paleStone, 'BELvue entrance recess panel');
   });
     addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');

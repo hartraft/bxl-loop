@@ -1903,3 +1903,7 @@ testCase('corbels carry each wing balcony slab from the facade', () => {
 testCase('a stylobate platform carries the Academy portico columns', () => {
   assert.match(palace, /'Academy portico stylobate'/);
 });
+
+testCase('a recessed panel surrounds the BELvue entrance door', () => {
+  assert.match(palace, /'BELvue entrance recess panel'/);
+});
