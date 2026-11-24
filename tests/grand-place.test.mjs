@@ -107,6 +107,17 @@ test('guild-house rooflines stay varied and instanced', () => {
   assert.ok(source.includes('gilded window surrounds'));
 });
 
+test('houses wear their real facade colours: ochre and plaster alongside the stone tones', () => {
+  assert.ok(square.includes('ochre: new THREE.MeshStandardMaterial'));
+  assert.ok(square.includes('plaster: new THREE.MeshStandardMaterial'));
+  assert.ok(square.includes("Le Cornet', x: -15, width: 8.5, height: 21, style: 'scroll', stone: materials.ochre"));
+  assert.ok(square.includes("La Louve', x: -5.5, width: 8.5, height: 23, floors: 3, style: 'scroll', stone: materials.ochre"));
+  assert.ok(square.includes("La Chaloupe d’Or', x: 46.5, width: 11, height: 24, style: 'bell', stone: materials.ochre"));
+  assert.ok(square.includes("L’Arbre d’Or', x: -18, width: 15, height: 22, style: 'stepped', stone: materials.ochre"));
+  assert.ok(square.includes("Le Roy d’Espagne', x: 23, width: 8.5, height: 24, floors: 4, style: 'bell', stone: materials.plaster"));
+  assert.ok(square.includes("Le Cygne', x: -44, width: 12, height: 23, floors: 4, style: 'bell', stone: materials.plaster"));
+});
+
 test('the seven real street mouths stay open, each with its bronze UNESCO plaque', () => {
   assert.ok(square.includes('UNESCO entrance plaque – ${street}'));
   for (const street of ['Rue au Beurre', 'Rue de la Tête d’or', 'Rue des Chapeliers', 'Rue Charles Buls', 'Rue de la Colline', 'Rue d’Arenberg', 'Rue Chair et Pain']) {
