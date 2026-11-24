@@ -2157,3 +2157,7 @@ testCase('stone steps lead down to the main pond rim on the north side', () => {
 testCase('end blocks close both ends of the portico architrave', () => {
   assert.match(palace, /'Architrave end block'/);
 });
+
+testCase('a low wall closes the south side of the Academy stables yard', () => {
+  assert.match(palace, /'Academy stables yard wall'/);
+});

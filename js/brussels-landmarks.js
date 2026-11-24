@@ -5636,6 +5636,9 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     for (let s = 0; s < 3; s++) {
       box(g, 6, 0.25, 0.9, 0, 0.9 - s * 0.25, 134.0 + s * 0.9, materials.paleStone, 'Main pond north access step');
     }
+
+    // A low wall closes the south side of the Academy stables yard.
+    box(g, 44, 1.0, 0.4, -168, 0.5, 116, materials.ochre, 'Academy stables yard wall');
   });
     addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');
