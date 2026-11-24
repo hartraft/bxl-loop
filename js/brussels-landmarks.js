@@ -5445,6 +5445,9 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     for (const side of [-1, 1]) {
       box(g, 0.3, 5.5, 0.35, -168 + side * 1.8, 2.75, 71.8, materials.warmStone, 'Academy stables door jamb');
     }
+
+    // A projecting plinth bases the BELvue pavilion block.
+    box(g, 38, 0.7, 30.6, 168, 0.35, 36, materials.warmStone, 'BELvue base plinth');
   });
     addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');

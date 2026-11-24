@@ -2024,3 +2024,7 @@ testCase('a bronze kick plate protects the foot of the portico main door', () =>
 testCase('jambs frame the great door of the Academy stables block', () => {
   assert.match(palace, /'Academy stables door jamb'/);
 });
+
+testCase('a projecting plinth bases the BELvue pavilion block', () => {
+  assert.match(palace, /'BELvue base plinth'/);
+});
