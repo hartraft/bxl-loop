@@ -800,3 +800,9 @@ testCase('the octagonal basin carries its own central fountain', () => {
   assert.match(palace, /'Octagonal basin fountain jet'/);
   assert.match(palace, /'Octagonal basin fountain spray'/);
 });
+
+testCase('the portico colonnade stands on a raised paved stylobate', () => {
+  assert.match(palace, /raised paved stylobate floor/);
+  assert.match(palace, /'Portico stylobate floor'/);
+  assert.match(palace, /'Portico stylobate edge'/);
+});
