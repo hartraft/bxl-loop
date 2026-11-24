@@ -1651,3 +1651,7 @@ testCase('keystones crown the BELvue piano nobile windows', () => {
 testCase('arms carry the gilded globes from the perron lamp standards', () => {
   assert.match(palace, /'Perron lamp arm'/);
 });
+
+testCase('a sett-paved yard lies behind the Academy stables block', () => {
+  assert.match(palace, /'Academy stables yard paving'/);
+});

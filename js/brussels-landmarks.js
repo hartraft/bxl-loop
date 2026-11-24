@@ -4988,6 +4988,9 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       const wx = 168 - 13 + i * 6.5;
       box(g, 0.45, 0.6, 0.3, wx, 17.6, 22.15, materials.warmStone, 'BELvue window keystone');
     }
+
+    // A sett-paved yard lies behind the Academy Palace stables block.
+    box(g, 44, 0.12, 24, -168, 0.06, 104, materials.pavingA, 'Academy stables yard paving');
   });
     addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');
