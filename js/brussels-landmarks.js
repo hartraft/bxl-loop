@@ -500,7 +500,7 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       mesh(tower, new THREE.ConeGeometry(0.48, 2.1, 8), roofMat, x, 69.5, z, 'Lantern side pinnacle spire');
     }
     // Eight radial gargoyles per level on each of the lantern's corner turrets.
-    const turretGargoyles = new THREE.InstancedMesh(new THREE.BoxGeometry(0.3, 0.5, 0.7), darkStone, 32);
+    const turretGargoyles = new THREE.InstancedMesh(new THREE.BoxGeometry(0.3, 0.5, 0.7), darkStone, 64);
     let tg = 0;
     for (let k = 0; k < 4; k++) {
       const ta = Math.PI / 4 + k * Math.PI / 2;
