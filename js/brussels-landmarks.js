@@ -2898,29 +2898,6 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     gullies.count = gu;
     gullies.name = 'Grand-Place kerb drainage gullies';
     plaza.add(gullies);
-    // End stones close the kerb line at each of the seven street mouths, and bump rows make
-    // the tactile guidance strips genuinely tactile.
-    const kerbEnds = new THREE.InstancedMesh(new THREE.BoxGeometry(0.6, 0.22, 0.6), materials.pavingEdge, mouths.length * 2);
-    const tactileBumps = new THREE.InstancedMesh(new THREE.SphereGeometry(0.05, 6, 5), materials.warmStone, mouths.length * 8);
-    let ke = 0, tb2 = 0;
-    for (const [mx, mz, dx, dz] of mouths) {
-      for (const side of [-1, 1]) {
-        sd.position.set(mx + dx * 2.2 + (dz !== 0 ? side * 3.4 : 0), 0.06, mz + dz * 2.2 + (dx !== 0 ? side * 3.4 : 0));
-        sd.rotation.y = 0;
-        sd.updateMatrix();
-        kerbEnds.setMatrixAt(ke++, sd.matrix);
-      }
-      for (let b = 0; b < 8; b++) {
-        sd.position.set(mx + dx * 3.4 + (dz !== 0 ? -1.4 + b * 0.4 : 0), 0.045, mz + dz * 3.4 + (dx !== 0 ? -1.4 + b * 0.4 : 0));
-        sd.updateMatrix();
-        tactileBumps.setMatrixAt(tb2++, sd.matrix);
-      }
-    }
-    kerbEnds.count = ke;
-    tactileBumps.count = tb2;
-    kerbEnds.name = 'Grand-Place kerb end stones at street mouths';
-    tactileBumps.name = 'Grand-Place tactile strip bumps';
-    plaza.add(kerbEnds, tactileBumps);
     // Darker blue-stone sett border framing the paved square along all four facade lines, as in
     // the real 1883/1899 calepinage. Instanced around the perimeter.
     const border = new THREE.InstancedMesh(new THREE.BoxGeometry(0.9, 0.08, 0.9), materials.pavingEdge, 420);
@@ -3033,6 +3010,29 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     tactiles.count = mouths.length;
     tactiles.name = 'Grand-Place tactile guidance strips';
     plaza.add(tactiles);
+    // End stones close the kerb line at each of the seven street mouths, and bump rows make
+    // the tactile guidance strips genuinely tactile.
+    const kerbEnds = new THREE.InstancedMesh(new THREE.BoxGeometry(0.6, 0.22, 0.6), materials.pavingEdge, mouths.length * 2);
+    const tactileBumps = new THREE.InstancedMesh(new THREE.SphereGeometry(0.05, 6, 5), materials.warmStone, mouths.length * 8);
+    let ke = 0, tb2 = 0;
+    for (const [mx, mz, dx, dz] of mouths) {
+      for (const side of [-1, 1]) {
+        sd.position.set(mx + dx * 2.2 + (dz !== 0 ? side * 3.4 : 0), 0.06, mz + dz * 2.2 + (dx !== 0 ? side * 3.4 : 0));
+        sd.rotation.y = 0;
+        sd.updateMatrix();
+        kerbEnds.setMatrixAt(ke++, sd.matrix);
+      }
+      for (let b = 0; b < 8; b++) {
+        sd.position.set(mx + dx * 3.4 + (dz !== 0 ? -1.4 + b * 0.4 : 0), 0.045, mz + dz * 3.4 + (dx !== 0 ? -1.4 + b * 0.4 : 0));
+        sd.updateMatrix();
+        tactileBumps.setMatrixAt(tb2++, sd.matrix);
+      }
+    }
+    kerbEnds.count = ke;
+    tactileBumps.count = tb2;
+    kerbEnds.name = 'Grand-Place kerb end stones at street mouths';
+    tactileBumps.name = 'Grand-Place tactile strip bumps';
+    plaza.add(kerbEnds, tactileBumps);
     // Blue-stone sett ring in the paving in front of Everard 't Serclaes' memorial plaque on
     // L'Étoile (no. 1, south frontage) — the real plaque is set off by a paved surround.
     const serclaesRing = new THREE.InstancedMesh(new THREE.BoxGeometry(0.7, 0.06, 0.7), materials.pavingEdge, 8);
