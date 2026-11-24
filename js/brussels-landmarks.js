@@ -1697,7 +1697,10 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     // Eight internal courts are left open. Four long ranges and cross-ranges create
     // a legible courtyard plan instead of a single opaque rectangular mass.
     const wingY = 17.5, wingH = 31, wingD = 17;
-    box(g, 160, wingH, wingD, 0, wingY, 66.5, stone, 'North range facing Place Poelaert');
+    // North range facing Place Poelaert, split around the monumental porch opening (|x| < 34),
+    // matching the entrance-range collider wings.
+    box(g, 46, wingH, wingD, -57, wingY, 66.5, stone, 'North range west wing facing Place Poelaert');
+    box(g, 46, wingH, wingD, 57, wingY, 66.5, stone, 'North range east wing facing Place Poelaert');
     box(g, 160, wingH, wingD, 0, wingY, -66.5, stone, 'South range above Rue de Wynants');
     box(g, wingD, wingH, 116, 71.5, wingY, 0, stone, 'West range Rue des Minimes');
     box(g, wingD, wingH, 116, -71.5, wingY, 0, stone, 'East range Rue aux Laines');

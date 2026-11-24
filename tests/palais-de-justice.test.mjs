@@ -148,7 +148,8 @@ test('the soubassement is the real dark Belgian bluestone (pierre bleue)', () =>
 test('the massing matches the real hors tout 186 x 177 m podium on the 160 x 150 m plan', () => {
   assert.ok(palace.includes("box(g, 186, 4.2, 177, 0, -1.0, 0, weathered, 'Palais de Justice monumental podium')"));
   assert.ok(palace.includes('terrainFoundationSkirt(g, g, brusselsToWorld(BRUSSELS_LANDMARK_ANCHORS.palaisDeJustice.lat, BRUSSELS_LANDMARK_ANCHORS.palaisDeJustice.lon), 186, 177, -3.1'));
-  assert.ok(palace.includes("box(g, 160, wingH, wingD, 0, wingY, 66.5, stone, 'North range facing Place Poelaert')"));
+  assert.ok(palace.includes("box(g, 46, wingH, wingD, -57, wingY, 66.5, stone, 'North range west wing facing Place Poelaert')"));
+  assert.ok(palace.includes("box(g, 46, wingH, wingD, 57, wingY, 66.5, stone, 'North range east wing facing Place Poelaert')"), 'porch opening |x|<34 cut through the north range');
   assert.ok(palace.includes("box(g, 160, wingH, wingD, 0, wingY, -66.5, stone, 'South range above Rue de Wynants')"));
   assert.ok(palace.includes("box(g, wingD, wingH, 116, 71.5, wingY, 0, stone, 'West range Rue des Minimes')"));
   assert.ok(palace.includes("box(g, wingD, wingH, 116, -71.5, wingY, 0, stone, 'East range Rue aux Laines')"));
