@@ -549,3 +549,10 @@ testCase('the 1960s Parc/Park metro entrance pavilion stands in the park NW corn
   assert.match(palace, /'Parc metro entrance pavilion base'/);
   assert.match(palace, /'Parc metro entrance canopy'/);
 });
+
+testCase('the Hôtel de la Liste Civile attaches to the east end of the palace frontage', () => {
+  assert.match(palace, /Hôtel de la Liste Civile stands at the EAST end/);
+  assert.match(palace, /'Hôtel de la Liste Civile block'/);
+  assert.match(palace, /'Liste Civile hipped roof'/);
+  assert.match(palace, /'Liste Civile piano nobile window'/);
+});

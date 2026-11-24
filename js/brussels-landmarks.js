@@ -2505,6 +2505,16 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     for (const cx of [-172.5, -163.5]) {
       box(g, 0.4, 3.1, 0.4, cx, 1.55, 398, materials.dark, 'Parc metro entrance canopy post');
     }
+    // The Hôtel de la Liste Civile stands at the EAST end of the palace frontage, attached to
+    // the curved gallery (rebuilt by Octave Flanneau after 1920).
+    box(g, 30, 15, 24, -112, 7.5, 36, materials.paleStone, 'Hôtel de la Liste Civile block');
+    box(g, 32, 0.9, 26, -112, 15.5, 36, materials.warmStone, 'Liste Civile cornice');
+    mesh(g, new THREE.ConeGeometry(18, 4.5, 4), materials.roof, -112, 19, 36, 'Liste Civile hipped roof');
+    for (let i = 0; i < 4; i++) {
+      const wx = -112 - 10.5 + i * 7;
+      box(g, 2.0, 4.0, 0.2, wx, 9, 24.1, materials.glass, 'Liste Civile piano nobile window');
+      box(g, 2.0, 3.0, 0.2, wx, 4.5, 24.1, materials.glass, 'Liste Civile ground window');
+    }
   });
     addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');
