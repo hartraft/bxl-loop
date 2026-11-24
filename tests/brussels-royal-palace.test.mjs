@@ -2185,3 +2185,7 @@ testCase('a cap course finishes the Academy garden front wall', () => {
 testCase('side caps close the ends of the stylobate edge', () => {
   assert.match(palace, /'Stylobate side cap'/);
 });
+
+testCase('a paved floor covers the Academy portico stylobate', () => {
+  assert.match(palace, /'Academy portico floor'/);
+});

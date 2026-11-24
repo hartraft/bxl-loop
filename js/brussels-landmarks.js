@@ -5667,6 +5667,9 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
 
     // A cap course finishes the Academy Palace garden front wall.
     box(g, 56, 0.12, 0.6, -168, 0.86, 56, materials.warmStone, 'Academy garden wall cap');
+
+    // A paved floor covers the Academy Palace portico stylobate.
+    box(g, 22, 0.06, 4, -168, 0.43, 19.9, materials.pavingA, 'Academy portico floor');
   });
     addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');
