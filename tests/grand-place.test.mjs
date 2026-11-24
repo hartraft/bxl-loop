@@ -39,6 +39,13 @@ test('the Town Hall tower rises from the ground-level portal to the real 96 m', 
   assert.ok(square.includes('Saint Michael dragon'));
 });
 
+test('the Town Hall roof ridge is dressed with gilded cresting', () => {
+  assert.ok(square.includes("'Town Hall gilded roof cresting'"));
+  assert.ok(square.includes('const crestCount = Math.floor(width / 1.5)'));
+  assert.ok(square.includes('new THREE.ConeGeometry(0.16, 0.6, 6), materials.gold, crestCount)'));
+  assert.ok(square.includes('crests.count = crestCount'));
+});
+
 test('the Town Hall eave is surmounted by a crenellated openwork parapet', () => {
   assert.ok(square.includes("'Town Hall crenellated openwork parapet'"));
   assert.ok(square.includes('const merlonCount = Math.floor(width / 1.2)'));

@@ -744,6 +744,17 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     merlons.count = merlonCount;
     merlons.name = 'Town Hall crenellated openwork parapet';
     root.add(merlons);
+    // Gilded cresting (fleurons) along the roof ridge — the real roofline is dressed in gold.
+    const crestCount = Math.floor(width / 1.5);
+    const crests = new THREE.InstancedMesh(new THREE.ConeGeometry(0.16, 0.6, 6), materials.gold, crestCount);
+    for (let i = 0; i < crestCount; i++) {
+      merDummy.position.set(-width / 2 + 0.75 + i * 1.5, ridgeY + 0.5, -depth / 2);
+      merDummy.updateMatrix();
+      crests.setMatrixAt(i, merDummy.matrix);
+    }
+    crests.count = crestCount;
+    crests.name = 'Town Hall gilded roof cresting';
+    root.add(crests);
 
     // Dormers and small roof turrets make the skyline read as a Gothic civic palace.
     for (let i = 0; i < 11; i++) {
