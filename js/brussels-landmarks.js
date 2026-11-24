@@ -5729,6 +5729,11 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
 
     // A sett field paves the east side of the Place du Trone.
     box(g, 60, 0.1, 20, -90, 0.02, -60, materials.pavingA, 'Place du Trone east sett field');
+
+    // Stone access steps lead down to the octagonal basin rim on its east side.
+    for (let s = 0; s < 3; s++) {
+      box(g, 0.9, 0.25, 5, 14.0 + s * 0.9, 0.9 - s * 0.25, 262, materials.paleStone, 'Octagonal basin east access step');
+    }
   });
     addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');
