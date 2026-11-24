@@ -6903,6 +6903,126 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       ramps.name = 'Kerb ramps at the crossings (abaissés de trottoir)';
       g.add(ramps);
     }
+    // Round 171: rue de la Bourse runs along the palace's east flank from the square south-east
+    // (en.wikipedia Place de la Bourse: two side streets run along each side of the building).
+    box(g, 12, 0.26, 55, 62, -0.13, 20, materials.pavingB, 'Rue de la Bourse paving (east flank of the palace)');
+    {
+      const facades = new THREE.InstancedMesh(new THREE.BoxGeometry(9, 18, 0.8), materials.plaster, 4);
+      const dummy = new THREE.Object3D();
+      for (let i = 0; i < 4; i++) {
+        dummy.position.set(67, 9, -2 - i * 13);
+        dummy.updateMatrix();
+        facades.setMatrixAt(i, dummy.matrix);
+      }
+      facades.count = 4;
+      facades.name = 'Rue de la Bourse facade row';
+      facades.castShadow = true;
+      g.add(facades);
+    }
+    // Round 172: rue Henri Maus runs along the palace's west flank.
+    box(g, 12, 0.26, 55, -62, -0.13, 20, materials.pavingB, 'Rue Henri Maus paving (west flank of the palace)');
+    {
+      const facades = new THREE.InstancedMesh(new THREE.BoxGeometry(9, 18, 0.8), materials.ochre, 4);
+      const dummy = new THREE.Object3D();
+      for (let i = 0; i < 4; i++) {
+        dummy.position.set(-67, 9, -2 - i * 13);
+        dummy.updateMatrix();
+        facades.setMatrixAt(i, dummy.matrix);
+      }
+      facades.count = 4;
+      facades.name = 'Rue Henri Maus facade row';
+      facades.castShadow = true;
+      g.add(facades);
+    }
+    // Round 173: the rue du Marche aux Poulets reaches the square from the south-east
+    // (fr.wikipedia: the square receives rue de la Bourse, rue du Marche aux Poulets, ...).
+    box(g, 12, 0.26, 40, 45, -0.13, -5, materials.pavingB, 'Rue du Marche aux Poulets connection to the square');
+    // Round 174: neoclassical 1870s blocks line the boulevard south of the square (toward
+    // Boulevard Maurice Lemonnier) — the boulevard's uniform facades of the Anspach scheme.
+    {
+      const blocks = new THREE.InstancedMesh(new THREE.BoxGeometry(16, 20, 14), materials.plaster, 4);
+      const dummy = new THREE.Object3D();
+      for (let i = 0; i < 4; i++) {
+        dummy.position.set(-30 + i * 20, 10, 142);
+        dummy.updateMatrix();
+        blocks.setMatrixAt(i, dummy.matrix);
+      }
+      blocks.count = 4;
+      blocks.name = 'Boulevard Anspach south facade row (facades uniformes du scheme Anspach, vers 1870)';
+      blocks.castShadow = true;
+      g.add(blocks);
+    }
+    // Round 175: the Ancienne Belgique concert hall fronts the boulevard north of the square
+    // (en.wikipedia Boulevard Anspach: places of interest include the Bourse and the Ancienne Belgique).
+    {
+      box(g, 26, 26, 16, -34, 13, 142, materials.warmStone, 'Ancienne Belgique concert hall frontage (Boulevard Anspach)');
+      box(g, 27, 1.4, 17, -34, 26.7, 142, materials.dark, 'Ancienne Belgique cornice');
+      const wins = new THREE.InstancedMesh(new THREE.BoxGeometry(2.4, 5, 0.3), materials.glass, 8);
+      const dummy = new THREE.Object3D();
+      let n = 0;
+      for (let f = 0; f < 2; f++) for (let i = 0; i < 4; i++) {
+        dummy.position.set(-43 + i * 6.5, 8 + f * 9, 150.2);
+        dummy.updateMatrix();
+        wins.setMatrixAt(n++, dummy.matrix);
+      }
+      wins.count = n;
+      wins.name = 'Ancienne Belgique windows';
+      wins.castShadow = true;
+      g.add(wins);
+    }
+    // Round 176: eclectic blocks line the boulevard north of the square toward De Brouckere.
+    {
+      const blocks = new THREE.InstancedMesh(new THREE.BoxGeometry(15, 19, 14), materials.ochre, 4);
+      const dummy = new THREE.Object3D();
+      for (let i = 0; i < 4; i++) {
+        dummy.position.set(28 + i * 19, 9.5, 100);
+        dummy.updateMatrix();
+        blocks.setMatrixAt(i, dummy.matrix);
+      }
+      blocks.count = 4;
+      blocks.name = 'Boulevard Anspach north facade row (blocs eclectiques, style 1870-85)';
+      blocks.castShadow = true;
+      g.add(blocks);
+    }
+    // Round 177: the rue des Bogards mouth south of the square, with its enamel sign.
+    {
+      box(g, 12, 0.26, 30, 0, -0.13, -60, materials.pavingB, 'Rue des Bogards mouth paving');
+      const sign = new THREE.Group();
+      sign.name = 'Enamel street sign RUE DES BOGARDS / BOGARDSTRAAT';
+      sign.position.set(6, 0, -58);
+      cylinder(sign, 0.05, 0.06, 2.6, 0, 1.3, 0, materials.dark, 6);
+      box(sign, 1.7, 0.5, 0.06, 0, 2.72, 0, materials.enamelBlue, 'enamel plate RUE DES BOGARDS / BOGARDSTRAAT');
+      g.add(sign);
+    }
+    // Round 178: paving continues from the rue Henri Maus south end toward the boulevard du Midi.
+    box(g, 12, 0.26, 45, -62, -0.13, -25, materials.pavingB, 'Rue Henri Maus south continuation toward Boulevard du Midi');
+    // Round 179: the facades along the square's east and west edges (beside the flanking streets).
+    {
+      const rows = new THREE.InstancedMesh(new THREE.BoxGeometry(10, 17, 0.8), materials.plaster, 6);
+      const dummy = new THREE.Object3D();
+      for (let i = 0; i < 3; i++) {
+        dummy.position.set(69, 8.5, 60 + i * 22);
+        dummy.updateMatrix();
+        rows.setMatrixAt(i, dummy.matrix);
+        dummy.position.set(-69, 8.5, 60 + i * 22);
+        dummy.updateMatrix();
+        rows.setMatrixAt(3 + i, dummy.matrix);
+      }
+      rows.count = 6;
+      rows.name = 'Square edge facade rows (immeubles bordant la place)';
+      rows.castShadow = true;
+      g.add(rows);
+    }
+    // Round 180: the pietonnier lamp heads glow after dark — register them in nightGlowMats.
+    {
+      const lampGlow = materials.glass.clone();
+      lampGlow.emissive = new THREE.Color(0x000000);
+      nightGlowMats.push(lampGlow);
+      const heads = g.children.find((c) => c.name === 'Pietonnier lamp heads');
+      if (heads) heads.material = lampGlow;
+      const beacons = g.children.find((c) => c.name === 'Belisha beacon globes');
+      if (beacons) beacons.material = lampGlow;
+    }
     // __SURROUNDINGS_ROUNDS__
   });
 

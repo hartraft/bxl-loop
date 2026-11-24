@@ -603,4 +603,29 @@ testCase('rounds 167-170: allegory pedestals, tympanum radiant halo, entablature
   assert.match(bourse, /'Bourse cella base plinth \(plinthe\)'/);
 });
 
+testCase('rounds 171-173: rue de la Bourse + rue Henri Maus flanking streets, Marche aux Poulets connection', () => {
+  assert.match(surroundings, /'Rue de la Bourse paving \(east flank of the palace\)'/);
+  assert.match(surroundings, /'Rue de la Bourse facade row'/);
+  assert.match(surroundings, /'Rue Henri Maus paving \(west flank of the palace\)'/);
+  assert.match(surroundings, /'Rue Henri Maus facade row'/);
+  assert.match(surroundings, /'Rue du Marche aux Poulets connection to the square'/);
+});
+
+testCase('rounds 174-179: boulevard south/north facade rows, Ancienne Belgique frontage, Bogards mouth + sign, square edge rows', () => {
+  assert.match(surroundings, /'Boulevard Anspach south facade row/);
+  assert.match(surroundings, /'Ancienne Belgique concert hall frontage \(Boulevard Anspach\)'/);
+  assert.match(surroundings, /'Ancienne Belgique windows'/);
+  assert.match(surroundings, /'Boulevard Anspach north facade row/);
+  assert.match(surroundings, /'Rue des Bogards mouth paving'/);
+  assert.match(surroundings, /'Enamel street sign RUE DES BOGARDS \/ BOGARDSTRAAT'/);
+  assert.match(surroundings, /'Rue Henri Maus south continuation toward Boulevard du Midi'/);
+  assert.match(surroundings, /'Square edge facade rows/);
+});
+
+testCase('round 180: pietonnier lamp heads + Belisha globes registered for the night glow pass', () => {
+  assert.match(surroundings, /nightGlowMats\.push\(lampGlow\)/);
+  assert.match(surroundings, /heads\.material = lampGlow/);
+  assert.match(surroundings, /beacons\.material = lampGlow/);
+});
+
 // __MORE_BOURSE_TESTS__
