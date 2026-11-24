@@ -4194,6 +4194,26 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     rearTrunk.count = rti; rearTrunk.name = 'Rear garden tree trunks'; g.add(rearTrunk);
     rearCan.count = rti; rearCan.name = 'Rear garden tree canopies'; g.add(rearCan);
 
+    // Tree rows also line the three radiating avenues from the main pond.
+    const radTrunk = new THREE.InstancedMesh(new THREE.CylinderGeometry(0.2, 0.28, 3.0, 6), materials.dark, 36);
+    const radCan = new THREE.InstancedMesh(new THREE.SphereGeometry(1.7, 8, 6), materials.green, 36);
+    const rdd = new THREE.Object3D();
+    let rdi = 0;
+    for (const ra of [Math.PI * 0.72, Math.PI * 0.28, Math.PI / 2]) {
+      for (let d = 20; d <= 110; d += 18) {
+        for (const off of [-4, 4]) {
+          const px = Math.cos(ra) * d + Math.cos(ra + Math.PI / 2) * off;
+          const pz = 150 + Math.sin(ra) * d + Math.sin(ra + Math.PI / 2) * off;
+          rdd.position.set(px, 1.5, pz); rdd.rotation.y = 0; rdd.updateMatrix();
+          radTrunk.setMatrixAt(rdi, rdd.matrix);
+          rdd.position.set(px, 3.9, pz); rdd.updateMatrix();
+          radCan.setMatrixAt(rdi, rdd.matrix);
+          rdi++;
+        }
+      }
+    }
+    radTrunk.count = rdi; radTrunk.name = 'Radiating avenue tree trunks'; g.add(radTrunk);
+    radCan.count = rdi; radCan.name = 'Radiating avenue tree canopies'; g.add(radCan);
   });
     addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');

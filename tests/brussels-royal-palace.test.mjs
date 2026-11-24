@@ -1084,3 +1084,9 @@ testCase('dormers pierce the front slope of each wing mansard', () => {
 testCase('basement windows (soupiraux) pierce the south avant-corps base', () => {
   assert.match(palace, /'South avant-corps basement window'/);
 });
+
+testCase('tree rows line the three radiating avenues from the main pond', () => {
+  assert.match(palace, /'Radiating avenue tree trunks'/);
+  assert.match(palace, /'Radiating avenue tree canopies'/);
+  assert.match(palace, /radTrunk\.count = rdi/);
+});
