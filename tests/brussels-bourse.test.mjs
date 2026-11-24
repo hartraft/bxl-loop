@@ -100,6 +100,7 @@ testCase('round 8: Greek-cross arms, four corner pavilions, ajouree lateral arca
   assert.match(bourse, /'Bourse rear arm end pediment \(curved pediment with Asie\/Afrique groups by Van Rasbourg\/Rodin\)'/);
   assert.match(bourse, /'Bourse lateral facade round-arched arcades \(facades ajourees, Brunfaut 1892-1898\)'/);
   assert.match(bourse, /arcades\.count = n/);
+  assert.match(bourse, /new THREE\.InstancedMesh\(new THREE\.BoxGeometry\(3\.4, 9, 0\.5\), materials\.dark, 48\)/, 'arcades allocation must cover all 48 instances (smoke-found bug)');
 });
 
 testCase('round 9: dome on four piers with paired Corinthian pilasters, glazed since 1893, lantern + finial', () => {
@@ -635,6 +636,7 @@ testCase('rounds 181-185: dome pilaster bases/capitals, pier plinths, socle refe
   assert.match(bourse, /'Bourse dome pier plinth \(plinthe du pilier\)'/);
   assert.match(bourse, /'Bourse socle refend grooves side \+ rear faces'/);
   assert.match(bourse, /side\.count = n/);
+  assert.match(bourse, /materials\.dark, 60\)/, 'socle refend side allocation must cover 60 instances (smoke-found bug)');
   assert.match(bourse, /'Bourse front eave gutter \(gouttiere\)'/);
   assert.match(bourse, /'Bourse pediment eaves palmette antefix'/);
 });
@@ -720,6 +722,31 @@ testCase('rounds 216-220: Fontaine side spouts, mirror corner stones, planter ri
   assert.match(layout, /premetro access 6 kiosk/);
   const sur2 = createBrusselsLandmarkColliders('bourseSurroundings', brusselsToWorld(BRUSSELS_LANDMARK_ANCHORS.bourseSurroundings.lat, BRUSSELS_LANDMARK_ANCHORS.bourseSurroundings.lon), BOURSE_ROTATION, 0);
   assert.ok(sur2.length >= 7, 'kiosks registered as colliders');
+});
+
+testCase('rounds 221-225: ground floodlights, entasis rings, cella coursing, stair landings, clock second hand', () => {
+  assert.match(bourse, /'Bourse ground floodlight troughs on the square \(projecteurs au sol\)'/);
+  assert.match(bourse, /troughs\.count = 6/);
+  assert.match(bourse, /'Bourse peristyle shaft entasis rings \(entasis\)'/);
+  assert.match(bourse, /rings\.count = 8/);
+  assert.match(bourse, /'Bourse cella coursing grooves/);
+  assert.match(bourse, /courses\.count = 6/);
+  assert.match(bourse, /'Bourse stair mid landing platform'/);
+  assert.match(bourse, /'Bourse clock second hand'/);
+});
+
+testCase('rounds 226-230: tympanum inner frame, ogee cyma, front pilasters, downpipe collars, cellar grates', () => {
+  assert.match(bourse, /'Bourse tympanum inner frame moulding/);
+  assert.match(bourse, /'tympanum inner frame raking'/);
+  assert.match(bourse, /'Bourse cornice ogee cyma band \(cyma en doucine\)'/);
+  assert.match(bourse, /cyma\.count = 1/);
+  assert.match(bourse, /'Bourse front corner pilaster'/);
+  assert.match(bourse, /'Bourse front pilaster capital'/);
+  assert.match(bourse, /'Bourse downpipe bracket collars \(colliers de fixation\)'/);
+  assert.match(bourse, /collars\.count = n/);
+  assert.match(bourse, /'Bourse cellar areaway grates beside the stair \(soupiraux de cave\)'/);
+  assert.match(bourse, /grates\.count = 4/);
+  assert.ok(!bourse.includes("'placeholder'"), 'no placeholder meshes left');
 });
 
 // __MORE_BOURSE_TESTS__

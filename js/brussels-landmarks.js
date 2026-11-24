@@ -4781,7 +4781,7 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     pedimentPrism(g, 34, 5, 8, 0, 26, 38.5, materials.paleStone, 'Bourse front arm end pediment');
     pedimentPrism(g, 34, 5, 8, 0, 26, -38.5, materials.paleStone, 'Bourse rear arm end pediment (curved pediment with Asie/Afrique groups by Van Rasbourg/Rodin)');
     {
-      const arcades = new THREE.InstancedMesh(new THREE.BoxGeometry(3.4, 9, 0.5), materials.dark, 24);
+      const arcades = new THREE.InstancedMesh(new THREE.BoxGeometry(3.4, 9, 0.5), materials.dark, 48);
       const dummy = new THREE.Object3D();
       let n = 0;
       for (const wx of [-48.5, -42, -35.5]) for (let i = 0; i < 8; i++) {
@@ -6103,7 +6103,7 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     }
     // Round 183: the socle's refend grooves continue around the side and rear faces.
     {
-      const side = new THREE.InstancedMesh(new THREE.BoxGeometry(0.05, 4.7, 0.07), materials.dark, 2 * 20);
+      const side = new THREE.InstancedMesh(new THREE.BoxGeometry(0.05, 4.7, 0.07), materials.dark, 60);
       const dummy = new THREE.Object3D();
       let n = 0;
       for (const sx of [-1, 1]) for (let i = 0; i < 20; i++) {
@@ -6285,6 +6285,117 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     for (const [vx, vz, ry] of [[-21, 0, Math.PI / 2], [21, 0, Math.PI / 2], [0, 21, 0], [0, -21, 0]]) {
       const valley = box(g, ry === 0 ? 6 : 0.3, 0.1, ry === 0 ? 0.3 : 6, vx, 26.2, vz, materials.dark, 'Bourse roof valley lead flashing (noue en plomb)');
       valley.rotation.y = ry;
+    }
+    // Round 221: ground floodlight troughs on the square aim up at the facade (the palace is
+    // floodlit after dark, as the Grand-Place is).
+    {
+      const troughs = new THREE.InstancedMesh(new THREE.BoxGeometry(3.2, 0.25, 0.6), materials.dark, 6);
+      const heads = new THREE.InstancedMesh(new THREE.SphereGeometry(0.18, 8, 6), materials.gold, 6);
+      const dummy = new THREE.Object3D();
+      for (let i = 0; i < 6; i++) {
+        dummy.position.set(-25 + i * 10, 0.12, 52);
+        dummy.updateMatrix();
+        troughs.setMatrixAt(i, dummy.matrix);
+        dummy.position.set(-25 + i * 10, 0.3, 51.6);
+        dummy.updateMatrix();
+        heads.setMatrixAt(i, dummy.matrix);
+      }
+      troughs.count = 6; troughs.name = 'Bourse ground floodlight troughs on the square (projecteurs au sol)';
+      troughs.castShadow = true; g.add(troughs);
+      heads.count = 6; heads.name = 'Bourse ground floodlight heads';
+      g.add(heads);
+    }
+    // Round 222: the column shafts swell slightly (entasis) — a subtle mid-shaft ring on each.
+    {
+      const rings = new THREE.InstancedMesh(new THREE.TorusGeometry(0.84, 0.06, 6, 14), materials.warmStone, 8);
+      const dummy = new THREE.Object3D();
+      for (let i = 0; i < 8; i++) {
+        dummy.position.set(peristyleX[i], 10.5, 36);
+        dummy.rotation.set(Math.PI / 2, 0, 0);
+        dummy.updateMatrix();
+        rings.setMatrixAt(i, dummy.matrix);
+      }
+      rings.count = 8;
+      rings.name = 'Bourse peristyle shaft entasis rings (entasis)';
+      g.add(rings);
+    }
+    // Round 223: the painted stone cella shows coursed joints (horizontal grooves).
+    {
+      const courses = new THREE.InstancedMesh(new THREE.BoxGeometry(100, 0.05, 0.06), materials.dark, 6);
+      const dummy = new THREE.Object3D();
+      for (let i = 0; i < 6; i++) {
+        dummy.position.set(0, 7 + i * 2.2, 30.23);
+        dummy.updateMatrix();
+        courses.setMatrixAt(i, dummy.matrix);
+      }
+      courses.count = 6;
+      courses.name = 'Bourse cella coursing grooves (joints de l\'appareil peint)';
+      courses.castShadow = false;
+      g.add(courses);
+    }
+    // Round 224: the monumental stair has side landing platforms at mid-height.
+    for (const sx of [-1, 1]) box(g, 8, 0.3, 6, sx * 17, 2.6, 41.5, materials.pavingEdge, 'Bourse stair mid landing platform');
+    // Round 225: the clock has a second hand.
+    {
+      const hand = box(g, 0.06, 1.6, 0.04, 0, 15.9, 30.86, materials.dark, 'Bourse clock second hand');
+      hand.rotation.z = 0.8;
+    }
+    // Round 226: the tympanum has an inner frame moulding inside the pediment triangle.
+    {
+      const inner = new THREE.Group();
+      inner.name = 'Bourse tympanum inner frame moulding (cadre interieur)';
+      box(inner, 30, 0.25, 0.2, 0, 25.0, 37.0, materials.warmStone, 'tympanum inner frame base');
+      const s = Math.atan2(8.5, 19);
+      for (const sx of [-1, 1]) {
+        const rail = box(inner, 0.25, 0.25, 17.5, sx * 7.5, 28.9, 37.0, materials.warmStone, 'tympanum inner frame raking');
+        rail.rotation.x = sx * -s;
+      }
+      g.add(inner);
+    }
+    // Round 227: the cornice carries an ogee cyma band along its front top edge.
+    {
+      const cyma = new THREE.InstancedMesh(new THREE.CylinderGeometry(0.14, 0.14, 104, 8, 1, false, 0, Math.PI), materials.warmStone, 1);
+      const dummy = new THREE.Object3D();
+      dummy.position.set(0, 23.9, 37.2);
+      dummy.rotation.z = Math.PI / 2;
+      dummy.updateMatrix();
+      cyma.setMatrixAt(0, dummy.matrix);
+      cyma.count = 1;
+      cyma.name = 'Bourse cornice ogee cyma band (cyma en doucine)';
+      cyma.castShadow = true;
+      g.add(cyma);
+    }
+    // Round 228: pilasters on the front facade's outer corners, framing the composition.
+    for (const sx of [-1, 1]) {
+      box(g, 1.1, 15, 4.6, sx * 49.4, 12.5, 28, materials.paleStone, 'Bourse front corner pilaster');
+      box(g, 1.4, 0.5, 5.0, sx * 49.4, 20.2, 28, materials.warmStone, 'Bourse front pilaster capital');
+    }
+    // Round 229: the downpipes are held to the wall by bracket collars.
+    {
+      const collars = new THREE.InstancedMesh(new THREE.BoxGeometry(0.2, 0.14, 0.2), materials.dark, 16);
+      const dummy = new THREE.Object3D();
+      let n = 0;
+      for (const sx of [-1, 1]) for (const sz of [1, -1]) for (let i = 0; i < 4; i++) {
+        dummy.position.set(sx * 49.6, 3 + i * 5.5, sz * 30.4);
+        dummy.updateMatrix();
+        collars.setMatrixAt(n++, dummy.matrix);
+      }
+      collars.count = n;
+      collars.name = 'Bourse downpipe bracket collars (colliers de fixation)';
+      g.add(collars);
+    }
+    // Round 230: cellar areaway grates (soupiraux) in the pavement beside the stair.
+    {
+      const grates = new THREE.InstancedMesh(new THREE.BoxGeometry(3, 0.08, 1.2), materials.dark, 4);
+      const dummy = new THREE.Object3D();
+      for (let i = 0; i < 2; i++) for (const sx of [-1, 1]) {
+        dummy.position.set(sx * 18, 0.05, 46 - i * 4);
+        dummy.updateMatrix();
+        grates.setMatrixAt(i * 2 + (sx < 0 ? 0 : 1), dummy.matrix);
+      }
+      grates.count = 4;
+      grates.name = 'Bourse cellar areaway grates beside the stair (soupiraux de cave)';
+      g.add(grates);
     }
     // __BOURSE_ROUNDS__
   });
