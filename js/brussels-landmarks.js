@@ -2423,6 +2423,13 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     // The south avant-corps is capped by an end cornice over its pediment, matching the
     // central front's cornice.
     box(g, 27.6, 0.5, 8.2, 0, 21.0, -60, moulding, 'South avant-corps end cornice');
+
+    // Gilded ridge finials mark the ends of each wing mansard ridge.
+    for (const x of wingXs) {
+      for (const side of [-1, 1]) {
+        mesh(g, new THREE.SphereGeometry(0.4, 10, 8), gilded, x + side * 25.4, 23.4, -1, 'Wing mansard ridge finial');
+      }
+    }
   });
   addLandmark('palaceSurroundings', (g) => {
     // Brussels Park (Parc de Bruxelles): the rectangular 13.1 ha neoclassical park north of the

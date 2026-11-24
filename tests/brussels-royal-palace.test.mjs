@@ -893,3 +893,8 @@ testCase('the south avant-corps is capped by an end cornice over its pediment', 
   assert.match(palace, /capped by an end cornice over its pediment/);
   assert.match(palace, /'South avant-corps end cornice'/);
 });
+
+testCase('gilded finials mark the ends of each wing mansard ridge', () => {
+  assert.match(palace, /ridge finials mark the ends/);
+  assert.match(palace, /'Wing mansard ridge finial'/);
+});
