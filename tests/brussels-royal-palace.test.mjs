@@ -2036,3 +2036,7 @@ testCase('gilded balls crown the perron side rail posts', () => {
 testCase('small pediments cap the Academy Palace end pavilions', () => {
   assert.match(palace, /'Academy end pavilion pediment'/);
 });
+
+testCase('cap strips finish the wing balcony corbels', () => {
+  assert.match(palace, /'Wing balcony corbel cap'/);
+});

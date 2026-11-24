@@ -4113,6 +4113,13 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
         mesh(g, new THREE.SphereGeometry(0.1, 10, 8), gilded, side * 8.4, 1.32, centralFace + pz, 'Perron rail post ball');
       }
     }
+
+    // Cap strips finish the wing balcony corbels.
+    for (const side of wingXs) {
+      for (let k = 0; k < 7; k++) {
+        box(g, 0.22, 0.1, 0.55, side - 21 + k * 7, 7.72, facadeZ + 0.5, bronze, 'Wing balcony corbel cap');
+      }
+    }
   });
   addLandmark('palaceSurroundings', (g) => {
     // Real-world sources: en/fr Wikipedia (Royal Palace of Brussels, Brussels Park, Place des Palais,
