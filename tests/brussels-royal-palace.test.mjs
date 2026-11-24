@@ -556,3 +556,9 @@ testCase('the Hôtel de la Liste Civile attaches to the east end of the palace f
   assert.match(palace, /'Liste Civile hipped roof'/);
   assert.match(palace, /'Liste Civile piano nobile window'/);
 });
+
+testCase('the palace rear gardens are English style with lawn and scattered trees', () => {
+  assert.match(palace, /English style at the rear/);
+  assert.match(palace, /'Rear English-style garden lawn'/);
+  assert.match(palace, /'Rear garden tree canopies'/);
+});

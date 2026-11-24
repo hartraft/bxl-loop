@@ -2218,6 +2218,25 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
         cgR.rotation.y = cgRot;
       }
     }
+
+    // Behind the palace the gardens are English style (Wikipedia: "French style at the
+    // front, English style at the rear") — a lawn with scattered trees on the Coudenberg site.
+    box(g, 200, 0.3, 90, 0, -0.1, -115, materials.green, 'Rear English-style garden lawn');
+    const rearTrunk = new THREE.InstancedMesh(new THREE.CylinderGeometry(0.25, 0.34, 3.6, 6), shadow, 12);
+    const rearCan = new THREE.InstancedMesh(new THREE.SphereGeometry(2.4, 8, 6), materials.green, 12);
+    const rtd = new THREE.Object3D();
+    let rti = 0;
+    for (let i = 0; i < 12; i++) {
+      const rx = -90 + (i % 6) * 36;
+      const rz = -80 - Math.floor(i / 6) * 55;
+      rtd.position.set(rx, 1.8, rz); rtd.rotation.y = 0; rtd.updateMatrix();
+      rearTrunk.setMatrixAt(rti, rtd.matrix);
+      rtd.position.set(rx, 4.6, rz); rtd.updateMatrix();
+      rearCan.setMatrixAt(rti, rtd.matrix);
+      rti++;
+    }
+    rearTrunk.count = rti; rearTrunk.name = 'Rear garden tree trunks'; g.add(rearTrunk);
+    rearCan.count = rti; rearCan.name = 'Rear garden tree canopies'; g.add(rearCan);
   });
   addLandmark('palaceSurroundings', (g) => {
     // Brussels Park (Parc de Bruxelles): the rectangular 13.1 ha neoclassical park north of the
