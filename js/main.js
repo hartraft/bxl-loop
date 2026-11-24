@@ -506,7 +506,7 @@ async function initApp() {
 
   window.addEventListener('resize', () => {
     cameraSystem.onResize(window.innerWidth, window.innerHeight);
-    renderer.setSize(window.innerWidth, window.innerHeight, false);
+    renderer.setSize(window.innerWidth, window.innerHeight);
     placeModeIndicator();
     if (mapSystem.isFullMapOpen) {
       mapSystem.resizeFullCanvas();
@@ -737,28 +737,33 @@ async function initApp() {
       frameCount = 0;
       fpsTimer = 0;
 
-      if (currentFps < 32) {
-        slowFrameSeconds += sampleSeconds;
-        fastFrameSeconds = 0;
-        if (slowFrameSeconds >= 1.25 && renderScale > 0.65) {
-          renderScale = Math.max(0.65, Math.round((renderScale - 0.1) * 100) / 100);
-          slowFrameSeconds = 0;
-          applyRenderScale();
-          console.info(`[performance] render scale reduced to ${renderScale.toFixed(2)} after sustained ${currentFps} FPS`);
-        }
-      } else if (currentFps > 48) {
-        fastFrameSeconds += sampleSeconds;
-        slowFrameSeconds = 0;
-        if (fastFrameSeconds >= 8 && renderScale < 1) {
-          renderScale = Math.min(1, Math.round((renderScale + 0.05) * 100) / 100);
+      // Fixed-timestep screenshot capture intentionally runs at 30 simulation ticks per second;
+      // that is not a measure of GPU throughput, so keep capture output resolution deterministic.
+      if (!CAPTURE) {
+        if (currentFps < 32) {
+          slowFrameSeconds += sampleSeconds;
           fastFrameSeconds = 0;
-          applyRenderScale();
-          console.info(`[performance] render scale restored to ${renderScale.toFixed(2)}`);
+          if (slowFrameSeconds >= 1.25 && renderScale > 0.65) {
+            renderScale = Math.max(0.65, Math.round((renderScale - 0.1) * 100) / 100);
+            slowFrameSeconds = 0;
+            applyRenderScale();
+            console.info(`[performance] render scale reduced to ${renderScale.toFixed(2)} after sustained ${currentFps} FPS`);
+          }
+        } else if (currentFps > 48) {
+          fastFrameSeconds += sampleSeconds;
+          slowFrameSeconds = 0;
+          if (fastFrameSeconds >= 8 && renderScale < 1) {
+            renderScale = Math.min(1, Math.round((renderScale + 0.05) * 100) / 100);
+            fastFrameSeconds = 0;
+            applyRenderScale();
+            console.info(`[performance] render scale restored to ${renderScale.toFixed(2)}`);
+          }
+        } else {
+          slowFrameSeconds = 0;
+          fastFrameSeconds = 0;
         }
-      } else {
-        slowFrameSeconds = 0;
-        fastFrameSeconds = 0;
-      }
+  
+        }
 
       const activeEnt = controllerManager.getActiveEntity();
       const mode = controllerManager.activeMode;
