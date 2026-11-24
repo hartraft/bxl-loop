@@ -2193,3 +2193,7 @@ testCase('a paved floor covers the Academy portico stylobate', () => {
 testCase('a paved floor covers the Palace of the Nation peristyle', () => {
   assert.match(palace, /'Palace of the Nation peristyle floor'/);
 });
+
+testCase('cap slabs finish the central balcony corbels', () => {
+  assert.match(palace, /'Central balcony corbel cap'/);
+});
