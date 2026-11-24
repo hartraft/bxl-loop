@@ -1497,10 +1497,11 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
         }
       }
 
-      // Subtle vertical divisions every third bay and a continuous attic balustrade.
-      for (let i = 0; i <= 3; i++) {
-        const px = x - 24 + i * 16;
-        box(g, 0.28, 19.2, 0.42, px, 10.2, facadeZ + 0.12, ashlar, 'Wing bay pilaster');
+      // A monumental order of pilasters divides EVERY bay of the wings — the real
+      // upper levels carry "un ordre monumental de pilastres" (EHNE / heritage).
+      for (let i = 0; i <= 9; i++) {
+        const px = x - 24.75 + i * 5.5;
+        box(g, 0.3, 19.2, 0.44, px, 10.2, facadeZ + 0.12, ashlar, 'Wing bay pilaster');
       }
       box(g, wingW + 1.5, 0.75, wingD + 1.1, x, 20.75, -1.5, ashlar, 'Wing main cornice');
       box(g, wingW + 1.0, 0.7, wingD + 0.8, x, 21.55, -1.5, roof, 'Wing mansard lower slope');

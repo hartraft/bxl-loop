@@ -68,6 +68,13 @@ testCase('the front garden holds the real three sunken parterres (central on the
   assert.match(palace, /\{ x: 38, w: 34, z: 12\.4, d: 2\.6 \}/);
 });
 
+testCase('a monumental pilaster order divides every bay of the wings', () => {
+  assert.match(palace, /ordre monumental de pilastres/);
+  assert.match(palace, /for \(let i = 0; i <= 9; i\+\+\)/);
+  assert.match(palace, /const px = x - 24\.75 \+ i \* 5\.5;/);
+  assert.match(palace, /'Wing bay pilaster'/);
+});
+
 testCase('the dome drum is pierced on all four faces by two rows of oculi, lower row garland-rimmed', () => {
   assert.match(palace, /pierced on EACH FACE/);
   assert.match(palace, /'Dome drum oculus garland'/);
