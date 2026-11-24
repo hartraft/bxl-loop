@@ -482,3 +482,17 @@ testCase('the Palace of the Nation faces the Royal Palace across the park on the
   assert.match(palace, /'Palace of the Nation pediment'/);
   assert.match(palace, /for \(let i = 0; i < 8; i\+\+\)/);
 });
+
+testCase('Godecharle Justice relief figures and an attic balustrade crown the Palace of the Nation', () => {
+  assert.match(palace, /Justice punishing Vices and rewarding/);
+  assert.match(palace, /'Palace of the Nation pediment relief figure'/);
+  assert.match(palace, /'Palace of the Nation attic balustrade'/);
+  assert.match(palace, /pnBal\.count = pni/);
+});
+
+testCase('the Royal Stables stand south-east of the palace by the Rue Ducale', () => {
+  assert.match(palace, /Royal Stables \(Écuries royales\)/);
+  assert.match(palace, /'Royal Stables main range'/);
+  assert.match(palace, /'Royal Stables hipped roof'/);
+  assert.match(palace, /'Royal Stables arched window'/);
+});

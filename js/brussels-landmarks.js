@@ -2401,6 +2401,28 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     for (let i = 0; i < 6; i++) {
       box(g, 2.4, 8, 0.2, -22.5 + i * 9, 12, 402.9, materials.glass, 'Palace of the Nation facade window');
     }
+    // The pediment carries Godecharle's bas-relief of Justice punishing Vices and rewarding
+    // Virtues; the attic of the Palace of the Nation is crowned by a balustrade.
+    for (const fx of [-6, 6]) {
+      mesh(g, new THREE.SphereGeometry(0.7, 12, 10), materials.warmStone, fx, 17.6, 401.9, 'Palace of the Nation pediment relief figure');
+    }
+    const pnBal = new THREE.InstancedMesh(new THREE.BoxGeometry(0.3, 1.0, 0.3), materials.plaster, 40);
+    const pnd = new THREE.Object3D();
+    let pni = 0;
+    for (let bx = -30; bx <= 30; bx += 3) {
+      pnd.position.set(bx, 23.7, 403.2); pnd.rotation.y = 0; pnd.updateMatrix();
+      pnBal.setMatrixAt(pni++, pnd.matrix);
+    }
+    pnBal.count = pni; pnBal.name = 'Palace of the Nation attic balustrade'; g.add(pnBal);
+    box(g, 62, 0.16, 0.5, 0, 24.25, 403.2, materials.warmStone, 'Palace of the Nation balustrade rail');
+    // The Royal Stables (Écuries royales) stand south-east of the palace by the Rue Ducale,
+    // a few tens of metres from the equestrian statue of Leopold II on the Place du Trône.
+    box(g, 46, 12, 24, -70, 6, -85, materials.ochre, 'Royal Stables main range');
+    box(g, 48, 0.9, 26, -70, 12.5, -85, materials.warmStone, 'Royal Stables cornice');
+    mesh(g, new THREE.ConeGeometry(26, 5, 4), materials.roof, -70, 16.5, -85, 'Royal Stables hipped roof');
+    for (let i = 0; i < 5; i++) {
+      box(g, 2.4, 5, 0.2, -70 - 16 + i * 8, 6, -72.9, materials.glass, 'Royal Stables arched window');
+    }
   });
     addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');
