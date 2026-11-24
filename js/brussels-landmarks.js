@@ -296,6 +296,23 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     box(root, 0.35, height - 1.8, 0.25, -width / 2 + 0.45, height / 2 + 0.5, 0.16, materials.gold);
     box(root, 0.35, height - 1.8, 0.25, width / 2 - 0.45, height / 2 + 0.5, 0.16, materials.gold);
     cylinder(root, 0.12, 0.12, 1.3, 0, height + gableHeight + 0.55, 0.08, materials.gold, 8);
+    // Pots à feu: stone vases with flames flanking the gable pediments — a documented ornament of
+    // the 1697-1699 Grand-Place baroque houses (e.g. Le Renard's volute wings, La Brouette's gable).
+    const potVases = new THREE.InstancedMesh(new THREE.CylinderGeometry(0.2, 0.3, 0.55, 8), stone, 2);
+    const potFlames = new THREE.InstancedMesh(new THREE.ConeGeometry(0.17, 0.5, 8), materials.gold, 2);
+    for (let i = 0; i < 2; i++) {
+      const px = (i === 0 ? -1 : 1) * (width / 2 - 1.4);
+      modDummy.position.set(px, height + gableHeight * 0.55, 0.12);
+      modDummy.updateMatrix();
+      potVases.setMatrixAt(i, modDummy.matrix);
+      modDummy.position.set(px, height + gableHeight * 0.55 + 0.5, 0.12);
+      modDummy.updateMatrix();
+      potFlames.setMatrixAt(i, modDummy.matrix);
+    }
+    potVases.count = potFlames.count = 2;
+    potVases.name = name + ' gable fire pot vase';
+    potFlames.name = name + ' gable fire pot flame';
+    root.add(potVases, potFlames);
     if (emblem) {
       const kind = emblem === true ? 'phoenix' : emblem;
       if (kind === 'vane') {

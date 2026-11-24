@@ -114,6 +114,13 @@ test('guild-house corners are chained with rusticated quoins', () => {
   assert.ok(square.includes('new THREE.InstancedMesh(new THREE.BoxGeometry(0.34, 0.78, 0.3), materials.warmStone, quoinRows * 2)'));
 });
 
+test('guild-house gables are flanked by pots à feu (stone vase + flame)', () => {
+  assert.ok(square.includes(" gable fire pot vase'"));
+  assert.ok(square.includes(" gable fire pot flame'"));
+  assert.ok(square.includes('new THREE.ConeGeometry(0.17, 0.5, 8), materials.gold, 2)'));
+  assert.ok(square.includes('potVases.count = potFlames.count = 2'));
+});
+
 test('guild houses carry the real names on the real sides, with Baroque detailing', () => {
   for (const name of ['Le Roy d’Espagne', 'La Brouette', 'Le Sac', 'La Louve', 'Le Cornet', 'Le Renard',
     'Le Heaume', 'Le Paon', 'Sainte-Barbe', 'Le Cerf', 'L’Ange', 'La Chaloupe d’Or',
