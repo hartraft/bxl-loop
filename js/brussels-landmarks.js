@@ -5840,6 +5840,112 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       box(g, 5.6, 0.3, 2.2, 0, 0.15, -42.2, materials.pavingEdge, 'Bourse rear entrance step');
       box(g, 6.2, 0.3, 3.0, 0, 0.45, -42.8, materials.pavingEdge, 'Bourse rear entrance landing');
     }
+    // Round 131: etage windows of the front facade get balcony balustrades with rails.
+    {
+      const rails = new THREE.InstancedMesh(new THREE.BoxGeometry(3.0, 0.1, 0.18), materials.warmStone, 4);
+      const bal = new THREE.InstancedMesh(new THREE.BoxGeometry(0.12, 0.8, 0.12), materials.warmStone, 4 * 12);
+      const dummy = new THREE.Object3D();
+      let r = 0, b = 0;
+      for (const sx of [-1, 1]) for (const wx of [24, 31]) {
+        dummy.position.set(sx * wx, 15.35, 30.4);
+        dummy.updateMatrix();
+        rails.setMatrixAt(r++, dummy.matrix);
+        for (let k = 0; k < 12; k++) {
+          dummy.position.set(sx * wx - 1.35 + k * 0.245, 14.95, 30.45);
+          dummy.updateMatrix();
+          bal.setMatrixAt(b++, dummy.matrix);
+        }
+      }
+      rails.count = r; rails.name = 'Bourse front etage balcony top rails';
+      rails.castShadow = true; g.add(rails);
+      bal.count = b; bal.name = 'Bourse front etage balcony balusters';
+      g.add(bal);
+    }
+    // Round 132: keystones over every front facade window.
+    {
+      const keys = new THREE.InstancedMesh(new THREE.BoxGeometry(0.6, 0.9, 0.3), materials.warmStone, 8);
+      const dummy = new THREE.Object3D();
+      let n = 0;
+      for (const sx of [-1, 1]) for (const wx of [24, 31]) for (const wy of [10, 17.5]) {
+        dummy.position.set(sx * wx, wy + 2.95, 30.35);
+        dummy.updateMatrix();
+        keys.setMatrixAt(n++, dummy.matrix);
+      }
+      keys.count = n;
+      keys.name = 'Bourse front window keystones (clefs de fenetre)';
+      keys.castShadow = true;
+      g.add(keys);
+    }
+    // Round 133: the tympanum geniuses carry their attributes — Commerce a purse, Industrie a
+    // hammer-and-gear (allegory of trade and industry, Joseph Jacquet).
+    {
+      const bg = g.children.find((c) => c.name === 'Bourse tympanum la Belgique (Joseph Jacquet)');
+      if (bg) {
+        mesh(bg, new THREE.SphereGeometry(0.3, 8, 6), materials.gold, 0.8, 1.6, 0.3, 'la Belgique laurel crown');
+      }
+      const geniuses = g.children.filter((c) => c.name && c.name.startsWith('Bourse tympanum genius'));
+      for (const gns of geniuses) {
+        const commerce = gns.name.includes('Commerce');
+        mesh(gns, new THREE.SphereGeometry(0.22, 8, 6), materials.gold, 0.6, 0.9, 0.25, commerce ? 'Commerce purse (bourse)' : 'Industrie gear');
+        if (!commerce) box(gns, 0.1, 0.7, 0.1, -0.6, 1.2, 0.25, materials.gold, 'Industrie hammer handle');
+      }
+    }
+    // Round 134: the pediment apex acroterion is a palmette fan.
+    mesh(g, new THREE.ConeGeometry(0.55, 1.3, 6), materials.warmStone, 0, 33.1, 32.5, 'Bourse apex palmette (palmette sommitale)');
+    // Round 135: the central door is reached by two worn stone steps.
+    box(g, 5.6, 0.18, 1.4, 0, 0.09, 31.2, materials.pavingEdge, 'Bourse central door lower step');
+    box(g, 5.2, 0.18, 1.0, 0, 0.27, 30.9, materials.pavingEdge, 'Bourse central door upper step');
+    // Round 136: lateral doors get thresholds.
+    box(g, 4.1, 0.15, 1.0, -10, 0.07, 31.0, materials.pavingEdge, 'Bourse west door threshold');
+    box(g, 4.1, 0.15, 1.0, 10, 0.07, 31.0, materials.pavingEdge, 'Bourse east door threshold');
+    // Round 137: bronze escutcheons and knockers on all three doors.
+    {
+      const esc = new THREE.InstancedMesh(new THREE.CylinderGeometry(0.16, 0.16, 0.06, 10), materials.bronze, 3);
+      const knock = new THREE.InstancedMesh(new THREE.SphereGeometry(0.12, 8, 6), materials.bronze, 3);
+      const dummy = new THREE.Object3D();
+      for (let i = 0; i < 3; i++) {
+        const x = [-10, 0, 10][i];
+        dummy.position.set(x, 8.6, 30.62);
+        dummy.rotation.x = Math.PI / 2;
+        dummy.updateMatrix();
+        esc.setMatrixAt(i, dummy.matrix);
+        dummy.position.set(x + 0.7, 7.6, 30.62);
+        dummy.updateMatrix();
+        knock.setMatrixAt(i, dummy.matrix);
+      }
+      esc.count = 3; esc.name = 'Bourse door escutcheons (entrees de serrure)';
+      g.add(esc);
+      knock.count = 3; knock.name = 'Bourse door knockers (heurtoirs)';
+      g.add(knock);
+    }
+    // Round 138: mutules (projecting modillion blocks) over each peristyle column on the cornice.
+    {
+      const mutules = new THREE.InstancedMesh(new THREE.BoxGeometry(0.7, 0.6, 0.8), materials.warmStone, 8);
+      const dummy = new THREE.Object3D();
+      for (let i = 0; i < 8; i++) {
+        dummy.position.set(peristyleX[i], 23.9, 37.2);
+        dummy.updateMatrix();
+        mutules.setMatrixAt(i, dummy.matrix);
+      }
+      mutules.count = 8;
+      mutules.name = 'Bourse cornice mutules over the peristyle columns';
+      mutules.castShadow = true;
+      g.add(mutules);
+    }
+    // Round 139: the archivolt's arms-of-Brussels shield gets a boss and rim.
+    mesh(g, new THREE.SphereGeometry(0.22, 8, 6), materials.gold, 0, 18.6, 30.7, 'Bourse shield boss (umbo)');
+    mesh(g, new THREE.TorusGeometry(1.35, 0.1, 6, 18), materials.gold, 0, 18.6, 30.68, 'Bourse shield rim (bordure)');
+    // Round 140: the facade windows glow warm after dark (night pass) — the stone of the palace
+    // was too soft and was painted with oil paint (Reflexcity); register a glowing window clone.
+    {
+      const bourseWindowGlow = materials.glass.clone();
+      bourseWindowGlow.emissive = new THREE.Color(0x000000);
+      nightGlowMats.push(bourseWindowGlow);
+      const winMesh = g.children.find((c) => c.name === 'Bourse facade windows (rez-de-chaussee + etage)');
+      if (winMesh) winMesh.material = bourseWindowGlow;
+      const cellaWin = g.children.filter((c) => c.name === 'Bourse cella arched window');
+      for (const w of cellaWin) w.material = bourseWindowGlow;
+    }
     // __BOURSE_ROUNDS__
   });
   addLandmark('bourseSurroundings', (g) => {

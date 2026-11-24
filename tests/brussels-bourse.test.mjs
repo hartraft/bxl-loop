@@ -512,4 +512,32 @@ testCase('rounds 127-130: kiosk frames + handrails, access-6 elevator shaft, Fon
   assert.match(surroundings, /'Orts monument plaque frame \(cadre bronze dore\)'/);
 });
 
+testCase('rounds 131-134: front balconies, window keystones, genius attributes, apex palmette', () => {
+  assert.match(bourse, /'Bourse front etage balcony top rails'/);
+  assert.match(bourse, /rails\.count = r/);
+  assert.match(bourse, /'Bourse front etage balcony balusters'/);
+  assert.match(bourse, /'Bourse front window keystones \(clefs de fenetre\)'/);
+  assert.match(bourse, /keys\.count = n/);
+  assert.match(bourse, /'Commerce purse \(bourse\)'/);
+  assert.match(bourse, /'Industrie gear'/);
+  assert.match(bourse, /'Industrie hammer handle'/);
+  assert.match(bourse, /'la Belgique laurel crown'/);
+  assert.match(bourse, /'Bourse apex palmette \(palmette sommitale\)'/);
+});
+
+testCase('rounds 135-140: door steps + thresholds, escutcheons + knockers, mutules, shield boss/rim, night window glow', () => {
+  assert.match(bourse, /'Bourse central door lower step'/);
+  assert.match(bourse, /'Bourse central door upper step'/);
+  assert.match(bourse, /'Bourse west door threshold'/);
+  assert.match(bourse, /'Bourse east door threshold'/);
+  assert.match(bourse, /'Bourse door escutcheons \(entrees de serrure\)'/);
+  assert.match(bourse, /'Bourse door knockers \(heurtoirs\)'/);
+  assert.match(bourse, /'Bourse cornice mutules over the peristyle columns'/);
+  assert.match(bourse, /mutules\.count = 8/);
+  assert.match(bourse, /'Bourse shield boss \(umbo\)'/);
+  assert.match(bourse, /'Bourse shield rim \(bordure\)'/);
+  assert.match(bourse, /nightGlowMats\.push\(bourseWindowGlow\)/);
+  assert.match(bourse, /winMesh\.material = bourseWindowGlow/);
+});
+
 // __MORE_BOURSE_TESTS__
