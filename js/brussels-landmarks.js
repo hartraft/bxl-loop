@@ -5332,6 +5332,11 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
 
     // A bed moulding crowns the front edge of the BELvue cornice.
     box(g, 38, 0.18, 0.4, 168, 23.1, 21.85, materials.warmStone, 'BELvue cornice bed moulding');
+
+    // Jambs frame the Palace of the Nation east wing door.
+    for (const side of [-1, 1]) {
+      box(g, 0.3, 6.0, 0.35, 70 + side * 1.8, 3.0, 406.8, materials.warmStone, 'Palace of the Nation east wing door jamb');
+    }
   });
     addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');

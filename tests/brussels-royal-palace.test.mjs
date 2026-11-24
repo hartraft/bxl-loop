@@ -1932,3 +1932,7 @@ testCase('a bed moulding crowns the front edge of the BELvue cornice', () => {
 testCase('shoes anchor the perron side rail posts', () => {
   assert.match(palace, /'Perron rail post shoe'/);
 });
+
+testCase('jambs frame the Palace of the Nation east wing door', () => {
+  assert.match(palace, /'Palace of the Nation east wing door jamb'/);
+});
