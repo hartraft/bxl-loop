@@ -4462,6 +4462,10 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
 
     // A low wall encloses the Royal Stables courtyard on its south side.
     box(g, 48, 1.0, 0.4, -70, 0.5, -98, materials.ochre, 'Royal Stables courtyard wall');
+
+    // Stone edging kerbs flank the north radiating avenue from the main pond.
+    box(g, 0.4, 0.18, 92, -4.3, 0.09, 215, materials.pavingEdge, 'Radiating avenue edging kerb');
+    box(g, 0.4, 0.18, 92, 4.3, 0.09, 215, materials.pavingEdge, 'Radiating avenue edging kerb');
   });
     addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');
