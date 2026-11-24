@@ -3931,6 +3931,12 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
         box(g, 0.14, 0.1, 0.14, side * 8.4, 1.25, centralFace + pz, bronze, 'Perron rail post cap');
       }
     }
+
+    // Rim rings finish the eleven great flower pots along the garden walk.
+    for (let k = 0; k < 11; k++) {
+      const px = -30 + k * 6;
+      cylinder(g, 0.62, 0.58, 0.18, px, 0.99, 11.0, potMat, 12).name = 'Flower pot rim';
+    }
   });
   addLandmark('palaceSurroundings', (g) => {
     // Real-world sources: en/fr Wikipedia (Royal Palace of Brussels, Brussels Park, Place des Palais,
