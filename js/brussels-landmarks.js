@@ -219,6 +219,44 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       awnings.castShadow = true;
       root.add(awnings);
       arcDummy.rotation.set(0, 0, 0);
+      // Terrace furniture set out on the square in front of the awnings — the real brasseries
+      // (Le Roy d'Espagne's parasols in the house colours, etc.) line the plaza with tables,
+      // chairs and parasols. All instanced per house.
+      const tableTops = new THREE.InstancedMesh(new THREE.CylinderGeometry(0.45, 0.45, 0.05, 10), materials.dark, bays);
+      const tableLegs = new THREE.InstancedMesh(new THREE.CylinderGeometry(0.05, 0.05, 0.75, 6), materials.dark, bays);
+      const chairs = new THREE.InstancedMesh(new THREE.BoxGeometry(0.38, 0.5, 0.38), materials.dark, bays * 2);
+      const parasolPoles = new THREE.InstancedMesh(new THREE.CylinderGeometry(0.03, 0.03, 1.9, 6), materials.dark, bays);
+      const parasols = new THREE.InstancedMesh(new THREE.ConeGeometry(0.95, 0.55, 8), materials.canvas, bays);
+      let t = 0;
+      for (let bay = 0; bay < bays; bay++) {
+        const wx = (bay - (bays - 1) / 2) * (width - 2.8) / Math.max(1, bays - 1);
+        arcDummy.position.set(wx, 0.775, 2.4);
+        arcDummy.updateMatrix();
+        tableTops.setMatrixAt(t, arcDummy.matrix);
+        arcDummy.position.set(wx, 0.375, 2.4);
+        arcDummy.updateMatrix();
+        tableLegs.setMatrixAt(t, arcDummy.matrix);
+        arcDummy.position.set(wx, 1.4, 2.4);
+        arcDummy.updateMatrix();
+        parasolPoles.setMatrixAt(t, arcDummy.matrix);
+        arcDummy.position.set(wx, 2.05, 2.4);
+        arcDummy.updateMatrix();
+        parasols.setMatrixAt(t, arcDummy.matrix);
+        for (const side of [-1, 1]) {
+          arcDummy.position.set(wx + side * 0.75, 0.25, 2.55);
+          arcDummy.updateMatrix();
+          chairs.setMatrixAt(t * 2 + (side > 0 ? 1 : 0), arcDummy.matrix);
+        }
+        t++;
+      }
+      tableTops.count = tableLegs.count = parasolPoles.count = parasols.count = t;
+      chairs.count = t * 2;
+      tableTops.name = name + ' terrace table top';
+      tableLegs.name = name + ' terrace table leg';
+      chairs.name = name + ' terrace chair';
+      parasolPoles.name = name + ' terrace parasol pole';
+      parasols.name = name + ' terrace parasol canopy';
+      root.add(tableTops, tableLegs, chairs, parasolPoles, parasols);
     }
 
     // Baroque guild-house dressing, as on the real frontages: pilasters between the

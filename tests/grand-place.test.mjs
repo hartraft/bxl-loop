@@ -159,6 +159,15 @@ test('guild-house rooflines stay varied and instanced', () => {
   assert.ok(source.includes('gilded window surrounds'));
 });
 
+test('terrace houses set out tables, chairs and parasols on the square', () => {
+  for (const part of [' terrace table top', ' terrace table leg', ' terrace chair', ' terrace parasol pole', ' terrace parasol canopy']) {
+    assert.ok(square.includes(part + "'"), `missing${part}`);
+  }
+  assert.ok(square.includes('chairs.count = t * 2'));
+  assert.ok(square.includes('new THREE.ConeGeometry(0.95, 0.55, 8), materials.canvas, bays)'));
+  assert.ok(square.includes('arcDummy.position.set(wx, 0.775, 2.4)'));
+});
+
 test('café awnings over the ground-floor arcades of the brasserie houses', () => {
   assert.ok(source.includes('canvas: new THREE.MeshStandardMaterial'));
   assert.ok(square.includes("café awnings"));
