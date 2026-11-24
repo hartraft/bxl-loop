@@ -2189,3 +2189,7 @@ testCase('side caps close the ends of the stylobate edge', () => {
 testCase('a paved floor covers the Academy portico stylobate', () => {
   assert.match(palace, /'Academy portico floor'/);
 });
+
+testCase('a paved floor covers the Palace of the Nation peristyle', () => {
+  assert.match(palace, /'Palace of the Nation peristyle floor'/);
+});

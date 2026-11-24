@@ -5670,6 +5670,9 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
 
     // A paved floor covers the Academy Palace portico stylobate.
     box(g, 22, 0.06, 4, -168, 0.43, 19.9, materials.pavingA, 'Academy portico floor');
+
+    // A paved floor covers the Palace of the Nation peristyle.
+    box(g, 52, 0.12, 4.5, 0, 0.06, 401.6, materials.pavingA, 'Palace of the Nation peristyle floor');
   });
     addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');
