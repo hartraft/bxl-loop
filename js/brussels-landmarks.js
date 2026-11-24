@@ -1911,6 +1911,29 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     for (const x of [-76, 76]) {
       box(g, 9, 0.12, 0.32, x, 24.0, facadeZ + 0.85, moulding, 'Pavilion roofline balustrade rail');
     }
+
+    // Chimney stacks (souches de cheminée) rise from the slate roofs of the wings,
+    // capped with stone copings, as on the real palace roofs.
+    const chimneys = new THREE.InstancedMesh(new THREE.BoxGeometry(1.1, 2.6, 1.1), ashlar, 16);
+    const caps = new THREE.InstancedMesh(new THREE.BoxGeometry(1.5, 0.3, 1.5), moulding, 16);
+    const cd = new THREE.Object3D();
+    let ci = 0;
+    for (const x of wingXs) {
+      for (let i = 0; i < 3; i++) {
+        const cx2 = x - 18 + i * 18, cz2 = -4 - i * 2;
+        cd.position.set(cx2, 23.6, cz2);
+        cd.rotation.y = 0;
+        cd.updateMatrix();
+        chimneys.setMatrixAt(ci, cd.matrix);
+        cd.position.set(cx2, 24.95, cz2);
+        cd.updateMatrix();
+        caps.setMatrixAt(ci++, cd.matrix);
+      }
+    }
+    chimneys.count = caps.count = ci;
+    chimneys.name = 'Palace roof chimney stacks';
+    caps.name = 'Chimney stack caps';
+    g.add(chimneys, caps);
     // The real front garden (jardin d'honneur, laid out 1904–09) holds three sunken
     // parterres between the façade and the gilded railing ("trois parterres creusés"):
     // a central pair flanking the perron walk on the portico axis, plus two lateral

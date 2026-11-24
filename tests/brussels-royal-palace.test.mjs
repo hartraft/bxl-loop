@@ -68,6 +68,13 @@ testCase('the front garden holds the real three sunken parterres (central on the
   assert.match(palace, /\{ x: 38, w: 34, z: 12\.4, d: 2\.6 \}/);
 });
 
+testCase('chimney stacks with stone caps rise from the wing slate roofs', () => {
+  assert.match(palace, /Chimney stacks/);
+  assert.match(palace, /'Palace roof chimney stacks'/);
+  assert.match(palace, /'Chimney stack caps'/);
+  assert.match(palace, /chimneys\.count = caps\.count = ci/);
+});
+
 testCase("Vinçotte's full tympanum programme: flag + Leopold II medallion centre, Scheldt and Meuse in the corners", () => {
   assert.match(palace, /tympanum programme/);
   assert.match(palace, /'Pediment national flag staff finial'/);
