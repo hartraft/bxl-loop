@@ -2285,3 +2285,7 @@ testCase('stone steps lead down to the main pond rim on its east side', () => {
 testCase('cap slabs finish the perron lamp base plinths', () => {
   assert.match(palace, /'Perron lamp plinth cap'/);
 });
+
+testCase('kerbs edge both sides of the bandstand access steps', () => {
+  assert.match(palace, /'Bandstand step kerb'/);
+});
