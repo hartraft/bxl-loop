@@ -1863,3 +1863,7 @@ testCase('low walls border the central garden walk', () => {
 testCase('stone surrounds frame the Royal Stables arched windows', () => {
   assert.match(palace, /'Royal Stables window surround'/);
 });
+
+testCase('pilasters strengthen the BELvue square-facing corners', () => {
+  assert.match(palace, /'BELvue corner pilaster'/);
+});

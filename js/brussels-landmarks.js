@@ -5262,6 +5262,11 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     for (let i = 0; i < 5; i++) {
       box(g, 2.8, 5.4, 0.16, -70 - 16 + i * 8, 6, -72.95, materials.warmStone, 'Royal Stables window surround');
     }
+
+    // Pilasters strengthen the square-facing corners of the BELvue pavilion.
+    for (const cx of [150.1, 185.9]) {
+      box(g, 0.5, 22, 0.4, cx, 11, 22.05, materials.paleStone, 'BELvue corner pilaster');
+    }
   });
     addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');
