@@ -3798,6 +3798,12 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       cylinder(g, 0.06, 0.1, 3.2, side * 6, 1.6, 14, bronze, 8).name = 'Garden gate lamp';
       mesh(g, new THREE.SphereGeometry(0.26, 10, 8), gilded, side * 6, 3.4, 14, 'Garden gate lamp globe');
     }
+
+    // A moulded surround frames the portico main door.
+    for (const side of [-1, 1]) {
+      box(g, 0.3, 7.5, 0.35, side * 2.15, 4.1, centralFace + 0.22, moulding, 'Portico door jamb');
+    }
+    box(g, 4.6, 0.3, 0.4, 0, 8.0, centralFace + 0.24, moulding, 'Portico door lintel');
   });
   addLandmark('palaceSurroundings', (g) => {
     // Real-world sources: en/fr Wikipedia (Royal Palace of Brussels, Brussels Park, Place des Palais,
