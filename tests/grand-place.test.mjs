@@ -216,7 +216,7 @@ test('the east frontage is the Maison des Ducs de Brabant: duke busts + Abundanc
 });
 
 test('L’Arbre d’Or roof carries the gilded equestrian statue of Charles of Lorraine', () => {
-  assert.ok(square.includes("L’Arbre d’Or', x: -18, width: 15, height: 22, style: 'stepped', stone: materials.ochre, terrace: true, equestrian: true }"));
+  assert.ok(square.includes("L’Arbre d’Or', x: -18, width: 15, height: 22, style: 'stepped', stone: materials.ochre, terrace: true, equestrian: true, dukeBusts: true }"));
   assert.ok(square.includes(" equestrian horse body'"));
   assert.ok(square.includes(" Charles of Lorraine rider'"));
   assert.ok(square.includes(" Charles of Lorraine rider head'"));
