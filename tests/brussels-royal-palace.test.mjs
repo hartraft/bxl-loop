@@ -384,3 +384,8 @@ testCase('a palace-surroundings landmark carries the rectangular 13.1 ha Brussel
   assert.match(palace, /addLandmark\('palaceSurroundings'/);
   assert.match(palace, /'Brussels Park lawn'/);
 });
+
+testCase('a central avenue leads from the palace axis to the park main pond', () => {
+  assert.match(palace, /central avenue leads to the main pond/);
+  assert.match(palace, /'Park central avenue to the main pond'/);
+});

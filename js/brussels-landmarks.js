@@ -2223,6 +2223,8 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     // Brussels Park (Parc de Bruxelles): the rectangular 13.1 ha neoclassical park north of the
     // Place des Palais, laid out 1776-83 by Guimard and Zinner around the palace-parliament axis.
     box(g, 344, 0.24, 340, 0, 0.0, 232, materials.green, 'Brussels Park lawn');
+    // A central avenue leads to the main pond from the palace axis (Wikipedia, Brussels Park).
+    box(g, 12, 0.08, 176, 0, 0.06, 150, materials.pavingA, 'Park central avenue to the main pond');
   });
     addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');
