@@ -4551,6 +4551,9 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       bsRail.setMatrixAt(bsi++, bsd.matrix);
     }
     bsRail.count = bsi; bsRail.name = 'Park bandstand railing'; g.add(bsRail);
+
+    // An architrave beam spans the Palace of the Nation peristyle columns under the pediment.
+    box(g, 52, 1.0, 3.0, 0, 15.5, 401.8, materials.warmStone, 'Palace of the Nation architrave');
   });
     addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');

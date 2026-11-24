@@ -1319,3 +1319,7 @@ testCase('a low railing rings the park bandstand', () => {
   assert.match(palace, /'Park bandstand railing'/);
   assert.match(palace, /bsRail\.count = bsi/);
 });
+
+testCase('an architrave beam spans the Palace of the Nation peristyle', () => {
+  assert.match(palace, /'Palace of the Nation architrave'/);
+});
