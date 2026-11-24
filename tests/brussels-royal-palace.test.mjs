@@ -1558,3 +1558,7 @@ testCase('a ridge strip crowns the Academy Palace roofline', () => {
 testCase('flanged bases anchor the perron lamp standards', () => {
   assert.match(palace, /'Perron lamp base flange'/);
 });
+
+testCase('stone sills sit under each BELvue piano nobile window', () => {
+  assert.match(palace, /'BELvue piano nobile sill'/);
+});

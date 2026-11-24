@@ -4856,6 +4856,12 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
 
     // A ridge strip crowns the Academy Palace attic roofline.
     box(g, 66, 0.35, 0.35, -168, 22.3, 36, materials.warmStone, 'Academy Palace roof ridge');
+
+    // Stone sills sit under each BELvue piano nobile window.
+    for (let i = 0; i < 5; i++) {
+      const wx = 168 - 13 + i * 6.5;
+      box(g, 2.4, 0.18, 0.3, wx, 12.75, 22.15, materials.warmStone, 'BELvue piano nobile sill');
+    }
   });
     addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');
