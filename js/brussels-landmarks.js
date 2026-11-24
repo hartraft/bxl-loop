@@ -2820,6 +2820,12 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     mesh(g, new THREE.ConeGeometry(1.3, 1.8, 10), parkWater, 0, 5.5, 262, 'Octagonal basin fountain spray');
     // The Rue Royale runs south from the park's west side toward the Place Royale/Koningsplein.
     box(g, 14, 0.06, 100, -181, 0.03, 12, materials.pavingA, 'Rue Royale south extension to Place Royale');
+    // The Academy Palace's boulevard du Régent side is scanned by blue-stone pilasters
+    // (heritage inventory 30098: "celle du boulevard du Régent scandée par des pilastres
+    // en pierre bleue").
+    for (let wz = 8; wz <= 64; wz += 7) {
+      box(g, 0.6, 3.2, 0.7, -204.7, 1.6, wz, materials.pavingB, 'Academy boulevard-side blue-stone pilaster');
+    }
   });
     addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');

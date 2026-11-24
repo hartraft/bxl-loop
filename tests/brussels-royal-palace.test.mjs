@@ -817,3 +817,8 @@ testCase('the Rue Royale extends south from the park toward the Place Royale', (
   assert.match(palace, /Rue Royale runs south from the park/);
   assert.match(palace, /'Rue Royale south extension to Place Royale'/);
 });
+
+testCase('the Academy boulevard side is scanned by blue-stone pilasters', () => {
+  assert.match(palace, /blue-stone pilasters/);
+  assert.match(palace, /'Academy boulevard-side blue-stone pilaster'/);
+});
