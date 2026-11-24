@@ -68,6 +68,15 @@ testCase('the front garden holds the real three sunken parterres (central on the
   assert.match(palace, /\{ x: 38, w: 34, z: 12\.4, d: 2\.6 \}/);
 });
 
+testCase('the Place des Palais frontage is paved with blue-stone setts beyond the garden railing', () => {
+  assert.match(palace, /entirely paved/);
+  assert.match(palace, /pierre bleue/);
+  assert.match(palace, /'Place des Palais paved apron'/);
+  assert.match(palace, /'Place des Palais sett paving'/);
+  assert.match(palace, /setts\.count = psi/);
+  assert.match(palace, /box\(g, 170, 0\.3, 44, 0, -0\.15, 36, materials\.pavingEdge/);
+});
+
 testCase('the main cornice stands on a row of corbelled modillions (wings + central corps)', () => {
   assert.match(palace, /pourvue de modillons/);
   assert.match(palace, /'Main cornice modillions'/);
