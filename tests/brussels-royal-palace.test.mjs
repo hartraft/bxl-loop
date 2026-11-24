@@ -920,3 +920,8 @@ testCase('each terminal pavilion carries a capped chimney stack', () => {
   assert.match(palace, /'Pavilion chimney stack'/);
   assert.match(palace, /'Pavilion chimney cap'/);
 });
+
+testCase('a moulded base course runs under the central attic', () => {
+  assert.match(palace, /base course runs under the central attic/);
+  assert.match(palace, /'Central attic base course'/);
+});
