@@ -2111,3 +2111,7 @@ testCase('dentil courses run under both Palace of the Nation wing cornices', () 
   assert.match(palace, /'Palace of the Nation wing cornice dentil'/);
   assert.match(palace, /pwDn\.count = pwDi/);
 });
+
+testCase('scroll ends finish both ends of the central balcony rail', () => {
+  assert.match(palace, /'Central balcony scroll end'/);
+});

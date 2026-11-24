@@ -4143,6 +4143,11 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
 
     // A bronze threshold plate spans the portico main door.
     box(g, 4.4, 0.08, 0.5, 0, 0.12, centralFace + 0.35, bronze, 'Portico door threshold plate');
+
+    // Scroll ends finish both ends of the central balcony rail.
+    for (const side of [-1, 1]) {
+      mesh(g, new THREE.SphereGeometry(0.12, 10, 8), bronze, side * 1.45, 11.5, centralFace + 1.0, 'Central balcony scroll end');
+    }
   });
   addLandmark('palaceSurroundings', (g) => {
     // Real-world sources: en/fr Wikipedia (Royal Palace of Brussels, Brussels Park, Place des Palais,
