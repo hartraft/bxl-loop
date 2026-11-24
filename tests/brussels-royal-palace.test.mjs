@@ -1891,3 +1891,7 @@ testCase('a stone rim rings the fountain jet of the main pond', () => {
 testCase('a cap finishes the plinth of the gilded garden railing', () => {
   assert.match(palace, /'Garden railing plinth cap'/);
 });
+
+testCase('a projecting cornice tops the Palace of the Nation peristyle entablature', () => {
+  assert.match(palace, /'Palace of the Nation peristyle cornice'/);
+});

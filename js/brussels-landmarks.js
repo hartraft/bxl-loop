@@ -5291,6 +5291,9 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
 
     // A stone rim rings the fountain jet at the centre of the park main pond.
     cylinder(g, 1.2, 1.4, 0.5, 0, 0.75, 150, materials.paleStone, 12).name = 'Park fountain rim';
+
+    // A projecting cornice tops the Palace of the Nation peristyle entablature.
+    box(g, 54, 0.35, 3.0, 0, 16.9, 401.3, materials.warmStone, 'Palace of the Nation peristyle cornice');
   });
     addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');
