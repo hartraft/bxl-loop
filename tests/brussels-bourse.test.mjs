@@ -650,4 +650,27 @@ testCase('rounds 186-190: clock minute ticks, second wings, frieze dentil band, 
   assert.match(bourse, /plinths\.count = 8/);
 });
 
+testCase('rounds 191-195: sign collars + sett rings, plate frames, bollard caps, bench backs/arms, mirror frame', () => {
+  assert.match(surroundings, /'Street sign post base collars \(colliers\)'/);
+  assert.match(surroundings, /'Sign post sett rings \(anneaux de pavé\)'/);
+  assert.match(surroundings, /'Enamel plate white border frames \(bordures blanches\)'/);
+  assert.match(surroundings, /frames\.count = plates\.length/);
+  assert.match(surroundings, /'Bollard rounded cap heads/);
+  assert.match(surroundings, /caps\.count = 16/);
+  assert.match(surroundings, /'Bench back slats \(dossiers des bancs\)'/);
+  assert.match(surroundings, /'Bench armrests \(accoudoirs\)'/);
+  assert.match(surroundings, /'Water mirror north frame moulding'/);
+});
+
+testCase('rounds 196-200: kiosk door + glass band, terrace chairs, fountain rims + nozzles, bin pedals, double bike arches', () => {
+  assert.match(surroundings, /'kiosk door panel \(porte\)'/);
+  assert.match(surroundings, /'kiosk tinted glass band/);
+  assert.match(surroundings, /'Terrace chairs \(chaises de terrasse\)'/);
+  assert.match(surroundings, /chairs\.count = n/);
+  assert.match(surroundings, /'Fountain basin rim mouldings'/);
+  assert.match(surroundings, /'Fountain centre nozzles \(gicleurs\)'/);
+  assert.match(surroundings, /'Bin foot pedals \(pedales\)'/);
+  assert.match(surroundings, /'Bicycle arch inner rails \(second rail des arceaux\)'/);
+});
+
 // __MORE_BOURSE_TESTS__

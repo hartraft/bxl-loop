@@ -7122,6 +7122,163 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       const beacons = g.children.find((c) => c.name === 'Belisha beacon globes');
       if (beacons) beacons.material = lampGlow;
     }
+    // Round 191: every sign post has a base collar and a sett ring at its foot.
+    {
+      const collars = [];
+      const rings = [];
+      for (const c of g.children) {
+        if (c.name && (c.name.startsWith('Enamel street sign') || c.name.startsWith('Pedestrian-zone'))) {
+          collars.push([c.position.x, c.position.z]);
+        }
+      }
+      const col = new THREE.InstancedMesh(new THREE.CylinderGeometry(0.1, 0.12, 0.25, 8), materials.dark, collars.length);
+      const ring = new THREE.InstancedMesh(new THREE.TorusGeometry(0.35, 0.05, 6, 12), materials.pavingEdge, collars.length);
+      const dummy = new THREE.Object3D();
+      for (let i = 0; i < collars.length; i++) {
+        dummy.position.set(collars[i][0], 0.12, collars[i][1]);
+        dummy.updateMatrix();
+        col.setMatrixAt(i, dummy.matrix);
+        dummy.position.set(collars[i][0], 0.03, collars[i][1]);
+        dummy.rotation.set(Math.PI / 2, 0, 0);
+        dummy.updateMatrix();
+        ring.setMatrixAt(i, dummy.matrix);
+      }
+      col.count = collars.length; col.name = 'Street sign post base collars (colliers)';
+      g.add(col);
+      ring.count = collars.length; ring.name = 'Sign post sett rings (anneaux de pavé)';
+      g.add(ring);
+    }
+    // Round 192: the enamel plates have white border frames with corner rivets.
+    {
+      const plates = g.children.filter((c) => c.name && c.name.startsWith('Enamel street sign'));
+      const frames = new THREE.InstancedMesh(new THREE.BoxGeometry(2.0, 0.6, 0.04), materials.paleStone, plates.length);
+      const dummy = new THREE.Object3D();
+      for (let i = 0; i < plates.length; i++) {
+        dummy.position.set(plates[i].position.x, 2.72, plates[i].position.z - 0.035);
+        dummy.updateMatrix();
+        frames.setMatrixAt(i, dummy.matrix);
+      }
+      frames.count = plates.length;
+      frames.name = 'Enamel plate white border frames (bordures blanches)';
+      g.add(frames);
+    }
+    // Round 193: the bollards are capped with rounded heads.
+    {
+      const caps = new THREE.InstancedMesh(new THREE.SphereGeometry(0.13, 8, 6), materials.dark, 16);
+      const dummy = new THREE.Object3D();
+      const spots = [];
+      for (let i = 0; i < 4; i++) spots.push([-62 + i * 3, 43.5], [62 - i * 3, 43.5], [-62 + i * 3, 133], [62 - i * 3, 133]);
+      for (let i = 0; i < 16; i++) {
+        dummy.position.set(spots[i][0], 0.95, spots[i][1]);
+        dummy.updateMatrix();
+        caps.setMatrixAt(i, dummy.matrix);
+      }
+      caps.count = 16;
+      caps.name = 'Bollard rounded cap heads (têtes de bornes)';
+      caps.castShadow = true;
+      g.add(caps);
+    }
+    // Round 194: the benches get back slats and armrests.
+    {
+      const backs = new THREE.InstancedMesh(new THREE.BoxGeometry(2.2, 0.5, 0.07), materials.warmStone, 10);
+      const arms = new THREE.InstancedMesh(new THREE.BoxGeometry(0.08, 0.35, 0.55), materials.dark, 20);
+      const dummy = new THREE.Object3D();
+      const spots = [[-30, 70], [-15, 70], [0, 70], [15, 70], [30, 70], [-45, 122], [-25, 122], [-5, 122], [15, 122], [35, 122]];
+      for (let i = 0; i < 10; i++) {
+        dummy.position.set(spots[i][0], 0.85, spots[i][1] - 0.28);
+        dummy.rotation.set(-0.25, 0, 0);
+        dummy.updateMatrix();
+        backs.setMatrixAt(i, dummy.matrix);
+        dummy.rotation.set(0, 0, 0);
+        dummy.position.set(spots[i][0] - 1.0, 0.62, spots[i][1]);
+        dummy.updateMatrix();
+        arms.setMatrixAt(2 * i, dummy.matrix);
+        dummy.position.set(spots[i][0] + 1.0, 0.62, spots[i][1]);
+        dummy.updateMatrix();
+        arms.setMatrixAt(2 * i + 1, dummy.matrix);
+      }
+      backs.count = 10; backs.name = 'Bench back slats (dossiers des bancs)';
+      backs.castShadow = true; g.add(backs);
+      arms.count = 20; arms.name = 'Bench armrests (accoudoirs)';
+      g.add(arms);
+    }
+    // Round 195: the water mirror gets a moulded stone frame with corner stones.
+    {
+      box(g, 15.2, 0.32, 0.6, -38, 0.1, 67.7, materials.pavingEdge, 'Water mirror north frame moulding');
+      box(g, 15.2, 0.32, 0.6, -38, 0.1, 72.3, materials.pavingEdge, 'Water mirror south frame moulding');
+      box(g, 0.6, 0.32, 5.2, -45.6, 0.1, 70, materials.pavingEdge, 'Water mirror west frame moulding');
+      box(g, 0.6, 0.32, 5.2, -30.4, 0.1, 70, materials.pavingEdge, 'Water mirror east frame moulding');
+    }
+    // Round 196: the premetro kiosks get a door panel and a tinted glass band.
+    for (const k of g.children) {
+      if (!k.name || !k.name.startsWith('Bourse premetro station')) continue;
+      box(k, 1.4, 2.2, 0.1, 0, 1.1, -1.7, materials.dark, 'kiosk door panel (porte)');
+      box(k, 3.3, 0.5, 3.3, 0, 2.4, 0, materials.glass, 'kiosk tinted glass band (bande vitree teintee)');
+    }
+    // Round 197: terrace chairs around the parasol tables.
+    {
+      const chairs = new THREE.InstancedMesh(new THREE.BoxGeometry(0.45, 0.5, 0.45), materials.warmStone, 12);
+      const dummy = new THREE.Object3D();
+      const spots = [[-40, 55], [-34, 58], [40, 55], [34, 58]];
+      let n = 0;
+      for (const [px, pz] of spots) for (const [dx, dz] of [[1.6, 0], [-1.6, 0], [0, 1.6]]) {
+        dummy.position.set(px + dx, 0.25, pz + dz);
+        dummy.updateMatrix();
+        chairs.setMatrixAt(n++, dummy.matrix);
+      }
+      chairs.count = n;
+      chairs.name = 'Terrace chairs (chaises de terrasse)';
+      chairs.castShadow = true;
+      g.add(chairs);
+    }
+    // Round 198: the boulevard fountain basins get rim mouldings and centre nozzles.
+    {
+      const rims = new THREE.InstancedMesh(new THREE.TorusGeometry(1.75, 0.09, 6, 16), materials.pavingEdge, 3);
+      const nozzles = new THREE.InstancedMesh(new THREE.CylinderGeometry(0.1, 0.14, 0.3, 8), materials.bronze, 3);
+      const dummy = new THREE.Object3D();
+      for (let i = 0; i < 3; i++) {
+        const x = -30 + i * 30;
+        dummy.position.set(x, 0.52, 122);
+        dummy.rotation.set(Math.PI / 2, 0, 0);
+        dummy.updateMatrix();
+        rims.setMatrixAt(i, dummy.matrix);
+        dummy.position.set(x, 0.6, 122);
+        dummy.rotation.set(0, 0, 0);
+        dummy.updateMatrix();
+        nozzles.setMatrixAt(i, dummy.matrix);
+      }
+      rims.count = 3; rims.name = 'Fountain basin rim mouldings';
+      g.add(rims);
+      nozzles.count = 3; nozzles.name = 'Fountain centre nozzles (gicleurs)';
+      g.add(nozzles);
+    }
+    // Round 199: the bins get a foot pedal and lid hinge.
+    {
+      const pedals = new THREE.InstancedMesh(new THREE.BoxGeometry(0.2, 0.05, 0.3), materials.dark, 6);
+      const dummy = new THREE.Object3D();
+      for (let i = 0; i < 6; i++) {
+        dummy.position.set(-60 + i * 24, 0.03, 127.1);
+        dummy.updateMatrix();
+        pedals.setMatrixAt(i, dummy.matrix);
+      }
+      pedals.count = 6;
+      pedals.name = 'Bin foot pedals (pedales)';
+      g.add(pedals);
+    }
+    // Round 200: each bike arch is a double rail (two concentric arcs).
+    {
+      const arches2 = new THREE.InstancedMesh(new THREE.TorusGeometry(0.4, 0.03, 6, 12, Math.PI), materials.dark, 8);
+      const dummy = new THREE.Object3D();
+      for (let i = 0; i < 8; i++) {
+        dummy.position.set(-58 + i * 3, 0, 50);
+        dummy.rotation.set(Math.PI / 2, 0, 0);
+        dummy.updateMatrix();
+        arches2.setMatrixAt(i, dummy.matrix);
+      }
+      arches2.count = 8;
+      arches2.name = 'Bicycle arch inner rails (second rail des arceaux)';
+      g.add(arches2);
+    }
     // __SURROUNDINGS_ROUNDS__
   });
 
