@@ -1524,6 +1524,40 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     box(g, 35.5, 1.35, 22.8, 0, 0.95, -1, ashlar, 'Central rusticated base');
     box(g, 35.5, 0.42, 0.65, 0, 7.45, centralFace + 0.12, moulding, 'Central arcade impost course');
 
+    // The real ground storey is a rusticated soubassement a bossages: alternating
+    // projecting stone blocks dress every arcade pier across the wings and the
+    // central corps. One instanced mesh keeps it to a single draw call.
+    const bossage = new THREE.InstancedMesh(new THREE.BoxGeometry(0.52, 0.62, 0.16), ashlar, 160);
+    const bgd = new THREE.Object3D();
+    let bgi = 0;
+    for (const x of wingXs) {
+      for (let i = 0; i < 9; i++) {
+        const bx = x - 22 + i * 5.5;
+        for (const px of [bx - 1.5, bx + 1.5]) {
+          for (let r = 0; r < 3; r++) {
+            bgd.position.set(px, 1.6 + r * 1.5, facadeZ + 0.2);
+            bgd.rotation.y = 0;
+            bgd.updateMatrix();
+            bossage.setMatrixAt(bgi++, bgd.matrix);
+          }
+        }
+      }
+    }
+    for (let i = 0; i < 5; i++) {
+      const x = -10 + i * 5;
+      for (const px of [x - 1.58, x + 1.58]) {
+        for (let r = 0; r < 3; r++) {
+          bgd.position.set(px, 1.55 + r * 1.5, centralFace + 0.2);
+          bgd.updateMatrix();
+          bossage.setMatrixAt(bgi++, bgd.matrix);
+        }
+      }
+    }
+    bossage.count = bgi;
+    bossage.name = 'Ground-floor rusticated bossage blocks';
+    bossage.castShadow = true;
+    g.add(bossage);
+
     // Five open, full-height entrance arches in the rusticated ground storey.
     for (let i = 0; i < 5; i++) {
       const x = -10 + i * 5;

@@ -35,6 +35,13 @@ testCase('Royal Palace centre has a sculpted pediment, domed drum and Belgian fl
   assert.match(palace, /Belgian flag stripe/);
 });
 
+testCase('the ground storey is a rusticated soubassement with bossage blocks on every arcade pier', () => {
+  assert.match(palace, /rusticated soubassement/);
+  assert.match(palace, /'Ground-floor rusticated bossage blocks'/);
+  assert.match(palace, /bossage\.count = bgi/);
+  assert.match(palace, /new THREE\.InstancedMesh\(new THREE\.BoxGeometry\(0\.52, 0\.62, 0\.16\), ashlar, 160\)/);
+});
+
 testCase("Suys' wrought-iron balcony parapet runs around the entire first floor", () => {
   assert.match(palace, /wrought-iron balcony parapet surrounds the ENTIRE first floor/);
   assert.match(palace, /'First-floor wrought-iron balcony rail'/);
