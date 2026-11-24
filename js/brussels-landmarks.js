@@ -1831,35 +1831,43 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     box(g, 56, 42, 30, 0, 27, 0, light, 'Salle des Pas Perdus central mass (48 x 22 m hall)');
     box(g, 58, 3.0, 54, 0, 48, 0, weathered, 'Dome stylobate lower step');
     box(g, 50, 3.0, 48, 0, 51, 0, light, 'Dome stylobate upper step');
+    // Dome stylobate on a Greek-cross plan, rhythmically pierced by paired pilasters
+    // (UNESCO tentative list 5357).
+    box(g, 30, 5.0, 66, 0, 54.5, 0, stone, 'Stylobate cross arm north-south');
+    box(g, 66, 5.0, 30, 0, 54.5, 0, stone, 'Stylobate cross arm east-west');
+    for (const [px, pz] of [[-24, 0], [24, 0], [0, -24], [0, 24]]) {
+      box(g, 1.2, 5.0, 1.2, px - 0.8, 54.5, pz, weathered, 'Stylobate paired pilaster');
+      box(g, 1.2, 5.0, 1.2, px + 0.8, 54.5, pz, weathered, 'Stylobate paired pilaster');
+    }
     // Square first drum with open colonnades on all four sides.
-    box(g, 39, 7, 39, 0, 56, -1, stone, 'Square dome drum');
+    box(g, 39, 7, 39, 0, 56, 0, stone, 'Square dome drum');
     for (let side = 0; side < 4; side++) {
       const angle = side * Math.PI / 2;
       for (let i = 0; i < 7; i++) {
         const t = -15 + i * 5;
         const x = Math.cos(angle) * 20.0 + Math.cos(angle + Math.PI / 2) * t;
-        const z = -1 + Math.sin(angle) * 20.0 + Math.sin(angle + Math.PI / 2) * t;
+        const z = Math.sin(angle) * 20.0 + Math.sin(angle + Math.PI / 2) * t;
         cylinder(g, 0.65, 0.78, 9.5, x, 64, z, light, 16);
       }
     }
-    box(g, 34, 1.5, 34, 0, 69, -1, weathered, 'Upper dome cornice');
+    box(g, 34, 1.5, 34, 0, 69, 0, weathered, 'Upper dome cornice');
     // Circular upper drum and copper dome; the high lantern is the city's defining silhouette.
-    cylinder(g, 17.5, 19.5, 15, 0, 77, -1, light, 32);
+    cylinder(g, 17.5, 19.5, 15, 0, 77, 0, light, 32);
     for (let i = 0; i < 24; i++) {
       const a = i * Math.PI * 2 / 24;
-      const x = Math.cos(a) * 18.3, z = -1 + Math.sin(a) * 18.3;
+      const x = Math.cos(a) * 18.3, z = Math.sin(a) * 18.3;
       box(g, 1.1, 9.0, 1.1, x, 77, z, weathered, 'Circular drum pier');
     }
-    cylinder(g, 20.5, 20.5, 1.5, 0, 85, -1, bronze, 32);
-    mesh(g, new THREE.SphereGeometry(20, 32, 20, 0, Math.PI * 2, 0, Math.PI / 2), roof, 0, 85, -1, 'Copper courthouse dome');
-    cylinder(g, 5.8, 7.5, 9, 0, 104, -1, bronze, 24);
+    cylinder(g, 20.5, 20.5, 1.5, 0, 85, 0, bronze, 32);
+    mesh(g, new THREE.SphereGeometry(20, 32, 20, 0, Math.PI * 2, 0, Math.PI / 2), roof, 0, 85, 0, 'Copper courthouse dome');
+    cylinder(g, 5.8, 7.5, 9, 0, 104, 0, bronze, 24);
     for (let i = 0; i < 12; i++) {
       const a = i * Math.PI * 2 / 12;
-      cylinder(g, 0.34, 0.42, 7.2, Math.cos(a) * 6.1, 104, -1 + Math.sin(a) * 6.1, light, 10);
+      cylinder(g, 0.34, 0.42, 7.2, Math.cos(a) * 6.1, 104, Math.sin(a) * 6.1, light, 10);
     }
-    cylinder(g, 4.6, 5.8, 2.0, 0, 109, -1, bronze, 20);
-    mesh(g, new THREE.SphereGeometry(4.8, 20, 12, 0, Math.PI * 2, 0, Math.PI / 2), roof, 0, 110, -1, 'Courthouse lantern cap');
-    cylinder(g, 0.22, 0.35, 5.5, 0, 116, -1, bronze, 12);
+    cylinder(g, 4.6, 5.8, 2.0, 0, 109, 0, bronze, 20);
+    mesh(g, new THREE.SphereGeometry(4.8, 20, 12, 0, Math.PI * 2, 0, Math.PI / 2), roof, 0, 110, 0, 'Courthouse lantern cap');
+    cylinder(g, 0.22, 0.35, 5.5, 0, 116, 0, bronze, 12);
     // The side facades each carry an axial portal with a small peristyle and a stair down to
     // street level: rue des Minimes on the west (local +X), rue aux Laines on the east; the
     // lower ground floor is entered from rue aux Laines.

@@ -124,6 +124,8 @@ test('the four corner pavilions carry hipped pavilion roofs and the north pair p
 test('the monumental dome stack exists: square drum, circular drum, copper dome, lantern', () => {
   assert.ok(palace.includes("'Salle des Pas Perdus central mass (48 x 22 m hall)'"));
   assert.ok(palace.includes("'Square dome drum'"));
+  assert.ok(palace.includes("'Stylobate cross arm north-south'"), 'Greek-cross stylobate');
+  assert.ok(palace.includes("'Stylobate paired pilaster'"));
   assert.ok(palace.includes("'Copper courthouse dome'"));
   assert.ok(palace.includes("'Courthouse lantern cap'"));
 });
