@@ -1207,3 +1207,8 @@ testCase('corner quoins strengthen the BELvue square-facing corners', () => {
 testCase('the gilded garden railing stands on a stone plinth', () => {
   assert.match(palace, /'Gilded garden railing plinth'/);
 });
+
+testCase('projecting end pavilions close both ends of the Academy Palace facade', () => {
+  assert.match(palace, /'Academy Palace end pavilion'/);
+  assert.match(palace, /'Academy Palace end pavilion cornice'/);
+});

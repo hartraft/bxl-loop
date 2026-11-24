@@ -4391,6 +4391,12 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
         box(g, 0.5, 1.6, 0.4, cx, qy, 21.9, materials.warmStone, 'BELvue corner quoin');
       }
     }
+
+    // Projecting end pavilions close both ends of the Academy Palace facade.
+    for (const px of [-201, -135]) {
+      box(g, 8, 20, 32, px, 10, 36, materials.paleStone, 'Academy Palace end pavilion');
+      box(g, 9, 0.8, 33, px, 20.4, 36, materials.warmStone, 'Academy Palace end pavilion cornice');
+    }
   });
     addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');
