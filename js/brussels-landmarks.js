@@ -3676,6 +3676,11 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       cylinder(g, 0.08, 0.12, 4.2, side * 9.6, 2.1, centralFace + 1.6, bronze, 8).name = 'Perron lamp standard';
       mesh(g, new THREE.SphereGeometry(0.42, 12, 10), gilded, side * 9.6, 4.5, centralFace + 1.6, 'Perron lamp gilded globe');
     }
+
+    // Dressed stone nosing strips edge each perron step of the central entrance.
+    for (let s = 0; s < 3; s++) {
+      box(g, 17, 0.05, 0.1, 0, 0.95 - s * 0.32, centralFace + 0.61 + s * 0.62, moulding, 'Perron step nosing');
+    }
   });
   addLandmark('palaceSurroundings', (g) => {
     // Real-world sources: en/fr Wikipedia (Royal Palace of Brussels, Brussels Park, Place des Palais,

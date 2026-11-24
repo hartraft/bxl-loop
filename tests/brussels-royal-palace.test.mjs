@@ -1153,3 +1153,7 @@ testCase('the Royal Stables have a projecting gatehouse with pediment and gate d
 testCase('contrasting sett accent rows cross the Place des Palais on the palace axis', () => {
   assert.match(palace, /'Place des Palais sett accent row'/);
 });
+
+testCase('each perron step carries a dressed stone nosing strip', () => {
+  assert.match(palace, /'Perron step nosing'/);
+});
