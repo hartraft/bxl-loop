@@ -5659,6 +5659,9 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     for (const side of [-1, 1]) {
       mesh(g, new THREE.SphereGeometry(0.4, 10, 8), materials.warmStone, side * 70, 18.6, 406.85, 'Palace of the Nation wing acroterion');
     }
+
+    // A cap course finishes the Academy Palace garden front wall.
+    box(g, 56, 0.12, 0.6, -168, 0.86, 56, materials.warmStone, 'Academy garden wall cap');
   });
     addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');

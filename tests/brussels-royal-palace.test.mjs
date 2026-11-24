@@ -2177,3 +2177,7 @@ testCase('acroteria crown the wing pediments of the Palace of the Nation', () =>
 testCase('stone bases anchor the end posts of the garden railing', () => {
   assert.match(palace, /'Garden railing end post base'/);
 });
+
+testCase('a cap course finishes the Academy garden front wall', () => {
+  assert.match(palace, /'Academy garden wall cap'/);
+});
