@@ -2133,6 +2133,10 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
         box(g, 0.2, 3.2, 1.9, side * 70.1, 12.5, wz, glass, 'Wing end window (piano nobile)');
         box(g, 0.2, 2.4, 1.9, side * 70.1, 6.5, wz, glass, 'Wing end window (ground)');
       }
+      // The side façades keep the same pilaster order as the front (heritage: "aile de sept travées").
+      for (let i = 0; i < 4; i++) {
+        box(g, 0.34, 20, 0.3, side * 70.1, 10, -3.5 - i * 5, ashlar, 'Wing end pilaster');
+      }
       for (let f = 0; f < 2; f++) {
         for (let i = 0; i < 3; i++) {
           box(g, 0.22, 3.4, 1.9, side * 80.1, 13 + f * 5.5, -5 - i * 5, glass, 'Pavilion outer-face window');

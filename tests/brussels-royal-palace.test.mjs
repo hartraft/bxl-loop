@@ -372,3 +372,9 @@ testCase('the central corps roof is a flat terrasson bordered by a stone balustr
   assert.match(palace, /'Terrasson balustrade front rail'/);
   assert.match(palace, /trPost\.count = tri/);
 });
+
+testCase('the side façades keep the pilaster order of the front (aile de sept travées)', () => {
+  assert.match(palace, /aile de sept travées/);
+  assert.match(palace, /'Wing end pilaster'/);
+  assert.match(palace, /box\(g, 0\.34, 20, 0\.3, side \* 70\.1, 10, -3\.5 - i \* 5/);
+});
