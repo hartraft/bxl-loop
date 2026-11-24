@@ -402,6 +402,16 @@ test('the Royal Palace snapshot shows forecourt ground instead of blank sky', ()
   assert.match(palace, /centre\.z\+18\)/);
 });
 
+test('the returned landmark zones also cover each drawn landmark footprint, so generic buildings inside them are skipped', () => {
+  assert.ok(source.includes('group.updateMatrixWorld(true)'));
+  assert.ok(source.includes('const zones = (GEO.landmarkZones || []).map((z) => ({ id: z.id, pts: z.pts }));'));
+  assert.ok(source.includes('const bb = new THREE.Box3().setFromObject(landmarks[id].group).expandByScalar(3);'));
+  assert.ok(source.includes('zones.push({ id, pts: [bb.min.x, bb.min.z, bb.max.x, bb.min.z, bb.max.x, bb.max.z, bb.min.x, bb.max.z] });'));
+  assert.ok(source.includes('group, colliders, zones, landmarks,'), 'zones (baked + footprint bboxes) are returned for the city builder to skip buildings inside');
+  const main = readFileSync(new URL('../js/main.js', import.meta.url), 'utf8');
+  assert.ok(main.includes('landmarkZones: landmarks.zones'));
+});
+
 test('every workflow that runs tools/shot.py installs Pillow for its render assertions', () => {
   const workflows = readdirSync(new URL('../.github/workflows', import.meta.url)).filter(f => f.endsWith('.yml'));
   const runners = workflows.filter(f => readFileSync(new URL(`../.github/workflows/${f}`, import.meta.url), 'utf8').includes('tools/shot.py http'));
