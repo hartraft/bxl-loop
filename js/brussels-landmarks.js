@@ -817,8 +817,21 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
         // Le Roy d'Espagne: a small cupola surmounted by a gilded weather vane.
         cylinder(root, 0.55, 0.7, 1.1, 0, height + gableHeight + 0.6, 0.08, stone).name = name + ' cupola';
         mesh(root, new THREE.ConeGeometry(0.65, 0.9, 8), roof, 0, height + gableHeight + 1.6, 0.08, name + ' cupola cap');
-        const vane = box(root, 1.1, 0.1, 0.06, 0, height + gableHeight + 2.3, 0.08, materials.gold, name + ' gilded weather vane');
+        const cupolaLouvers = new THREE.InstancedMesh(new THREE.BoxGeometry(0.5, 0.08, 0.1), materials.dark, 4);
+      const vane = box(root, 1.1, 0.1, 0.06, 0, height + gableHeight + 2.3, 0.08, materials.gold, name + ' gilded weather vane');
         vane.rotation.y = 0.6;
+        // Louver slats in the cupola drum below the vane, as on the real Le Roy d'Espagne.
+        for (let i = 0; i < 4; i++) {
+          const a = i * Math.PI / 4 + Math.PI / 8;
+          modDummy.position.set(Math.cos(a) * 0.6, height + gableHeight + 0.6, Math.sin(a) * 0.6);
+          modDummy.rotation.y = -a;
+          modDummy.updateMatrix();
+          cupolaLouvers.setMatrixAt(i, modDummy.matrix);
+          modDummy.rotation.y = 0;
+        }
+        cupolaLouvers.count = 4;
+        cupolaLouvers.name = name + ' cupola louver slats';
+        root.add(cupolaLouvers);
       } else if (kind === 'horse') {
         // Le Cornet: the ship-stern gable is manned by a gilded horse.
         box(root, 0.9, 0.5, 0.25, 0, height + gableHeight + 1.2, 0.1, materials.gold, name + ' gilded horse body');
@@ -841,6 +854,16 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
         fan.count = 5;
         fan.name = name + ' peacock tail fan';
         root.add(fan);
+        // Peacock crest: three gilded eye-balls on the head, as on the real Le Paon emblem.
+        const crest = new THREE.InstancedMesh(new THREE.SphereGeometry(0.06, 6, 5), materials.gold, 3);
+        for (let i = 0; i < 3; i++) {
+          modDummy.position.set((i - 1) * 0.09, height + gableHeight + 2.32, 0.1);
+          modDummy.updateMatrix();
+          crest.setMatrixAt(i, modDummy.matrix);
+        }
+        crest.count = 3;
+        crest.name = name + ' peacock crest eyes';
+        root.add(crest);
       } else if (kind === 'stag') {
         // Le Cerf: gilded stag head with antlers.
         mesh(root, new THREE.SphereGeometry(0.2, 8, 6), materials.gold, 0, height + gableHeight + 1.5, 0.1, name + ' gilded stag head');
@@ -967,6 +990,9 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       mesh(root, new THREE.SphereGeometry(0.24, 8, 6), materials.gold, 0, height + gableHeight + 2.25, 0.1, name + ' St Nicholas gable statue head');
       box(root, 0.8, 0.3, 0.2, 0, 3.95, 0.55, materials.bronze, name + ' fox sign body');
       mesh(root, new THREE.SphereGeometry(0.18, 8, 6), materials.bronze, 0.45, 4.05, 0.55, name + ' fox sign head');
+      // The hanging fox sign's bushy tail, as on the real Le Renard enseigne.
+      const foxTail = box(root, 0.22, 0.4, 0.08, -0.35, 3.95, 0.55, materials.bronze, name + ' fox sign tail');
+      foxTail.rotation.z = 0.6;
       // Four haberdashery bas-relief panels (needles, scissors, thread, buttons) above the
       // ground-floor arcade — the real Le Renard facade tells the guild's trade in relief.
       const reliefs = new THREE.InstancedMesh(new THREE.BoxGeometry(0.6, 0.5, 0.1), materials.bronze, 4);
@@ -1050,6 +1076,10 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       box(root, 0.7, 1.5, 0.24, 0, height + gableHeight + 0.3, 0.34, materials.dark, name + ' St Giles arched niche');
       box(root, 0.28, 1.0, 0.14, 0, height + gableHeight + 0.35, 0.48, materials.gold, name + ' St Giles statue');
       mesh(root, new THREE.SphereGeometry(0.15, 8, 6), materials.gold, 0, height + gableHeight + 1.05, 0.48, name + ' St Giles statue head');
+      // St Giles' deer (his attribute) and a pilgrim scallop beside the niche, as on the real
+      // La Brouette pediment.
+      box(root, 0.3, 0.22, 0.1, 0.55, height + gableHeight + 0.1, 0.48, materials.gold, name + ' St Giles deer');
+      mesh(root, new THREE.SphereGeometry(0.09, 8, 6), materials.gold, -0.55, height + gableHeight + 0.2, 0.48, name + ' pilgrim scallop shell');
       box(root, 0.6, 0.45, 0.14, 0, (4.4 + wyB) / 2, 0.3, materials.dark, name + ' wheelbarrow cartouche ground');
       box(root, 0.45, 0.2, 0.06, 0, (4.4 + wyB) / 2, 0.4, materials.gold, name + ' gilded wheelbarrow');
       box(root, 0.55, 0.3, 0.12, -bayStep, wyB - 1.35, 0.28, materials.warmStone, name + ' Anno 1697 cartouche');
@@ -1080,6 +1110,10 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       const apollo = new THREE.Shape();
       apollo.moveTo(-0.6, 0); apollo.lineTo(0, 0.5); apollo.lineTo(0.6, 0); apollo.closePath();
       mesh(root, new THREE.ShapeGeometry(apollo), stone, 0, height + 2.6, 0.14, name + ' Apollo pediment');
+      // The she-wolf's tail and hind legs complete the Romulus-and-Remus relief.
+      const wtail = box(root, 0.5, 0.08, 0.08, 0, height + 0.72, 0.3, materials.bronze, name + ' she-wolf tail');
+      wtail.rotation.z = -0.4;
+      box(root, 0.08, 0.2, 0.08, -0.15, height + 0.62, 0.3, materials.bronze, name + ' she-wolf hind leg');
     }
     if (spec.cornet) {
       // Le Cornet (boatmen's house, no. 6): the gable is drawn as a galleon's stern manned by a
@@ -1090,6 +1124,10 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       box(root, 0.5, 0.08, 0.08, -0.9, 7.92, 0.3, materials.gold, name + ' anchor stock');
       const anchorArms = box(root, 0.5, 0.08, 0.08, -0.9, 7.58, 0.3, materials.gold, name + ' anchor arms');
       anchorArms.rotation.z = 0.5;
+      // Stern windows of the galleon's castle manned by the horse, on the Le Cornet gable.
+      for (const side of [-1, 1]) {
+        box(root, 0.3, 0.4, 0.1, side * 0.8, height + gableHeight + 0.4, 0.12, glowGlass, name + ' galleon stern window');
+      }
     }
     if (spec.equestrian) {
       // L'Arbre d'Or (brewers' guild house, no. 10): the roof carries a gilded equestrian statue
@@ -1098,6 +1136,10 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       box(root, 0.3, 0.45, 0.3, 0.55, height + gableHeight + 1.35, 0.1, materials.gold, name + ' equestrian horse head');
       box(root, 0.34, 1.0, 0.24, 0, height + gableHeight + 1.85, 0.1, materials.gold, name + ' Charles of Lorraine rider');
       mesh(root, new THREE.SphereGeometry(0.16, 8, 6), materials.gold, 0, height + gableHeight + 2.45, 0.1, name + ' Charles of Lorraine rider head');
+      // The equestrian horse's legs, as on the real 1901 Charles of Lorraine statue.
+      for (const [lx, lz] of [[-0.3, -0.12], [-0.3, 0.12], [0.3, -0.12], [0.3, 0.12]]) {
+        box(root, 0.1, 0.55, 0.1, lx, height + gableHeight + 0.55, lz + 0.1, materials.gold, name + ' equestrian horse leg');
+      }
     }
     if (spec.dukeBusts) {
       // Maison des Ducs de Brabant (east side, nos. 13-19 behind a single facade): stone busts
@@ -1133,6 +1175,11 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       neck.name = name + ' swan neck';
       neck.rotation.z = -0.5;
       mesh(root, new THREE.SphereGeometry(0.12, 8, 6), materials.gold, 0.22, 4.9, 0.5, name + ' swan head');
+      // Folded wings on the sculptured swan's body, as on the real Le Cygne sign.
+      for (const side of [-1, 1]) {
+        const sw = box(root, 0.34, 0.16, 0.08, side * 0.2, 4.12, 0.5, materials.gold, name + ' swan wing');
+        sw.rotation.z = side * 0.5;
+      }
     }
     if (spec.saintStatue) {
       // Sainte-Barbe: a statue of St Barbara in a niche at the gable base.
@@ -1972,6 +2019,10 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     outerL.rotation.z = -0.66;
     const outerR = box(tower, 3.0, 0.3, 0.6, 1.75, 10.15, towerW / 2 + 0.15, trim, 'Portal outer archivolt rib');
     outerR.rotation.z = 0.66;
+    // Label stops terminate both archivolt ribs where they meet the hood mould.
+    for (const side of [-1, 1]) {
+      box(tower, 0.26, 0.4, 0.5, side * 3.3, 8.6, towerW / 2 + 0.2, darkStone, 'Portal archivolt label stop');
+    }
     for (const side of [-1, 1]) {
       box(tower, 0.66, 2.4, 0.25, side * 2.6, 5.5, towerW / 2 + 0.08, darkStone, 'Portal jamb knight niche');
       box(tower, 0.24, 1.1, 0.12, side * 2.6, 5.5, towerW / 2 + 0.22, materials.gold, 'Portal jamb knight statue');
@@ -2499,6 +2550,20 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     khImposts.count = ki;
     khImposts.name = 'King’s House gallery arch impost blocks';
     root.add(khImposts);
+    // Cross tracery bars over the gallery oculi, as in the real neo-Gothic oculi.
+    const oculiBarsV = new THREE.InstancedMesh(new THREE.BoxGeometry(0.06, 0.56, 0.05), trim, bays);
+    const oculiBarsH = new THREE.InstancedMesh(new THREE.BoxGeometry(0.56, 0.06, 0.05), trim, bays);
+    for (let i = 0; i < bays; i++) {
+      const x = -width / 2 + bayW * (i + 0.5);
+      khd.position.set(x, 13.7, 0.27);
+      khd.updateMatrix();
+      oculiBarsV.setMatrixAt(i, khd.matrix);
+      oculiBarsH.setMatrixAt(i, khd.matrix);
+    }
+    oculiBarsV.count = oculiBarsH.count = bays;
+    oculiBarsV.name = 'King’s House gallery oculi tracery (vertical)';
+    oculiBarsH.name = 'King’s House gallery oculi tracery (horizontal)';
+    root.add(oculiBarsV, oculiBarsH);
     // Capitals widen the tops of the ground-gallery piers, as on the real arcade.
     const khPierCaps = new THREE.InstancedMesh(new THREE.BoxGeometry(0.44, 0.24, 0.56), trim, bays * 2);
     let kpc = 0;

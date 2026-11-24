@@ -991,3 +991,21 @@ test('rounds 223-232: blueStone night wash, glowWater, Broodhuis shaft side lanc
   assert.ok(source.includes('Manneken Pis basin overflow grate'));
   assert.ok(source.includes('Manneken Pis plaque frame'));
 });
+
+test('rounds 233-242: swan wings, she-wolf tail/leg, galleon stern windows, horse legs, St Giles deer + scallop, fox tail, cupola louvers, peacock crest, archivolt label stops, oculi tracery', () => {
+  assert.ok(square.includes('swan wing'));
+  assert.ok(square.includes('she-wolf tail'));
+  assert.ok(square.includes('she-wolf hind leg'));
+  assert.ok(square.includes('galleon stern window'));
+  assert.ok(square.includes('equestrian horse leg'));
+  assert.ok(square.includes('St Giles deer'));
+  assert.ok(square.includes('pilgrim scallop shell'));
+  assert.ok(square.includes('fox sign tail'));
+  assert.ok(square.includes('cupola louver slats'));
+  assert.ok(square.includes('cupolaLouvers.count = 4'));
+  assert.ok(square.includes('peacock crest eyes'));
+  assert.ok(square.includes('crest.count = 3'));
+  assert.ok(square.includes('Portal archivolt label stop'));
+  assert.ok(square.includes('gallery oculi tracery (vertical)'));
+  assert.ok(square.includes('oculiBarsV.count = oculiBarsH.count = bays'));
+});
