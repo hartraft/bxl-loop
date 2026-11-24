@@ -560,4 +560,29 @@ testCase('rounds 145-150: putti wings, globe meridians, rear quoins, rear pilast
   assert.match(bourse, /'Bourse stylobate edge moulding'/);
 });
 
+testCase('rounds 151-154: calepinage courses, wear lines, sett patches + borders, corner accent cobbles', () => {
+  assert.match(surroundings, /'Place de la Bourse alternating calepinage courses'/);
+  assert.match(surroundings, /alt\.count = n/);
+  assert.match(surroundings, /'Place de la Bourse wear lines/);
+  assert.match(surroundings, /wear\.count = 2/);
+  assert.match(surroundings, /'Place de la Bourse sett repair patches'/);
+  assert.match(surroundings, /'Sett patch borders/);
+  assert.match(surroundings, /'Square corner accent cobbles/);
+  assert.match(surroundings, /accent\.count = n/);
+});
+
+testCase('rounds 155-160: boulevard spine, side-street stubs, planter soil + shrubs, tree trunks + guards, stair tactile strip, kerb ramps', () => {
+  assert.match(surroundings, /'Boulevard Anspach central spine \(bande centrale\)'/);
+  assert.match(surroundings, /'Rue Paul Devaux paving stub'/);
+  assert.match(surroundings, /'Rue Jules Van Praet paving stub'/);
+  assert.match(surroundings, /'Planter soil \(terreau des bacs encastres\)'/);
+  assert.match(surroundings, /soil\.count = 12/);
+  assert.match(surroundings, /'Planter shrubs \(arbustes des bacs\)'/);
+  assert.match(surroundings, /'Boulevard tree trunks \(fûts\)'/);
+  assert.match(surroundings, /'Tree guard grilles \(grilles de protection\)'/);
+  assert.match(surroundings, /'Tactile strip at the monumental stair foot \(bande podotactile\)'/);
+  assert.match(surroundings, /'Kerb ramps at the crossings \(abaissés de trottoir\)'/);
+  assert.match(surroundings, /ramps\.count = 4/);
+});
+
 // __MORE_BOURSE_TESTS__

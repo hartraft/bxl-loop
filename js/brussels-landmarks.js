@@ -6714,6 +6714,136 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
         box(m, 1.7, 1.0, 0.06, 0, 1.2, 0.66, materials.gold, 'Orts monument plaque frame (cadre bronze dore)');
       }
     }
+    // Round 151: the square's calepinage alternates two stone tones in courses (repaved 2015).
+    {
+      const alt = new THREE.InstancedMesh(new THREE.BoxGeometry(1.6, 0.05, 1.6), materials.pavingEdge, 14 * 32);
+      const dummy = new THREE.Object3D();
+      let n = 0;
+      for (let row = 0; row < 14; row++) for (let col = 0; col < 32; col++) {
+        if ((row + col) % 2 === 0) continue;
+        dummy.position.set(-62 + col * 4 + (row % 2) * 2, 0.045, 46 + row * 6);
+        dummy.updateMatrix();
+        alt.setMatrixAt(n++, dummy.matrix);
+      }
+      alt.count = n;
+      alt.name = 'Place de la Bourse alternating calepinage courses';
+      alt.receiveShadow = true;
+      g.add(alt);
+    }
+    // Round 152: wear lines along the square's main axes (the busiest pedestrian paths).
+    {
+      const wear = new THREE.InstancedMesh(new THREE.BoxGeometry(90, 0.03, 2.2), materials.pavingEdge, 2);
+      const dummy = new THREE.Object3D();
+      dummy.position.set(0, 0.06, 88); dummy.updateMatrix(); wear.setMatrixAt(0, dummy.matrix);
+      dummy.position.set(0, 0.06, 108); dummy.updateMatrix(); wear.setMatrixAt(1, dummy.matrix);
+      wear.count = 2;
+      wear.name = 'Place de la Bourse wear lines (lignes d\'usure)';
+      wear.receiveShadow = true;
+      g.add(wear);
+    }
+    // Round 153: bordered sett patches (repair patches in the paving).
+    {
+      const patches = new THREE.InstancedMesh(new THREE.BoxGeometry(6, 0.04, 4), materials.pavingB, 6);
+      const borders = new THREE.InstancedMesh(new THREE.BoxGeometry(6.4, 0.05, 4.4), materials.pavingEdge, 6);
+      const dummy = new THREE.Object3D();
+      const spots = [[-30, 60], [20, 75], [-10, 95], [35, 100], [-45, 110], [10, 120]];
+      for (let i = 0; i < 6; i++) {
+        dummy.position.set(spots[i][0], 0.07, spots[i][1]);
+        dummy.updateMatrix();
+        patches.setMatrixAt(i, dummy.matrix);
+        borders.setMatrixAt(i, dummy.matrix);
+      }
+      patches.count = 6; patches.name = 'Place de la Bourse sett repair patches';
+      g.add(patches);
+      borders.count = 6; borders.name = 'Sett patch borders (bordures de ragréage)';
+      g.add(borders);
+    }
+    // Round 154: accent cobbles at the four corners of the square.
+    {
+      const accent = new THREE.InstancedMesh(new THREE.BoxGeometry(1.2, 0.07, 1.2), materials.pavingEdge, 4 * 9);
+      const dummy = new THREE.Object3D();
+      let n = 0;
+      for (const [cx, cz] of [[-62, 44], [62, 44], [-62, 134], [62, 134]]) {
+        for (let i = 0; i < 9; i++) {
+          dummy.position.set(cx + (i % 3) * 1.4 - 1.4, 0.08, cz + Math.floor(i / 3) * 1.4 - 1.4);
+          dummy.updateMatrix();
+          accent.setMatrixAt(n++, dummy.matrix);
+        }
+      }
+      accent.count = n;
+      accent.name = 'Square corner accent cobbles (cobles d\'angle)';
+      g.add(accent);
+    }
+    // Round 155: the boulevard's central spine is paved in a contrasting tone (pietonnier design).
+    box(g, 170, 0.28, 6, 0, -0.14, 122, materials.pavingEdge, 'Boulevard Anspach central spine (bande centrale)');
+    // Round 156: paving stubs continue into the side streets (rue Paul Devaux, rue Jules Van Praet).
+    box(g, 14, 0.26, 40, -58, -0.13, 100, materials.pavingB, 'Rue Paul Devaux paving stub');
+    box(g, 12, 0.26, 34, -28, -0.13, 112, materials.pavingB, 'Rue Jules Van Praet paving stub');
+    // Round 157: each embedded planter holds soil and a shrub ball.
+    {
+      const soil = new THREE.InstancedMesh(new THREE.CylinderGeometry(2.6, 2.6, 0.12, 10), materials.dark, 12);
+      const shrubs = new THREE.InstancedMesh(new THREE.SphereGeometry(0.9, 8, 6), materials.green, 12);
+      const dummy = new THREE.Object3D();
+      for (let i = 0; i < 12; i++) {
+        dummy.position.set(-77 + i * 14, 0.6, 118.5);
+        dummy.updateMatrix();
+        soil.setMatrixAt(i, dummy.matrix);
+        dummy.position.set(-77 + i * 14, 1.4, 118.5);
+        dummy.updateMatrix();
+        shrubs.setMatrixAt(i, dummy.matrix);
+      }
+      soil.count = 12; soil.name = 'Planter soil (terreau des bacs encastres)';
+      g.add(soil);
+      shrubs.count = 12; shrubs.name = 'Planter shrubs (arbustes des bacs)';
+      shrubs.castShadow = true;
+      g.add(shrubs);
+    }
+    // Round 158: tree trunks + protective grilles around the boulevard trees.
+    {
+      const trunks = new THREE.InstancedMesh(new THREE.CylinderGeometry(0.18, 0.24, 2.6, 8), materials.dark, 12);
+      const guards = new THREE.InstancedMesh(new THREE.TorusGeometry(0.9, 0.05, 6, 12), materials.dark, 12);
+      const dummy = new THREE.Object3D();
+      for (let i = 0; i < 12; i++) {
+        dummy.position.set(-77 + i * 14, 1.3, 118.5);
+        dummy.updateMatrix();
+        trunks.setMatrixAt(i, dummy.matrix);
+        dummy.position.set(-77 + i * 14, 0.5, 118.5);
+        dummy.rotation.set(Math.PI / 2, 0, 0);
+        dummy.updateMatrix();
+        guards.setMatrixAt(i, dummy.matrix);
+      }
+      trunks.count = 12; trunks.name = 'Boulevard tree trunks (fûts)';
+      g.add(trunks);
+      guards.count = 12; guards.name = 'Tree guard grilles (grilles de protection)';
+      g.add(guards);
+    }
+    // Round 159: tactile paving strip across the stair foot (accessibility to the peristyle).
+    {
+      const bumps = new THREE.InstancedMesh(new THREE.SphereGeometry(0.09, 6, 5), materials.pavingEdge, 2 * 26);
+      const dummy = new THREE.Object3D();
+      let n = 0;
+      for (let r = 0; r < 2; r++) for (let i = 0; i < 26; i++) {
+        dummy.position.set(-12.5 + i * 1, 0.09, 49 + (r - 0.5) * 0.5);
+        dummy.updateMatrix();
+        bumps.setMatrixAt(n++, dummy.matrix);
+      }
+      bumps.count = n;
+      bumps.name = 'Tactile strip at the monumental stair foot (bande podotactile)';
+      g.add(bumps);
+    }
+    // Round 160: kerb ramps (abaissés de trottoir) at the four boulevard crossings.
+    {
+      const ramps = new THREE.InstancedMesh(new THREE.BoxGeometry(4, 0.1, 1.6), materials.pavingEdge, 4);
+      const dummy = new THREE.Object3D();
+      for (let i = 0; i < 4; i++) {
+        dummy.position.set(i % 2 ? 8 : -8, 0.1, i < 2 ? 107.2 : 134.8);
+        dummy.updateMatrix();
+        ramps.setMatrixAt(i, dummy.matrix);
+      }
+      ramps.count = 4;
+      ramps.name = 'Kerb ramps at the crossings (abaissés de trottoir)';
+      g.add(ramps);
+    }
     // __SURROUNDINGS_ROUNDS__
   });
 
