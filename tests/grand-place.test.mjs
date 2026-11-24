@@ -503,7 +503,7 @@ test('the four frontages still face the plaza', () => {
 
 test('facades pick up a faint warm floodlight wash at night', () => {
   assert.ok(source.includes('facadeWashMats'));
-  assert.ok(source.includes("for (const key of ['limestone', 'paleStone', 'warmStone', 'ochre', 'plaster', 'gobertange', 'euville', 'gold', 'bronze', 'pavingA', 'pavingB'])"));
+  assert.ok(source.includes("for (const key of ['limestone', 'paleStone', 'warmStone', 'ochre', 'plaster', 'gobertange', 'euville', 'gold', 'bronze', 'pavingA', 'pavingB', 'blueStone'])"));
   assert.ok(source.includes('m.emissiveIntensity = level * 0.16'));
   assert.ok(source.includes('m.emissive.setHex(0xffd9a0)'));
 });
@@ -669,7 +669,7 @@ test('real building stones: Gobertange sandstone and Euville limestone houses, b
 test('night: lit enamel street signs, floodlit gilding/bronze/paving, glowing café awnings (rounds 89-90, 95-96)', () => {
   assert.ok(source.includes('nightGlowMats.push(signGlow)'));
   assert.ok(square.includes('signGlow, plaques.length'));
-  assert.ok(source.includes("'gold', 'bronze', 'pavingA', 'pavingB'"), 'gold, bronze and paving join the night floodlight wash');
+  assert.ok(source.includes("'gold', 'bronze', 'pavingA', 'pavingB', 'blueStone'"), 'gold, bronze, paving and blue stone join the night floodlight wash');
   assert.ok(source.includes('nightGlowMats.push(awningGlow)'));
   assert.ok(square.includes('awningGlow, bays'));
 });
@@ -971,4 +971,23 @@ test('rounds 213-222: kerb end stones, tactile bumps, sett patch borders, floodl
   assert.ok(square.includes('awning front poles'));
   assert.ok(square.includes('’t Serclaes plaque bronze frame'));
   assert.ok(square.includes('UNESCO plaque frame'));
+});
+
+test('rounds 223-232: blueStone night wash, glowWater, Broodhuis shaft side lancets, TH wing side windows + coursing + plinth tables, arcade vault infills, accent cobbles, Manneken rocaille scrolls/overflow/plaque frame', () => {
+  assert.ok(source.includes("nightGlowMats.push(glowWater)"));
+  assert.ok(source.includes('glowWater, 6'));
+  assert.ok(square.includes('King’s House tower shaft side lancets'));
+  assert.ok(square.includes('khShaftSide.count = kss'));
+  assert.ok(square.includes('Town Hall wing side-elevation windows'));
+  assert.ok(square.includes('wingSideWin.count = wsw'));
+  assert.ok(square.includes('Town Hall wing coursing grooves'));
+  assert.ok(square.includes('coursing.count = cg'));
+  assert.ok(square.includes('Town Hall wing plinth water tables'));
+  assert.ok(square.includes('Arcade vault infill panels'));
+  assert.ok(square.includes('vaultInfills.count = bays'));
+  assert.ok(square.includes('Grand-Place accent cobbles'));
+  assert.ok(square.includes('accents.count = 40'));
+  assert.ok(source.includes('Manneken Pis rocaille scroll'));
+  assert.ok(source.includes('Manneken Pis basin overflow grate'));
+  assert.ok(source.includes('Manneken Pis plaque frame'));
 });

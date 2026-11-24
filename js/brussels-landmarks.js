@@ -48,10 +48,14 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
   const awningGlow = materials.canvas.clone();
   awningGlow.emissive = new THREE.Color(0x000000);
   nightGlowMats.push(awningGlow);
+  // Fountain water glows faintly at night — a dedicated clone for the Manneken Pis jet.
+  const glowWater = materials.glass.clone();
+  glowWater.emissive = new THREE.Color(0x000000);
+  nightGlowMats.push(glowWater);
   // Facade stone materials get a faint warm floodlight wash at night (the real square is
   // floodlit after dark) — clone them so daytime rendering is untouched.
   const facadeWashMats = [];
-  for (const key of ['limestone', 'paleStone', 'warmStone', 'ochre', 'plaster', 'gobertange', 'euville', 'gold', 'bronze', 'pavingA', 'pavingB']) {
+  for (const key of ['limestone', 'paleStone', 'warmStone', 'ochre', 'plaster', 'gobertange', 'euville', 'gold', 'bronze', 'pavingA', 'pavingB', 'blueStone']) {
     const m = materials[key].clone();
     m.emissive = new THREE.Color(0x000000);
     facadeWashMats.push(m);
@@ -1182,6 +1186,40 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     corniceDrips.count = 2;
     corniceDrips.name = 'Wing cornice drip moulds';
     root.add(corniceDrips);
+    // Glazed windows pierce the outer side elevations of both wings toward the side streets,
+    // and fine coursing grooves run the wing facades; sloped water tables cap the plinths.
+    const wingSideWin = new THREE.InstancedMesh(new THREE.BoxGeometry(0.14, 3.0, 1.5), glass, 8);
+    const coursing = new THREE.InstancedMesh(new THREE.BoxGeometry(1, 0.045, 0.05), materials.dark, 16);
+    const thPlinthTables = new THREE.InstancedMesh(new THREE.BoxGeometry(1, 0.08, 0.5), materials.dark, 2);
+    const wd2 = new THREE.Object3D();
+    let wsw = 0, cg = 0;
+    for (const [wx, ww, sx] of [[eastWingX, 15, -1], [westWingX, 32, 1]]) {
+      const faceX = wx + sx * (ww / 2 + 0.05);
+      for (let r = 0; r < 4; r++) {
+        wd2.position.set(faceX, 7 + r * 5.5, -depth / 2 + 3 + r * 3.2);
+        wd2.updateMatrix();
+        wingSideWin.setMatrixAt(wsw++, wd2.matrix);
+      }
+      for (let g = 0; g < 8; g++) {
+        wd2.position.set(wx, 5 + g * 2.9, 0.18);
+        wd2.scale.set(ww, 1, 1);
+        wd2.updateMatrix();
+        coursing.setMatrixAt(cg++, wd2.matrix);
+        wd2.scale.set(1, 1, 1);
+      }
+      wd2.position.set(wx, 1.08, 0.28);
+      wd2.scale.set(ww + 0.6, 1, 1);
+      wd2.updateMatrix();
+      thPlinthTables.setMatrixAt(sx > 0 ? 1 : 0, wd2.matrix);
+      wd2.scale.set(1, 1, 1);
+    }
+    wingSideWin.count = wsw;
+    coursing.count = cg;
+    thPlinthTables.count = 2;
+    wingSideWin.name = 'Town Hall wing side-elevation windows';
+    coursing.name = 'Town Hall wing coursing grooves';
+    thPlinthTables.name = 'Town Hall wing plinth water tables';
+    root.add(wingSideWin, coursing, thPlinthTables);
     // Both wing cornices stand on rows of corbels (modillions), like the guild houses.
     const wingMods = new THREE.InstancedMesh(new THREE.BoxGeometry(0.3, 0.34, 0.34), darkStone, 40);
     const wmd = new THREE.Object3D();
@@ -1313,6 +1351,18 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     vaultRibs.count = bays;
     vaultRibs.name = 'Arcade cross-vault ribs';
     root.add(vaultRibs);
+    // Dark vault infill panels close each arcade bay between the ribs, as on the real vaulted
+    // ground floor.
+    const vaultInfills = new THREE.InstancedMesh(new THREE.BoxGeometry(bayW - 0.6, 0.08, 0.4), materials.dark, bays);
+    for (let i = 0; i < bays; i++) {
+      vd.position.set(-width / 2 + bayW * (i + 0.5), 7.18, 0.32);
+      vd.rotation.z = 0;
+      vd.updateMatrix();
+      vaultInfills.setMatrixAt(i, vd.matrix);
+    }
+    vaultInfills.count = bays;
+    vaultInfills.name = 'Arcade vault infill panels';
+    root.add(vaultInfills);
     // Springer stones where each pointed arch leaves its pier.
     const springers = new THREE.InstancedMesh(new THREE.BoxGeometry(0.3, 0.36, 0.5), trim, bays * 2);
     let sp = 0;
@@ -2691,6 +2741,19 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     khShaftRings.count = 3;
     khShaftRings.name = 'King’s House tower shaft string rings';
     root.add(khShaftRings);
+    // Glazed lancets pierce both side faces of the Broodhuis tower shaft, as on the real tower.
+    const khShaftSide = new THREE.InstancedMesh(new THREE.BoxGeometry(0.14, 3.2, 1.7), glass, 4);
+    let kss = 0;
+    for (const sx of [-1, 1]) {
+      for (const y of [15, 25]) {
+        khQd.position.set(sx * 1.45, y, towerZ);
+        khQd.updateMatrix();
+        khShaftSide.setMatrixAt(kss++, khQd.matrix);
+      }
+    }
+    khShaftSide.count = kss;
+    khShaftSide.name = 'King’s House tower shaft side lancets';
+    root.add(khShaftSide);
     cylinder(root, 1.35, 1.5, 2.6, 0, 34.3, towerZ, trim, 8).name = 'King’s House central tower octagonal top';
     // Louvered belfry openings around the octagonal top of the real Broodhuis tower.
     const khLouvers = new THREE.InstancedMesh(new THREE.BoxGeometry(0.9, 0.1, 0.2), darkStone, 8);
@@ -2878,6 +2941,19 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     repairs.name = 'Grand-Place paving repair patches';
     repairs.receiveShadow = true;
     plaza.add(repairs);
+    // Scattered accent cobbles of a third tone break up the field, as in the real worn
+    // calepinage.
+    const accents = new THREE.InstancedMesh(cobbleGeo, materials.pavingEdge, 40);
+    for (let i = 0; i < 40; i++) {
+      dummy.position.set(-51.7 + ((i * 7) % 16) * 6.9 + ((i * 3) % 5) * 0.3, -0.055, -35 + ((i * 5) % 15) * 4.9);
+      dummy.rotation.y = ((i * 11) % 7) * 0.05;
+      dummy.updateMatrix();
+      accents.setMatrixAt(i, dummy.matrix);
+    }
+    accents.count = 40;
+    accents.name = 'Grand-Place accent cobbles';
+    accents.receiveShadow = true;
+    plaza.add(accents);
     // Granite kerb stones along all four facade lines where the paving meets the buildings.
     for (const [w, d, x, z, n] of [[110, 0.5, 0, 35.6, 'south'], [110, 0.5, 0, -35.6, 'north'], [0.5, 71, -54.6, 0, 'west'], [0.5, 71, 54.6, 0, 'east']]) {
       box(plaza, w, 0.18, d, x, 0.02, z, materials.pavingEdge, `Grand-Place ${n} facade kerb`);
@@ -3334,9 +3410,16 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     cylinder(g, 0.34, 0.45, 1.6, 0, 2.1, 0, materials.blueStone, 8).name = 'Manneken Pis column';
     box(g, 0.3, 0.62, 0.22, 0, 3.15, 0, materials.bronze, 'Manneken Pis bronze figure');
     mesh(g, new THREE.SphereGeometry(0.16, 10, 8), materials.bronze, 0, 3.56, 0, 'Manneken Pis bronze head');
-    cylinder(g, 0.02, 0.02, 0.5, 0.14, 3.0, 0.12, materials.glass, 6).name = 'Manneken Pis water jet';
+    cylinder(g, 0.02, 0.02, 0.5, 0.14, 3.0, 0.12, glowWater, 6).name = 'Manneken Pis water jet';
     cylinder(g, 1.1, 1.25, 0.5, 0, 0.25, 0, materials.blueStone, 12).name = 'Manneken Pis stone basin';
-    mesh(g, new THREE.CircleGeometry(1.05, 12), materials.glass, 0, 0.42, 0, 'Manneken Pis basin water');
+    mesh(g, new THREE.CircleGeometry(1.05, 12), glowWater, 0, 0.42, 0, 'Manneken Pis basin water');
+    // Rocaille scroll curls at the niche corners and an overflow grate in the basin rim —
+    // details of the real 1770 surround.
+    for (let i = 0; i < 4; i++) {
+      const a = i * Math.PI / 2 + Math.PI / 4;
+      mesh(g, new THREE.SphereGeometry(0.16, 8, 6), materials.blueStone, Math.cos(a) * 1.35, 4.35 + (i % 2) * 0.25, -0.22, 'Manneken Pis rocaille scroll');
+    }
+    box(g, 0.5, 0.04, 0.08, 0.8, 0.44, 0, materials.dark, 'Manneken Pis basin overflow grate');
     for (let i = 0; i < 4; i++) {
       const a = i * Math.PI / 2 + Math.PI / 4;
       box(g, 0.06, 0.8, 0.06, Math.cos(a) * 1.55, 0.4, Math.sin(a) * 1.55, materials.dark, 'Manneken Pis railing post');
@@ -3344,6 +3427,11 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     const hoop = mesh(g, new THREE.TorusGeometry(1.55, 0.04, 6, 20), materials.dark, 0, 0.82, 0, 'Manneken Pis railing top hoop');
     hoop.rotation.x = Math.PI / 2;
     box(g, 0.5, 0.3, 0.05, 0, 1.6, -0.62, materials.bronze, 'Manneken Pis commemorative plaque');
+    // A bronze border frames the commemorative plaque.
+    box(g, 0.58, 0.06, 0.03, 0, 1.77, -0.645, materials.bronze, 'Manneken Pis plaque frame');
+    box(g, 0.58, 0.06, 0.03, 0, 1.43, -0.645, materials.bronze, 'Manneken Pis plaque frame');
+    box(g, 0.06, 0.38, 0.03, -0.26, 1.6, -0.645, materials.bronze, 'Manneken Pis plaque frame');
+    box(g, 0.06, 0.38, 0.03, 0.26, 1.6, -0.645, materials.bronze, 'Manneken Pis plaque frame');
   });
   addLandmark('montDesArts', (g) => {
     // Mont des Arts: René Péchère's 1957–58 suspended garden, restored in 2001.
