@@ -1090,3 +1090,8 @@ testCase('tree rows line the three radiating avenues from the main pond', () => 
   assert.match(palace, /'Radiating avenue tree canopies'/);
   assert.match(palace, /radTrunk\.count = rdi/);
 });
+
+testCase('stone edging kerbs flank the park central avenue', () => {
+  assert.match(palace, /'Central avenue west edging kerb'/);
+  assert.match(palace, /'Central avenue east edging kerb'/);
+});

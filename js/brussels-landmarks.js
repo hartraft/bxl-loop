@@ -4214,6 +4214,9 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     }
     radTrunk.count = rdi; radTrunk.name = 'Radiating avenue tree trunks'; g.add(radTrunk);
     radCan.count = rdi; radCan.name = 'Radiating avenue tree canopies'; g.add(radCan);
+    // Stone edging kerbs flank the central avenue walk.
+    box(g, 0.4, 0.18, 172, -6.3, 0.09, 150, materials.pavingEdge, 'Central avenue west edging kerb');
+    box(g, 0.4, 0.18, 172, 6.3, 0.09, 150, materials.pavingEdge, 'Central avenue east edging kerb');
   });
     addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');
