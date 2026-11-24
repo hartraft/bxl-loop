@@ -794,3 +794,9 @@ testCase('the Royal Stables wrap a paved courtyard with side and rear ranges', (
   assert.match(palace, /'Royal Stables rear range'/);
   assert.match(palace, /'Royal Stables courtyard paving'/);
 });
+
+testCase('the octagonal basin carries its own central fountain', () => {
+  assert.match(palace, /own central fountain jet/);
+  assert.match(palace, /'Octagonal basin fountain jet'/);
+  assert.match(palace, /'Octagonal basin fountain spray'/);
+});

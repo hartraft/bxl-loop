@@ -2803,6 +2803,9 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     box(g, 12, 10, 50, -94, 5, -85, materials.ochre, 'Royal Stables west range');
     box(g, 46, 10, 12, -70, 5, -112, materials.ochre, 'Royal Stables rear range');
     box(g, 36, 0.14, 40, -70, 0.05, -88, materials.pavingEdge, 'Royal Stables courtyard paving');
+    // The octagonal basin (1780) carries its own central fountain jet, like the main pond.
+    cylinder(g, 0.2, 0.5, 5.2, 0, 2.7, 262, parkWater, 10).name = 'Octagonal basin fountain jet';
+    mesh(g, new THREE.ConeGeometry(1.3, 1.8, 10), parkWater, 0, 5.5, 262, 'Octagonal basin fountain spray');
   });
     addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');
