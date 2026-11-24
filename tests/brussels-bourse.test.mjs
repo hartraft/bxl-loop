@@ -696,4 +696,30 @@ testCase('rounds 206-210: attic parapet + balusters, dormer glazing, chimney pot
   assert.match(bourse, /'Bourse roof valley lead flashing \(noue en plomb\)'/);
 });
 
+testCase('rounds 211-215: 1949 mansard + dormers, 1884-85 avant-corps pediments, Cafe oriel + mansard, kiosk roundels + steps', () => {
+  assert.match(surroundings, /'1949 building mansard roof'/);
+  assert.match(surroundings, /'1949 building mansard dormers'/);
+  assert.match(surroundings, /'1884-85 block central avant-corps'/);
+  assert.match(surroundings, /'1884-85 avant-corps pediment \(fronton\)'/);
+  assert.match(surroundings, /'Cafe de la Bourse corner oriel'/);
+  assert.match(surroundings, /'Cafe de la Bourse mansard roof'/);
+  assert.match(surroundings, /'premetro access sign disc \(roundel generique, sans marque\)'/);
+  assert.match(surroundings, /'kiosk lower step'/);
+  assert.match(surroundings, /'kiosk upper step'/);
+});
+
+testCase('rounds 216-220: Fontaine side spouts, mirror corner stones, planter rims, lamp collars, kiosk colliders', () => {
+  assert.match(surroundings, /'Fontaine Orts side spout \(bec lateral\)'/);
+  assert.match(surroundings, /'Water mirror corner stones/);
+  assert.match(surroundings, /'Planter rim mouldings \(bords des bacs\)'/);
+  assert.match(surroundings, /rims\.count = 12/);
+  assert.match(surroundings, /'Lighting column base collars'/);
+  const layout = readFileSync(new URL('../js/brussels-colliders.js', import.meta.url), 'utf8');
+  assert.match(layout, /premetro access 7 kiosk/);
+  assert.match(layout, /premetro access 8 kiosk/);
+  assert.match(layout, /premetro access 6 kiosk/);
+  const sur2 = createBrusselsLandmarkColliders('bourseSurroundings', brusselsToWorld(BRUSSELS_LANDMARK_ANCHORS.bourseSurroundings.lat, BRUSSELS_LANDMARK_ANCHORS.bourseSurroundings.lon), BOURSE_ROTATION, 0);
+  assert.ok(sur2.length >= 7, 'kiosks registered as colliders');
+});
+
 // __MORE_BOURSE_TESTS__

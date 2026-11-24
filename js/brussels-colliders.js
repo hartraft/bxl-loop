@@ -102,7 +102,11 @@ const bourseSurroundings = [
   { name: '1884-85 apartment block west', x: -30, z: 108, hx: 26, hz: 9, maxY: 24 },
   { name: '1884-85 apartment block east', x: 30, z: 108, hx: 26, hz: 9, maxY: 24 },
   { name: 'Orts fountain', x: -52, z: 78, hx: 1.2, hz: 1.2, maxY: 2.4 },
-  { name: 'Auguste Orts monument', x: -48, z: 72, hx: 1.5, hz: 1.5, maxY: 5 }
+  { name: 'Auguste Orts monument', x: -48, z: 72, hx: 1.5, hz: 1.5, maxY: 5 },
+  // Round 220: the three Bourse/Beurs premetro surface accesses (6, 7, 8).
+  { name: 'premetro access 7 kiosk', x: -52, z: 103, hx: 2.0, hz: 2.0, maxY: 3.2 },
+  { name: 'premetro access 8 kiosk', x: -40, z: 103, hx: 2.0, hz: 2.0, maxY: 3.2 },
+  { name: 'premetro access 6 kiosk', x: 18, z: 100, hx: 2.0, hz: 2.0, maxY: 3.2 }
 ];
 
 export const BRUSSELS_LANDMARK_COLLIDER_LAYOUT = Object.freeze({

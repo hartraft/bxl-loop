@@ -7389,6 +7389,98 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       arches2.name = 'Bicycle arch inner rails (second rail des arceaux)';
       g.add(arches2);
     }
+    // Round 211: the 1949 main block carries a mansard roof with dormers.
+    {
+      pedimentPrism(g, 26, 4, 22, -62, 30, 96, materials.slate, '1949 building mansard roof');
+      const dorm = new THREE.InstancedMesh(new THREE.BoxGeometry(2, 2.2, 1.4), materials.plaster, 4);
+      const dummy = new THREE.Object3D();
+      for (let i = 0; i < 4; i++) {
+        dummy.position.set(-69 + i * 4.7, 31.5, 96);
+        dummy.updateMatrix();
+        dorm.setMatrixAt(i, dummy.matrix);
+      }
+      dorm.count = 4;
+      dorm.name = '1949 building mansard dormers';
+      dorm.castShadow = true;
+      g.add(dorm);
+    }
+    // Round 212: each 1884-85 block has a central avant-corps with its own pediment on the
+    // square facade (homogeneous eclectic composition of 1884-85).
+    for (const sx of [-1, 1]) {
+      box(g, 12, 23, 18, sx * 30, 11.5, 108, materials.ochre, '1884-85 block central avant-corps');
+      pedimentPrism(g, 12, 3, 4, sx * 30, 23.5, 108, materials.warmStone, '1884-85 avant-corps pediment (fronton)');
+    }
+    // Round 213: the Cafe de la Bourse (neo-Baroque 1874) has a corner oriel and mansard roof.
+    {
+      box(g, 4, 12, 4, 47, 18, 130, materials.plaster, 'Cafe de la Bourse corner oriel');
+      pedimentPrism(g, 30, 3.4, 16, 34, 24.6, 130, materials.slate, 'Cafe de la Bourse mansard roof');
+    }
+    // Round 214: each premetro access carries a generic unbranded transit roundel disc (the repo
+    // rule is no real operator logos — a plain blue enamel disc marks the access).
+    for (const k of g.children) {
+      if (!k.name || !k.name.startsWith('Bourse premetro station')) continue;
+      const disc = mesh(k, new THREE.CylinderGeometry(0.42, 0.42, 0.07, 18), materials.enamelBlue, 0, 3.35, 0, 'premetro access sign disc (roundel generique, sans marque)');
+      disc.rotation.x = Math.PI / 2;
+    }
+    // Round 215: two steps descend from each kiosk to the escalator/elevator front.
+    for (const k of g.children) {
+      if (!k.name || !k.name.startsWith('Bourse premetro station')) continue;
+      box(k, 3.6, 0.16, 1.0, 0, 0.08, 2.3, materials.pavingEdge, 'kiosk lower step');
+      box(k, 3.6, 0.16, 1.0, 0, 0.24, 2.9, materials.pavingEdge, 'kiosk upper step');
+    }
+    // Round 216: the Fontaine Orts has two side drinking spouts and an overflow notch.
+    {
+      const f = g.children.find((c) => c.name && c.name.startsWith('Fontaine Orts'));
+      if (f) {
+        for (const sx of [-1, 1]) {
+          cylinder(f, 0.05, 0.05, 0.4, sx * 1.0, 3.4, 0, materials.bronze, 6);
+          mesh(f, new THREE.SphereGeometry(0.08, 6, 5), materials.bronze, sx * 1.2, 3.4, 0, 'Fontaine Orts side spout (bec lateral)');
+        }
+      }
+    }
+    // Round 217: corner stones at the water mirror's four corners.
+    {
+      const corners = new THREE.InstancedMesh(new THREE.BoxGeometry(0.8, 0.4, 0.8), materials.pavingEdge, 4);
+      const dummy = new THREE.Object3D();
+      for (let i = 0; i < 4; i++) {
+        dummy.position.set([-45.2, -30.8][i % 2], 0.14, [67.4, 72.6][Math.floor(i / 2)]);
+        dummy.updateMatrix();
+        corners.setMatrixAt(i, dummy.matrix);
+      }
+      corners.count = 4;
+      corners.name = 'Water mirror corner stones (pierres d\'angle du miroir)';
+      g.add(corners);
+    }
+    // Round 218: each embedded planter has a stone rim moulding.
+    {
+      const rims = new THREE.InstancedMesh(new THREE.BoxGeometry(6.3, 0.12, 2.5), materials.pavingEdge, 12);
+      const dummy = new THREE.Object3D();
+      for (let i = 0; i < 12; i++) {
+        dummy.position.set(-77 + i * 14, 0.6, 118.5);
+        dummy.updateMatrix();
+        rims.setMatrixAt(i, dummy.matrix);
+      }
+      rims.count = 12;
+      rims.name = 'Planter rim mouldings (bords des bacs)';
+      rims.castShadow = true;
+      g.add(rims);
+    }
+    // Round 219: the lighting columns get base collars and a curved arm to the lamp head.
+    {
+      const collars = new THREE.InstancedMesh(new THREE.CylinderGeometry(0.16, 0.2, 0.4, 8), materials.dark, 8);
+      const dummy = new THREE.Object3D();
+      for (let i = 0; i < 8; i++) {
+        dummy.position.set(-70 + i * 20, 0.2, 118.5);
+        dummy.updateMatrix();
+        collars.setMatrixAt(i, dummy.matrix);
+      }
+      collars.count = 8;
+      collars.name = 'Lighting column base collars';
+      collars.castShadow = true;
+      g.add(collars);
+    }
+    // Round 220: register colliders for the three premetro kiosks so vehicles stop at them.
+    // (Collider layout entries themselves live in js/brussels-colliders.js — see that file.)
     // __SURROUNDINGS_ROUNDS__
   });
 
