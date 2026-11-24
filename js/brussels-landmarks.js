@@ -2751,6 +2751,12 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
         box(g, 2.2, 0.5, 0.1, bx, 0.8, bz + 0.32, materials.warmStone, 'Park avenue bench back');
       }
     }
+    // The Academy Palace has seven bays on its north and south faces too (15 bays W/E).
+    for (const fz of [22, 50]) {
+      for (let i = 0; i < 7; i++) {
+        box(g, 2.2, 5.5, 0.2, -168 - 27 + i * 9, 9, fz, materials.glass, 'Academy Palace side window');
+      }
+    }
   });
     addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');

@@ -736,3 +736,9 @@ testCase('eight stone ribs stiffen the flattened dome from drum to lantern', () 
   assert.match(palace, /'Dome rib'/);
   assert.match(palace, /for \(let ri = 0; ri < 8; ri\+\+\)/);
 });
+
+testCase('the Academy Palace has seven bays on its north and south faces', () => {
+  assert.match(palace, /seven bays on its north and south faces/);
+  assert.match(palace, /'Academy Palace side window'/);
+  assert.match(palace, /for \(let i = 0; i < 7; i\+\+\)/);
+});
