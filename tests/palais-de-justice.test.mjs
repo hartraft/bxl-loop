@@ -140,6 +140,8 @@ test('the monumental dome stack exists: square drum, circular drum, copper dome,
   assert.ok(palace.includes('domeGeom.scale(1, 1.06, 1)'), 'bombe profile of the 1948 raising');
   assert.ok(palace.includes("'Gilded dome rib'"));
   assert.ok(palace.includes("'Courthouse lantern cap'"));
+  assert.ok(palace.includes('cylinder(g, 0.18, 0.3, 0.8, 0, 115.8, 0, gilded, 8)'), 'silhouette tops at 116 m hors tout');
+  assert.ok(!palace.includes('0.22, 0.35, 5.5'), 'no Eurovision antenna (removed 2002)');
 });
 
 test('the Place Poelaert front carries the monumental stair and the double-colonnade peristyle', () => {

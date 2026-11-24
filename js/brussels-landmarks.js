@@ -1908,14 +1908,18 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       const rib = mesh(g, ribGeom, gilded, 0, 0, 0, 'Gilded dome rib');
       rib.rotation.y = i * Math.PI * 2 / 16;
     }
-    cylinder(g, 5.8, 7.5, 9, 0, 104, 0, bronze, 24);
+    // Colonnaded lantern with a gilded cap: the whole palace tops out at 116 m hors tout.
+    // (The 17 m Eurovision antenna on the dome was removed in September 2002.)
+    cylinder(g, 5.8, 7.5, 6, 0, 103.5, 0, bronze, 24);
     for (let i = 0; i < 12; i++) {
       const a = i * Math.PI * 2 / 12;
-      cylinder(g, 0.34, 0.42, 7.2, Math.cos(a) * 6.1, 104, Math.sin(a) * 6.1, light, 10);
+      cylinder(g, 0.34, 0.42, 8, Math.cos(a) * 6.1, 106, Math.sin(a) * 6.1, light, 10);
     }
-    cylinder(g, 4.6, 5.8, 2.0, 0, 109, 0, bronze, 20);
-    mesh(g, new THREE.SphereGeometry(4.8, 20, 12, 0, Math.PI * 2, 0, Math.PI / 2), roof, 0, 110, 0, 'Courthouse lantern cap');
-    cylinder(g, 0.22, 0.35, 5.5, 0, 116, 0, bronze, 12);
+    cylinder(g, 7.2, 7.2, 1.2, 0, 110.6, 0, gilded, 24);
+    const capGeom = new THREE.SphereGeometry(4.0, 20, 12, 0, Math.PI * 2, 0, Math.PI / 2);
+    capGeom.scale(1, 1.1, 1);
+    mesh(g, capGeom, gilded, 0, 111.2, 0, 'Courthouse lantern cap');
+    cylinder(g, 0.18, 0.3, 0.8, 0, 115.8, 0, gilded, 8);
     // The side facades each carry an axial portal with a small peristyle and a stair down to
     // street level: rue des Minimes on the west (local +X), rue aux Laines on the east; the
     // lower ground floor is entered from rue aux Laines.
