@@ -1034,3 +1034,8 @@ testCase('the central corps carries tall second-floor windows above the portico'
   assert.match(palace, /'Central second-floor window'/);
   assert.match(palace, /'Central second-floor lintel'/);
 });
+
+testCase('each central ground-floor arch is ringed by an archivolt', () => {
+  assert.match(palace, /archivolt of voussoirs/);
+  assert.match(palace, /'Central arcade archivolt'/);
+});

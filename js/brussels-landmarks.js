@@ -3588,6 +3588,13 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       box(g, 2.2, 0.18, 0.36, cx, 14.35, centralFace + 0.22, moulding, 'Central second-floor sill');
       box(g, 2.2, 0.18, 0.36, cx, 17.65, centralFace + 0.22, moulding, 'Central second-floor lintel');
     }
+
+    // Each central ground-floor arch is ringed by an archivolt of voussoirs.
+    for (let i = 0; i < 5; i++) {
+      const cx = -8 + i * 4;
+      const av = mesh(g, new THREE.TorusGeometry(1.9, 0.16, 6, 18, Math.PI), ashlar, cx, 4.4, centralFace + 0.2, 'Central arcade archivolt');
+      av.rotation.x = 0;
+    }
   });
   addLandmark('palaceSurroundings', (g) => {
     // Real-world sources: en/fr Wikipedia (Royal Palace of Brussels, Brussels Park, Place des Palais,
