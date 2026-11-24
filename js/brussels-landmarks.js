@@ -1676,6 +1676,14 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     const bronze = new THREE.MeshStandardMaterial({ color: 0x75664b, metalness: 0.42, roughness: 0.65 });
     // The real soubassement is pierre bleue (Belgian bluestone), a dark base under the pale stone.
     const bluestone = new THREE.MeshStandardMaterial({ color: 0x3d444c, roughness: 0.92 });
+    // The real palace is floodlit after dark: register the facade stones for the warm night
+    // wash and the window recesses for the lit-window glow (daytime rendering is untouched).
+    for (const m of [stone, light, weathered, ochre]) {
+      m.emissive = new THREE.Color(0x000000);
+      facadeWashMats.push(m);
+    }
+    recess.emissive = new THREE.Color(0x000000);
+    nightGlowMats.push(recess);
 
     // Broad podium and perimeter terrace: the courthouse sits above the Marolles escarpment.
     // Hors tout 186 x 177 m (UNESCO tentative list 5357); the building plan itself is 160 x 150 m.

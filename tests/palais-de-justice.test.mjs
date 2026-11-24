@@ -50,6 +50,12 @@ test('the terrace rests on the visible retaining massif toward Wynants and Minim
   assert.ok(palace.includes("'West massif lower tier (rue des Minimes)'"));
 });
 
+test('the palace facades take the warm floodlight wash and the windows glow at night', () => {
+  assert.ok(palace.includes('for (const m of [stone, light, weathered, ochre])'));
+  assert.ok(palace.includes('facadeWashMats.push(m);'), 'floodlit facades after dark');
+  assert.ok(palace.includes('nightGlowMats.push(recess);'), 'lit windows after dark');
+});
+
 test('the British soldiers monument and the Bouffiaux orientation table stand on the esplanade', () => {
   assert.ok(palace.includes("'British monument plinth'"));
   assert.ok(palace.includes("'British/Belgian soldier figure'"));
