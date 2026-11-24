@@ -105,7 +105,7 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
   // Instanced windows keep the repeated historic detail to two draw calls per facade.
   function guildHouse(parent, spec) {
     const { name, x, width, height, depth = 11, floors = 3, stone = materials.limestone,
-      roof = materials.roof, style = 'gable', rotation = 0, y = 0, emblem = false } = spec;
+      roof = materials.roof, style = 'gable', rotation = 0, y = 0, emblem = false, balustradeStatues = false } = spec;
     const root = new THREE.Group();
     root.name = name;
     root.position.set(x, y, 0);
@@ -243,11 +243,30 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     box(root, 0.35, height - 1.8, 0.25, width / 2 - 0.45, height / 2 + 0.5, 0.16, materials.gold);
     cylinder(root, 0.12, 0.12, 1.3, 0, height + gableHeight + 0.55, 0.08, materials.gold, 8);
     if (emblem) {
-      // Gilded guild emblem crowning the gable — La Louve's golden phoenix and the like.
-      const em = mesh(root, new THREE.SphereGeometry(0.34, 10, 8), materials.gold, 0, height + gableHeight + 1.7, 0.1, name + ' gilded gable emblem');
-      em.scale.set(0.7, 1.4, 0.5);
-      const wing = box(root, 1.0, 0.14, 0.1, 0, height + gableHeight + 1.95, 0.12, materials.gold, name + ' gilded gable emblem wing');
-      wing.rotation.z = 0.35;
+      const kind = emblem === true ? 'phoenix' : emblem;
+      if (kind === 'vane') {
+        // Le Roy d'Espagne: a small cupola surmounted by a gilded weather vane.
+        cylinder(root, 0.55, 0.7, 1.1, 0, height + gableHeight + 0.6, 0.08, stone).name = name + ' cupola';
+        mesh(root, new THREE.ConeGeometry(0.65, 0.9, 8), roof, 0, height + gableHeight + 1.6, 0.08, name + ' cupola cap');
+        const vane = box(root, 1.1, 0.1, 0.06, 0, height + gableHeight + 2.3, 0.08, materials.gold, name + ' gilded weather vane');
+        vane.rotation.y = 0.6;
+      } else if (kind === 'horse') {
+        // Le Cornet: the ship-stern gable is manned by a gilded horse.
+        box(root, 0.9, 0.5, 0.25, 0, height + gableHeight + 1.2, 0.1, materials.gold, name + ' gilded horse body');
+        mesh(root, new THREE.SphereGeometry(0.22, 8, 6), materials.gold, 0.5, height + gableHeight + 1.55, 0.1, name + ' gilded horse head');
+      } else {
+        // Gilded guild emblem crowning the gable — La Louve's golden phoenix and the like.
+        const em = mesh(root, new THREE.SphereGeometry(0.34, 10, 8), materials.gold, 0, height + gableHeight + 1.7, 0.1, name + ' gilded gable emblem');
+        em.scale.set(0.7, 1.4, 0.5);
+        const wing = box(root, 1.0, 0.14, 0.1, 0, height + gableHeight + 1.95, 0.12, materials.gold, name + ' gilded gable emblem wing');
+        wing.rotation.z = 0.35;
+      }
+    }
+    if (balustradeStatues) {
+      // Le Roy d'Espagne: six statues on the balustrade, the six ingredients of bread.
+      for (let i = 0; i < 6; i++) {
+        box(root, 0.22, 0.85, 0.12, -width / 2 + 1.2 + i * (width - 2.4) / 5, height + 1.35, 0.14, materials.gold, name + ' balustrade statue');
+      }
     }
     // Round oculus set into the gable, and a small triangular pediment over every window.
     const oculus = cylinder(root, 0.42, 0.42, 0.1, 0, height + 1.6, 0.12, materials.glass, 16);
@@ -707,11 +726,11 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     plaza.add(west);
     // West side, numbered from the north corner like the real nos. 1-7, with the street
     // mouths left open at both ends: Rue au Beurre (north) and Rue de la Tête d'or (south).
-    guildHouse(west, { name: 'Guild House – Le Roy d’Espagne', x: 23, width: 8.5, height: 24, floors: 4, style: 'bell', stone: materials.plaster, emblem: true });
+    guildHouse(west, { name: 'Guild House – Le Roy d’Espagne', x: 23, width: 8.5, height: 24, floors: 4, style: 'bell', stone: materials.plaster, emblem: 'vane', balustradeStatues: true });
     guildHouse(west, { name: 'Guild House – La Brouette', x: 13.5, width: 8.5, height: 20, style: 'stepped', stone: materials.plaster });
     guildHouse(west, { name: 'Guild House – Le Sac', x: 4, width: 8.5, height: 22, style: 'gable', stone: materials.warmStone });
     guildHouse(west, { name: 'Guild House – La Louve', x: -5.5, width: 8.5, height: 23, floors: 3, style: 'scroll', stone: materials.ochre, emblem: true });
-    guildHouse(west, { name: 'Guild House – Le Cornet', x: -15, width: 8.5, height: 21, style: 'scroll', stone: materials.ochre, emblem: true });
+    guildHouse(west, { name: 'Guild House – Le Cornet', x: -15, width: 8.5, height: 21, style: 'scroll', stone: materials.ochre, emblem: 'horse' });
     guildHouse(west, { name: 'Guild House – Le Renard', x: -24.5, width: 8.5, height: 20, style: 'gable', stone: materials.warmStone });
 
     const east = new THREE.Group();

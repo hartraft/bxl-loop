@@ -113,6 +113,16 @@ test('guild-house rooflines stay varied and instanced', () => {
   assert.ok(source.includes('gilded window surrounds'));
 });
 
+test('signature house emblems: Le Cornet horse, Le Roy d’Espagne cupola-vane and six statues', () => {
+  assert.ok(square.includes("emblem: 'horse'"));
+  assert.ok(square.includes("emblem: 'vane'"));
+  assert.ok(square.includes('balustradeStatues: true'));
+  assert.ok(square.includes(' gilded horse body'));
+  assert.ok(square.includes(' gilded weather vane'));
+  assert.ok(square.includes(' balustrade statue'));
+  assert.ok(square.includes("kind === 'phoenix'"));
+});
+
 test('houses wear their real facade colours: ochre and plaster alongside the stone tones', () => {
   assert.ok(source.includes('ochre: new THREE.MeshStandardMaterial'));
   assert.ok(source.includes('plaster: new THREE.MeshStandardMaterial'));
