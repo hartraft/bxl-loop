@@ -1968,3 +1968,7 @@ testCase('keystones crown the Palace of the Nation wing windows', () => {
 testCase('mullions divide the BELvue attic windows', () => {
   assert.match(palace, /'BELvue attic window mullion'/);
 });
+
+testCase('mid rails run between the wing balcony balusters', () => {
+  assert.match(palace, /'Wing balcony mid rail'/);
+});
