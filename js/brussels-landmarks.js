@@ -3759,6 +3759,12 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
         box(g, 2.6, 0.35, 2.6, x, 22.0, z, moulding, 'Portico column abacus');
       }
     }
+
+    // Each of the eleven great flower pots stands on a square stone pedestal.
+    for (let k = 0; k < 11; k++) {
+      const px = -30 + k * 6;
+      box(g, 1.3, 0.3, 1.3, px, 0.15, 11.0, stone, 'Flower pot pedestal');
+    }
   });
   addLandmark('palaceSurroundings', (g) => {
     // Real-world sources: en/fr Wikipedia (Royal Palace of Brussels, Brussels Park, Place des Palais,

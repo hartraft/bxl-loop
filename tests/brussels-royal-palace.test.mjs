@@ -1290,3 +1290,7 @@ testCase('lanterns crown the piers of the park north gate', () => {
 testCase('a top rail closes the BELvue roof terrace balustrade', () => {
   assert.match(palace, /'BELvue roof terrace rail'/);
 });
+
+testCase('each of the eleven great flower pots stands on a stone pedestal', () => {
+  assert.match(palace, /'Flower pot pedestal'/);
+});
