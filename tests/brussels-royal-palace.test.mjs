@@ -1960,3 +1960,7 @@ testCase('stone lintels crown the Academy ground-floor arched windows', () => {
 testCase('a bed moulding sits between the portico architrave and cornice', () => {
   assert.match(palace, /'Portico architrave bed moulding'/);
 });
+
+testCase('keystones crown the Palace of the Nation wing windows', () => {
+  assert.match(palace, /'Palace of the Nation wing window keystone'/);
+});

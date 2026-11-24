@@ -5369,6 +5369,13 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     for (let i = 0; i < 7; i++) {
       box(g, 2.6, 0.22, 0.3, -168 - 24 + i * 8, 7.4, 21.0, materials.warmStone, 'Academy ground window lintel');
     }
+
+    // Keystones crown the Palace of the Nation wing windows.
+    for (const side of [-1, 1]) {
+      for (let i = 0; i < 4; i++) {
+        box(g, 0.45, 0.6, 0.3, side * 70 - 15 + i * 10, 12.0, 407.0, materials.warmStone, 'Palace of the Nation wing window keystone');
+      }
+    }
   });
     addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');
