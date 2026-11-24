@@ -33,6 +33,12 @@ test('the Town Hall tower rises from the ground-level portal to the real 96 m', 
   assert.ok(square.includes('Saint Michael dragon'));
 });
 
+test('the Town Hall carries gargoyles on the buttresses and eight per turret level', () => {
+  assert.ok(square.includes('Town Hall facade gargoyles'));
+  assert.ok(square.includes('Tower turret gargoyles'));
+  assert.ok(square.includes('for (let i = 0; i < 8; i++)'));
+});
+
 test('the Town Hall is two genuinely asymmetrical wings with prophets above the portal', () => {
   assert.ok(square.includes('Town Hall east wing (1401-1421)'));
   assert.ok(square.includes('Town Hall west wing (1444+)'));

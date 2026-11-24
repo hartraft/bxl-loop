@@ -373,6 +373,22 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     facadeStatues.name = 'Town Hall gilded facade statues';
     facadeNiches.castShadow = facadeStatues.castShadow = true;
     root.add(facadeNiches, facadeStatues);
+    // Gargoyles: projecting spouts on the buttresses — the real facade is covered in them.
+    const facadeGargoyles = new THREE.InstancedMesh(new THREE.BoxGeometry(0.3, 0.5, 0.7), darkStone, bays);
+    const gd = new THREE.Object3D();
+    let gi = 0;
+    for (let i = 0; i <= bays; i += 2) {
+      for (const y of [8.2, 16.4]) {
+        gd.position.set(-width / 2 + i * bayW, y, 0.55);
+        gd.rotation.set(0, 0, 0);
+        gd.updateMatrix();
+        facadeGargoyles.setMatrixAt(gi++, gd.matrix);
+      }
+    }
+    facadeGargoyles.count = gi;
+    facadeGargoyles.name = 'Town Hall facade gargoyles';
+    facadeGargoyles.castShadow = true;
+    root.add(facadeGargoyles);
     // A continuous steep slate roof, ridge running along the long axis.
     const roofHalf = depth / 2 + 0.7, ridgeY = height + 7.8, eaveY = height + 0.6;
     const roofVertices = new Float32Array([
@@ -483,6 +499,25 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       cylinder(tower, 0.28, 0.42, 11, x, 63.5, z, trim, 8).name = 'Lantern side pinnacle';
       mesh(tower, new THREE.ConeGeometry(0.48, 2.1, 8), roofMat, x, 69.5, z, 'Lantern side pinnacle spire');
     }
+    // Eight radial gargoyles per level on each of the lantern's corner turrets.
+    const turretGargoyles = new THREE.InstancedMesh(new THREE.BoxGeometry(0.3, 0.5, 0.7), darkStone, 32);
+    let tg = 0;
+    for (let k = 0; k < 4; k++) {
+      const ta = Math.PI / 4 + k * Math.PI / 2;
+      for (const level of [64, 71]) {
+        for (let i = 0; i < 8; i++) {
+          const ga = ta + i * Math.PI / 4;
+          gd.position.set(Math.cos(ga) * 1.45, level, Math.sin(ga) * 1.45);
+          gd.rotation.set(0, -ga, 0);
+          gd.updateMatrix();
+          turretGargoyles.setMatrixAt(tg++, gd.matrix);
+        }
+      }
+    }
+    turretGargoyles.count = tg;
+    turretGargoyles.name = 'Tower turret gargoyles';
+    turretGargoyles.castShadow = true;
+    tower.add(turretGargoyles);
     // Slender openwork pyramidal spire to 96 m: eight bare stone ribs, no solid cone,
     // exactly like the real openwork spire, tied by gilded ring armatures.
     for (let i = 0; i < 8; i++) {
