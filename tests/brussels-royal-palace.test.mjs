@@ -1928,3 +1928,7 @@ testCase('stone sills sit under the Academy first-floor windows', () => {
 testCase('a bed moulding crowns the front edge of the BELvue cornice', () => {
   assert.match(palace, /'BELvue cornice bed moulding'/);
 });
+
+testCase('shoes anchor the perron side rail posts', () => {
+  assert.match(palace, /'Perron rail post shoe'/);
+});
