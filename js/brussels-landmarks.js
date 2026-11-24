@@ -5082,6 +5082,11 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       box(g, 0.35, 8.5, 0.4, side * 2.45, 4.25, 402.75, materials.warmStone, 'Palace of the Nation door jamb');
     }
     box(g, 5.0, 0.3, 0.45, 0, 8.75, 402.75, materials.warmStone, 'Palace of the Nation door lintel');
+
+    // Jambs frame the BELvue entrance door on the square facade.
+    for (const side of [-1, 1]) {
+      box(g, 0.3, 6.2, 0.35, 168 + side * 2.05, 3.1, 21.8, materials.warmStone, 'BELvue door jamb');
+    }
   });
     addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');
