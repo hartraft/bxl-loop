@@ -5144,6 +5144,11 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     for (const side of [-1, 1]) {
       box(g, 0.3, 0.6, 1.0, 168 + side * 2.5, 0.3, 21.2, materials.paleStone, 'BELvue step cheek');
     }
+
+    // Mullions divide the arched windows of the Royal Stables range.
+    for (let i = 0; i < 5; i++) {
+      box(g, 0.08, 5, 0.06, -70 - 16 + i * 8, 6, -73.0, materials.warmStone, 'Royal Stables window mullion');
+    }
   });
     addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');
