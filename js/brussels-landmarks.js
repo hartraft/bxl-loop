@@ -1747,7 +1747,7 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     waterTables.name = 'Balcony and sill water tables';
     root.add(waterTables);
     // Corbel brackets carry every upper-storey window sill, as on the real facade.
-    const sillBrackets = new THREE.InstancedMesh(new THREE.BoxGeometry(0.18, 0.2, 0.3), darkStone, bays * 2);
+    const sillBrackets = new THREE.InstancedMesh(new THREE.BoxGeometry(0.18, 0.2, 0.3), darkStone, bays * 4);
     let sb = 0;
     for (let floor = 0; floor < 2; floor++) {
       const y = floor === 0 ? 12.5 : 20.0;
