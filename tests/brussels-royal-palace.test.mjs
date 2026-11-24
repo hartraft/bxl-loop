@@ -1879,3 +1879,7 @@ testCase('stone surrounds frame the Academy ground-floor arched windows', () => 
 testCase('hinge straps secure the portico main door leaves', () => {
   assert.match(palace, /'Portico door hinge'/);
 });
+
+testCase('jambs frame the Palace of the Nation wing door', () => {
+  assert.match(palace, /'Palace of the Nation wing door jamb'/);
+});

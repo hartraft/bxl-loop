@@ -5280,6 +5280,11 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     for (let i = 0; i < 7; i++) {
       box(g, 2.6, 4.9, 0.16, -168 - 24 + i * 8, 5, 20.95, materials.warmStone, 'Academy ground window surround');
     }
+
+    // Jambs frame the Palace of the Nation west wing door.
+    for (const side of [-1, 1]) {
+      box(g, 0.3, 6.0, 0.35, -70 + side * 1.8, 3.0, 406.8, materials.warmStone, 'Palace of the Nation wing door jamb');
+    }
   });
     addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');
