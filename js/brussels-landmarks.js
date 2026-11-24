@@ -2266,6 +2266,9 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     // The dome lantern is crowned by a gilded finial ball and spike.
     mesh(g, new THREE.SphereGeometry(0.45, 12, 10), gilded, 0, 41.9, -1, 'Dome lantern gilded finial');
     mesh(g, new THREE.ConeGeometry(0.22, 1.1, 8), gilded, 0, 42.75, -1, 'Dome lantern finial spike');
+
+    // A gravel central walk runs from the garden gate to the perron on the portico axis.
+    box(g, 5, 0.08, 5.6, 0, 0.06, 11.7, ashlar, 'Garden central walk');
   });
   addLandmark('palaceSurroundings', (g) => {
     // Brussels Park (Parc de Bruxelles): the rectangular 13.1 ha neoclassical park north of the

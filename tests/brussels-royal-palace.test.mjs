@@ -581,3 +581,8 @@ testCase('the dome lantern is crowned by a gilded finial ball and spike', () => 
   assert.match(palace, /'Dome lantern gilded finial'/);
   assert.match(palace, /'Dome lantern finial spike'/);
 });
+
+testCase('a gravel central walk runs from the garden gate to the perron on the axis', () => {
+  assert.match(palace, /gravel central walk runs from the garden gate/);
+  assert.match(palace, /'Garden central walk'/);
+});
