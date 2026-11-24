@@ -3782,6 +3782,13 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
 
     // The great ground-floor door stands behind the portico colonnade.
     box(g, 4.0, 7.5, 0.25, 0, 4.1, centralFace + 0.2, shadow, 'Portico main door');
+
+    // Capitals finish the pilasters on both wing end faces.
+    for (const side of [-1, 1]) {
+      for (let i = 0; i < 4; i++) {
+        box(g, 0.6, 0.5, 0.6, side * 70.1, 20.2, -3.5 - i * 5, ashlar, 'Wing end pilaster capital');
+      }
+    }
   });
   addLandmark('palaceSurroundings', (g) => {
     // Real-world sources: en/fr Wikipedia (Royal Palace of Brussels, Brussels Park, Place des Palais,

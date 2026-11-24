@@ -1359,3 +1359,7 @@ testCase('a low railing rings the Vauxhall bandstand', () => {
   assert.match(palace, /'Vauxhall bandstand railing'/);
   assert.match(palace, /vhRail\.count = vhi/);
 });
+
+testCase('capitals finish the pilasters on both wing end faces', () => {
+  assert.match(palace, /'Wing end pilaster capital'/);
+});
