@@ -1661,6 +1661,28 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       }
     }
 
+    // The real portico columns have fluted shafts (heritage inventory 30402: "à fût cannelé").
+    const fluteGeo = new THREE.BoxGeometry(0.12, 13.5, 0.1);
+    const flutes = new THREE.InstancedMesh(fluteGeo, shadow, 12 * 16);
+    const fd = new THREE.Object3D();
+    let fi = 0;
+    for (let i = 0; i < 6; i++) {
+      const x = -12.5 + i * 5;
+      for (const z of [centralFace + 1.55, centralFace + 4.1]) {
+        for (let fk = 0; fk < 16; fk++) {
+          const fa = fk * Math.PI / 8;
+          fd.position.set(x + Math.cos(fa) * 1.19, 14.95, z + Math.sin(fa) * 1.19);
+          fd.rotation.y = -fa;
+          fd.updateMatrix();
+          flutes.setMatrixAt(fi++, fd.matrix);
+        }
+      }
+    }
+    flutes.count = fi;
+    flutes.name = 'Portico column fluting';
+    flutes.castShadow = true;
+    g.add(flutes);
+
     // The colossal portico carries a full classical entablature on the real Maquet
     // front: architrave beam over the capitals, a triglyph frieze, a dentil course
     // and a projecting cornice beneath the pediment.

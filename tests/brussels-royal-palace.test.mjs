@@ -329,3 +329,10 @@ testCase('real-world fidelity lock: every documented feature of the real palace 
   ];
   for (const marker of markers) assert.match(palace, marker);
 });
+
+testCase('portico column shafts are fluted (fût cannelé)', () => {
+  assert.match(palace, /fluted shafts/);
+  assert.match(palace, /'Portico column fluting'/);
+  assert.match(palace, /flutes\.count = fi/);
+  assert.match(palace, /for \(let fk = 0; fk < 16; fk\+\+\)/);
+});
