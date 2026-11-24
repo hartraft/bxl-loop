@@ -713,6 +713,19 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     roofGeo.computeVertexNormals();
     mesh(root, roofGeo, roofMat, 0, 0, 0, 'Town Hall steep slate roof');
     box(root, width + 2, 0.45, 0.5, 0, ridgeY, -depth / 2, darkStone, 'Town Hall roof ridge');
+    // Crenellated openwork parapet along the front eave — the real elevation is surmounted by a
+    // crenellated openwork balustrade. Instanced merlons.
+    const merlonCount = Math.floor(width / 1.2);
+    const merlons = new THREE.InstancedMesh(new THREE.BoxGeometry(0.5, 0.7, 0.3), trim, merlonCount);
+    const merDummy = new THREE.Object3D();
+    for (let i = 0; i < merlonCount; i++) {
+      merDummy.position.set(-width / 2 + 0.6 + i * 1.2, eaveY + 0.35, 0.6);
+      merDummy.updateMatrix();
+      merlons.setMatrixAt(i, merDummy.matrix);
+    }
+    merlons.count = merlonCount;
+    merlons.name = 'Town Hall crenellated openwork parapet';
+    root.add(merlons);
 
     // Dormers and small roof turrets make the skyline read as a Gothic civic palace.
     for (let i = 0; i < 11; i++) {

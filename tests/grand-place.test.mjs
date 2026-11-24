@@ -39,6 +39,12 @@ test('the Town Hall tower rises from the ground-level portal to the real 96 m', 
   assert.ok(square.includes('Saint Michael dragon'));
 });
 
+test('the Town Hall eave is surmounted by a crenellated openwork parapet', () => {
+  assert.ok(square.includes("'Town Hall crenellated openwork parapet'"));
+  assert.ok(square.includes('const merlonCount = Math.floor(width / 1.2)'));
+  assert.ok(square.includes('merlons.count = merlonCount'));
+});
+
 test('the Town Hall arcade pillars carry knight and squire statues of the Noble Houses', () => {
   assert.ok(square.includes("'Arcade pillar knight statues (Noble Houses)'"));
   assert.ok(square.includes('new THREE.BoxGeometry(0.22, 0.95, 0.12), materials.gold, bays * 2)'));
