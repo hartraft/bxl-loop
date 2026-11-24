@@ -1323,3 +1323,7 @@ testCase('a low railing rings the park bandstand', () => {
 testCase('an architrave beam spans the Palace of the Nation peristyle', () => {
   assert.match(palace, /'Palace of the Nation architrave'/);
 });
+
+testCase('stone edging strips border the central garden walk', () => {
+  assert.match(palace, /'Central garden walk edging'/);
+});
