@@ -683,3 +683,9 @@ testCase('the Academy Palace corner bays are coach-door entrances (portes cochè
   assert.match(palace, /'Academy Palace corner coach door'/);
   assert.match(palace, /'Academy coach door lintel'/);
 });
+
+testCase('the Palace of the Nation wings carry window grids and hipped roofs', () => {
+  assert.match(palace, /window grids and slate roofs/);
+  assert.match(palace, /'Palace of the Nation wing roof'/);
+  assert.match(palace, /'Palace of the Nation wing window'/);
+});
