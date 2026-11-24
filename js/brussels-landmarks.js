@@ -1839,17 +1839,23 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       box(g, 1.2, 5.0, 1.2, px - 0.8, 54.5, pz, weathered, 'Stylobate paired pilaster');
       box(g, 1.2, 5.0, 1.2, px + 0.8, 54.5, pz, weathered, 'Stylobate paired pilaster');
     }
-    // Square first drum with open colonnades on all four sides.
-    box(g, 39, 7, 39, 0, 56, 0, stone, 'Square dome drum');
+    // Square first drum on a stepped base (base a gradins), open as a colonnade on each side,
+    // with solid corner piers and a top ring carrying the circular drum.
+    box(g, 45, 2.5, 45, 0, 50.25, 0, weathered, 'Square drum base a gradins lower tier');
+    box(g, 42, 2.0, 42, 0, 53.0, 0, weathered, 'Square drum base a gradins upper tier');
+    for (const sx of [-1, 1]) for (const sz of [-1, 1]) {
+      box(g, 5, 9, 5, sx * 17, 58.5, sz * 17, stone, 'Square dome drum corner pier');
+    }
     for (let side = 0; side < 4; side++) {
       const angle = side * Math.PI / 2;
       for (let i = 0; i < 7; i++) {
         const t = -15 + i * 5;
         const x = Math.cos(angle) * 20.0 + Math.cos(angle + Math.PI / 2) * t;
         const z = Math.sin(angle) * 20.0 + Math.sin(angle + Math.PI / 2) * t;
-        cylinder(g, 0.65, 0.78, 9.5, x, 64, z, light, 16);
+        cylinder(g, 0.65, 0.78, 9.5, x, 58.75, z, light, 16);
       }
     }
+    box(g, 41, 1.6, 41, 0, 63.4, 0, stone, 'Square dome drum top ring');
     box(g, 34, 1.5, 34, 0, 69, 0, weathered, 'Upper dome cornice');
     // Circular upper drum and copper dome; the high lantern is the city's defining silhouette.
     cylinder(g, 17.5, 19.5, 15, 0, 77, 0, light, 32);
