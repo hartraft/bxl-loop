@@ -4103,6 +4103,9 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     for (const side of wingXs) {
       box(g, wingW, 0.05, 0.05, side, 7.45, facadeZ + 0.84, bronze, 'Wing balcony bottom rail');
     }
+
+    // A bronze kick plate protects the foot of the portico main door.
+    box(g, 3.8, 0.5, 0.06, 0, 0.4, centralFace + 0.26, bronze, 'Portico door kick plate');
   });
   addLandmark('palaceSurroundings', (g) => {
     // Real-world sources: en/fr Wikipedia (Royal Palace of Brussels, Brussels Park, Place des Palais,

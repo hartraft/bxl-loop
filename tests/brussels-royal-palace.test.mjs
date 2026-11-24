@@ -2016,3 +2016,7 @@ testCase('bottom rails join the feet of the wing balcony balusters', () => {
 testCase('tympanum panels fill the Palace of the Nation wing pediments', () => {
   assert.match(palace, /'Palace of the Nation wing tympanum'/);
 });
+
+testCase('a bronze kick plate protects the foot of the portico main door', () => {
+  assert.match(palace, /'Portico door kick plate'/);
+});
