@@ -5285,6 +5285,9 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     for (const side of [-1, 1]) {
       box(g, 0.3, 6.0, 0.35, -70 + side * 1.8, 3.0, 406.8, materials.warmStone, 'Palace of the Nation wing door jamb');
     }
+
+    // A stone rim rings the fountain jet at the centre of the park main pond.
+    cylinder(g, 1.2, 1.4, 0.5, 0, 0.75, 150, materials.paleStone, 12).name = 'Park fountain rim';
   });
     addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');
