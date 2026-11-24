@@ -1503,3 +1503,7 @@ testCase('capitals crown each Palace of the Nation peristyle column', () => {
 testCase('each wing balcony rests on a projecting stone slab', () => {
   assert.match(palace, /'Wing balcony slab'/);
 });
+
+testCase('an architrave spans the Academy Palace portico under the pediment', () => {
+  assert.match(palace, /'Academy Palace portico architrave'/);
+});

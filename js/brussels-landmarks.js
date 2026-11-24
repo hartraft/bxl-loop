@@ -4788,6 +4788,9 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     for (let i = 0; i < 8; i++) {
       cylinder(g, 1.2, 1.0, 0.6, -24 + i * 6.85, 15.0, 401.5, materials.plaster, 12).name = 'Palace of the Nation column capital';
     }
+
+    // An architrave beam spans the Academy Palace portico columns under the pediment.
+    box(g, 18, 0.8, 1.2, -168, 12.4, 19.7, materials.warmStone, 'Academy Palace portico architrave');
   });
     addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');
