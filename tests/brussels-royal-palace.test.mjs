@@ -2205,3 +2205,7 @@ testCase('a kerb borders the front edge of the peristyle floor', () => {
 testCase('a mid post stiffens each perron side rail', () => {
   assert.match(palace, /'Perron rail mid post'/);
 });
+
+testCase('cap courses finish the Academy garden side walls', () => {
+  assert.match(palace, /'Academy garden side wall cap'/);
+});
