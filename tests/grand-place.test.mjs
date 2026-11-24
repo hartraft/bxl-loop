@@ -271,7 +271,7 @@ test('guild houses have the real arcaded ground floors and gilded gable emblems'
 test('Le Paon wears the characteristic 18th-century neck gable (halsgevel)', () => {
   assert.ok(square.includes("style === 'neck'"));
   assert.ok(square.includes('shape.quadraticCurveTo(-w2, 3.2, -w2 + 1.8, 3.2)'));
-  assert.ok(square.includes("Le Paon', x: -38, width: 12, height: 22, floors: 3, style: 'neck', stone: materials.paleStone }"));
+  assert.ok(square.includes("Le Paon', x: -38, width: 12, height: 22, floors: 3, style: 'neck', stone: materials.paleStone, emblem: 'peacock' }"));
 });
 
 test('guild-house rooflines stay varied and instanced', () => {
@@ -323,7 +323,7 @@ test('the east frontage is the Maison des Ducs de Brabant: duke busts + Abundanc
 });
 
 test('L’Arbre d’Or roof carries the gilded equestrian statue of Charles of Lorraine', () => {
-  assert.ok(square.includes("L’Arbre d’Or', x: -18, width: 15, height: 22, style: 'stepped', stone: materials.ochre, terrace: true, equestrian: true, dukeBusts: true }"));
+  assert.ok(square.includes("L’Arbre d’Or', x: -18, width: 15, height: 22, style: 'stepped', stone: materials.ochre, terrace: true, equestrian: true, dukeBusts: true, emblem: 'barley' }"));
   assert.ok(square.includes(" equestrian horse body'"));
   assert.ok(square.includes(" Charles of Lorraine rider'"));
   assert.ok(square.includes(" Charles of Lorraine rider head'"));
@@ -378,6 +378,25 @@ test('Le Roy d’Espagne carries Roman emperor medallions and the St Aubert bust
   assert.ok(square.includes('new THREE.CylinderGeometry(0.55, 0.55, 0.12, 20).rotateX(Math.PI / 2), materials.gold, 4)'));
   assert.ok(square.includes(" St Aubert bust'"));
   assert.ok(square.includes('medallions.count = 4'));
+});
+
+test('the named houses wear their real gable emblems', () => {
+  const expected = [
+    ['L’Étoile', "emblem: 'star'"],
+    ['Le Heaume', "emblem: 'helmet'"],
+    ['Le Paon', "emblem: 'peacock'"],
+    ['Le Cerf', "emblem: 'stag'"],
+    ['L’Ange', "emblem: 'angel'"],
+    ['La Chaloupe d’Or', "emblem: 'boat'"],
+    ['L’Arbre d’Or', "emblem: 'barley'"],
+    ['La Rose', "emblem: 'rose'"],
+    ['Le Mont Thabor', "emblem: 'flags'"]
+  ];
+  for (const [house, emblem] of expected) {
+    assert.ok(square.includes(`${house}', `) && square.includes(emblem), `${house} missing ${emblem}`);
+    const line = square.split('\n').find(l => l.includes(house) && l.includes('guildHouse'));
+    assert.ok(line && line.includes(emblem), `${house} spec line lacks ${emblem}`);
+  }
 });
 
 test('gable emblem kinds exist for the named houses: helmet, peacock, stag, angel, boat, star, rose, flags, barley', () => {
