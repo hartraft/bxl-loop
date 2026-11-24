@@ -2141,3 +2141,7 @@ testCase('dentil courses run under both Academy end pavilion cornices', () => {
   assert.match(palace, /'Academy end pavilion dentil'/);
   assert.match(palace, /aepD\.count = aepDi/);
 });
+
+testCase('a moulded edge finishes the front of the perron top landing', () => {
+  assert.match(palace, /'Perron landing edge'/);
+});

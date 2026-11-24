@@ -4160,6 +4160,9 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     for (const side of [-1, 1]) {
       box(g, 0.35, 0.08, 3.3, side * 2.1, 0.54, 12.4, moulding, 'Garden walk wall cap');
     }
+
+    // A moulded edge finishes the front of the perron top landing.
+    box(g, 17, 0.08, 0.12, 0, 1.12, centralFace + 1.58, moulding, 'Perron landing edge');
   });
   addLandmark('palaceSurroundings', (g) => {
     // Real-world sources: en/fr Wikipedia (Royal Palace of Brussels, Brussels Park, Place des Palais,
