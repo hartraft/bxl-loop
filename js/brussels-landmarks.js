@@ -4490,6 +4490,12 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     // Low walls close the east and west sides of the Academy Palace garden.
     box(g, 0.4, 0.8, 16, -197, 0.4, 64, materials.paleStone, 'Academy garden side wall');
     box(g, 0.4, 0.8, 16, -139, 0.4, 64, materials.paleStone, 'Academy garden side wall');
+
+    // Lanterns also crown the piers of the park north gate by the Palace of the Nation.
+    for (const gx of [-6, 6]) {
+      box(g, 0.5, 0.7, 0.5, gx, 3.75, 402, materials.bronze, 'Park north gate lantern');
+      mesh(g, new THREE.SphereGeometry(0.22, 10, 8), materials.glass, gx, 3.75, 402, 'Park north gate lantern glass');
+    }
   });
     addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');

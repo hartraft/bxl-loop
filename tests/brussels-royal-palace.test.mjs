@@ -1281,3 +1281,8 @@ testCase('low walls close the east and west sides of the Academy garden', () => 
 testCase('abacus blocks sit atop each portico column capital', () => {
   assert.match(palace, /'Portico column abacus'/);
 });
+
+testCase('lanterns crown the piers of the park north gate', () => {
+  assert.match(palace, /'Park north gate lantern'/);
+  assert.match(palace, /'Park north gate lantern glass'/);
+});
