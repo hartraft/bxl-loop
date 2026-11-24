@@ -842,3 +842,9 @@ testCase('the central portico bay has a bronze double door with panels and gilde
   assert.match(palace, /'Central door recessed panel'/);
   assert.match(palace, /'Central door gilded transom'/);
 });
+
+testCase('four clipped lawn panels fill Brussels Park between the walks', () => {
+  assert.match(palace, /clipped lawn panels/);
+  assert.match(palace, /'Park lawn panel'/);
+  assert.match(palace, /'Park lawn panel edging'/);
+});

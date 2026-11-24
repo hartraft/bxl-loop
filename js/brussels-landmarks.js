@@ -2849,6 +2849,11 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     for (let s = 0; s < 4; s++) {
       box(g, 54 - s * 2, 0.3, 1.2, 0, 0.15 + s * 0.3, 399.4 - s * 1.1, materials.plaster, 'Palace of the Nation portico step');
     }
+    // Four clipped lawn panels (green rooms) fill the park between the avenue walks.
+    for (const [lx, lz] of [[-55, 120], [55, 120], [-55, 290], [55, 290]]) {
+      box(g, 70, 0.1, 60, lx, 0.05, lz, materials.green, 'Park lawn panel');
+      box(g, 71, 0.06, 61, lx, 0.02, lz, materials.pavingA, 'Park lawn panel edging');
+    }
   });
     addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');
