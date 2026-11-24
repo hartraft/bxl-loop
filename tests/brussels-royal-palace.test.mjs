@@ -1591,3 +1591,8 @@ testCase('bronze threshold plates span each central French door', () => {
 testCase('windows pierce the Academy Palace attic storey', () => {
   assert.match(palace, /'Academy Palace attic window'/);
 });
+
+testCase('modillions line the underside of the BELvue cornice', () => {
+  assert.match(palace, /'BELvue cornice modillion'/);
+  assert.match(palace, /bvMd\.count = bvMi/);
+});

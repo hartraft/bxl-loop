@@ -4898,6 +4898,16 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     for (let i = 0; i < 9; i++) {
       box(g, 1.8, 2.0, 0.2, -168 - 24 + i * 6, 21.5, 20.95, materials.glass, 'Academy Palace attic window');
     }
+
+    // Modillions line the underside of the BELvue cornice.
+    const bvMd = new THREE.InstancedMesh(new THREE.BoxGeometry(0.34, 0.45, 0.4), materials.warmStone, 20);
+    const bvMdd = new THREE.Object3D();
+    let bvMi = 0;
+    for (let mi2 = 0; mi2 < 20; mi2++) {
+      bvMdd.position.set(151 + mi2 * 1.8, 21.85, 21.8); bvMdd.rotation.y = 0; bvMdd.updateMatrix();
+      bvMd.setMatrixAt(bvMi++, bvMdd.matrix);
+    }
+    bvMd.count = bvMi; bvMd.name = 'BELvue cornice modillion'; g.add(bvMd);
   });
     addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');
