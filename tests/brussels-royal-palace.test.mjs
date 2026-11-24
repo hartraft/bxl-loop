@@ -1754,3 +1754,7 @@ testCase('raking cornices follow both slopes of the Academy pediment', () => {
 testCase('collar rings decorate the perron lamp standards', () => {
   assert.match(palace, /'Perron lamp collar'/);
 });
+
+testCase('cheek stones flank the Palace of the Nation entrance steps', () => {
+  assert.match(palace, /'Palace of the Nation step cheek'/);
+});

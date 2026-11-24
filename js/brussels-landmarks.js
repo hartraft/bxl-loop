@@ -5129,6 +5129,11 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     rkL.rotation.z = Math.atan2(3.4, 8);
     const rkR = box(g, 8.8, 0.18, 0.2, -164, 13.9, 19.62, materials.warmStone, 'Academy pediment raking cornice');
     rkR.rotation.z = -Math.atan2(3.4, 8);
+
+    // Cheek stones flank the Palace of the Nation entrance steps.
+    for (const side of [-1, 1]) {
+      box(g, 0.3, 0.6, 1.4, side * 2.9, 0.3, 401.6, materials.paleStone, 'Palace of the Nation step cheek');
+    }
   });
     addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');
