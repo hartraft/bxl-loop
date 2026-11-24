@@ -302,7 +302,7 @@ testCase('rounds 55-58: premetro accesses 6/7/8, Fontaine Orts 1888, Orts monume
   assert.match(surroundings, /'Fontaine Orts bust of Auguste Orts \(Vinootte\)'/);
   assert.match(surroundings, /'Fontaine Orts water disc \(eau potable, haut debit\)'/);
   assert.match(surroundings, /'Monument to Auguste Orts \(no\. 3 place de la Bourse\)'/);
-  assert.match(surroundings, /'Water mirror on the rue Auguste Orts axis \(miroir d.eau, pietonnier\)'/);
+  assert.match(surroundings, /'Water mirror on the rue Auguste Orts axis \(miroir d..eau, pietonnier\)'/);
   assert.match(surroundings, /'Water mirror jets/);
 });
 
