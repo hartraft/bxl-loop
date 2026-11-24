@@ -50,6 +50,17 @@ test('the Town Hall is two genuinely asymmetrical wings with prophets above the 
   assert.ok(square.includes('Portal prophet gilded figure'));
 });
 
+test('the Town Hall ogival portal has a double archivolt, five-statuette tympanum, jamb knights and corbels', () => {
+  assert.ok(square.includes('Portal tympanum panel'));
+  assert.ok(square.includes('Portal tympanum saint statues'));
+  assert.ok(square.includes('new THREE.InstancedMesh(new THREE.BoxGeometry(0.26, 1.15, 0.14), materials.gold, 5)'));
+  assert.ok(square.includes('tympanumSaints.count = saintIndex'));
+  assert.ok(square.includes('Portal historiated corbels'));
+  assert.ok(square.includes('Portal outer archivolt rib'));
+  assert.ok(square.includes('Portal jamb knight niche'));
+  assert.ok(square.includes('Portal jamb knight statue'));
+});
+
 test('the Town Hall upper-storey lancets carry twin-light tracery, oculi and keystones', () => {
   assert.ok(square.includes('Lancet mullion (twin-light tracery)'));
   assert.ok(square.includes('Lancet pair oculus (quatrefoil tracery)'));

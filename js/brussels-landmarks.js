@@ -510,6 +510,38 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     const portalR = box(tower, 2.6, 0.3, 0.6, 1.35, 9.9, towerW / 2 + 0.15, trim, 'Portal pointed arch rib');
     portalR.rotation.z = 0.62;
     box(tower, 6.2, 0.3, 1.1, 0, 10.6, towerW / 2 + 0.5, trim, 'Portal balcony');
+    // The real ogival portal: a double archivolt, a tympanum with five statues (St Michael between
+    // St Sebastian, St Christopher, St George and St Géry), knight figures at the jambs and
+    // historiated corbels carrying the balcony.
+    box(tower, 3.4, 1.4, 0.3, 0, 10.3, towerW / 2 + 0.1, darkStone, 'Portal tympanum panel');
+    const tympanumSaints = new THREE.InstancedMesh(new THREE.BoxGeometry(0.26, 1.15, 0.14), materials.gold, 5);
+    const portalCorbels = new THREE.InstancedMesh(new THREE.BoxGeometry(0.3, 0.5, 0.6), darkStone, 3);
+    const portalDummy = new THREE.Object3D();
+    let saintIndex = 0;
+    for (const sx of [-1.6, -0.8, 0, 0.8, 1.6]) {
+      portalDummy.position.set(sx, 10.2, towerW / 2 + 0.28);
+      portalDummy.updateMatrix();
+      tympanumSaints.setMatrixAt(saintIndex++, portalDummy.matrix);
+    }
+    tympanumSaints.count = saintIndex;
+    tympanumSaints.name = 'Portal tympanum saint statues';
+    let corbelIndex = 0;
+    for (const cx of [-2.2, 0, 2.2]) {
+      portalDummy.position.set(cx, 10.35, towerW / 2 + 0.75);
+      portalDummy.updateMatrix();
+      portalCorbels.setMatrixAt(corbelIndex++, portalDummy.matrix);
+    }
+    portalCorbels.count = corbelIndex;
+    portalCorbels.name = 'Portal historiated corbels';
+    tower.add(tympanumSaints, portalCorbels);
+    const outerL = box(tower, 3.0, 0.3, 0.6, -1.75, 10.15, towerW / 2 + 0.15, trim, 'Portal outer archivolt rib');
+    outerL.rotation.z = -0.66;
+    const outerR = box(tower, 3.0, 0.3, 0.6, 1.75, 10.15, towerW / 2 + 0.15, trim, 'Portal outer archivolt rib');
+    outerR.rotation.z = 0.66;
+    for (const side of [-1, 1]) {
+      box(tower, 0.66, 2.4, 0.25, side * 2.6, 5.5, towerW / 2 + 0.08, darkStone, 'Portal jamb knight niche');
+      box(tower, 0.24, 1.1, 0.12, side * 2.6, 5.5, towerW / 2 + 0.22, materials.gold, 'Portal jamb knight statue');
+    }
     // Prophet figures in niches above the portal, between the shaft lancets.
     for (const side of [-1, 1]) {
       for (const dx of [1.1, 3.3]) {
