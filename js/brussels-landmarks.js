@@ -2119,6 +2119,29 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       box(g, 2.0, 3.6, 0.2, wx, 13.5, -63.5, glass, 'South avant-corps window');
       box(g, 2.0, 2.8, 0.2, wx, 7.0, -63.5, glass, 'South avant-corps ground window');
     }
+
+    // Two symmetrical curved galleries (galeries courbes) join each end pavilion to the
+    // hotels at the extremities of the Place des Palais (heritage inventory, building 30402).
+    for (const side of [-1, 1]) {
+      for (let cgK = 0; cgK < 7; cgK++) {
+        const cgA = cgK / 6 * Math.PI / 2;
+        const cgX = side * 88 - 8 * Math.cos(cgA);
+        const cgZ = 8.5 + 8 * Math.sin(cgA);
+        box(g, 0.55, 7.6, 0.55, cgX, 3.8, cgZ, stone, 'Curved gallery column');
+        box(g, 0.85, 0.3, 0.85, cgX, 7.75, cgZ, ashlar, 'Curved gallery capital');
+      }
+      for (let cgK = 0; cgK < 6; cgK++) {
+        const cgAm = (cgK + 0.5) / 6 * Math.PI / 2;
+        const cgX = side * 88 - 8 * Math.cos(cgAm);
+        const cgZ = 8.5 + 8 * Math.sin(cgAm);
+        const cgChord = 2 * 8 * Math.sin(Math.PI / 24) + 0.3;
+        const cgRot = Math.atan2(-Math.cos(cgAm), side * Math.sin(cgAm));
+        const cgE = box(g, cgChord, 0.7, 0.5, cgX, 8.3, cgZ, ashlar, 'Curved gallery entablature');
+        cgE.rotation.y = cgRot;
+        const cgR = box(g, cgChord + 0.2, 0.35, 1.2, cgX, 8.85, cgZ, roof, 'Curved gallery roof segment');
+        cgR.rotation.y = cgRot;
+      }
+    }
   });
     addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');
