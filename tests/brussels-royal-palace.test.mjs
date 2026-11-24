@@ -2161,3 +2161,7 @@ testCase('end blocks close both ends of the portico architrave', () => {
 testCase('a low wall closes the south side of the Academy stables yard', () => {
   assert.match(palace, /'Academy stables yard wall'/);
 });
+
+testCase('end blocks close both ends of the portico frieze triglyph run', () => {
+  assert.match(palace, /'Triglyph end block'/);
+});

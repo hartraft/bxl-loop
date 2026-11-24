@@ -4168,6 +4168,11 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     for (const side of [-1, 1]) {
       box(g, 0.5, 1.05, 4.8, side * 18.5, 22.78, centralFace + 2.9, ashlar, 'Architrave end block');
     }
+
+    // End blocks close both ends of the portico frieze triglyph run.
+    for (const side of [-1, 1]) {
+      box(g, 0.5, 0.6, 0.2, side * 18.2, 22.95, centralFace + 4.5, moulding, 'Triglyph end block');
+    }
   });
   addLandmark('palaceSurroundings', (g) => {
     // Real-world sources: en/fr Wikipedia (Royal Palace of Brussels, Brussels Park, Place des Palais,
