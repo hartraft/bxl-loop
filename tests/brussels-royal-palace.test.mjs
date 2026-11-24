@@ -1252,3 +1252,8 @@ testCase('a straight garden walk leads from the perron to the gilded railing', (
 testCase('broad stone steps lead up to the Palace of the Nation peristyle', () => {
   assert.match(palace, /'Palace of the Nation peristyle step'/);
 });
+
+testCase('stone planters with plantings flank the foot of the perron', () => {
+  assert.match(palace, /'Perron planter'/);
+  assert.match(palace, /'Perron planter planting'/);
+});

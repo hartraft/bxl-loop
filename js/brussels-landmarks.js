@@ -3740,6 +3740,12 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
 
     // A straight garden walk leads from the perron to the gilded railing on the axis.
     box(g, 3, 0.08, 3.2, 0, 0.05, 12.4, ashlar, 'Central garden walk');
+
+    // Stone planters with plantings flank the foot of the perron.
+    for (const side of [-1, 1]) {
+      box(g, 1.6, 1.0, 1.6, side * 9.8, 0.5, centralFace + 0.9, stone, 'Perron planter');
+      mesh(g, new THREE.SphereGeometry(0.55, 10, 8), flowerMat, side * 9.8, 1.25, centralFace + 0.9, 'Perron planter planting');
+    }
   });
   addLandmark('palaceSurroundings', (g) => {
     // Real-world sources: en/fr Wikipedia (Royal Palace of Brussels, Brussels Park, Place des Palais,
