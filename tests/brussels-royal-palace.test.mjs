@@ -424,3 +424,22 @@ testCase('around sixty Greco-Roman statues on pedestals stand in Brussels Park',
   assert.match(palace, /'Park statue figures'/);
   assert.match(palace, /for \(let i = 0; i < 60; i\+\+\)/);
 });
+
+testCase('three avenues radiate from the main pond toward the long views', () => {
+  assert.match(palace, /three other avenues radiate/);
+  assert.match(palace, /'Park radiating avenue'/);
+  assert.match(palace, /av\.rotation\.y = Math\.PI \/ 2 - ra/);
+});
+
+testCase('rows of trees line the central avenue of Brussels Park', () => {
+  assert.match(palace, /Tree-lined avenues/);
+  assert.match(palace, /'Park avenue tree trunks'/);
+  assert.match(palace, /'Park avenue tree canopies'/);
+  assert.match(palace, /trunks\.count = tri2/);
+});
+
+testCase('the two shallows (bas-fonds) on the palace side of the park remain', () => {
+  assert.match(palace, /Two shallows \(bas-fonds\)/);
+  assert.match(palace, /'Park west shallow \(bas-fond\)'/);
+  assert.match(palace, /'Park east shallow \(bas-fond\)'/);
+});

@@ -2295,6 +2295,35 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     }
     statues.count = sti; statues.name = 'Park statue pedestals'; g.add(statues);
     figs.count = sti; figs.name = 'Park statue figures'; g.add(figs);
+    // From the main pond, three other avenues radiate to long views (Palace of Justice, Royal
+    // Palace, Place du Trone) — the star-shaped alley pattern of the neoclassical park.
+    for (const ra of [Math.PI * 0.72, Math.PI * 0.28, Math.PI / 2]) {
+      const avLen = 120;
+      const av = box(g, 8, 0.07, avLen, Math.cos(ra) * avLen / 2, 0.07, 150 + Math.sin(ra) * avLen / 2, materials.pavingA, 'Park radiating avenue');
+      av.rotation.y = Math.PI / 2 - ra;
+    }
+    // Tree-lined avenues: rows of trees flank the central walk (thousands were replanted 1776-83).
+    const trunkGeo = new THREE.CylinderGeometry(0.22, 0.3, 3.2, 6);
+    const canGeo = new THREE.SphereGeometry(1.9, 8, 6);
+    const trunks = new THREE.InstancedMesh(trunkGeo, materials.dark, 44);
+    const cans = new THREE.InstancedMesh(canGeo, materials.green, 44);
+    const trd = new THREE.Object3D();
+    let tri2 = 0;
+    for (let tz = 70; tz <= 390; tz += 16) {
+      for (const tx of [-9, 9]) {
+        trd.position.set(tx, 1.6, tz); trd.rotation.y = 0; trd.updateMatrix();
+        trunks.setMatrixAt(tri2, trd.matrix);
+        trd.position.set(tx, 4.2, tz); trd.updateMatrix();
+        cans.setMatrixAt(tri2, trd.matrix);
+        tri2++;
+      }
+    }
+    trunks.count = tri2; trunks.name = 'Park avenue tree trunks'; g.add(trunks);
+    cans.count = tri2; cans.name = 'Park avenue tree canopies'; g.add(cans);
+    // Two shallows (bas-fonds) remain on the palace side of the park — the old Koperbeek
+    // lowlands that were never fully levelled when the square was widened in 1904.
+    box(g, 60, 0.1, 26, -70, -0.06, 76, materials.pavingA, 'Park west shallow (bas-fond)');
+    box(g, 60, 0.1, 26, 70, -0.06, 76, materials.pavingA, 'Park east shallow (bas-fond)');
   });
     addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');
