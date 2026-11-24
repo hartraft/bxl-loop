@@ -1415,3 +1415,7 @@ testCase('flower boxes with plantings line the wing balconies', () => {
 testCase('stone sills sit under each Palace of the Nation facade window', () => {
   assert.match(palace, /'Palace of the Nation window sill'/);
 });
+
+testCase('a moulded cap crowns the central balcony rail', () => {
+  assert.match(palace, /'Central balcony top cap'/);
+});

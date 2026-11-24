@@ -3813,6 +3813,9 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
         mesh(g, new THREE.SphereGeometry(0.26, 8, 6), flowerMat, bx, 7.8, facadeZ + 0.85, 'Wing balcony flower box planting');
       }
     }
+
+    // A moulded cap crowns the central balcony rail.
+    box(g, 3.2, 0.08, 1.0, 0, 11.56, centralFace + 0.72, moulding, 'Central balcony top cap');
   });
   addLandmark('palaceSurroundings', (g) => {
     // Real-world sources: en/fr Wikipedia (Royal Palace of Brussels, Brussels Park, Place des Palais,
