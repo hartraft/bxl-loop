@@ -452,3 +452,11 @@ testCase('the Academy Palace closes the east end of the Place des Palais (1823-2
   assert.match(palace, /'Academy Palace Ionic pilaster'/);
   assert.match(palace, /'Academy Palace attic'/);
 });
+
+testCase('the Academy Palace garden holds its six named statues', () => {
+  assert.match(palace, /Stas monument/);
+  assert.match(palace, /'Academy garden pedestal'/);
+  assert.match(palace, /'Quetelet statue'/);
+  assert.match(palace, /'Discobole statue'/);
+  assert.match(palace, /'La Surprise statue'/);
+});

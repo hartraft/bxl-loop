@@ -2345,6 +2345,14 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     for (let i = 0; i < 8; i++) {
       box(g, 0.5, 18, 0.4, -168 - 28 + i * 8, 9, 21.1, materials.warmStone, 'Academy Palace Ionic pilaster');
     }
+    // The Academy Palace garden holds its statues: Quetelet, the Stas monument (Vinçotte with a
+    // Horta pedestal), Jules Destrée, Caïn maudit, the Discobole and La Surprise.
+    const agStat = ['Quetelet statue', 'Stas monument', 'Destrée statue', 'Cain maudit statue', 'Discobole statue', 'La Surprise statue'];
+    for (let i = 0; i < agStat.length; i++) {
+      const gx = -196 + i * 10;
+      box(g, 1.6, 1.4, 1.6, gx, 0.7, 64, materials.paleStone, 'Academy garden pedestal');
+      mesh(g, new THREE.SphereGeometry(0.6, 10, 8), materials.paleStone, gx, 2.2, 64, agStat[i]);
+    }
   });
     addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');
