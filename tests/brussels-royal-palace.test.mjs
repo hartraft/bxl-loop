@@ -787,3 +787,10 @@ testCase('the Academy Palace is roofed with a slate mansard and dormers', () => 
   assert.match(palace, /'Academy Palace mansard roof'/);
   assert.match(palace, /'Academy Palace roof dormer'/);
 });
+
+testCase('the Royal Stables wrap a paved courtyard with side and rear ranges', () => {
+  assert.match(palace, /wrap a courtyard with a side range/);
+  assert.match(palace, /'Royal Stables west range'/);
+  assert.match(palace, /'Royal Stables rear range'/);
+  assert.match(palace, /'Royal Stables courtyard paving'/);
+});
