@@ -68,6 +68,16 @@ testCase('the front garden holds the real three sunken parterres (central on the
   assert.match(palace, /\{ x: 38, w: 34, z: 12\.4, d: 2\.6 \}/);
 });
 
+testCase('the central attic carries the oval garlanded medallion struck with Leopold II monogram', () => {
+  assert.match(palace, /struck with Leopold/);
+  assert.match(palace, /'Leopold II monogram medallion'/);
+  assert.match(palace, /'Leopold II monogram disc'/);
+  assert.match(palace, /'Leopold II monogram L stem'/);
+  assert.match(palace, /'Leopold II monogram L foot'/);
+  assert.match(palace, /'Attic garland swag'/);
+  assert.match(palace, /medallion\.scale\.set\(1\.3, 1, 1\)/);
+});
+
 testCase('the palace is floodlit at night: stone wash + glowing windows via the shared night systems', () => {
   assert.match(palace, /floodlit after dark/);
   assert.match(palace, /facadeWashMats\.push\(stone, ashlar, moulding\)/);
