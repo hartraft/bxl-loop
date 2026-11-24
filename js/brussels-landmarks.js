@@ -1783,9 +1783,28 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       box(g, p.w - 4, 0.06, 0.7, p.x, 0.05, p.z, flowerMat, 'Parterre flower band');
     }
 
+    // The 1904–09 garden is enclosed by GILDED railings, gates and balustrades on a
+    // stone plinth ("grilles, portails et balustrades dorés"), separating the palace
+    // from the Place des Palais. Three gates open onto the parterre axes: the central
+    // gate on the portico axis and one in front of each lateral parterre.
+    const gilded = new THREE.MeshStandardMaterial({ color: 0xc9a227, metalness: 0.75, roughness: 0.35 });
+    box(g, 149, 0.5, 0.6, 0, 0.25, 14, ashlar, 'Garden enclosure stone plinth');
     for (let x = -74; x <= 74; x += 2.4) {
-      cylinder(g, 0.1, 0.14, 1.1, x, 0.55, 14, ashlar, 8);
-      if (x < 73.9) box(g, 2.4, 0.07, 0.07, x + 1.2, 0.9, 14, bronze, 'Forecourt railing');
+      cylinder(g, 0.09, 0.12, 1.5, x, 0.75, 14, gilded, 8);
+      if (x < 73.9) {
+        box(g, 2.4, 0.06, 0.06, x + 1.2, 1.42, 14, gilded, 'Gilded garden railing top rail');
+        box(g, 2.4, 0.05, 0.05, x + 1.2, 1.0, 14, gilded, 'Gilded garden railing mid rail');
+      }
+    }
+    for (const gx of [0, -38, 38]) {
+      for (const side of [-1, 1]) {
+        box(g, 0.9, 1.9, 0.9, gx + side * 2.4, 0.95, 14, ashlar, 'Gilded gate stone pier');
+        mesh(g, new THREE.SphereGeometry(0.42, 12, 10), gilded, gx + side * 2.4, 2.15, 14, 'Gate pier gilded urn');
+      }
+      box(g, 4.0, 1.15, 0.08, gx, 0.95, 14, gilded, 'Gilded garden gate leaf');
+      for (let k = 0; k < 9; k++) {
+        box(g, 0.05, 1.15, 0.05, gx - 1.8 + k * 0.45, 0.95, 14, gilded, 'Gilded gate baluster');
+      }
     }
   });
     addLandmark('cathedral', (g) => {
