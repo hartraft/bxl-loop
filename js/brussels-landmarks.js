@@ -4208,6 +4208,13 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     for (const side of [-1, 1]) {
       cylinder(g, 0.3, 0.3, 0.06, side * 9.6, 4.5, centralFace + 1.6, bronze, 10).name = 'Perron lamp globe ring';
     }
+
+    // Balls finish the ends of the wing balcony rail caps.
+    for (const side of wingXs) {
+      for (const e of [-1, 1]) {
+        mesh(g, new THREE.SphereGeometry(0.1, 10, 8), bronze, side + e * (wingW / 2 - 0.1), 8.05, facadeZ + 0.62, 'Wing balcony rail end ball');
+      }
+    }
   });
   addLandmark('palaceSurroundings', (g) => {
     // Real-world sources: en/fr Wikipedia (Royal Palace of Brussels, Brussels Park, Place des Palais,

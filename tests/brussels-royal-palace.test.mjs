@@ -2253,3 +2253,7 @@ testCase('a sett field paves the east side of the Place du Trone', () => {
 testCase('stone steps lead down to the octagonal basin rim on its east side', () => {
   assert.match(palace, /'Octagonal basin east access step'/);
 });
+
+testCase('balls finish the ends of the wing balcony rail caps', () => {
+  assert.match(palace, /'Wing balcony rail end ball'/);
+});
