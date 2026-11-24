@@ -1017,3 +1017,9 @@ testCase('the rear English-style garden lives in the surroundings landmark, not 
   const lawnIdx = palace.indexOf("'Rear English-style garden lawn'");
   assert.ok(surStart !== -1 && lawnIdx > surStart, 'rear garden must be inside the palaceSurroundings slice');
 });
+
+testCase('wing bay pilasters carry bases and capitals', () => {
+  assert.match(palace, /'Wing bay pilaster base'/);
+  assert.match(palace, /'Wing bay pilaster capital'/);
+  assert.match(palace, /for \(let i = 0; i <= 9; i\+\+\)/);
+});

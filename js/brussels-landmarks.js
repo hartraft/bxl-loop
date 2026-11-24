@@ -2649,6 +2649,8 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       for (let i = 0; i <= 9; i++) {
         const px = x - 24.75 + i * 5.5;
         box(g, 0.3, 19.2, 0.44, px, 10.2, facadeZ + 0.12, ashlar, 'Wing bay pilaster');
+        box(g, 0.5, 0.6, 0.6, px, 0.6, facadeZ + 0.14, moulding, 'Wing bay pilaster base');
+        box(g, 0.52, 0.5, 0.62, px, 19.6, facadeZ + 0.14, moulding, 'Wing bay pilaster capital');
       }
       box(g, wingW + 1.5, 0.75, wingD + 1.1, x, 20.75, -1.5, ashlar, 'Wing main cornice');
       box(g, wingW + 1.0, 0.7, wingD + 0.8, x, 21.55, -1.5, roof, 'Wing mansard lower slope');
