@@ -495,6 +495,8 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     // Gilded keyhole escutcheon and door knocker on every door leaf.
     box(root, 0.1, 0.22, 0.05, 0.3, 1.6, 0.5, materials.gold, name + ' door keyhole escutcheon');
     mesh(root, new THREE.SphereGeometry(0.07, 8, 6), materials.gold, -0.3, 1.65, 0.52, name + ' door knocker');
+    // A gilded kick plate at the foot of every door leaf, as on the real doors.
+    box(root, 0.8, 0.28, 0.06, 0, 0.34, 0.48, materials.gold, name + ' door kick plate');
     // Small attic windows in the gable base, flanking the oculus.
     const atticWindows = new THREE.InstancedMesh(new THREE.BoxGeometry(0.5, 0.7, 0.1), spec.windowMat || glowGlass, 2);
     for (let i = 0; i < 2; i++) {
@@ -2033,6 +2035,9 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     turretHoods.count = th;
     turretHoods.name = 'Corner turret lancet hood moulds';
     root.add(turretHoods);
+    // The real east wing ends in a BLIND arch beneath its corner turret — a filled, dark
+    // recessed arch.
+    box(root, 1.5, 5.6, 0.2, -(width / 2 - 2.2), 3.4, 0.12, materials.dark, 'Blind arcade arch under east corner turret');
 
     // The off-centre tower rises from the ground-level portal to the real 96 m: square
     // shaft, gallery above the roofline, three-tier openwork octagonal lantern with corner
@@ -2114,6 +2119,18 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     }
     tympanumSaints.count = saintIndex;
     tympanumSaints.name = 'Portal tympanum saint statues';
+    // Small canopy hoods shelter each of the five tympanum saints, as on the real portal.
+    const saintHoodShape = new THREE.Shape();
+    saintHoodShape.moveTo(-0.3, 0); saintHoodShape.lineTo(0, 0.26); saintHoodShape.lineTo(0.3, 0); saintHoodShape.closePath();
+    const saintHoods = new THREE.InstancedMesh(new THREE.ShapeGeometry(saintHoodShape), trim, 5);
+    for (let i = 0; i < 5; i++) {
+      portalDummy.position.set(-1.6 + i * 0.8, 10.85, towerW / 2 + 0.28);
+      portalDummy.updateMatrix();
+      saintHoods.setMatrixAt(i, portalDummy.matrix);
+    }
+    saintHoods.count = 5;
+    saintHoods.name = 'Tympanum saint canopy hoods';
+    tower.add(saintHoods);
     let corbelIndex = 0;
     for (const cx of [-2.2, 0, 2.2]) {
       portalDummy.position.set(cx, 10.35, towerW / 2 + 0.75);
@@ -2134,6 +2151,8 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     for (const side of [-1, 1]) {
       box(tower, 0.66, 2.4, 0.25, side * 2.6, 5.5, towerW / 2 + 0.08, darkStone, 'Portal jamb knight niche');
       box(tower, 0.24, 1.1, 0.12, side * 2.6, 5.5, towerW / 2 + 0.22, materials.gold, 'Portal jamb knight statue');
+      // Colonette strips frame each jamb niche, as on the real portal.
+      box(tower, 0.12, 2.5, 0.18, side * 3.0, 5.5, towerW / 2 + 0.1, trim, 'Portal jamb colonette');
     }
     // Prophet figures in niches along the portal archivolt mouldings — the real ogival
     // portal carries a procession of prophets on its archivolt.
@@ -2152,6 +2171,19 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     archivoltProphets.count = ap;
     archivoltProphets.name = 'Archivolt prophet statues';
     tower.add(archivoltProphets);
+    // Canopy hoods over each archivolt prophet, as on the real portal's prophet niches.
+    const prophetHoods = new THREE.InstancedMesh(new THREE.ShapeGeometry(saintHoodShape), trim, 8);
+    let ph = 0;
+    for (const side of [-1, 1]) {
+      for (const f of [0.15, 0.4, 0.65, 0.9]) {
+        apd.position.set(side * (1.75 + 0.92 * (2 * f - 1)), 10.85 + 1.19 * (2 * f - 1), towerW / 2 + 0.3);
+        apd.updateMatrix();
+        prophetHoods.setMatrixAt(ph++, apd.matrix);
+      }
+    }
+    prophetHoods.count = ph;
+    prophetHoods.name = 'Archivolt prophet canopy hoods';
+    tower.add(prophetHoods);
     // Stone entrance steps descend from the ogival portal onto the square.
     for (let i = 0; i < 3; i++) {
       box(tower, 5.4 - i * 0.8, 0.22, 0.7, 0, 0.11 + i * 0.22, towerW / 2 + 0.55 + i * 0.55, darkStone, 'Portal entrance step');
@@ -2162,6 +2194,10 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     box(tower, 2.3, 0.3, 0.06, 0, 0.35, towerW / 2 + 0.26, materials.gold, 'Portal door kick plate');
     // Gilded semicircular fanlight above the portal door leaves.
     mesh(tower, new THREE.CircleGeometry(1.05, 16, 0, Math.PI), glass, 0, 3.72, towerW / 2 + 0.22, 'Portal fanlight');
+    // Vertical panel grooves in the massive portal door leaves, as on the real doors.
+    for (let i = 0; i < 4; i++) {
+      box(tower, 0.04, 3.2, 0.04, -0.8 + i * 0.55, 1.9, towerW / 2 + 0.3, materials.dark, 'Portal door panel groove');
+    }
     // Hood mould sheltering the whole ogival portal, as on the real tower base.
     const hoodShape = new THREE.Shape();
     hoodShape.moveTo(-3.4, 0); hoodShape.lineTo(0, 1.3); hoodShape.lineTo(3.4, 0); hoodShape.closePath();
@@ -3108,12 +3144,20 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     const charlesHoodShape = new THREE.Shape();
     charlesHoodShape.moveTo(-0.8, 0); charlesHoodShape.lineTo(0, 0.4); charlesHoodShape.lineTo(0.8, 0); charlesHoodShape.closePath();
     mesh(root, new THREE.ShapeGeometry(charlesHoodShape), trim, 0, 31.95, towerZ + 1.55, 'King’s House Charles V canopy hood');
+    // Charles V holds the imperial orb and sceptre, as on the real tower statue.
+    mesh(root, new THREE.SphereGeometry(0.12, 8, 6), materials.gold, 0.42, 30.9, towerZ + 1.55, 'King’s House Charles V imperial orb');
+    box(root, 0.05, 0.8, 0.05, -0.4, 30.9, towerZ + 1.55, materials.gold, 'King’s House Charles V sceptre');
     // The 1625 Virgin Mary statue group on the central pavilion: Mary flanked by two saints.
     box(root, 0.5, 1.9, 0.2, 0, 19.0, 0.26, stone, 'King’s House Virgin Mary statue');
     mesh(root, new THREE.SphereGeometry(0.24, 8, 6), stone, 0, 20.1, 0.26, 'King’s House Virgin Mary statue head');
+    // A gilded halo crowns the 1625 Virgin Mary, as on the real statue group.
+    const maryHalo = mesh(root, new THREE.TorusGeometry(0.3, 0.04, 6, 16), materials.gold, 0, 20.15, 0.2, 'King’s House Virgin Mary halo');
+    maryHalo.rotation.y = Math.PI / 2;
     for (const side of [-1, 1]) {
       box(root, 0.4, 1.5, 0.18, side * 1.2, 18.8, 0.26, stone, 'King’s House saint statue');
       mesh(root, new THREE.SphereGeometry(0.2, 8, 6), stone, side * 1.2, 19.65, 0.26, 'King’s House saint statue head');
+      const saintHalo = mesh(root, new THREE.TorusGeometry(0.24, 0.03, 6, 14), materials.gold, side * 1.2, 19.7, 0.2, 'King’s House saint halo');
+      saintHalo.rotation.y = Math.PI / 2;
     }
     // A small canopy hood shelters the 1625 Virgin Mary statue group on the pavilion.
     const maryHoodShape = new THREE.Shape();
@@ -3273,6 +3317,19 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     accents.name = 'Grand-Place accent cobbles';
     accents.receiveShadow = true;
     plaza.add(accents);
+    // Smaller infill slabs of the calepinage fill the gaps between the main courses, as in
+    // the real 1883/1899 paving.
+    const infills = new THREE.InstancedMesh(new THREE.BoxGeometry(3.3, 0.1, 2.0), materials.pavingA, 60);
+    for (let i = 0; i < 60; i++) {
+      dummy.position.set(-51.7 + ((i * 11) % 16) * 6.9 + 3.45, -0.05, -35 + ((i * 7) % 15) * 4.9 + 2.45);
+      dummy.rotation.y = ((i * 5) % 4) * 0.03;
+      dummy.updateMatrix();
+      infills.setMatrixAt(i, dummy.matrix);
+    }
+    infills.count = 60;
+    infills.name = 'Grand-Place infill slabs';
+    infills.receiveShadow = true;
+    plaza.add(infills);
     // Granite kerb stones along all four facade lines where the paving meets the buildings.
     for (const [w, d, x, z, n] of [[110, 0.5, 0, 35.6, 'south'], [110, 0.5, 0, -35.6, 'north'], [0.5, 71, -54.6, 0, 'west'], [0.5, 71, 54.6, 0, 'east']]) {
       box(plaza, w, 0.18, d, x, 0.02, z, materials.pavingEdge, `Grand-Place ${n} facade kerb`);

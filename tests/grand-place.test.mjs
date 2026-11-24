@@ -1073,3 +1073,20 @@ test('rounds 263-272: turret hood moulds, gallery crocket balls, lantern turret 
   assert.ok(square.includes('Grand-Place floodlight cable conduits'));
   assert.ok(source.includes('Manneken Pis niche shell crown'));
 });
+
+test('rounds 273-282: portal door grooves, jamb colonettes, saint/prophet canopy hoods, Charles V orb+sceptre, Mary/saint halos, door kick plates, infill slabs, blind arch under east turret', () => {
+  assert.ok(square.includes('Portal door panel groove'));
+  assert.ok(square.includes('Portal jamb colonette'));
+  assert.ok(square.includes('Tympanum saint canopy hoods'));
+  assert.ok(square.includes('saintHoods.count = 5'));
+  assert.ok(square.includes('Archivolt prophet canopy hoods'));
+  assert.ok(square.includes('prophetHoods.count = ph'));
+  assert.ok(square.includes('King’s House Charles V imperial orb'));
+  assert.ok(square.includes('King’s House Charles V sceptre'));
+  assert.ok(square.includes('King’s House Virgin Mary halo'));
+  assert.ok(square.includes('King’s House saint halo'));
+  assert.ok(square.includes('door kick plate'));
+  assert.ok(square.includes('Grand-Place infill slabs'));
+  assert.ok(square.includes('infills.count = 60'));
+  assert.ok(square.includes('Blind arcade arch under east corner turret'));
+});
