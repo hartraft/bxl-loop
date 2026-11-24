@@ -1167,3 +1167,8 @@ testCase('stone surrounds frame the wing end windows on both gable ends', () => 
   assert.match(palace, /'Wing end window surround'/);
   assert.match(palace, /'Wing end ground window surround'/);
 });
+
+testCase('the central portico balcony parapet is filled with iron balusters and a mid rail', () => {
+  assert.match(palace, /'Central balcony baluster'/);
+  assert.match(palace, /'Central balcony mid rail'/);
+});

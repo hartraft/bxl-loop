@@ -3690,6 +3690,12 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
         box(g, 0.14, 2.8, 2.3, side * 70.12, 6.5, wz, ashlar, 'Wing end ground window surround');
       }
     }
+
+    // Wrought-iron balusters and a mid rail fill the central portico balcony parapet.
+    for (let bx = -1.3; bx <= 1.31; bx += 0.26) {
+      box(g, 0.05, 0.5, 0.06, bx, 11.28, centralFace + 1.0, bronze, 'Central balcony baluster');
+    }
+    box(g, 2.9, 0.05, 0.05, 0, 11.3, centralFace + 1.0, bronze, 'Central balcony mid rail');
   });
   addLandmark('palaceSurroundings', (g) => {
     // Real-world sources: en/fr Wikipedia (Royal Palace of Brussels, Brussels Park, Place des Palais,
