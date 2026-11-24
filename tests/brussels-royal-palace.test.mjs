@@ -1683,3 +1683,7 @@ testCase('stone lintels crown the BELvue attic windows', () => {
 testCase('rim rings finish the eleven great flower pots', () => {
   assert.match(palace, /'Flower pot rim'/);
 });
+
+testCase('centre mullions divide the Palace of the Nation wing windows', () => {
+  assert.match(palace, /'Palace of the Nation wing window mullion'/);
+});

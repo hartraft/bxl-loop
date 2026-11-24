@@ -5030,6 +5030,13 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       const wx = 168 - 13 + i * 6.5;
       box(g, 2.4, 0.2, 0.3, wx, 21.95, 22.15, materials.warmStone, 'BELvue attic window lintel');
     }
+
+    // Centre mullions divide the Palace of the Nation wing windows.
+    for (const side of [-1, 1]) {
+      for (let i = 0; i < 4; i++) {
+        box(g, 0.08, 7, 0.06, side * 70 - 15 + i * 10, 8, 407.0, materials.warmStone, 'Palace of the Nation wing window mullion');
+      }
+    }
   });
     addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');
