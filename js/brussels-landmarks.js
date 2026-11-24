@@ -3982,6 +3982,11 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     for (const side of [-1, 1]) {
       cylinder(g, 0.14, 0.17, 0.3, side * 9.6, 2.4, centralFace + 1.6, bronze, 8).name = 'Perron lamp collar';
     }
+
+    // Stone sills sit under the portico door side lights.
+    for (const side of [-1, 1]) {
+      box(g, 1.5, 0.18, 0.4, side * 3.3, 11.2, centralFace + 0.3, moulding, 'Portico side light sill');
+    }
   });
   addLandmark('palaceSurroundings', (g) => {
     // Real-world sources: en/fr Wikipedia (Royal Palace of Brussels, Brussels Park, Place des Palais,

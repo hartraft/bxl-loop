@@ -1762,3 +1762,7 @@ testCase('cheek stones flank the Palace of the Nation entrance steps', () => {
 testCase('cheek stones flank the BELvue entrance steps', () => {
   assert.match(palace, /'BELvue step cheek'/);
 });
+
+testCase('stone sills sit under the portico door side lights', () => {
+  assert.match(palace, /'Portico side light sill'/);
+});
