@@ -4155,6 +4155,11 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
         mesh(g, new THREE.SphereGeometry(0.12, 10, 8), bronze, side + e * (wingW / 2 - 0.2), 8.0, facadeZ + 0.84, 'Wing balcony scroll end');
       }
     }
+
+    // Cap slabs finish the low walls bordering the central garden walk.
+    for (const side of [-1, 1]) {
+      box(g, 0.35, 0.08, 3.3, side * 2.1, 0.54, 12.4, moulding, 'Garden walk wall cap');
+    }
   });
   addLandmark('palaceSurroundings', (g) => {
     // Real-world sources: en/fr Wikipedia (Royal Palace of Brussels, Brussels Park, Place des Palais,

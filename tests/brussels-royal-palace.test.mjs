@@ -2132,3 +2132,7 @@ testCase('a bronze kick plate protects the foot of the BELvue door', () => {
 testCase('a bronze kick plate protects the foot of the Palace of the Nation door', () => {
   assert.match(palace, /'Palace of the Nation door kick plate'/);
 });
+
+testCase('cap slabs finish the garden walk low walls', () => {
+  assert.match(palace, /'Garden walk wall cap'/);
+});
