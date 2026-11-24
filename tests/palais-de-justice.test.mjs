@@ -114,6 +114,11 @@ test('the Monument national a l\'Infanterie Belge stands on the esplanade', () =
   assert.ok(palace.includes("'Infantry monument raised platform'"));
 });
 
+test('the esplanade retaining wall is split around the central stair corridor', () => {
+  assert.ok(!palace.includes("box(g, 178, 1.8, 3, 0, 1.6, 90"), 'no full-width wall across the stair');
+  assert.ok(palace.includes("'Place Poelaert retaining wall ' + (side < 0 ? 'west' : 'east')"));
+});
+
 test('Place Poelaert is a vast paved esplanade with sett borders', () => {
   assert.ok(palace.includes("'Place Poelaert esplanade paving'"));
   assert.ok(palace.includes('box(g, 150, 0.3, 70, 0, 0.15, 126, materials.pavingA'));
