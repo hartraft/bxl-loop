@@ -35,6 +35,15 @@ testCase('Royal Palace centre has a sculpted pediment, domed drum and Belgian fl
   assert.match(palace, /Belgian flag stripe/);
 });
 
+testCase('the colossal portico carries a full classical entablature (architrave, triglyph frieze, dentils, cornice)', () => {
+  assert.match(palace, /'Portico architrave beam'/);
+  assert.match(palace, /'Portico frieze triglyphs'/);
+  assert.match(palace, /triglyphs\.count = ti/);
+  assert.match(palace, /'Portico dentil course'/);
+  assert.match(palace, /dentils\.count = di/);
+  assert.match(palace, /'Portico cornice'/);
+});
+
 testCase('Royal Palace frontage spans the real ~160 m along the Place des Palais', () => {
   assert.match(palace, /The real frontage runs about 160 m along the Place des Palais/);
   assert.match(palace, /const wingW = 52, wingH = 20\.5, wingD = 19;/);

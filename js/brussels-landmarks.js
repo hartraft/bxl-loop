@@ -1561,6 +1561,36 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       }
     }
 
+    // The colossal portico carries a full classical entablature on the real Maquet
+    // front: architrave beam over the capitals, a triglyph frieze, a dentil course
+    // and a projecting cornice beneath the pediment.
+    box(g, 37, 1.05, 4.8, 0, 22.78, centralFace + 2.9, ashlar, 'Portico architrave beam');
+    const triglyphs = new THREE.InstancedMesh(new THREE.BoxGeometry(0.34, 0.6, 0.16), moulding, 25);
+    const tgd = new THREE.Object3D();
+    let ti = 0;
+    for (let i = 0; i < 25; i++) {
+      tgd.position.set(-17 + i * 1.42, 22.95, centralFace + 4.5);
+      tgd.rotation.y = 0;
+      tgd.updateMatrix();
+      triglyphs.setMatrixAt(ti++, tgd.matrix);
+    }
+    triglyphs.count = ti;
+    triglyphs.name = 'Portico frieze triglyphs';
+    triglyphs.castShadow = true;
+    g.add(triglyphs);
+    const dentils = new THREE.InstancedMesh(new THREE.BoxGeometry(0.2, 0.24, 0.18), moulding, 53);
+    let di = 0;
+    for (let i = 0; i < 53; i++) {
+      tgd.position.set(-18 + i * 0.7, 23.32, centralFace + 4.55);
+      tgd.updateMatrix();
+      dentils.setMatrixAt(di++, tgd.matrix);
+    }
+    dentils.count = di;
+    dentils.name = 'Portico dentil course';
+    dentils.castShadow = true;
+    g.add(dentils);
+    box(g, 37.8, 0.34, 5.2, 0, 23.45, centralFace + 2.9, moulding, 'Portico cornice');
+
     // Five tall glazed doors/windows sit behind the colonnade, not as a row of
     // unrelated dark slots on the upper wall.
     for (let i = 0; i < 5; i++) {
