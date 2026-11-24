@@ -611,3 +611,10 @@ testCase('the Academy Palace garden is closed along Rue Ducale by a balustraded 
   assert.match(palace, /'Academy boundary balustrade'/);
   assert.match(palace, /awBal\.count = awi/);
 });
+
+testCase('the BELvue pavilion carries corner quoins and hipped-roof dormers', () => {
+  assert.match(palace, /chaînage d'angle/);
+  assert.match(palace, /'BELvue corner quoin'/);
+  assert.match(palace, /'BELvue dormer'/);
+  assert.match(palace, /'BELvue dormer roof'/);
+});

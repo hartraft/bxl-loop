@@ -2606,6 +2606,18 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     }
     awBal.count = awi; awBal.name = 'Academy boundary balustrade'; g.add(awBal);
     box(g, 0.9, 0.16, 61, -204, 4.15, 36, materials.warmStone, 'Academy boundary balustrade rail');
+    // The BELvue corner pavilion is built up with corner quoins (chaînage d'angle) and
+    // dormers pierce its hipped roof, like the palace's own end pavilions.
+    for (const side of [-1, 1]) {
+      for (let y = 1.2; y <= 21.5; y += 0.95) {
+        box(g, 0.5, 0.8, 0.4, 168 + side * 17.9, y, 36 + side * 0, materials.warmStone, 'BELvue corner quoin');
+        box(g, 0.4, 0.8, 0.5, 168 + side * 0, y, 36 + side * 13.9, materials.warmStone, 'BELvue corner quoin');
+      }
+    }
+    for (const dx of [-6, 0, 6]) {
+      box(g, 1.2, 1.5, 0.3, 168 + dx, 24.6, 26.5, materials.paleStone, 'BELvue dormer');
+      mesh(g, new THREE.ConeGeometry(0.9, 0.8, 4), materials.roof, 168 + dx, 25.8, 26.5, 'BELvue dormer roof');
+    }
   });
     addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');
