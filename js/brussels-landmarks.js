@@ -518,6 +518,16 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     pilasters.castShadow = balusters.castShadow = niches.castShadow = statues.castShadow = true;
     root.add(pilasters, balusters, niches, statues);
     box(root, width + 0.7, 0.16, 0.24, 0, height + 0.9, 0.14, stone, name + ' parapet rail');
+    // Gilded finial balls terminate the parapet rail at both ends of every house.
+    const parapetFinials = new THREE.InstancedMesh(new THREE.SphereGeometry(0.14, 8, 6), materials.gold, 2);
+    for (let i = 0; i < 2; i++) {
+      modDummy.position.set((i === 0 ? -1 : 1) * (width / 2 + 0.2), height + 1.0, 0.14);
+      modDummy.updateMatrix();
+      parapetFinials.setMatrixAt(i, modDummy.matrix);
+    }
+    parapetFinials.count = 2;
+    parapetFinials.name = name + ' parapet rail end finials';
+    root.add(parapetFinials);
 
     // Each house gets a distinct roofline instead of the repeated identical cones of the old model.
     const gableHeight = style === 'stepped' ? 4.8 : style === 'bell' ? 3.6 : 4.6;
@@ -1079,6 +1089,21 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     trefoilBand.name = 'Arcade trefoil band';
     histCorbels.name = 'Knight statue historiated corbels';
     root.add(leafFinials, trefoilBand, histCorbels);
+    // Capitals widen the top of every arcade pier, as on the real Brabantine arcade.
+    const pierCapitals = new THREE.InstancedMesh(new THREE.BoxGeometry(0.44, 0.22, 0.6), trim, bays * 2);
+    let pc = 0;
+    for (let i = 0; i < bays; i++) {
+      const x = -width / 2 + bayW * (i + 0.5);
+      for (const px of [x - bayW / 2 + 0.12, x + bayW / 2 - 0.12]) {
+        vd.position.set(px, 7.62, 0.24);
+        vd.rotation.z = 0;
+        vd.updateMatrix();
+        pierCapitals.setMatrixAt(pc++, vd.matrix);
+      }
+    }
+    pierCapitals.count = pc;
+    pierCapitals.name = 'Arcade pier capitals';
+    root.add(pierCapitals);
     // A stone balcony connects the two wings across the facade above the arcade, on a row of
     // balusters — as on the real elevation.
     box(root, width + 1.2, 0.4, 1.3, 0, 8.7, 0.55, trim, 'Wing-connecting balcony');
@@ -1805,6 +1830,20 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     khKeystones.name = 'King’s House gallery arch keystones';
     khOculi.name = 'King’s House gallery oculi';
     root.add(khKeystones, khOculi);
+    // Impost blocks spring the gallery arches from the piers, as on the real Broodhuis.
+    const khImposts = new THREE.InstancedMesh(new THREE.BoxGeometry(0.34, 0.3, 0.4), trim, bays * 2);
+    let ki = 0;
+    for (let i = 0; i < bays; i++) {
+      const x = -width / 2 + bayW * (i + 0.5);
+      for (const side of [-1, 1]) {
+        khd.position.set(x + side * (bayW / 2 - 0.1), 6.6, 0.24);
+        khd.updateMatrix();
+        khImposts.setMatrixAt(ki++, khd.matrix);
+      }
+    }
+    khImposts.count = ki;
+    khImposts.name = 'King’s House gallery arch impost blocks';
+    root.add(khImposts);
     // Upper storey: windows plus gilded statues in niches at the alternating bay joints.
     const khNiches = new THREE.InstancedMesh(new THREE.BoxGeometry(0.66, 2.2, 0.2), darkStone, bays);
     const khStatues = new THREE.InstancedMesh(new THREE.BoxGeometry(0.24, 1.1, 0.12), materials.gold, bays);
@@ -1865,6 +1904,17 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       const x = -width / 2 + 3.5 + i * 5.2;
       box(root, 0.24, 1.0, 0.12, x, height + 0.55, 0.18, materials.gold, 'King’s House standard-bearer statue');
     }
+    // Each standard-bearer carries a gilded lance, as on the real roofline statues.
+    const lances = new THREE.InstancedMesh(new THREE.CylinderGeometry(0.03, 0.03, 1.7, 6), materials.gold, 6);
+    const khLd2 = new THREE.Object3D();
+    for (let i = 0; i < 6; i++) {
+      khLd2.position.set(-width / 2 + 3.5 + i * 5.2 + 0.2, height + 1.3, 0.18);
+      khLd2.updateMatrix();
+      lances.setMatrixAt(i, khLd2.matrix);
+    }
+    lances.count = 6;
+    lances.name = 'King’s House standard-bearer lances';
+    root.add(lances);
 
     // Vast slate roof behind the central pavilion, ridge running along the long axis.
     const ridgeY = height + 6.5, eaveY = height + 0.5;

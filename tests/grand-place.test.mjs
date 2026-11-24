@@ -792,3 +792,14 @@ test('rounds 131-136: shutter hinge straps, Broodhuis gallery sills, balcony cor
   assert.ok(square.includes('door fanlight rays'));
   assert.ok(square.includes('fanRays.count = 5'));
 });
+
+test('rounds 137-140: arcade pier capitals, Broodhuis impost blocks, parapet finials, standard-bearer lances', () => {
+  assert.ok(square.includes('Arcade pier capitals'));
+  assert.ok(square.includes('pierCapitals.count = pc'));
+  assert.ok(square.includes('King’s House gallery arch impost blocks'));
+  assert.ok(square.includes('khImposts.count = ki'));
+  assert.ok(square.includes('parapet rail end finials'));
+  assert.ok(square.includes('parapetFinials.count = 2'));
+  assert.ok(square.includes('King’s House standard-bearer lances'));
+  assert.ok(square.includes('lances.count = 6'));
+});
