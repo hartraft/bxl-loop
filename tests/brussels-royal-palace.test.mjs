@@ -1956,3 +1956,7 @@ testCase('brackets carry the central balcony flower box', () => {
 testCase('stone lintels crown the Academy ground-floor arched windows', () => {
   assert.match(palace, /'Academy ground window lintel'/);
 });
+
+testCase('a bed moulding sits between the portico architrave and cornice', () => {
+  assert.match(palace, /'Portico architrave bed moulding'/);
+});

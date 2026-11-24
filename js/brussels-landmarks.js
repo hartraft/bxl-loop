@@ -4074,6 +4074,9 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     for (const fx of [-1.0, 0, 1.0]) {
       box(g, 0.15, 0.2, 0.45, fx, 10.7, centralFace + 1.1, bronze, 'Central flower box bracket');
     }
+
+    // A bed moulding sits between the portico architrave and cornice.
+    box(g, 37, 0.1, 5.0, 0, 23.33, centralFace + 2.9, moulding, 'Portico architrave bed moulding');
   });
   addLandmark('palaceSurroundings', (g) => {
     // Real-world sources: en/fr Wikipedia (Royal Palace of Brussels, Brussels Park, Place des Palais,
