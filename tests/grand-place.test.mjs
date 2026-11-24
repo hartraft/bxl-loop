@@ -261,6 +261,14 @@ test('guild-house windows have folded-back shutters and storeys are split by str
   assert.ok(square.includes('stringCourses.count = sc'));
 });
 
+test('guild houses carry rebuild-date cartouches, door pediments and gable attic windows', () => {
+  assert.ok(square.includes(" rebuild date cartouche'"));
+  assert.ok(square.includes(" rebuild date cartouche rim'"));
+  assert.ok(square.includes(" door surround pediment'"));
+  assert.ok(square.includes(" gable attic windows'"));
+  assert.ok(square.includes('atticWindows.count = 2'));
+});
+
 test('guild houses have the real arcaded ground floors and gilded gable emblems', () => {
   assert.ok(square.includes(' ground-floor arcade'));
   assert.ok(square.includes(' arcade lintel'));

@@ -272,6 +272,23 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     const fanlight = cylinder(root, 0.4, 0.4, 0.08, 0, 3.02, 0.44, materials.gold, 16);
     fanlight.name = name + ' door fanlight';
     fanlight.rotation.x = Math.PI / 2;
+    // Rebuild-date cartouche beside the door — the real houses carry "Anno 1697" etc. after the
+    // 1695 bombardment — and a small pediment crowns the doorway.
+    box(root, 0.8, 0.3, 0.1, width / 2 - 1.3, 3.9, 0.34, materials.dark, name + ' rebuild date cartouche');
+    box(root, 0.6, 0.18, 0.04, width / 2 - 1.3, 3.9, 0.4, materials.gold, name + ' rebuild date cartouche rim');
+    const doorPed = new THREE.Shape();
+    doorPed.moveTo(-0.35, 0); doorPed.lineTo(0, 0.32); doorPed.lineTo(0.35, 0); doorPed.closePath();
+    mesh(root, new THREE.ShapeGeometry(doorPed), stone, 0, 3.32, 0.42, name + ' door surround pediment');
+    // Small attic windows in the gable base, flanking the oculus.
+    const atticWindows = new THREE.InstancedMesh(new THREE.BoxGeometry(0.5, 0.7, 0.1), spec.windowMat || glowGlass, 2);
+    for (let i = 0; i < 2; i++) {
+      modDummy.position.set((i === 0 ? -1 : 1) * width / 4, height + 0.75, 0.14);
+      modDummy.updateMatrix();
+      atticWindows.setMatrixAt(i, modDummy.matrix);
+    }
+    atticWindows.count = 2;
+    atticWindows.name = name + ' gable attic windows';
+    root.add(atticWindows);
     if (terrace) {
       // Café awning sloping over each ground-floor arcade bay — the real square's
       // brasseries and cafés sit under canvas awnings on the Grand-Place.
