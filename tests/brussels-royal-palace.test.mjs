@@ -1447,3 +1447,7 @@ testCase('stone lintels crown the Palace of the Nation wing windows', () => {
 testCase('a lower step completes the Academy Palace portico entrance flight', () => {
   assert.match(palace, /'Academy Palace portico lower step'/);
 });
+
+testCase('bronze escutcheon plates mark each central French door', () => {
+  assert.match(palace, /'French door escutcheon'/);
+});

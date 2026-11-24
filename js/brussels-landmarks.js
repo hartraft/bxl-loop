@@ -3826,6 +3826,11 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     for (let px = -33; px <= 33; px += 3) {
       box(g, 0.16, 0.12, 0.16, px, 1.5, 14, gilded, 'Garden railing post cap');
     }
+
+    // Bronze escutcheon plates mark each central French door.
+    for (let i = 0; i < 5; i++) {
+      box(g, 0.5, 0.7, 0.05, -10 + i * 5, 13.5, centralFace + 0.28, bronze, 'French door escutcheon');
+    }
   });
   addLandmark('palaceSurroundings', (g) => {
     // Real-world sources: en/fr Wikipedia (Royal Palace of Brussels, Brussels Park, Place des Palais,
