@@ -2269,6 +2269,14 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
 
     // A gravel central walk runs from the garden gate to the perron on the portico axis.
     box(g, 5, 0.08, 5.6, 0, 0.06, 11.7, ashlar, 'Garden central walk');
+
+    // Each sunken parterre is edged with a clipped boxwood border (jardin d'honneur).
+    for (const p of [{ x: -13.5, w: 9 }, { x: 13.5, w: 9 }, { x: -38, w: 34 }, { x: 38, w: 34 }]) {
+      box(g, p.w + 0.5, 0.34, 0.22, p.x, 0.1, 12.4 - 1.5, lawnMat, 'Parterre boxwood border');
+      box(g, p.w + 0.5, 0.34, 0.22, p.x, 0.1, 12.4 + 1.5, lawnMat, 'Parterre boxwood border');
+      box(g, 0.22, 0.34, 3.2, p.x - p.w / 2 - 0.25, 0.1, 12.4, lawnMat, 'Parterre boxwood border');
+      box(g, 0.22, 0.34, 3.2, p.x + p.w / 2 + 0.25, 0.1, 12.4, lawnMat, 'Parterre boxwood border');
+    }
   });
   addLandmark('palaceSurroundings', (g) => {
     // Brussels Park (Parc de Bruxelles): the rectangular 13.1 ha neoclassical park north of the

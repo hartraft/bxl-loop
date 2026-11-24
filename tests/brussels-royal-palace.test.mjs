@@ -586,3 +586,8 @@ testCase('a gravel central walk runs from the garden gate to the perron on the a
   assert.match(palace, /gravel central walk runs from the garden gate/);
   assert.match(palace, /'Garden central walk'/);
 });
+
+testCase('each sunken parterre is edged with a clipped boxwood border', () => {
+  assert.match(palace, /clipped boxwood border/);
+  assert.match(palace, /'Parterre boxwood border'/);
+});
