@@ -4936,6 +4936,11 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     for (let i = 0; i < 4; i++) {
       cylinder(g, 0.95, 1.05, 0.7, -174 + i * 4, 0.35, 19.5, materials.paleStone, 12).name = 'Academy portico column base';
     }
+
+    // Stone lintels crown the Royal Stables hayloft windows.
+    for (let i = 0; i < 5; i++) {
+      box(g, 1.5, 0.18, 0.3, -70 - 16 + i * 8, 10.7, -73.0, materials.warmStone, 'Royal Stables hayloft lintel');
+    }
   });
     addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');
