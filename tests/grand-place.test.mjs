@@ -1037,3 +1037,21 @@ test('round 253: the real Town Hall ground arcade is asymmetrical — 11 arches 
   assert.ok(square.includes('new THREE.BoxGeometry(0.22, 0.3, 0.34), trim, arcBays * 6)'));
   assert.ok(square.includes('bays * 2 + 2'));
 });
+
+test('rounds 254-262: belfry quatrefoils, buttress pinnacle caps, spire rib feet, Broodhuis outer archivolt + cornice drip + plinth water table + parapet urns, window reveals, awning stripes', () => {
+  assert.ok(square.includes('Belfry quatrefoil tracery'));
+  assert.ok(square.includes('belfryQuatrefoils.count = bq'));
+  assert.ok(square.includes('Flying buttress pinnacle cap'));
+  assert.ok(square.includes('Spire rib foot blocks'));
+  assert.ok(square.includes('ribFeet.count = 8'));
+  assert.ok(square.includes('King’s House outer archivolt voussoirs'));
+  assert.ok(square.includes('khVoussoirs2.count = khV2'));
+  assert.ok(square.includes('King’s House cornice drip mould'));
+  assert.ok(square.includes('King’s House plinth water table'));
+  assert.ok(square.includes('King’s House parapet urns'));
+  assert.ok(square.includes('khUrns.count = 2'));
+  assert.ok(square.includes('window inner reveals'));
+  assert.ok(square.includes('reveals.count = rv'));
+  assert.ok(square.includes('awning canvas stripes'));
+  assert.ok(square.includes('stripes.count = bays * 2'));
+});

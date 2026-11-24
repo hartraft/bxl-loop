@@ -371,6 +371,21 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     winKeystones.count = wk;
     winKeystones.name = name + ' window keystones';
     root.add(winKeystones);
+    // Dark inner reveals recess every window into the facade, as on the real houses.
+    const reveals = new THREE.InstancedMesh(new THREE.BoxGeometry(1.2, 1.55, 0.08), materials.dark, bays * floors);
+    let rv = 0;
+    for (let floor = 1; floor <= floors; floor++) {
+      const wy = 4.4 + (floor - 1) * ((height - 6.6) / Math.max(1, floors - 1));
+      for (let bay = 0; bay < bays; bay++) {
+        const wx = (bay - (bays - 1) / 2) * (width - 2.8) / Math.max(1, bays - 1);
+        dummy.position.set(wx, wy, 0.08);
+        dummy.updateMatrix();
+        reveals.setMatrixAt(rv++, dummy.matrix);
+      }
+    }
+    reveals.count = rv;
+    reveals.name = name + ' window inner reveals';
+    root.add(reveals);
     // Stone corbels under every window sill, carrying the sills of the real facades.
     const sillCorbels = new THREE.InstancedMesh(new THREE.BoxGeometry(0.2, 0.18, 0.24), materials.warmStone, bays * floors * 2);
     let scc = 0;
@@ -539,6 +554,21 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       valanceTrim.count = bays;
       valanceTrim.name = name + ' awning valance gilded trim';
       root.add(valanceTrim);
+      // White canvas stripes stripe each café awning, as on the real brasserie awnings.
+      const stripes = new THREE.InstancedMesh(new THREE.BoxGeometry(0.22, 0.06, 1.32), materials.plaster, bays * 2);
+      for (let bay = 0; bay < bays; bay++) {
+        const wx = (bay - (bays - 1) / 2) * (width - 2.8) / Math.max(1, bays - 1);
+        for (let s2 = 0; s2 < 2; s2++) {
+          arcDummy.position.set(wx - 0.55 + s2 * 1.1 + ((width - 2.8) / bays) / 2 - 0.15, 3.72, 1.05);
+          arcDummy.rotation.x = 0.42;
+          arcDummy.updateMatrix();
+          stripes.setMatrixAt(bay * 2 + s2, arcDummy.matrix);
+          arcDummy.rotation.x = 0;
+        }
+      }
+      stripes.count = bays * 2;
+      stripes.name = name + ' awning canvas stripes';
+      root.add(stripes);
       // Canvas side flaps close the awning ends.
       const sideFlaps = new THREE.InstancedMesh(new THREE.BoxGeometry(0.05, 0.55, 1.05), materials.canvas, 2);
       for (let i = 0; i < 2; i++) {
@@ -2248,6 +2278,23 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     pierCapitalsL.name = 'Lantern pier capitals';
     belfryHoods.name = 'Belfry opening hood moulds';
     tower.add(pierCapitalsL, belfryHoods);
+    // Quatrefoil tracery discs in each belfry opening, as in the real openwork lantern.
+    const belfryQuatrefoils = new THREE.InstancedMesh(new THREE.CylinderGeometry(0.42, 0.42, 0.1, 12).rotateX(Math.PI / 2), trim, 24);
+    let bq = 0;
+    for (let level = 0; level < 3; level++) {
+      const y0 = 60.6 + level * 6.6;
+      for (let i = 0; i < 8; i++) {
+        const a = i * Math.PI / 4 + Math.PI / 8;
+        ld.position.set(Math.cos(a) * 3.9, y0 + 3.4, Math.sin(a) * 3.9);
+        ld.rotation.y = -a;
+        ld.updateMatrix();
+        belfryQuatrefoils.setMatrixAt(bq++, ld.matrix);
+        ld.rotation.y = 0;
+      }
+    }
+    belfryQuatrefoils.count = bq;
+    belfryQuatrefoils.name = 'Belfry quatrefoil tracery';
+    tower.add(belfryQuatrefoils);
     // Timber bell frame and clapper inside the middle belfry tier, around the great bell.
     const bellFrame = new THREE.InstancedMesh(new THREE.BoxGeometry(0.12, 2.2, 0.12), materials.dark, 4);
     for (let i = 0; i < 4; i++) {
@@ -2273,6 +2320,8 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       const d = new THREE.Vector3(x - bx, 4.5, z - bz);
       const buttress = mesh(tower, new THREE.BoxGeometry(0.34, d.length(), 0.34), trim, (bx + x) / 2, 59.75, (bz + z) / 2, 'Flying buttress');
       buttress.quaternion.setFromUnitVectors(up, d.normalize());
+      // Small spire caps crown the flying buttress heads.
+      mesh(tower, new THREE.ConeGeometry(0.3, 0.9, 6), roofMat, x, 62.6, z, 'Flying buttress pinnacle cap');
     }
     // Gilded finial balls crowning the four lantern corner turret spires.
     const turretFinials = new THREE.InstancedMesh(new THREE.SphereGeometry(0.2, 8, 6), materials.gold, 4);
@@ -2338,6 +2387,20 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     crochets.count = ck;
     crochets.name = 'Spire rib gilded crochets';
     tower.add(crochets);
+    // Stone foot blocks bed each spire rib into the lantern crown, as on the real openwork
+    // spire.
+    const ribFeet = new THREE.InstancedMesh(new THREE.BoxGeometry(0.4, 0.5, 0.4), darkStone, 8);
+    for (let i = 0; i < 8; i++) {
+      const a = i * Math.PI / 4;
+      cd.position.set(Math.cos(a) * 3.7, 80.9, Math.sin(a) * 3.7);
+      cd.rotation.y = -a;
+      cd.updateMatrix();
+      ribFeet.setMatrixAt(i, cd.matrix);
+      cd.rotation.y = 0;
+    }
+    ribFeet.count = 8;
+    ribFeet.name = 'Spire rib foot blocks';
+    tower.add(ribFeet);
     cylinder(tower, 1.5, 1.5, 0.14, 0, 90.6, 0, materials.gold, 8).name = 'Spire gilded ring armature';
     // Two more gilded ring armatures tie the openwork spire ribs higher up.
     cylinder(tower, 0.85, 0.85, 0.12, 0, 93.4, 0, materials.gold, 8).name = 'Spire gilded ring armature';
@@ -2417,6 +2480,9 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     khDownpipes.count = 2;
     khDownpipes.name = 'King’s House rainwater downpipes';
     root.add(khDownpipes);
+    // Sloped water table caps the Broodhuis plinth, shedding rainwater off the base.
+    const khWaterTable = box(root, width + 1.7, 0.08, 0.6, 0, 1.04, 0.3, darkStone, 'King’s House plinth water table');
+    khWaterTable.rotation.x = 0.1;
     // Glazed windows pierce both side elevations of the Broodhuis block, as on the real
     // building's flanks facing the side streets.
     const khSideWindows = new THREE.InstancedMesh(new THREE.BoxGeometry(0.14, 2.6, 1.3), glass, 8);
@@ -2470,6 +2536,8 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     khDentils.count = 26;
     khDentils.name = 'King’s House upper cornice dentils';
     root.add(khDentils);
+    // Drip mould under the upper cornice sheds water off the Broodhuis facade.
+    box(root, width + 1.0, 0.08, 0.4, 0, height - 0.95, 0.3, darkStone, 'King’s House cornice drip mould');
 
     // Ground-floor arcade gallery: recessed arched openings between piers, pointed heads.
     const bays = 9, bayW = width / bays;
@@ -2515,6 +2583,24 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     khSpandrels.count = bays;
     khSpandrels.name = 'King’s House arcade spandrel reliefs';
     root.add(khSpandrels);
+    // A second, outer archivolt ring of voussoirs encircles the ground arcade, as in the real
+    // double-moulded Broodhuis arches.
+    const khVoussoirs2 = new THREE.InstancedMesh(new THREE.BoxGeometry(0.3, 0.26, 0.36), darkStone, bays * 5);
+    let khV2 = 0;
+    for (let i = 0; i < bays; i++) {
+      const x = -width / 2 + bayW * (i + 0.5);
+      for (let j = 0; j < 5; j++) {
+        const a = Math.PI * (0.14 + 0.72 * (j / 4));
+        khVd.position.set(x + Math.cos(a) * 1.32, 6.05 + Math.sin(a) * 1.0, 0.24);
+        khVd.rotation.z = a - Math.PI / 2;
+        khVd.updateMatrix();
+        khVoussoirs2.setMatrixAt(khV2++, khVd.matrix);
+        khVd.rotation.z = 0;
+      }
+    }
+    khVoussoirs2.count = khV2;
+    khVoussoirs2.name = 'King’s House outer archivolt voussoirs';
+    root.add(khVoussoirs2);
     // First-floor gallery: arched windows above a continuous balustrade.
     box(root, width - 1.5, 0.85, 0.55, 0, 7.6, 0.4, trim, 'First gallery balustrade');
     // Balusters rise along the first gallery balustrade, as on the real Broodhuis.
@@ -2763,6 +2849,16 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     khMerlons.count = 26;
     khMerlons.name = 'King’s House crenellated parapet merlons';
     root.add(khMerlons);
+    // Stone urns stand on the parapet at the Broodhuis front corners, as on the real roofline.
+    const khUrns = new THREE.InstancedMesh(new THREE.CylinderGeometry(0.22, 0.3, 0.6, 8), trim, 2);
+    for (let i = 0; i < 2; i++) {
+      khLd2.position.set((i === 0 ? -1 : 1) * (width / 2 - 1.2), height + 1.1, 0.6);
+      khLd2.updateMatrix();
+      khUrns.setMatrixAt(i, khLd2.matrix);
+    }
+    khUrns.count = 2;
+    khUrns.name = 'King’s House parapet urns';
+    root.add(khUrns);
 
     // Vast slate roof behind the central pavilion, ridge running along the long axis.
     const ridgeY = height + 6.5, eaveY = height + 0.5;
