@@ -1911,3 +1911,8 @@ testCase('a recessed panel surrounds the BELvue entrance door', () => {
 testCase('a moulded edge finishes the front of the central balcony slab', () => {
   assert.match(palace, /'Central balcony slab edge'/);
 });
+
+testCase('a door with lintel pierces the east wing of the Palace of the Nation', () => {
+  assert.match(palace, /'Palace of the Nation east wing door'/);
+  assert.match(palace, /'Palace of the Nation east wing door lintel'/);
+});

@@ -5310,6 +5310,10 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
 
     // A recessed panel surrounds the BELvue entrance door on the square facade.
     box(g, 5.2, 7.0, 0.2, 168, 3.5, 21.95, materials.paleStone, 'BELvue entrance recess panel');
+
+    // A door with lintel pierces the east wing facade of the Palace of the Nation.
+    box(g, 3.0, 6.0, 0.3, 70, 3.0, 406.85, materials.dark, 'Palace of the Nation east wing door');
+    box(g, 3.4, 0.22, 0.4, 70, 6.2, 406.8, materials.warmStone, 'Palace of the Nation east wing door lintel');
   });
     addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');
