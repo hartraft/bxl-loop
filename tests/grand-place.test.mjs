@@ -166,6 +166,15 @@ test('café awnings over the ground-floor arcades of the brasserie houses', () =
   assert.equal((square.match(/terrace: true\s*[,}]/g) || []).length, 6, 'six houses carry terraces');
 });
 
+test('Le Cornet carries the gilded horn and anchor of the boatmen', () => {
+  assert.ok(square.includes("emblem: 'horse', cornet: true }"));
+  assert.ok(square.includes(" gilded horn'"));
+  assert.ok(square.includes(" anchor shank'"));
+  assert.ok(square.includes(" anchor stock'"));
+  assert.ok(square.includes(" anchor arms'"));
+  assert.ok(square.includes('new THREE.ConeGeometry(0.22, 0.8, 8), materials.gold'));
+});
+
 test('La Louve carries the Romulus-and-Remus she-wolf relief and the Apollo pediment', () => {
   assert.ok(square.includes('emblem: true, terrace: true, louve: true }'));
   assert.ok(square.includes(" Romulus and Remus relief panel'"));
