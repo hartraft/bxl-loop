@@ -4140,6 +4140,9 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
 
     // A contrasting sett line runs down the centre of the garden walk.
     box(g, 0.3, 0.06, 3.2, 0, 0.09, 12.4, moulding, 'Garden walk centre sett line');
+
+    // A bronze threshold plate spans the portico main door.
+    box(g, 4.4, 0.08, 0.5, 0, 0.12, centralFace + 0.35, bronze, 'Portico door threshold plate');
   });
   addLandmark('palaceSurroundings', (g) => {
     // Real-world sources: en/fr Wikipedia (Royal Palace of Brussels, Brussels Park, Place des Palais,

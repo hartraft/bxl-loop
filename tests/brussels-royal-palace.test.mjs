@@ -2098,3 +2098,7 @@ testCase('a contrasting sett line runs down the centre of the garden walk', () =
 testCase('kerbs edge both sides of the Palace of the Nation peristyle steps', () => {
   assert.match(palace, /'Palace of the Nation step kerb'/);
 });
+
+testCase('a bronze threshold plate spans the portico main door', () => {
+  assert.match(palace, /'Portico door threshold plate'/);
+});
