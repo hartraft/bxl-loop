@@ -822,3 +822,9 @@ testCase('the Academy boulevard side is scanned by blue-stone pilasters', () => 
   assert.match(palace, /blue-stone pilasters/);
   assert.match(palace, /'Academy boulevard-side blue-stone pilaster'/);
 });
+
+testCase('the wing end faces are capped by an end cornice and blocking course', () => {
+  assert.match(palace, /end cornice/);
+  assert.match(palace, /'Wing end cornice'/);
+  assert.match(palace, /'Wing end blocking course'/);
+});
