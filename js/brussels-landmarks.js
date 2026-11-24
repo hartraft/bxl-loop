@@ -5361,6 +5361,11 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       const wx = 168 - 13 + i * 6.5;
       box(g, 0.4, 0.55, 0.3, wx, 9.6, 22.15, materials.warmStone, 'BELvue ground window keystone');
     }
+
+    // Stone lintels crown the Academy Palace ground-floor arched windows.
+    for (let i = 0; i < 7; i++) {
+      box(g, 2.6, 0.22, 0.3, -168 - 24 + i * 8, 7.4, 21.0, materials.warmStone, 'Academy ground window lintel');
+    }
   });
     addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');

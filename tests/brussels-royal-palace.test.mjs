@@ -1952,3 +1952,7 @@ testCase('keystones crown the BELvue ground-floor windows', () => {
 testCase('brackets carry the central balcony flower box', () => {
   assert.match(palace, /'Central flower box bracket'/);
 });
+
+testCase('stone lintels crown the Academy ground-floor arched windows', () => {
+  assert.match(palace, /'Academy ground window lintel'/);
+});
