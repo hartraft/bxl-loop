@@ -1217,3 +1217,8 @@ testCase('modillions line the underside of the Palace of the Nation cornice', ()
   assert.match(palace, /'Palace of the Nation cornice modillion'/);
   assert.match(palace, /pnMod\.count = pmi/);
 });
+
+testCase('lanterns crown the piers of the park south gate on the palace axis', () => {
+  assert.match(palace, /'Park south gate lantern'/);
+  assert.match(palace, /'Park south gate lantern glass'/);
+});

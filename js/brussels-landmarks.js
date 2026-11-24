@@ -4407,6 +4407,12 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       pnMod.setMatrixAt(pmi++, pmd.matrix);
     }
     pnMod.count = pmi; pnMod.name = 'Palace of the Nation cornice modillion'; g.add(pnMod);
+
+    // Lanterns crown the piers of the park south gate on the palace axis.
+    for (const gx of [-6, 6]) {
+      box(g, 0.5, 0.7, 0.5, gx, 3.75, 62, materials.bronze, 'Park south gate lantern');
+      mesh(g, new THREE.SphereGeometry(0.22, 10, 8), materials.glass, gx, 3.75, 62, 'Park south gate lantern glass');
+    }
   });
     addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');
