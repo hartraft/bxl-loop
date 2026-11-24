@@ -1604,3 +1604,8 @@ testCase('cap slabs finish both perron cheek walls', () => {
 testCase('quoins strengthen the facade corners of both Palace of the Nation wings', () => {
   assert.match(palace, /'Palace of the Nation wing quoin'/);
 });
+
+testCase('stone lintels crown the wing end windows on both gable ends', () => {
+  assert.match(palace, /'Wing end window lintel'/);
+  assert.match(palace, /'Wing end ground window lintel'/);
+});

@@ -3889,6 +3889,15 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     for (const side of [-1, 1]) {
       box(g, 1.0, 0.12, 2.4, side * 8.9, 1.26, centralFace + 1.2, moulding, 'Perron cheek wall cap');
     }
+
+    // Stone lintels crown the wing end windows on both gable ends.
+    for (const side of [-1, 1]) {
+      for (let i = 0; i < 3; i++) {
+        const wz = -6 - i * 5;
+        box(g, 0.14, 0.25, 2.3, side * 70.12, 14.35, wz, ashlar, 'Wing end window lintel');
+        box(g, 0.14, 0.25, 2.3, side * 70.12, 7.95, wz, ashlar, 'Wing end ground window lintel');
+      }
+    }
   });
   addLandmark('palaceSurroundings', (g) => {
     // Real-world sources: en/fr Wikipedia (Royal Palace of Brussels, Brussels Park, Place des Palais,
