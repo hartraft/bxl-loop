@@ -4913,6 +4913,15 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       bvMd.setMatrixAt(bvMi++, bvMdd.matrix);
     }
     bvMd.count = bvMi; bvMd.name = 'BELvue cornice modillion'; g.add(bvMd);
+
+    // Corner quoins strengthen the facade corners of both Palace of the Nation wings.
+    for (const side of [-1, 1]) {
+      for (const cx of [side * 50.2, side * 89.8]) {
+        for (const qy of [4, 9, 14]) {
+          box(g, 0.5, 1.8, 0.4, cx, qy, 406.9, materials.warmStone, 'Palace of the Nation wing quoin');
+        }
+      }
+    }
   });
     addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');

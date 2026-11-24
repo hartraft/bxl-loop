@@ -1600,3 +1600,7 @@ testCase('modillions line the underside of the BELvue cornice', () => {
 testCase('cap slabs finish both perron cheek walls', () => {
   assert.match(palace, /'Perron cheek wall cap'/);
 });
+
+testCase('quoins strengthen the facade corners of both Palace of the Nation wings', () => {
+  assert.match(palace, /'Palace of the Nation wing quoin'/);
+});
