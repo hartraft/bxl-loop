@@ -398,4 +398,32 @@ testCase('rounds 87-90: archivolt voussoirs + keystone, tympanum plinth + attend
   assert.match(bourse, /dentils\.count = 36/);
 });
 
+testCase('rounds 91-94: stair parapets + coping, newel posts + urns, tread nosings, landing moulding', () => {
+  assert.match(bourse, /'Bourse stair balustrade parapet '/);
+  assert.match(bourse, /'Bourse stair parapet coping \(chaperon\)'/);
+  assert.match(bourse, /'Bourse stair newel posts \(poteaux de depart\)'/);
+  assert.match(bourse, /posts\.count = 4/);
+  assert.match(bourse, /'Bourse newel urn finials \(vases\)'/);
+  assert.match(bourse, /'Bourse stair tread nosings \(bandes de rive\)'/);
+  assert.match(bourse, /nosings\.count = 20/);
+  assert.match(bourse, /'Bourse portico landing edge moulding \(bandeau de rive\)'/);
+});
+
+testCase('rounds 95-100: bull/bear lion anatomy, pedestal mouldings, torch bowls, collar+lead, cheek caps', () => {
+  assert.match(bourse, /out_ref_bull = bull/);
+  assert.match(bourse, /out_ref_bear = bear/);
+  assert.match(bourse, /'bull lion open jaw'/);
+  assert.match(bourse, /'bull lion raised foreleg'/);
+  assert.match(bourse, /'bull lion tail tuft'/);
+  assert.match(bourse, /'bear lion lowered jaw'/);
+  assert.match(bourse, /'bear lion planted foreleg'/);
+  assert.match(bourse, /'Bourse lion pedestal plinth base'/);
+  assert.match(bourse, /'Bourse lion pedestal cap moulding'/);
+  assert.match(bourse, /torchGeniuses\.push\(genius\)/);
+  assert.match(bourse, /'torch bowl \(coupe\)'/);
+  assert.match(bourse, /'torch flame \(flamme\)'/);
+  assert.match(bourse, /'lion collar \(collier\)'/);
+  assert.match(bourse, /'Bourse stair cheek wall cap \(chaperon\)'/);
+});
+
 // __MORE_BOURSE_TESTS__

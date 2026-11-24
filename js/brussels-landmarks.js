@@ -4977,8 +4977,11 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     // Round 22: the two great stone lions by the brothers Jean-Joseph and Jacques Jaquet guard
     // the escalier monumental; their posture mirrors the stock market — one head raised (bull,
     // cours en hausse), one head bowed (bear, cours en baisse) (fr.wikipedia Palais de la Bourse).
+    let out_ref_bull, out_ref_bear;
+    const torchGeniuses = [];
     {
       const bull = new THREE.Group();
+      out_ref_bull = bull;
       bull.name = 'Bourse stair lion BULL (head raised, Jean-Joseph Jaquet)';
       bull.position.set(-14, 1.5, 44);
       box(bull, 2.6, 1.5, 1.2, 0, 0.75, 0, materials.warmStone, 'bull lion body');
@@ -4988,6 +4991,7 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       cylinder(bull, 0.08, 0.1, 1.0, 0, 1.3, -1.1, materials.warmStone, 6);
       g.add(bull);
       const bear = new THREE.Group();
+      out_ref_bear = bear;
       bear.name = 'Bourse stair lion BEAR (head bowed, Jacques Jaquet)';
       bear.position.set(14, 1.5, 44);
       box(bear, 2.6, 1.5, 1.2, 0, 0.75, 0, materials.warmStone, 'bear lion body');
@@ -5002,6 +5006,7 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       const genius = new THREE.Group();
       genius.name = 'Bourse torch genius leading the ' + (sx < 0 ? 'bull' : 'bear') + ' lion';
       genius.position.set(sx * 14, 0, 46.6);
+      torchGeniuses.push(genius);
       box(genius, 0.8, 1.7, 0.4, 0, 0.85, 0, materials.warmStone, 'torch genius body');
       mesh(genius, new THREE.SphereGeometry(0.34, 8, 6), materials.warmStone, 0, 1.95, 0, 'torch genius head');
       cylinder(genius, 0.06, 0.06, 0.7, sx * 0.55, 1.6, 0.2, materials.dark, 6);
@@ -5473,6 +5478,94 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       dentils.count = 36;
       dentils.name = 'Bourse pediment raking cornice dentils';
       g.add(dentils);
+    }
+    // Round 91: stone balustrade parapets run up both sides of the monumental stair.
+    {
+      const slope = Math.atan2(5, 14);
+      for (const sx of [-1, 1]) {
+        const parapet = box(g, 1.0, 1.1, 15.5, sx * 13.2, 3.1, 41, materials.blueStone, 'Bourse stair balustrade parapet ' + (sx < 0 ? 'west' : 'east'));
+        parapet.rotation.z = sx * -slope;
+        box(g, 1.2, 0.18, 15.5, sx * 13.2, 3.75, 41, materials.warmStone, 'Bourse stair parapet coping (chaperon)');
+      }
+    }
+    // Round 92: newel posts with urn finials at the stair foot and head, both sides.
+    {
+      const posts = new THREE.InstancedMesh(new THREE.BoxGeometry(0.55, 1.5, 0.55), materials.blueStone, 4);
+      const urns = new THREE.InstancedMesh(new THREE.SphereGeometry(0.3, 8, 6), materials.warmStone, 4);
+      const dummy = new THREE.Object3D();
+      const spots = [[-13.2, 47.8], [13.2, 47.8], [-13.2, 34.2], [13.2, 34.2]];
+      for (let i = 0; i < 4; i++) {
+        dummy.position.set(spots[i][0], 0.75, spots[i][1]);
+        dummy.updateMatrix();
+        posts.setMatrixAt(i, dummy.matrix);
+        dummy.position.set(spots[i][0], 1.75, spots[i][1]);
+        dummy.updateMatrix();
+        urns.setMatrixAt(i, dummy.matrix);
+      }
+      posts.count = 4; posts.name = 'Bourse stair newel posts (poteaux de depart)';
+      posts.castShadow = true; g.add(posts);
+      urns.count = 4; urns.name = 'Bourse newel urn finials (vases)';
+      urns.castShadow = true; g.add(urns);
+    }
+    // Round 93: a lighter nosing strip (bande de rive) on the front edge of every tread.
+    {
+      const nosings = new THREE.InstancedMesh(new THREE.BoxGeometry(26, 0.06, 0.18), materials.pavingEdge, 20);
+      const dummy = new THREE.Object3D();
+      for (let i = 0; i < 20; i++) {
+        dummy.position.set(0, i * 0.25 + 0.26, 47.6 - i * 0.7 - 0.33);
+        dummy.updateMatrix();
+        nosings.setMatrixAt(i, dummy.matrix);
+      }
+      nosings.count = 20;
+      nosings.name = 'Bourse stair tread nosings (bandes de rive)';
+      nosings.receiveShadow = true;
+      g.add(nosings);
+    }
+    // Round 94: a moulded edge band on the portico landing.
+    box(g, 26.4, 0.25, 0.5, 0, 5.05, 34.4, materials.warmStone, 'Bourse portico landing edge moulding (bandeau de rive)');
+    // Round 95: the bull lion (head raised) gets open jaw, eye, raised foreleg and curled tail.
+    {
+      const b = out_ref_bull;
+      mesh(b, new THREE.BoxGeometry(0.28, 0.16, 0.1), materials.dark, 0.2, 2.1, 1.28, 'bull lion open jaw');
+      mesh(b, new THREE.SphereGeometry(0.07, 6, 5), materials.dark, 0.25, 2.12, 0.95, 'bull lion eye');
+      box(b, 0.34, 0.9, 0.34, 1.0, 1.35, 0.3, materials.warmStone, 'bull lion raised foreleg');
+      const tail = cylinder(b, 0.07, 0.05, 0.9, -1.1, 1.6, -0.6, materials.warmStone, 6);
+      tail.rotation.z = 0.9;
+      mesh(b, new THREE.SphereGeometry(0.1, 6, 5), materials.warmStone, -1.45, 1.95, -0.75, 'bull lion tail tuft');
+    }
+    // Round 96: the bear lion (head bowed) gets lowered jaw, eye, planted foreleg and tail.
+    {
+      const b = out_ref_bear;
+      mesh(b, new THREE.BoxGeometry(0.28, 0.14, 0.1), materials.dark, 0.2, 1.1, 1.3, 'bear lion lowered jaw');
+      mesh(b, new THREE.SphereGeometry(0.07, 6, 5), materials.dark, 0.25, 1.22, 0.95, 'bear lion eye');
+      box(b, 0.34, 0.55, 0.34, 1.0, 0.55, 0.35, materials.warmStone, 'bear lion planted foreleg');
+      const tail = cylinder(b, 0.07, 0.05, 0.9, -1.1, 1.5, -0.6, materials.warmStone, 6);
+      tail.rotation.z = 0.7;
+      mesh(b, new THREE.SphereGeometry(0.1, 6, 5), materials.warmStone, -1.4, 1.8, -0.7, 'bear lion tail tuft');
+    }
+    // Round 97: each lion pedestal carries plinth base and cap mouldings.
+    for (const sx of [-1, 1]) {
+      box(g, 4.1, 0.22, 4.1, sx * 14, 0.11, 44, materials.warmStone, 'Bourse lion pedestal plinth base');
+      box(g, 4.3, 0.18, 4.3, sx * 14, 1.44, 44, materials.warmStone, 'Bourse lion pedestal cap moulding');
+    }
+    // Round 98: each torch genius holds a torch bowl (coupe) with a flame.
+    for (const grp of torchGeniuses) {
+      const sx = grp.position.x < 0 ? -1 : 1;
+      mesh(grp, new THREE.CylinderGeometry(0.18, 0.08, 0.22, 8), materials.dark, sx * 0.55, 1.95, 0.2, 'torch bowl (coupe)');
+      mesh(grp, new THREE.ConeGeometry(0.14, 0.4, 6), materials.gold, sx * 0.55, 2.3, 0.2, 'torch flame (flamme)');
+    }
+    // Round 99: a collar and lead chain from each genius's hand to its lion (the geniuses
+    // "conduisent" the lions — Reflexcity).
+    for (const sx of [-1, 1]) {
+      const lion = sx < 0 ? out_ref_bull : out_ref_bear;
+      mesh(lion, new THREE.TorusGeometry(0.5, 0.07, 6, 12), materials.bronze, 0, 1.9, 0.55, 'lion collar (collier)');
+      const lead = cylinder(g, 0.03, 0.03, 3.2, sx * 14, 1.6, 45.3, materials.bronze, 5);
+      lead.rotation.x = 0.5;
+    }
+    // Round 100: sloped caps (chaperons) on the stair cheek walls.
+    for (const sx of [-1, 1]) {
+      const cap = box(g, 1.7, 0.22, 15.5, sx * 13.7, 5.55, 41.3, materials.warmStone, 'Bourse stair cheek wall cap (chaperon)');
+      cap.rotation.z = sx * -Math.atan2(5, 14);
     }
     // __BOURSE_ROUNDS__
   });
