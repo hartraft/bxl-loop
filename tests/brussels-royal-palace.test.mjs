@@ -342,3 +342,11 @@ testCase('piano nobile wing windows carry a small triangular pediment (inférieu
   assert.match(palace, /if \(floorY === 9\.9\)/);
   assert.match(palace, /'Piano nobile window pediment'/);
 });
+
+testCase('pavilion dormers (lucarne en pavillon) pierce the terminal pavilion roofs', () => {
+  assert.match(palace, /lucarne en pavillon/);
+  assert.match(palace, /'Pavilion dormer'/);
+  assert.match(palace, /'Pavilion dormer window'/);
+  assert.match(palace, /'Pavilion dormer pavilion roof'/);
+  assert.match(palace, /for \(const dx of \[-3\.2, 0, 3\.2\]\)/);
+});

@@ -1922,6 +1922,12 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       box(g, 8, 23, 21, x, 11.5, -1, stone, 'Palace terminal pavilion');
       box(g, 9.5, 0.9, 22, x, 23.25, -1, moulding, 'Terminal pavilion cornice');
       mesh(g, new THREE.ConeGeometry(6.6, 2.0, 4), roof, x, 25.0, -1, 'Terminal pavilion pavilion roof');
+      // Pavilion dormers (lucarne en pavillon) pierce the front slope of each pavilion roof.
+      for (const dx of [-3.2, 0, 3.2]) {
+        box(g, 1.1, 1.3, 0.3, x + dx, 24.45, 3.6, stone, 'Pavilion dormer');
+        box(g, 0.7, 0.85, 0.34, x + dx, 24.45, 3.62, glass, 'Pavilion dormer window');
+        mesh(g, new THREE.ConeGeometry(0.85, 0.75, 4), roof, x + dx, 25.35, 3.6, 'Pavilion dormer pavilion roof');
+      }
       for (const dx of [-2.5, 0, 2.5]) {
         box(g, 1.55, 4.4, 0.22, x + dx, 14.0, facadeZ + 0.1, glass, 'Terminal pavilion window');
         // The pavilion ground floors carry the same rusticated round arches with
