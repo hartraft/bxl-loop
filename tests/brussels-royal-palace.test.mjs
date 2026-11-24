@@ -2053,3 +2053,7 @@ testCase('a dentil course runs under the Royal Stables gatehouse cornice', () =>
 testCase('a rim finishes the central balcony flower box', () => {
   assert.match(palace, /'Central flower box rim'/);
 });
+
+testCase('kerbs edge both sides of the Academy portico steps', () => {
+  assert.match(palace, /'Academy portico step kerb'/);
+});

@@ -5489,6 +5489,13 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       rsDn.setMatrixAt(rsDi++, rsDd.matrix);
     }
     rsDn.count = rsDi; rsDn.name = 'Royal Stables gatehouse dentil'; g.add(rsDn);
+
+    // Kerbs edge both sides of the Academy Palace portico steps.
+    for (const cz of [19.9, 19.3]) {
+      for (const side of [-1, 1]) {
+        box(g, 0.25, 0.35, 1.2, -168 + side * 2.8, 0.18, cz, materials.pavingEdge, 'Academy portico step kerb');
+      }
+    }
   });
     addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');
