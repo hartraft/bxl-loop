@@ -1790,3 +1790,7 @@ testCase('cap strips crown the wing balcony rails', () => {
 testCase('cornices crown both Palace of the Nation wings', () => {
   assert.match(palace, /'Palace of the Nation wing cornice'/);
 });
+
+testCase('bases finish the pilasters on both wing end faces', () => {
+  assert.match(palace, /'Wing end pilaster base'/);
+});

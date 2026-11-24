@@ -3997,6 +3997,13 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     for (const side of wingXs) {
       box(g, wingW, 0.06, 0.62, side, 8.0, facadeZ + 0.62, bronze, 'Wing balcony rail cap');
     }
+
+    // Bases finish the pilasters on both wing end faces.
+    for (const side of [-1, 1]) {
+      for (let i = 0; i < 4; i++) {
+        box(g, 0.6, 0.6, 0.6, side * 70.1, 0.3, -3.5 - i * 5, ashlar, 'Wing end pilaster base');
+      }
+    }
   });
   addLandmark('palaceSurroundings', (g) => {
     // Real-world sources: en/fr Wikipedia (Royal Palace of Brussels, Brussels Park, Place des Palais,
