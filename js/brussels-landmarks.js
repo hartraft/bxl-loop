@@ -5455,6 +5455,13 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
 
     // A projecting plinth bases the BELvue pavilion block.
     box(g, 38, 0.7, 30.6, 168, 0.35, 36, materials.warmStone, 'BELvue base plinth');
+
+    // Small pediments cap the Academy Palace end pavilions.
+    for (const px of [-201, -135]) {
+      const ep = new THREE.Shape();
+      ep.moveTo(-4.5, 0); ep.lineTo(4.5, 0); ep.lineTo(0, 2.2); ep.closePath();
+      mesh(g, new THREE.ShapeGeometry(ep), materials.warmStone, px, 20.8, 19.75, 'Academy end pavilion pediment');
+    }
   });
     addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');
