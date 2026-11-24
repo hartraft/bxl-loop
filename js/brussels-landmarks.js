@@ -35,6 +35,15 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
   const glowGlass = materials.glass.clone();
   glowGlass.emissive = new THREE.Color(0x000000);
   nightGlowMats.push(glowGlass);
+  // Facade stone materials get a faint warm floodlight wash at night (the real square is
+  // floodlit after dark) — clone them so daytime rendering is untouched.
+  const facadeWashMats = [];
+  for (const key of ['limestone', 'paleStone', 'warmStone', 'ochre', 'plaster']) {
+    const m = materials[key].clone();
+    m.emissive = new THREE.Color(0x000000);
+    facadeWashMats.push(m);
+    materials[key] = m;
+  }
 
   function mesh(parent, geometry, material, x = 0, y = 0, z = 0, name = '') {
     const object = new THREE.Mesh(geometry, material);
@@ -159,6 +168,10 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     const frameGeo = new THREE.BoxGeometry(1.28, 1.7, 0.12);
     const windows = new THREE.InstancedMesh(windowGeo, spec.windowMat || glowGlass, bays * floors);
     const frames = new THREE.InstancedMesh(frameGeo, materials.gold, bays * floors);
+    // Stone cross-mullions (croisées de pierre) dividing each window into four lights — the real
+    // houses' upper windows are crossed like this (blue-stone croisillons on e.g. Le Mont Thabor).
+    const mullionV = new THREE.InstancedMesh(new THREE.BoxGeometry(0.09, 1.45, 0.06), stone, bays * floors);
+    const mullionH = new THREE.InstancedMesh(new THREE.BoxGeometry(1.05, 0.09, 0.06), stone, bays * floors);
     const dummy = new THREE.Object3D();
     let index = 0;
     for (let floor = 1; floor <= floors; floor++) {
@@ -173,13 +186,18 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
         dummy.scale.set(1, 1, 1);
         dummy.updateMatrix();
         frames.setMatrixAt(index, dummy.matrix);
+        dummy.position.set(wx, wy, 0.2);
+        dummy.updateMatrix();
+        mullionV.setMatrixAt(index, dummy.matrix);
+        mullionH.setMatrixAt(index, dummy.matrix);
         index++;
       }
     }
     windows.name = name + ' windows';
     frames.name = name + ' gilded window surrounds';
+    mullionV.name = mullionH.name = name + ' window stone cross-mullions';
     windows.castShadow = frames.castShadow = true;
-    root.add(windows, frames);
+    root.add(windows, frames, mullionV, mullionH);
 
     // Ground floor: a recessed arcade opening per bay — on the real square the cafés and
     // shops sit under these arcades, so the ground floor is taller and darker than the
@@ -204,6 +222,11 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     arcade.castShadow = lintels.castShadow = true;
     root.add(arcade, lintels);
     box(root, width - 0.4, 0.2, 0.3, 0, 3.6, 0.36, materials.warmStone, name + ' arcade string course');
+    // Arched door leaf with a gilded fanlight in the centre arcade bay of every house.
+    box(root, 0.95, 2.5, 0.12, 0, 1.55, 0.42, materials.dark, name + ' arched door leaf');
+    const fanlight = cylinder(root, 0.4, 0.4, 0.08, 0, 3.02, 0.44, materials.gold, 16);
+    fanlight.name = name + ' door fanlight';
+    fanlight.rotation.x = Math.PI / 2;
     if (terrace) {
       // Café awning sloping over each ground-floor arcade bay — the real square's
       // brasseries and cafés sit under canvas awnings on the Grand-Place.
@@ -220,6 +243,17 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       awnings.castShadow = true;
       root.add(awnings);
       arcDummy.rotation.set(0, 0, 0);
+      // Scalloped canvas valance hanging from the front edge of each awning.
+      const valances = new THREE.InstancedMesh(new THREE.BoxGeometry((width - 2.8) / bays - 0.3, 0.24, 0.04), materials.canvas, bays);
+      for (let bay = 0; bay < bays; bay++) {
+        const wx = (bay - (bays - 1) / 2) * (width - 2.8) / Math.max(1, bays - 1);
+        arcDummy.position.set(wx, 2.85, 1.45);
+        arcDummy.updateMatrix();
+        valances.setMatrixAt(bay, arcDummy.matrix);
+      }
+      valances.count = bays;
+      valances.name = name + ' awning valance';
+      root.add(valances);
       // Terrace furniture set out on the square in front of the awnings — the real brasseries
       // (Le Roy d'Espagne's parasols in the house colours, etc.) line the plaza with tables,
       // chairs and parasols. All instanced per house.
@@ -735,6 +769,17 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     merlons.count = merlonCount;
     merlons.name = 'Town Hall crenellated openwork parapet';
     root.add(merlons);
+    // Gilded cresting (fleurons) along the roof ridge — the real roofline is dressed in gold.
+    const crestCount = Math.floor(width / 1.5);
+    const crests = new THREE.InstancedMesh(new THREE.ConeGeometry(0.16, 0.6, 6), materials.gold, crestCount);
+    for (let i = 0; i < crestCount; i++) {
+      merDummy.position.set(-width / 2 + 0.75 + i * 1.5, ridgeY + 0.5, -depth / 2);
+      merDummy.updateMatrix();
+      crests.setMatrixAt(i, merDummy.matrix);
+    }
+    crests.count = crestCount;
+    crests.name = 'Town Hall gilded roof cresting';
+    root.add(crests);
 
     // Dormers and small roof turrets make the skyline read as a Gothic civic palace.
     for (let i = 0; i < 11; i++) {
@@ -756,6 +801,7 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       const shaft = cylinder(turret, 1.5, 1.8, height + 7, 0, (height + 7) / 2, 0, trim, 8);
       shaft.name = 'Facade corner turret';
       mesh(turret, new THREE.ConeGeometry(1.9, 7, 8), roofMat, 0, height + 10.5, 0, 'Facade corner turret spire');
+      mesh(turret, new THREE.SphereGeometry(0.24, 8, 6), materials.gold, 0, height + 14.3, 0, 'Facade corner turret gilded finial');
     }
 
     // The off-centre tower rises from the ground-level portal to the real 96 m: square
@@ -1128,6 +1174,25 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     strips.receiveShadow = true;
     plaza.add(strips);
 
+    // Cobbled stubs of the seven surrounding lanes continue outward from each mouth — the real
+    // streets around the square are cobbled too, so the paving visibly runs into them.
+    const streetCobbles = new THREE.InstancedMesh(stripGeo, materials.pavingB, 7 * 15 * 3);
+    let sc = 0;
+    for (const [mx, mz, dx, dz] of mouths) {
+      for (let d = 13; d <= 30; d += 1.3) {
+        for (let w = -1.4; w <= 1.41; w += 1.2) {
+          sd.position.set(mx - dx * d + (dz ? w : 0), -0.07, mz - dz * d + (dx ? w : 0));
+          sd.rotation.y = 0;
+          sd.updateMatrix();
+          streetCobbles.setMatrixAt(sc++, sd.matrix);
+        }
+      }
+    }
+    streetCobbles.count = sc;
+    streetCobbles.name = 'Grand-Place street cobble stubs';
+    streetCobbles.receiveShadow = true;
+    plaza.add(streetCobbles);
+
     // Bollards flank each street entrance — the real square is pedestrianised at its mouths.
     const bollards = new THREE.InstancedMesh(new THREE.CylinderGeometry(0.14, 0.18, 0.9, 10), materials.dark, mouths.length * 2);
     let bi = 0;
@@ -1364,8 +1429,12 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
   });
   addLandmark('royalPalace', (g) => {
     // North façade after Henri Maquet's 1904–09 Beaux-Arts reconstruction.
-    // Keep the measured hierarchy legible at city scale: 13-bay wings, rusticated
+    // Keep the measured hierarchy legible at city scale: long wings, rusticated
     // arcade level, piano nobile, upper register, central six-column portico and dome.
+    // The real frontage runs about 160 m along the Place des Palais — Leopold II's two
+    // symmetrical curved galleries nearly doubled the palace and left a façade roughly
+    // half as long again as Buckingham Palace's 108 m front — so the model spans the
+    // full ~160 m: wings at ±44 with 52 m frontage each and terminal pavilions at ±76.
     const stone = new THREE.MeshStandardMaterial({ color: 0xd9d1c4, roughness: 0.88 });
     const ashlar = new THREE.MeshStandardMaterial({ color: 0xc8beae, roughness: 0.9 });
     const moulding = new THREE.MeshStandardMaterial({ color: 0xe2dacc, roughness: 0.84 });
@@ -1375,10 +1444,11 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     const bronze = new THREE.MeshStandardMaterial({ color: 0x74664d, metalness: 0.48, roughness: 0.58 });
     const shadow = new THREE.MeshStandardMaterial({ color: 0x303638, roughness: 0.84 });
     const facadeZ = 8.15;
-    const wingW = 39, wingH = 20.5, wingD = 19;
-    const wingXs = [-42, 42];
+    const wingW = 52, wingH = 20.5, wingD = 19;
+    const wingXs = [-44, 44];
 
-    // The two long wings each have thirteen narrow bays over three registers.
+    // The two long wings each carry nine bays over three registers, spread across the
+    // real ~52 m wing frontage.
     for (const x of wingXs) {
       box(g, wingW, wingH, wingD, x, wingH / 2, -1.5, stone, 'Royal Palace thirteen-bay wing');
       box(g, wingW + 0.8, 1.2, wingD + 0.8, x, 0.6, -1.5, ashlar, 'Wing rusticated plinth');
@@ -1386,7 +1456,7 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       box(g, wingW + 1.0, 0.34, wingD + 0.9, x, 13.65, facadeZ, moulding, 'Wing second string course');
 
       for (let i = 0; i < 9; i++) {
-        const bx = x - 18 + i * 4.5;
+        const bx = x - 22 + i * 5.5;
         // Ground-floor arcades: broad rusticated piers and round-headed openings.
         const wingArch = new THREE.Shape();
         wingArch.moveTo(-1.16, 0); wingArch.lineTo(1.16, 0); wingArch.lineTo(1.16, 3.75);
@@ -1420,7 +1490,7 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
 
       // Subtle vertical divisions every third bay and a continuous attic balustrade.
       for (let i = 0; i <= 3; i++) {
-        const px = x - 19.2 + i * 12.8;
+        const px = x - 24 + i * 16;
         box(g, 0.28, 19.2, 0.42, px, 10.2, facadeZ + 0.12, ashlar, 'Wing bay pilaster');
       }
       box(g, wingW + 1.5, 0.75, wingD + 1.1, x, 20.75, -1.5, ashlar, 'Wing main cornice');
@@ -1436,14 +1506,14 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       mansardGeo.translate(0, 22.0, -10.0);
       mesh(g, mansardGeo, roof, x, 0, -1.5, 'Wing sloping slate mansard');
       for (let i = 0; i < 7; i++) {
-        const bx = x - 16.5 + i * 5.5;
+        const bx = x - 21 + i * 7;
         const oval = mesh(g, new THREE.TorusGeometry(0.72, 0.11, 8, 24), moulding, bx, 22.95, facadeZ + 0.45, 'Wing oval oeil-de-boeuf surround');
         oval.scale.set(1.35, 0.78, 1);
         const pane = mesh(g, new THREE.CircleGeometry(0.66, 24), glass, bx, 22.95, facadeZ + 0.42, 'Wing oval roof window');
         pane.scale.set(1.35, 0.78, 1);
       }
       for (let i = 0; i < 27; i++) {
-        const bx = x - 19 + i * 1.46;
+        const bx = x - 25 + i * 1.9;
         box(g, 0.28, 0.72, 0.28, bx, 22.0, facadeZ + 0.35, ashlar, 'Wing attic baluster');
       }
     }
@@ -1579,7 +1649,7 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
 
     // Terminal pavilions close the long façade; each has a pavilion roof and a stronger
     // corner risalit, while the iron-and-stone forecourt boundary stays visually light.
-    for (const x of [-65, 65]) {
+    for (const x of [-76, 76]) {
       box(g, 8, 23, 21, x, 11.5, -1, stone, 'Palace terminal pavilion');
       box(g, 9.5, 0.9, 22, x, 23.25, -1, moulding, 'Terminal pavilion cornice');
       mesh(g, new THREE.ConeGeometry(6.6, 2.0, 4), roof, x, 25.0, -1, 'Terminal pavilion pavilion roof');
@@ -1587,9 +1657,9 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
         box(g, 1.55, 4.4, 0.22, x + dx, 14.0, facadeZ + 0.1, glass, 'Terminal pavilion window');
       }
     }
-    for (let x = -58; x <= 58; x += 2.4) {
+    for (let x = -74; x <= 74; x += 2.4) {
       cylinder(g, 0.1, 0.14, 1.1, x, 0.55, 14, ashlar, 8);
-      if (x < 57.9) box(g, 2.4, 0.07, 0.07, x + 1.2, 0.9, 14, bronze, 'Forecourt railing');
+      if (x < 73.9) box(g, 2.4, 0.07, 0.07, x + 1.2, 0.9, 14, bronze, 'Forecourt railing');
     }
   });
     addLandmark('cathedral', (g) => {
@@ -1878,6 +1948,10 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     for (const m of nightGlowMats) {
       m.emissive.setHex(0xffb45a);
       m.emissiveIntensity = level * 0.85;
+    }
+    for (const m of facadeWashMats) {
+      m.emissive.setHex(0xffd9a0);
+      m.emissiveIntensity = level * 0.16;
     }
   }
   return {

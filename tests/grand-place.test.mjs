@@ -17,6 +17,9 @@ test('the square is the real entirely paved, completely open Grand-Place', () =>
   assert.ok(source.includes('for (let row = 0; row < 15; row++)'));
   assert.ok(source.includes('for (let col = 0; col < 16; col++)'));
   assert.ok(source.includes('Grand-Place entrance sett strips (passerelles)'));
+  assert.ok(source.includes('Grand-Place street cobble stubs'));
+  assert.ok(source.includes('new THREE.InstancedMesh(stripGeo, materials.pavingB, 7 * 15 * 3)'));
+  assert.ok(source.includes('streetCobbles.count = sc'));
   assert.ok(source.includes('Grand-Place blue-stone sett border'));
   assert.ok(source.includes('new THREE.BoxGeometry(0.9, 0.08, 0.9), materials.pavingEdge, 420)'));
   assert.ok(source.includes('border.count = bd'));
@@ -37,6 +40,13 @@ test('the Town Hall tower rises from the ground-level portal to the real 96 m', 
   assert.ok(square.includes('Spire gilded ring armature'));
   assert.ok(square.includes('Gilded Saint Michael figure'));
   assert.ok(square.includes('Saint Michael dragon'));
+});
+
+test('the Town Hall roof ridge is dressed with gilded cresting', () => {
+  assert.ok(square.includes("'Town Hall gilded roof cresting'"));
+  assert.ok(square.includes('const crestCount = Math.floor(width / 1.5)'));
+  assert.ok(square.includes('new THREE.ConeGeometry(0.16, 0.6, 6), materials.gold, crestCount)'));
+  assert.ok(square.includes('crests.count = crestCount'));
 });
 
 test('the Town Hall eave is surmounted by a crenellated openwork parapet', () => {
@@ -107,6 +117,11 @@ test('the Town Hall buttresses are pinnacled with spires and gilded finials', ()
   assert.ok(square.includes('pinnacleSpires.count = pinnacleFinials.count = pin'));
 });
 
+test('the Town Hall corner turret spires end in gilded finials', () => {
+  assert.ok(square.includes("'Facade corner turret gilded finial'"));
+  assert.ok(square.includes('new THREE.SphereGeometry(0.24, 8, 6), materials.gold, 0, height + 14.3, 0'));
+});
+
 test('the Town Hall facade carries the real statue niches and wing-terminating corner turrets', () => {
   assert.ok(square.includes('Town Hall facade statue niches'));
   assert.ok(square.includes('Town Hall gilded facade statues'));
@@ -170,6 +185,21 @@ test('guild houses carry the real names on the real sides, with Baroque detailin
   assert.ok(square.includes(' gilded statues'));
 });
 
+test('guild-house windows are divided by stone cross-mullions (croisées)', () => {
+  assert.ok(square.includes(" window stone cross-mullions'"));
+  assert.ok(square.includes('new THREE.BoxGeometry(0.09, 1.45, 0.06), stone, bays * floors)'));
+  assert.ok(square.includes('new THREE.BoxGeometry(1.05, 0.09, 0.06), stone, bays * floors)'));
+  assert.ok(square.includes('mullionV.setMatrixAt(index, dummy.matrix)'));
+  assert.ok(square.includes('root.add(windows, frames, mullionV, mullionH)'));
+});
+
+test('every guild house has an arched door leaf with a gilded fanlight in its centre bay', () => {
+  assert.ok(square.includes(" arched door leaf'"));
+  assert.ok(square.includes(" door fanlight'"));
+  assert.ok(square.includes('box(root, 0.95, 2.5, 0.12, 0, 1.55, 0.42, materials.dark, name +'));
+  assert.ok(square.includes('fanlight.rotation.x = Math.PI / 2'));
+});
+
 test('guild houses have the real arcaded ground floors and gilded gable emblems', () => {
   assert.ok(square.includes(' ground-floor arcade'));
   assert.ok(square.includes(' arcade lintel'));
@@ -200,6 +230,12 @@ test('guild-house rooflines stay varied and instanced', () => {
   assert.ok(source.includes('else {\n      shape.moveTo(-width / 2, 0)'));
   assert.ok(source.includes('new THREE.InstancedMesh'));
   assert.ok(source.includes('gilded window surrounds'));
+});
+
+test('café awnings carry a hanging canvas valance', () => {
+  assert.ok(square.includes(" awning valance'"));
+  assert.ok(square.includes('valances.count = bays'));
+  assert.ok(square.includes('arcDummy.position.set(wx, 2.85, 1.45)'));
 });
 
 test('terrace houses set out tables, chairs and parasols on the square', () => {
@@ -341,6 +377,13 @@ test('the four frontages still face the plaza', () => {
   assert.ok(source.includes('east.rotation.y = -Math.PI / 2'));
 });
 
+test('facades pick up a faint warm floodlight wash at night', () => {
+  assert.ok(source.includes('facadeWashMats'));
+  assert.ok(source.includes("for (const key of ['limestone', 'paleStone', 'warmStone', 'ochre', 'plaster'])"));
+  assert.ok(source.includes('m.emissiveIntensity = level * 0.16'));
+  assert.ok(source.includes('m.emissive.setHex(0xffd9a0)'));
+});
+
 test('windows and arcades glow warm at night (floodlit square)', () => {
   assert.ok(source.includes('nightGlowMats'));
   assert.ok(source.includes('glowGlass'));
@@ -410,6 +453,14 @@ test('the returned landmark zones also cover each drawn landmark footprint, so g
   assert.ok(source.includes('group, colliders, zones, landmarks,'), 'zones (baked + footprint bboxes) are returned for the city builder to skip buildings inside');
   const main = readFileSync(new URL('../js/main.js', import.meta.url), 'utf8');
   assert.ok(main.includes('landmarkZones: landmarks.zones'));
+});
+
+test('the Pages deploy waits for the github-pages artifact before deploying', () => {
+  const wf = readFileSync(new URL('../.github/workflows/deploy-brussels.yml', import.meta.url), 'utf8');
+  const wait = wf.indexOf('Wait for the github-pages artifact');
+  const deploy = wf.indexOf('actions/deploy-pages@v4');
+  assert.ok(wait > 0 && deploy > wait, 'the artifact-visibility wait must run before deploy-pages');
+  assert.ok(wf.includes('select(.name == "github-pages"'));
 });
 
 test('every workflow that runs tools/shot.py installs Pillow for its render assertions', () => {

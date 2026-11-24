@@ -167,6 +167,19 @@ jobs:
         uses: actions/upload-pages-artifact@v3
         with:
           path: _site
+      - name: Wait for the github-pages artifact to be visible
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          # deploy-pages@v4 intermittently fails with "No artifacts named github-pages"
+          # when the freshly uploaded artifact metadata is not yet visible — poll briefly.
+          for i in $(seq 1 24); do
+            if gh api "repos/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID/artifacts?per_page=100" --jq '[.artifacts[] | select(.name == "github-pages" and .expired == false)] | length' | grep -q '^1$'; then
+              echo "github-pages artifact visible"; exit 0
+            fi
+            sleep 5
+          done
+          echo "github-pages artifact still not visible after 2 minutes; continuing anyway"
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
