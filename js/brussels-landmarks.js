@@ -5522,6 +5522,15 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       const kerb = box(g, 0.4, 0.18, 92, midWx + perpWx * off, 0.09, midWz + perpWz * off, materials.pavingEdge, 'Radiating avenue west kerb');
       kerb.rotation.y = Math.PI / 2 - raW;
     }
+
+    // Stone edging kerbs flank the east radiating avenue from the main pond.
+    const raE = Math.PI * 0.28;
+    const midEx = Math.cos(raE) * 65, midEz = 150 + Math.sin(raE) * 65;
+    const perpEx = -Math.sin(raE), perpEz = Math.cos(raE);
+    for (const off of [-4.3, 4.3]) {
+      const kerb = box(g, 0.4, 0.18, 92, midEx + perpEx * off, 0.09, midEz + perpEz * off, materials.pavingEdge, 'Radiating avenue east kerb');
+      kerb.rotation.y = Math.PI / 2 - raE;
+    }
   });
     addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');

@@ -2073,3 +2073,7 @@ testCase('kerbs flank the west radiating avenue from the main pond', () => {
 testCase('a nosing strip edges the front stylobate step', () => {
   assert.match(palace, /'Stylobate step nosing'/);
 });
+
+testCase('kerbs flank the east radiating avenue from the main pond', () => {
+  assert.match(palace, /'Radiating avenue east kerb'/);
+});
