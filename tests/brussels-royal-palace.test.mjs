@@ -1273,3 +1273,7 @@ testCase('triangular pediments cap the center of each Palace of the Nation wing'
 testCase('steps climb from the garden walk up to the portico stylobate', () => {
   assert.match(palace, /'Portico stylobate step'/);
 });
+
+testCase('low walls close the east and west sides of the Academy garden', () => {
+  assert.match(palace, /'Academy garden side wall'/);
+});

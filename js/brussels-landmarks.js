@@ -4478,6 +4478,10 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       wp.moveTo(-4, 0); wp.lineTo(4, 0); wp.lineTo(0, 2.4); wp.closePath();
       mesh(g, new THREE.ShapeGeometry(wp), materials.warmStone, side * 70, 16, 406.85, 'Palace of the Nation wing pediment');
     }
+
+    // Low walls close the east and west sides of the Academy Palace garden.
+    box(g, 0.4, 0.8, 16, -197, 0.4, 64, materials.paleStone, 'Academy garden side wall');
+    box(g, 0.4, 0.8, 16, -139, 0.4, 64, materials.paleStone, 'Academy garden side wall');
   });
     addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');
