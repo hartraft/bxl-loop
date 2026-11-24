@@ -628,4 +628,26 @@ testCase('round 180: pietonnier lamp heads + Belisha globes registered for the n
   assert.match(surroundings, /beacons\.material = lampGlow/);
 });
 
+testCase('rounds 181-185: dome pilaster bases/capitals, pier plinths, socle refends around, eave gutter, pediment antefixes', () => {
+  assert.match(bourse, /'Bourse dome pilaster bases'/);
+  assert.match(bourse, /'Bourse dome pilaster capitals \(chapiteaux des pilastres\)'/);
+  assert.match(bourse, /caps\.count = n/);
+  assert.match(bourse, /'Bourse dome pier plinth \(plinthe du pilier\)'/);
+  assert.match(bourse, /'Bourse socle refend grooves side \+ rear faces'/);
+  assert.match(bourse, /side\.count = n/);
+  assert.match(bourse, /'Bourse front eave gutter \(gouttiere\)'/);
+  assert.match(bourse, /'Bourse pediment eaves palmette antefix'/);
+});
+
+testCase('rounds 186-190: clock minute ticks, second wings, frieze dentil band, double archivolt, column plinths', () => {
+  assert.match(bourse, /'Bourse clock minute ticks'/);
+  assert.match(bourse, /ticks\.count = 12/);
+  assert.match(bourse, /'winged figure second wing'/);
+  assert.match(bourse, /'Bourse frieze lower dentil band'/);
+  assert.match(bourse, /d\.count = 60/);
+  assert.match(bourse, /'Bourse central door outer archivolt \(double archivolte\)'/);
+  assert.match(bourse, /'Bourse peristyle column plinths \(plinthes\)'/);
+  assert.match(bourse, /plinths\.count = 8/);
+});
+
 // __MORE_BOURSE_TESTS__

@@ -6077,6 +6077,105 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     for (const sx of [-1, 1]) box(g, 1.2, 3.5, 9.6, sx * 51.2, 21.75, 32.5, materials.warmStone, 'Bourse entablature end block');
     // Round 170: the cella base plinth (plinthe) in darker stone.
     box(g, 100, 0.7, 4.3, 0, 5.35, 28, materials.warmStone, 'Bourse cella base plinth (plinthe)');
+    // Round 181: the paired Corinthian pilasters on the dome piers get bases and capitals.
+    {
+      const bases = new THREE.InstancedMesh(new THREE.BoxGeometry(0.8, 0.5, 0.8), materials.warmStone, 8);
+      const caps = new THREE.InstancedMesh(new THREE.BoxGeometry(0.8, 0.4, 0.8), materials.warmStone, 8);
+      const dummy = new THREE.Object3D();
+      let n = 0;
+      for (const sx of [-1, 1]) for (const sz of [-1, 1]) for (const off of [[3.6, 0], [0, 3.6]]) {
+        dummy.position.set(sx * 11 + (off[0] ? sx * 3.6 : 0), 6.25, sz * 11 + (off[1] ? sz * 3.6 : 0));
+        dummy.updateMatrix();
+        bases.setMatrixAt(n, dummy.matrix);
+        dummy.position.set(sx * 11 + (off[0] ? sx * 3.6 : 0), 27.4, sz * 11 + (off[1] ? sz * 3.6 : 0));
+        dummy.updateMatrix();
+        caps.setMatrixAt(n++, dummy.matrix);
+      }
+      bases.count = n; bases.name = 'Bourse dome pilaster bases';
+      g.add(bases);
+      caps.count = n; caps.name = 'Bourse dome pilaster capitals (chapiteaux des pilastres)';
+      caps.castShadow = true;
+      g.add(caps);
+    }
+    // Round 182: each dome pier stands on a plinth at the drum base.
+    for (const sx of [-1, 1]) for (const sz of [-1, 1]) {
+      box(g, 8.2, 1.2, 8.2, sx * 11, 5.6, sz * 11, materials.warmStone, 'Bourse dome pier plinth (plinthe du pilier)');
+    }
+    // Round 183: the socle's refend grooves continue around the side and rear faces.
+    {
+      const side = new THREE.InstancedMesh(new THREE.BoxGeometry(0.05, 4.7, 0.07), materials.dark, 2 * 20);
+      const dummy = new THREE.Object3D();
+      let n = 0;
+      for (const sx of [-1, 1]) for (let i = 0; i < 20; i++) {
+        dummy.position.set(sx * 53.03, 2.5, -40 + i * 4);
+        dummy.updateMatrix();
+        side.setMatrixAt(n++, dummy.matrix);
+      }
+      for (let i = 0; i < 20; i++) {
+        dummy.position.set(-52 + i * 5.4, 2.5, -41.03);
+        dummy.updateMatrix();
+        side.setMatrixAt(n++, dummy.matrix);
+      }
+      side.count = n;
+      side.name = 'Bourse socle refend grooves side + rear faces';
+      g.add(side);
+    }
+    // Round 184: an eave gutter runs along the front cornice, aligned with the downpipes.
+    box(g, 104, 0.22, 0.5, 0, 23.95, 37.4, materials.dark, 'Bourse front eave gutter (gouttiere)');
+    // Round 185: palmette antefixes at the two lower corners of the pediment.
+    for (const sx of [-1, 1]) mesh(g, new THREE.ConeGeometry(0.45, 1.1, 6), materials.warmStone, sx * 18.4, 24.6, 32.5, 'Bourse pediment eaves palmette antefix');
+    // Round 186: twelve minute ticks around the facade clock.
+    {
+      const ticks = new THREE.InstancedMesh(new THREE.BoxGeometry(0.07, 0.3, 0.05), materials.dark, 12);
+      const dummy = new THREE.Object3D();
+      for (let i = 0; i < 12; i++) {
+        const a = i * Math.PI / 6;
+        dummy.position.set(Math.sin(a) * 1.05, 15.9 + Math.cos(a) * 1.05, 30.83);
+        dummy.rotation.set(0, 0, -a);
+        dummy.updateMatrix();
+        ticks.setMatrixAt(i, dummy.matrix);
+      }
+      ticks.count = 12;
+      ticks.name = 'Bourse clock minute ticks';
+      g.add(ticks);
+    }
+    // Round 187: each Bien/Mal winged figure spreads a second wing.
+    for (const w of g.children.filter((c) => c.name && c.name.startsWith('Bourse Bien/Mal winged figure'))) {
+      const sx = w.position.x < 0 ? -1 : 1;
+      box(w, 0.8, 0.2, 0.2, -sx * 0.55, 1.5, 0.1, materials.bronze, 'winged figure second wing');
+    }
+    // Round 188: a dentil band under the frieze garlands.
+    {
+      const d = new THREE.InstancedMesh(new THREE.BoxGeometry(0.2, 0.24, 0.12), materials.warmStone, 60);
+      const dummy = new THREE.Object3D();
+      for (let i = 0; i < 60; i++) {
+        dummy.position.set(-49 + i * 1.67, 20.75, 37.05);
+        dummy.updateMatrix();
+        d.setMatrixAt(i, dummy.matrix);
+      }
+      d.count = 60;
+      d.name = 'Bourse frieze lower dentil band';
+      g.add(d);
+    }
+    // Round 189: the central door arch is a double archivolt (two concentric rings).
+    {
+      const ring = mesh(g, new THREE.CylinderGeometry(3.4, 3.4, 0.45, 18, 1, false, 0, Math.PI), materials.warmStone, 0, 14.2, 30.3, 'Bourse central door outer archivolt (double archivolte)');
+      ring.rotation.z = Math.PI / 2;
+    }
+    // Round 190: each peristyle column stands on a square plinth on the stylobate.
+    {
+      const plinths = new THREE.InstancedMesh(new THREE.BoxGeometry(2.4, 0.25, 2.4), materials.warmStone, 8);
+      const dummy = new THREE.Object3D();
+      for (let i = 0; i < 8; i++) {
+        dummy.position.set(peristyleX[i], 5.53, 36);
+        dummy.updateMatrix();
+        plinths.setMatrixAt(i, dummy.matrix);
+      }
+      plinths.count = 8;
+      plinths.name = 'Bourse peristyle column plinths (plinthes)';
+      plinths.castShadow = true;
+      g.add(plinths);
+    }
     // __BOURSE_ROUNDS__
   });
   addLandmark('bourseSurroundings', (g) => {
