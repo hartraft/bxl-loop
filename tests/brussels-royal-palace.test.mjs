@@ -36,7 +36,7 @@ testCase('Royal Palace centre has a sculpted pediment, domed drum and Belgian fl
 });
 
 testCase('the front garden holds the real three sunken parterres (central on the portico axis, two lateral)', () => {
-  assert.match(palace, /three sunken\s+parterres/);
+  assert.match(palace, /trois parterres/);
   assert.equal((palace.match(/'Sunken parterre retaining edge'/g) || []).length, 3);
   assert.equal((palace.match(/'Sunken parterre lawn'/g) || []).length, 3);
   assert.equal((palace.match(/'Parterre flower band'/g) || []).length, 3);
