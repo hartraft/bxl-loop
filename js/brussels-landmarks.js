@@ -5946,6 +5946,78 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       const cellaWin = g.children.filter((c) => c.name === 'Bourse cella arched window');
       for (const w of cellaWin) w.material = bourseWindowGlow;
     }
+    // Round 141: the caryatids' drapery is carved in vertical folds.
+    {
+      const caryatids = g.children.filter((c) => c.name && c.name.startsWith('Bourse caryatid'));
+      for (const c of caryatids) {
+        const folds = new THREE.InstancedMesh(new THREE.BoxGeometry(0.08, 3.2, 0.06), materials.dark, 5);
+        const dummy = new THREE.Object3D();
+        for (let k = 0; k < 5; k++) {
+          dummy.position.set(-0.32 + k * 0.16, 1.7, 0.21);
+          dummy.updateMatrix();
+          folds.setMatrixAt(k, dummy.matrix);
+        }
+        folds.count = 5;
+        folds.name = 'Bourse caryatid drapery folds (plis du drapé)';
+        c.add(folds);
+      }
+    }
+    // Round 142: a continuous entablature beam rests on the four caryatid capital blocks.
+    box(g, 20, 0.9, 1.0, 0, 24.1, -41.2, materials.warmStone, 'Bourse caryatid entablature beam (entablement porte par les cariatides)');
+    // Round 143: the L'Asie group includes an elephant; L'Afrique an attendant — the 1871 groups
+    // by Van Rasbourg (largely executed by Rodin) on the south facade top.
+    {
+      const groups = g.children.filter((c) => c.name && c.name.startsWith('Bourse rear pediment group'));
+      for (const grp of groups) {
+        const isAsia = grp.name.includes('Asie');
+        if (isAsia) {
+          mesh(grp, new THREE.SphereGeometry(0.7, 10, 8), materials.warmStone, -2.2, 0.7, 0.2, 'L\'Asie elephant body');
+          cylinder(grp, 0.18, 0.24, 0.9, -2.85, 0.4, 0.2, materials.warmStone, 8);
+          mesh(grp, new THREE.SphereGeometry(0.34, 8, 6), materials.warmStone, -3.2, 0.85, 0.2, 'L\'Asie elephant head');
+        } else {
+          box(grp, 0.9, 1.8, 0.4, -2.0, 0.9, 0.1, materials.warmStone, 'L\'Afrique attendant');
+          mesh(grp, new THREE.SphereGeometry(0.3, 8, 6), materials.warmStone, -2.0, 2.1, 0.1, 'L\'Afrique attendant head');
+        }
+      }
+    }
+    // Round 144: the rear pediment is curved (fronton courbe) — a cyma arc over its crown.
+    {
+      const arc = mesh(g, new THREE.TorusGeometry(17, 0.35, 8, 24, Math.PI * 0.55), materials.warmStone, 0, 26, -38.6, 'Bourse rear curved pediment cyma (fronton courbe)');
+      arc.rotation.z = Math.PI * 0.225;
+    }
+    // Round 145: the globe-carrying putti have wings.
+    for (const p of g.children.filter((c) => c.name && c.name.startsWith('Bourse putti carrying'))) {
+      const sx = p.position.x < 0 ? -1 : 1;
+      box(p, 0.7, 0.18, 0.18, sx * 0.45, 1.1, 0.12, materials.warmStone, 'putto wing');
+    }
+    // Round 146: the bronze globe carries meridian rings.
+    for (const rr of [0.7, 1.05]) {
+      const ring = mesh(g, new THREE.TorusGeometry(rr, 0.05, 6, 20), materials.dark, 0, 25.2, -41.2, 'Bourse globe meridian');
+      ring.rotation.y = Math.PI / 2;
+    }
+    // Round 147: quoin chains at the rear facade corners.
+    {
+      const q = new THREE.InstancedMesh(new THREE.BoxGeometry(0.55, 0.95, 0.5), materials.warmStone, 44);
+      const dummy = new THREE.Object3D();
+      let n = 0;
+      for (const sx of [-1, 1]) for (let r = 0; r < 22; r++) {
+        dummy.position.set(sx * 16.7, 5.6 + r * 0.95, -41.3);
+        dummy.updateMatrix();
+        q.setMatrixAt(n++, dummy.matrix);
+      }
+      q.count = n;
+      q.name = 'Bourse rear facade corner quoins';
+      q.castShadow = true;
+      g.add(q);
+    }
+    // Round 148: pilasters frame the three rear upper bays.
+    for (const bx of [-10, -5, 5, 10]) {
+      box(g, 0.8, 7, 0.5, bx, 22.5, -41.35, materials.paleStone, 'Bourse rear bay pilaster');
+    }
+    // Round 149: the peristyle is a deep recess — a darker cella wall band behind the columns.
+    box(g, 100, 15, 0.6, 0, 12.5, 29.2, materials.dark, 'Bourse peristyle recess shadow band');
+    // Round 150: the stylobate carries an edge moulding (bandeau) on its front edge.
+    box(g, 41, 0.22, 0.3, 0, 5.45, 38.2, materials.warmStone, 'Bourse stylobate edge moulding');
     // __BOURSE_ROUNDS__
   });
   addLandmark('bourseSurroundings', (g) => {

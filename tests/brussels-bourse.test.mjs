@@ -540,4 +540,24 @@ testCase('rounds 135-140: door steps + thresholds, escutcheons + knockers, mutul
   assert.match(bourse, /winMesh\.material = bourseWindowGlow/);
 });
 
+testCase('rounds 141-144: caryatid drapery folds, entablature beam, Asie elephant / Afrique attendant, rear curved cyma', () => {
+  assert.match(bourse, /'Bourse caryatid drapery folds \(plis du drapé\)'/);
+  assert.match(bourse, /folds.count = 5/);
+  assert.match(bourse, /'Bourse caryatid entablature beam/);
+  assert.match(bourse, /'L\\'Asie elephant body'/);
+  assert.match(bourse, /'L\\'Asie elephant head'/);
+  assert.match(bourse, /'L\\'Afrique attendant'/);
+  assert.match(bourse, /'Bourse rear curved pediment cyma \(fronton courbe\)'/);
+});
+
+testCase('rounds 145-150: putti wings, globe meridians, rear quoins, rear pilasters, recess band, stylobate moulding', () => {
+  assert.match(bourse, /'putto wing'/);
+  assert.match(bourse, /'Bourse globe meridian'/);
+  assert.match(bourse, /'Bourse rear facade corner quoins'/);
+  assert.match(bourse, /q\.count = n/);
+  assert.match(bourse, /'Bourse rear bay pilaster'/);
+  assert.match(bourse, /'Bourse peristyle recess shadow band'/);
+  assert.match(bourse, /'Bourse stylobate edge moulding'/);
+});
+
 // __MORE_BOURSE_TESTS__
