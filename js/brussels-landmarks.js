@@ -2658,6 +2658,10 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     // placed before the levelled ruins of the Coudenberg palace — the park's founding monument.
     box(g, 4, 3.4, 4, -30, 1.7, 300, materials.paleStone, 'Charles of Lorraine statue pedestal');
     mesh(g, new THREE.SphereGeometry(0.9, 12, 10), materials.paleStone, -30, 5.2, 300, 'Charles of Lorraine statue figure');
+    // The monument to Godecharle (by Gilles-Lambert Godecharle) stands in Brussels Park,
+    // among the park's sixty Greco-Roman and historical sculptures.
+    box(g, 3.6, 3.0, 3.6, 30, 1.5, 300, materials.paleStone, 'Godecharle monument pedestal');
+    mesh(g, new THREE.SphereGeometry(0.85, 12, 10), materials.paleStone, 30, 4.6, 300, 'Godecharle monument figure');
   });
     addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');

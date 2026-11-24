@@ -660,3 +660,9 @@ testCase('the 1769 statue of Prince Charles Alexander of Lorraine stands in the 
   assert.match(palace, /'Charles of Lorraine statue pedestal'/);
   assert.match(palace, /'Charles of Lorraine statue figure'/);
 });
+
+testCase('the Godecharle monument stands in Brussels Park', () => {
+  assert.match(palace, /monument to Godecharle/);
+  assert.match(palace, /'Godecharle monument pedestal'/);
+  assert.match(palace, /'Godecharle monument figure'/);
+});
