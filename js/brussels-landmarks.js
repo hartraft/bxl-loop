@@ -1435,11 +1435,13 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     // symmetrical curved galleries nearly doubled the palace and left a façade roughly
     // half as long again as Buckingham Palace's 108 m front — so the model spans the
     // full ~160 m: wings at ±44 with 52 m frontage each and terminal pavilions at ±76.
-    const stone = new THREE.MeshStandardMaterial({ color: 0xd9d1c4, roughness: 0.88 });
-    const ashlar = new THREE.MeshStandardMaterial({ color: 0xc8beae, roughness: 0.9 });
-    const moulding = new THREE.MeshStandardMaterial({ color: 0xe2dacc, roughness: 0.84 });
-    const roof = new THREE.MeshStandardMaterial({ color: 0x596260, roughness: 0.92 });
-    const roofEdge = new THREE.MeshStandardMaterial({ color: 0x30393a, roughness: 0.9 });
+    // The real north façade is built of white Euville limestone — "pierre blanche
+    // d'Euville" per the heritage inventory — over a dark Belgian slate roof.
+    const stone = new THREE.MeshStandardMaterial({ color: 0xece4d3, roughness: 0.88 });
+    const ashlar = new THREE.MeshStandardMaterial({ color: 0xd6cbb8, roughness: 0.9 });
+    const moulding = new THREE.MeshStandardMaterial({ color: 0xf2ead9, roughness: 0.84 });
+    const roof = new THREE.MeshStandardMaterial({ color: 0x4b555e, roughness: 0.92 });
+    const roofEdge = new THREE.MeshStandardMaterial({ color: 0x2c3338, roughness: 0.9 });
     const glass = new THREE.MeshStandardMaterial({ color: 0x273b43, roughness: 0.34, metalness: 0.12 });
     const bronze = new THREE.MeshStandardMaterial({ color: 0x74664d, metalness: 0.48, roughness: 0.58 });
     const shadow = new THREE.MeshStandardMaterial({ color: 0x303638, roughness: 0.84 });
