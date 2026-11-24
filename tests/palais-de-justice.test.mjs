@@ -31,8 +31,8 @@ assert.ok(start >= 0 && end > start, 'the Palais de Justice builder must exist')
 const palace = source.slice(start, end);
 
 test('the landmark is anchored and rotated so the principal facade faces Place Poelaert to the north', () => {
-  assert.ok(source.includes("if (id === 'palaisDeJustice') root.rotation.y = Math.PI;"));
-  assert.ok(source.includes('monumental entrance faces Place Poelaert to the north'));
+  assert.ok(source.includes("if (id === 'palaisDeJustice') root.rotation.y = PALAIS_DE_JUSTICE_ROTATION;"));
+  assert.ok(source.includes('monumental entrance faces Place Poelaert'));
   assert.ok(palace.includes('Palais de Justice (Joseph Poelaert, 1866'));
   assert.ok(palace.includes('BRUSSELS_LANDMARK_ANCHORS.palaisDeJustice.lat'));
 });
@@ -184,7 +184,8 @@ test('the north and south ranges carry colossal paired pilasters, lintels and al
 
 test('twin escaliers d\'honneur flank the porch up to the corner pavilions', () => {
   assert.ok(palace.includes("\"Escalier d'honneur flight\""));
-  assert.ok(palace.includes('for (let step = 0; step < 10; step++)'));
+  assert.ok(palace.includes('for (let step = 0; step < 16; step++)'));
+  assert.ok(palace.includes('100 - step * 1.6'), 'flight reaches down to the forecourt landing, not floating');
   assert.ok(palace.includes("'Honour stair landing at corner pavilion'"));
 });
 
