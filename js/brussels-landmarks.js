@@ -4521,6 +4521,16 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       trRing.setMatrixAt(tri4++, trd3.matrix);
     }
     trRing.count = tri4; trRing.name = 'Place du Trone statue sett ring'; g.add(trRing);
+
+    // A dentil course runs under the projecting BELvue cornice.
+    const bvDen = new THREE.InstancedMesh(new THREE.BoxGeometry(0.24, 0.3, 0.3), materials.warmStone, 20);
+    const bdd2 = new THREE.Object3D();
+    let bdi2 = 0;
+    for (let di2 = 0; di2 < 20; di2++) {
+      bdd2.position.set(151 + di2 * 1.8, 22.2, 21.85); bdd2.rotation.y = 0; bdd2.updateMatrix();
+      bvDen.setMatrixAt(bdi2++, bdd2.matrix);
+    }
+    bvDen.count = bdi2; bvDen.name = 'BELvue cornice dentil'; g.add(bvDen);
   });
     addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');

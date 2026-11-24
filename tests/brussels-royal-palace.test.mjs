@@ -1299,3 +1299,8 @@ testCase('a circular sett ring surrounds the equestrian statue on the Place du T
   assert.match(palace, /'Place du Trone statue sett ring'/);
   assert.match(palace, /trRing\.count = tri4/);
 });
+
+testCase('a dentil course runs under the BELvue cornice', () => {
+  assert.match(palace, /'BELvue cornice dentil'/);
+  assert.match(palace, /bvDen\.count = bdi2/);
+});
