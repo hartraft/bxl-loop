@@ -50,6 +50,14 @@ test('the terrace rests on the visible retaining massif toward Wynants and Minim
   assert.ok(palace.includes("'West massif lower tier (rue des Minimes)'"));
 });
 
+test('the Monument national a l\'Infanterie Belge stands on the esplanade', () => {
+  assert.ok(palace.includes("'Infantry monument bluestone obelisk'"));
+  assert.ok(palace.includes("'Gilded royal crown on obelisk'"));
+  assert.ok(palace.includes("'Obelisk summit soldier'"));
+  assert.ok(palace.includes("'Winged Victory body (Infantry monument)'"));
+  assert.ok(palace.includes("'Infantry monument raised platform'"));
+});
+
 test('Place Poelaert is a vast paved esplanade with sett borders', () => {
   assert.ok(palace.includes("'Place Poelaert esplanade paving'"));
   assert.ok(palace.includes('box(g, 150, 0.3, 70, 0, 0.15, 126, materials.pavingA'));

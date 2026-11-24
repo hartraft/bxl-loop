@@ -1952,6 +1952,25 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     box(g, 152, 0.34, 3, 0, 0.16, 89.8, materials.pavingEdge, 'Place Poelaert south sett border');
     box(g, 152, 0.34, 3, 0, 0.16, 161.2, materials.pavingEdge, 'Place Poelaert north sett border');
     for (const x of [-75, 75]) box(g, 3, 0.34, 72, x, 0.16, 126, materials.pavingEdge, 'Place Poelaert side sett border');
+    // Monument national a l'Infanterie Belge (A. De Mol / E. Vereycken, 1935) on the esplanade:
+    // a great bluestone obelisk on a raised platform, crowned by a gilded royal crown ringed by
+    // four soldiers, with a bronze winged Victory at its foot.
+    box(g, 14, 2.5, 14, -35, 1.55, 135, bluestone, 'Infantry monument raised platform');
+    const obelisk = mesh(g, new THREE.CylinderGeometry(3.2, 5.4, 26, 4), bluestone, -35, 15.8, 135, 'Infantry monument bluestone obelisk');
+    obelisk.rotation.y = Math.PI / 4;
+    mesh(g, new THREE.TorusGeometry(2.6, 0.5, 10, 20), gilded, -35, 29.4, 135, 'Gilded royal crown on obelisk');
+    for (const [sx, sz] of [[-2.6, -2.6], [2.6, -2.6], [-2.6, 2.6], [2.6, 2.6]]) {
+      cylinder(g, 0.35, 0.45, 3.2, -35 + sx, 28.2, 135 + sz, bronze, 8);
+      mesh(g, new THREE.SphereGeometry(0.3, 8, 6), bronze, -35 + sx, 30.1, 135 + sz, 'Obelisk summit soldier');
+    }
+    const victory = new THREE.Group();
+    victory.position.set(-35, 3.4, 142.5);
+    mesh(victory, new THREE.SphereGeometry(0.8, 10, 8), bronze, 0, 1.2, 0, 'Winged Victory body (Infantry monument)');
+    for (const w of [-1, 1]) {
+      const wing = mesh(victory, new THREE.BoxGeometry(0.12, 1.8, 2.6), bronze, w * 1.0, 1.6, -0.3, 'Winged Victory wing');
+      wing.rotation.z = w * 0.55;
+    }
+    g.add(victory);
     // The real terrace rests on a massive retaining massif, plainly visible from
     // rue de Wynants (south) and rue des Minimes (west) where the plateau drops to the Marolles.
     box(g, 190, 3.5, 4, 0, -2.6, -90.5, weathered, 'South massif retaining tier (rue de Wynants)');
