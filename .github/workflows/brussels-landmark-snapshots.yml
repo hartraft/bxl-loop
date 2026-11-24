@@ -6,6 +6,7 @@ on:
       - "snapshot-grand-place.html"
       - "snapshot-royal-palace.html"
       - "js/brussels-landmarks.js"
+      - "tests/grand-place.test.mjs"
       - ".github/workflows/brussels-landmark-snapshots.yml"
   workflow_dispatch:
 permissions:
@@ -30,10 +31,10 @@ jobs:
           for file in metadata.json heightmap.f32; do
             curl --fail --location --retry 4 "$base/data/brussels-terrain/$file" -o "data/brussels-terrain/$file"
           done
-      - name: Check landmark source syntax and Royal Palace façade geometry
+      - name: Check landmark source syntax, Grand-Place and Royal Palace geometry
         run: |
           node --check js/brussels-landmarks.js
-          node --test tests/brussels-royal-palace.test.mjs tests/brussels-landmark-colliders.test.mjs
+          node --test tests/grand-place.test.mjs tests/brussels-royal-palace.test.mjs tests/brussels-landmark-colliders.test.mjs
       - name: Install Playwright
         run: |
           python -m pip install playwright

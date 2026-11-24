@@ -34,9 +34,9 @@ const bounds=new THREE.Box3().setFromObject(target);
 const size=bounds.getSize(new THREE.Vector3());
 const centre=bounds.getCenter(new THREE.Vector3());
 const camera=new THREE.PerspectiveCamera(38,innerWidth/innerHeight,0.1,1500);
-// Grand-Place view from the open square, facing the Town Hall's +Z façade.
-camera.position.set(centre.x+12,centre.y+Math.max(28,size.y*.48),centre.z+Math.max(112,size.z*1.8));
-camera.lookAt(centre.x+10,centre.y+size.y*.38,centre.z);
+// Grand-Place view from the open square, facing the Town Hall and framing its full 96 m tower.
+camera.position.set(centre.x+16,centre.y+Math.max(52,size.y*.55),centre.z+Math.max(150,size.z*2.4));
+camera.lookAt(centre.x+8,centre.y+size.y*.40,centre.z);
 renderer.setAnimationLoop(()=>renderer.render(scene,camera));
 window.__snapshotReady=true;
 addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight)});
