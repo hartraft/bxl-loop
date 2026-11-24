@@ -781,3 +781,9 @@ testCase('the terminal pavilion cornices carry modillions', () => {
   assert.match(palace, /'Terminal pavilion modillion'/);
   assert.match(palace, /for \(let mi2 = 0; mi2 < 7; mi2\+\+\)/);
 });
+
+testCase('the Academy Palace is roofed with a slate mansard and dormers', () => {
+  assert.match(palace, /slate mansard carrying dormers/);
+  assert.match(palace, /'Academy Palace mansard roof'/);
+  assert.match(palace, /'Academy Palace roof dormer'/);
+});

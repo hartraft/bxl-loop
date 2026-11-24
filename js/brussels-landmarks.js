@@ -2792,6 +2792,12 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     // The vista axis from the palace portico to the park's north gate is a lighter paved
     // carpet laid over the setts — the palace-Parliament sightline on the square.
     box(g, 10, 0.1, 46, 0, 0.02, 36, materials.pavingA, 'Place des Palais central axis vista');
+    // The Academy Palace is roofed with a slate mansard carrying dormers, behind its attic.
+    mesh(g, new THREE.ConeGeometry(34, 7, 4), materials.roof, -168, 25.5, 36, 'Academy Palace mansard roof');
+    for (const dx of [-20, 0, 20]) {
+      box(g, 1.4, 1.8, 0.3, -168 + dx, 23.6, 24.5, materials.paleStone, 'Academy Palace roof dormer');
+      mesh(g, new THREE.ConeGeometry(1.0, 0.9, 4), materials.roof, -168 + dx, 24.9, 24.5, 'Academy dormer roof');
+    }
   });
     addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');
