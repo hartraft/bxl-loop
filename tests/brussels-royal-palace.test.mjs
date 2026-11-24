@@ -1562,3 +1562,7 @@ testCase('flanged bases anchor the perron lamp standards', () => {
 testCase('stone sills sit under each BELvue piano nobile window', () => {
   assert.match(palace, /'BELvue piano nobile sill'/);
 });
+
+testCase('newel posts finish both ends of the central balcony rail', () => {
+  assert.match(palace, /'Central balcony end newel'/);
+});

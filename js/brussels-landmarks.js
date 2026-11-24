@@ -3869,6 +3869,11 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     for (const side of [-1, 1]) {
       cylinder(g, 0.2, 0.26, 0.2, side * 9.6, 1.1, centralFace + 1.6, bronze, 8).name = 'Perron lamp base flange';
     }
+
+    // Newel posts finish both ends of the central balcony rail.
+    for (const side of [-1, 1]) {
+      box(g, 0.12, 0.7, 0.12, side * 1.55, 11.75, centralFace + 1.0, bronze, 'Central balcony end newel');
+    }
   });
   addLandmark('palaceSurroundings', (g) => {
     // Real-world sources: en/fr Wikipedia (Royal Palace of Brussels, Brussels Park, Place des Palais,
