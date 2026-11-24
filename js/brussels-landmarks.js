@@ -885,14 +885,24 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
         box(tower, 0.24, 1.05, 0.12, side * dx, 10.75, towerW / 2 + 0.2, materials.gold, 'Portal prophet gilded figure');
       }
     }
-    // Narrow lancet recesses on the front and side faces of the shaft.
+    // Narrow lancet recesses on the front and side faces of the shaft, each under a trefoil
+    // tympanum — the real base of the tower has mullioned windows beneath trefoil tympana.
+    const trefoils = new THREE.InstancedMesh(new THREE.CylinderGeometry(0.32, 0.32, 0.14, 12).rotateX(Math.PI / 2), trim, 12);
+    const trd = new THREE.Object3D();
+    let tr = 0;
     for (const y of [6.5, 15, 23.5, 32, 40.5, 48.5]) {
       for (const side of [-1, 1]) {
         box(tower, 1.15, 4.4, 0.2, side * 2.3, y, towerW / 2 + 0.08, glass, 'Tower lancet');
         box(tower, 0.16, 4.75, 0.26, side * 2.3, y, towerW / 2, trim, 'Tower lancet moulding');
         box(tower, 0.2, 4.4, 1.15, towerW / 2 + 0.08, y, side * 2.3, glass, 'Tower side lancet');
+        trd.position.set(side * 2.3, y + 2.62, towerW / 2 + 0.1);
+        trd.updateMatrix();
+        trefoils.setMatrixAt(tr++, trd.matrix);
       }
     }
+    trefoils.count = tr;
+    trefoils.name = 'Tower lancet trefoil tympana';
+    tower.add(trefoils);
     // Gallery above the roofline, with projecting pinnacles at its corners and mid-sides.
     cylinder(tower, 5.6, 6.2, 1.8, 0, 56.9, 0, trim, 8).name = 'Tower gallery above the roofline';
     for (let i = 0; i < 8; i++) {

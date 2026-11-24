@@ -121,6 +121,12 @@ test('the Town Hall portal has stone entrance steps onto the square', () => {
   assert.ok(square.includes("box(tower, 5.4 - i * 0.8, 0.22, 0.7, 0, 0.11 + i * 0.22, towerW / 2 + 0.55 + i * 0.55, darkStone, 'Portal entrance step')"));
 });
 
+test('the Town Hall base lancets sit under trefoil tympana', () => {
+  assert.ok(square.includes("'Tower lancet trefoil tympana'"));
+  assert.ok(square.includes('trefoils.count = tr'));
+  assert.ok(square.includes('new THREE.CylinderGeometry(0.32, 0.32, 0.14, 12).rotateX(Math.PI / 2), trim, 12)'));
+});
+
 test('the Town Hall tower shaft is chained with corner quoins', () => {
   assert.ok(square.includes("'Town Hall tower corner quoins'"));
   assert.ok(square.includes('towerQuoins.count = tq'));
