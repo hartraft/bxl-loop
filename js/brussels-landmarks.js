@@ -4595,6 +4595,12 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
         box(g, 0.6, 1.8, 0.4, cx, qy, 402.9, materials.warmStone, 'Palace of the Nation corner quoin');
       }
     }
+
+    // A bronze name plaque hangs on each statue pedestal in the Academy garden.
+    for (let i = 0; i < agStat.length; i++) {
+      const gx = -196 + i * 10;
+      box(g, 0.9, 0.5, 0.06, gx, 0.9, 63.55, materials.bronze, 'Academy statue plaque');
+    }
   });
     addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');

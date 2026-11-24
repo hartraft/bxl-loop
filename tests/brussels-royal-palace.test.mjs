@@ -1350,3 +1350,7 @@ testCase('corner quoins strengthen the Palace of the Nation facade corners', () 
 testCase('the great ground-floor door stands behind the portico colonnade', () => {
   assert.match(palace, /'Portico main door'/);
 });
+
+testCase('each Academy garden statue pedestal carries a bronze name plaque', () => {
+  assert.match(palace, /'Academy statue plaque'/);
+});
