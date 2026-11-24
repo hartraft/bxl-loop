@@ -585,4 +585,22 @@ testCase('rounds 155-160: boulevard spine, side-street stubs, planter soil + shr
   assert.match(surroundings, /ramps\.count = 4/);
 });
 
+testCase('rounds 161-166: peristyle soffit, aedicule pediment, imposts, pavilion windows/dentils/doors', () => {
+  assert.match(bourse, /'Bourse peristyle soffit \(plafond\)'/);
+  assert.match(bourse, /'Bourse aedicule pediment over the central door'/);
+  assert.match(bourse, /'Bourse central arch impost block'/);
+  assert.match(bourse, /'Bourse avant-corps pavilion windows'/);
+  assert.match(bourse, /wins\.count = n/);
+  assert.match(bourse, /'Bourse pavilion cornice dentils'/);
+  assert.match(bourse, /'Bourse pavilion door ' \+ \(sx < 0 \? 'west' : 'east'\)/);
+  assert.match(bourse, /'Bourse pavilion door lintel'/);
+});
+
+testCase('rounds 167-170: allegory pedestals, tympanum radiant halo, entablature end blocks, cella plinth', () => {
+  assert.match(bourse, /'Bourse allegory pedestal'/);
+  assert.match(bourse, /'Bourse tympanum radiant halo disc'/);
+  assert.match(bourse, /'Bourse entablature end block'/);
+  assert.match(bourse, /'Bourse cella base plinth \(plinthe\)'/);
+});
+
 // __MORE_BOURSE_TESTS__

@@ -6018,6 +6018,65 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     box(g, 100, 15, 0.6, 0, 12.5, 29.2, materials.dark, 'Bourse peristyle recess shadow band');
     // Round 150: the stylobate carries an edge moulding (bandeau) on its front edge.
     box(g, 41, 0.22, 0.3, 0, 5.45, 38.2, materials.warmStone, 'Bourse stylobate edge moulding');
+    // Round 161: the peristyle has a dark soffit (plafond de la colonnade) under the entablature.
+    box(g, 100, 0.25, 9, 0, 20.1, 32.5, materials.dark, 'Bourse peristyle soffit (plafond)');
+    // Round 162: a small triangular pediment crowns the central door's aedicule.
+    pedimentPrism(g, 8.6, 1.6, 2.2, 0, 14.25, 30.9, materials.paleStone, 'Bourse aedicule pediment over the central door');
+    // Round 163: impost blocks at the springing of the central arch.
+    for (const sx of [-1, 1]) box(g, 0.9, 0.7, 0.7, sx * 4.3, 15.9, 30.35, materials.warmStone, 'Bourse central arch impost block');
+    // Round 164: windows on the two front avant-corps pavilions, ground floor and etage.
+    {
+      const wins = new THREE.InstancedMesh(new THREE.BoxGeometry(2.2, 4.4, 0.35), materials.glass, 8);
+      const dummy = new THREE.Object3D();
+      let n = 0;
+      for (const sx of [-1, 1]) for (const wx of [-2.5, 2.5]) for (const wy of [10.5, 18]) {
+        dummy.position.set(sx * 44 + wx, wy, 41.2);
+        dummy.updateMatrix();
+        wins.setMatrixAt(n++, dummy.matrix);
+      }
+      wins.count = n;
+      wins.name = 'Bourse avant-corps pavilion windows';
+      wins.castShadow = true;
+      g.add(wins);
+    }
+    // Round 165: dentils under the pavilion cornices.
+    {
+      const dent = new THREE.InstancedMesh(new THREE.BoxGeometry(0.22, 0.3, 0.25), materials.warmStone, 2 * 16);
+      const dummy = new THREE.Object3D();
+      let n = 0;
+      for (const sx of [-1, 1]) for (let i = 0; i < 16; i++) {
+        dummy.position.set(sx * 44 - 7.5 + i, 25.5, 41.1);
+        dummy.updateMatrix();
+        dent.setMatrixAt(n++, dummy.matrix);
+      }
+      dent.count = n;
+      dent.name = 'Bourse pavilion cornice dentils';
+      dent.castShadow = true;
+      g.add(dent);
+    }
+    // Round 166: each pavilion has a ground-floor door in a stone surround.
+    for (const sx of [-1, 1]) {
+      box(g, 3, 5.4, 0.5, sx * 44, 7.7, 41.2, materials.dark, 'Bourse pavilion door ' + (sx < 0 ? 'west' : 'east'));
+      box(g, 3.8, 0.35, 0.7, sx * 44, 10.6, 41.25, materials.warmStone, 'Bourse pavilion door lintel');
+    }
+    // Round 167: the four De Groot allegories stand on pedestals.
+    {
+      const figs = g.children.filter((c) => c.name && c.name.startsWith('Bourse allegory'));
+      for (const fig of figs) {
+        const sx = fig.position.x, sz = fig.position.z;
+        box(g, 1.6, 0.5, 1.0, sx, fig.position.y - 0.25, sz, materials.blueStone, 'Bourse allegory pedestal');
+      }
+    }
+    // Round 168: a radiant gilded disc (halo) behind la Belgique in the tympanum — the emblem
+    // sits in a radiant disc like the guild-house emblems of the Grand-Place.
+    {
+      const bg = g.children.find((c) => c.name === 'Bourse tympanum la Belgique (Joseph Jacquet)');
+      if (bg) mesh(bg, new THREE.CylinderGeometry(1.7, 1.7, 0.12, 20), materials.gold, 0, 1.6, -0.3, 'Bourse tympanum radiant halo disc');
+    }
+    // Round 169: end blocks (blocs d'extremite) close the entablature at the facade corners.
+    for (const sx of [-1, 1]) box(g, 1.2, 3.5, 9.6, sx * 51.2, 21.75, 32.5, materials.warmStone, 'Bourse entablature end block');
+    // Round 170: the cella base plinth (plinthe) in darker stone.
+    box(g, 100, 0.7, 4.3, 0, 5.35, 28, materials.warmStone, 'Bourse cella base plinth (plinthe)');
     // __BOURSE_ROUNDS__
   });
   addLandmark('bourseSurroundings', (g) => {
