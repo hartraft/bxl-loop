@@ -23,6 +23,11 @@ const palaisDeJustice = [
   { name: 'east range', x: -71.5, z: 0, hx: 8.5, hz: 58, maxY: 33 },
   { name: 'central hall', x: 0, z: 0, hx: 26, hz: 24, maxY: 48 },
   { name: 'dome drum', x: 0, z: 0, hx: 20, hz: 20, maxY: 122 },
+  // The four corner pavilions with their hipped roofs (top ~47.3 m).
+  { name: 'corner pavilion', x: -66, z: 64, hx: 14, hz: 15, maxY: 48 },
+  { name: 'corner pavilion', x: 66, z: 64, hx: 14, hz: 15, maxY: 48 },
+  { name: 'corner pavilion', x: -66, z: -61.5, hx: 14, hz: 13.5, maxY: 48 },
+  { name: 'corner pavilion', x: 66, z: -61.5, hx: 14, hz: 13.5, maxY: 48 },
   // Podium retaining edges. The north edge is split around the principal stair corridor.
   { name: 'west podium edge', x: 93, z: 0, hx: 0.9, hz: 88.5, maxY: 1.2 },
   { name: 'east podium edge', x: -93, z: 0, hx: 0.9, hz: 88.5, maxY: 1.2 },

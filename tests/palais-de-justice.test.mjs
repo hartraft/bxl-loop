@@ -1,6 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
+import { BRUSSELS_LANDMARK_COLLIDER_LAYOUT, createBrusselsLandmarkColliders } from '../js/brussels-colliders.js';
+import { BRUSSELS_LANDMARK_ANCHORS, brusselsToWorld } from '../js/brussels-frame.js';
 
 // Real-world references for the Palais de Justice de Bruxelles (Joseph Poelaert, 1866-1883):
 // - UNESCO tentative list 5357 (whc.unesco.org/en/tentativelists/5357/): hors tout 186 x 177 x 116 m,
@@ -48,6 +50,29 @@ test('the terrace rests on the visible retaining massif toward Wynants and Minim
   assert.ok(palace.includes("'South massif lower tier (rue de Wynants)'"));
   assert.ok(palace.includes("'West massif retaining tier (rue des Minimes)'"));
   assert.ok(palace.includes("'West massif lower tier (rue des Minimes)'"));
+});
+
+test('colliders match the final 160 x 150 m plan and cover the 116 m dome', () => {
+  const layout = BRUSSELS_LANDMARK_COLLIDER_LAYOUT.palaisDeJustice;
+  const rear = layout.find(c => c.name === 'rear range');
+  assert.deepEqual([rear.x, rear.z, rear.hx, rear.hz], [0, -66.5, 80, 8.5]);
+  const west = layout.find(c => c.name === 'west range');
+  assert.deepEqual([west.x, west.z, west.hx, west.hz], [71.5, 0, 8.5, 58]);
+  const drum = layout.find(c => c.name === 'dome drum');
+  assert.ok(drum.maxY >= 116, 'dome collider covers the 116 m hors tout silhouette');
+  assert.equal(layout.filter(c => c.name === 'corner pavilion').length, 4);
+  // The principal stair corridor onto Place Poelaert stays open.
+  const anchor = brusselsToWorld(BRUSSELS_LANDMARK_ANCHORS.palaisDeJustice.lat, BRUSSELS_LANDMARK_ANCHORS.palaisDeJustice.lon);
+  const colliders = createBrusselsLandmarkColliders('palaisDeJustice', anchor, Math.PI);
+  const approach = { x: 0, z: 85, hx: 38, hz: 7 };
+  const cos = Math.cos(Math.PI), sin = Math.sin(Math.PI);
+  for (const c of colliders) {
+    const dx = c.obb.cx - anchor.x, dz = c.obb.cz - anchor.z;
+    const lx = dx * cos - dz * sin, lz = dx * sin + dz * cos;
+    const overlap = Math.abs(lx - approach.x) < c.obb.hx + approach.hx - 1e-6 &&
+      Math.abs(lz - approach.z) < c.obb.hz + approach.hz - 1e-6;
+    assert.equal(overlap, false, 'stair corridor must stay open');
+  }
 });
 
 test('the palace facades take the warm floodlight wash and the windows glow at night', () => {
