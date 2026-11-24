@@ -1482,3 +1482,7 @@ testCase('each Hermes bust around the octagonal basin stands on a pedestal', () 
 testCase('the central balcony rail sits on a projecting stone slab', () => {
   assert.match(palace, /'Central balcony slab'/);
 });
+
+testCase('attic bases ring each Palace of the Nation peristyle column', () => {
+  assert.match(palace, /'Palace of the Nation column base'/);
+});
