@@ -3628,6 +3628,22 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       }
     }
     gwBal.count = gwi; gwBal.name = 'Palace grounds wall balustrade'; g.add(gwBal);
+
+    // The portico column shafts are drum-stacked: horizontal joint bands mark each drum.
+    const jointGeo = new THREE.CylinderGeometry(1.34, 1.34, 0.09, 32);
+    const joints = new THREE.InstancedMesh(jointGeo, shadow, 36);
+    const jd = new THREE.Object3D();
+    let ji = 0;
+    for (let i = 0; i < 6; i++) {
+      const x = -12.5 + i * 5;
+      for (const z of [centralFace + 1.55, centralFace + 4.1]) {
+        for (const jy of [11.5, 15.2, 18.9]) {
+          jd.position.set(x, jy, z); jd.rotation.y = 0; jd.updateMatrix();
+          joints.setMatrixAt(ji++, jd.matrix);
+        }
+      }
+    }
+    joints.count = ji; joints.name = 'Portico column drum joints'; g.add(joints);
   });
   addLandmark('palaceSurroundings', (g) => {
     // Real-world sources: en/fr Wikipedia (Royal Palace of Brussels, Brussels Park, Place des Palais,

@@ -1056,3 +1056,9 @@ testCase('the palace grounds are enclosed by balustraded walls (south, east, wes
   assert.match(palace, /'Palace grounds wall balustrade'/);
   assert.match(palace, /gwBal\.count = gwi/);
 });
+
+testCase('portico column shafts show drum joint bands', () => {
+  assert.match(palace, /horizontal joint bands/);
+  assert.match(palace, /'Portico column drum joints'/);
+  assert.match(palace, /joints\.count = ji/);
+});
