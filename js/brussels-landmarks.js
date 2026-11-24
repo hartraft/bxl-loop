@@ -1783,6 +1783,28 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       box(g, p.w - 4, 0.06, 0.7, p.x, 0.05, p.z, flowerMat, 'Parterre flower band');
     }
 
+    // "Les Fleurs du Palais Royal": eleven great pots — one for each of the country's
+    // provinces plus the capital Brussels — stand along the central garden walk.
+    const potMat = new THREE.MeshStandardMaterial({ color: 0x9a5b3c, roughness: 0.9 });
+    const pots = new THREE.InstancedMesh(new THREE.CylinderGeometry(0.55, 0.42, 0.9, 12), potMat, 11);
+    const plants = new THREE.InstancedMesh(new THREE.SphereGeometry(0.62, 10, 8), flowerMat, 11);
+    const pd = new THREE.Object3D();
+    let pi = 0;
+    for (let k = 0; k < 11; k++) {
+      const px = -30 + k * 6;
+      pd.position.set(px, 0.45, 11.0);
+      pd.rotation.y = 0;
+      pd.updateMatrix();
+      pots.setMatrixAt(pi, pd.matrix);
+      pd.position.set(px, 1.25, 11.0);
+      pd.updateMatrix();
+      plants.setMatrixAt(pi++, pd.matrix);
+    }
+    pots.count = plants.count = pi;
+    pots.name = 'Les Fleurs du Palais Royal pots';
+    plants.name = 'Les Fleurs du Palais Royal plantings';
+    g.add(pots, plants);
+
     // The 1904–09 garden is enclosed by GILDED railings, gates and balustrades on a
     // stone plinth ("grilles, portails et balustrades dorés"), separating the palace
     // from the Place des Palais. Three gates open onto the parterre axes: the central

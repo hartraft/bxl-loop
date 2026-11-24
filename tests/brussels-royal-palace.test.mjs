@@ -35,6 +35,15 @@ testCase('Royal Palace centre has a sculpted pediment, domed drum and Belgian fl
   assert.match(palace, /Belgian flag stripe/);
 });
 
+testCase('"Les Fleurs du Palais Royal" — eleven province pots line the central garden walk', () => {
+  assert.match(palace, /Les Fleurs du Palais Royal/);
+  assert.match(palace, /'Les Fleurs du Palais Royal pots'/);
+  assert.match(palace, /'Les Fleurs du Palais Royal plantings'/);
+  assert.match(palace, /pots\.count = plants\.count = pi/);
+  assert.match(palace, /for \(let k = 0; k < 11; k\+\+\)/);
+  assert.match(palace, /const px = -30 \+ k \* 6;/);
+});
+
 testCase('the front garden is enclosed by gilded railings with three gates on the parterre axes', () => {
   assert.match(palace, /grilles, portails et balustrades dor/);
   assert.match(palace, /'Garden enclosure stone plinth'/);
