@@ -474,3 +474,11 @@ testCase('the Place des Palais sett paving spans the full 350 m width of the squ
   assert.match(palace, /'Place des Palais full-width sett paving'/);
   assert.match(palace, /setts2\.count = si2/);
 });
+
+testCase('the Palace of the Nation faces the Royal Palace across the park on the axis', () => {
+  assert.match(palace, /Guimard's 1778-83 neoclassical palace facing the Royal Palace/);
+  assert.match(palace, /'Palace of the Nation central block'/);
+  assert.match(palace, /'Palace of the Nation peristyle column'/);
+  assert.match(palace, /'Palace of the Nation pediment'/);
+  assert.match(palace, /for \(let i = 0; i < 8; i\+\+\)/);
+});

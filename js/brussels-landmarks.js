@@ -2385,6 +2385,22 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     setts2.name = 'Place des Palais full-width sett paving';
     setts2.receiveShadow = true;
     g.add(setts2);
+    // Across the park, on the same axis, stands the Palace of the Nation (Belgian Federal
+    // Parliament) — Guimard's 1778-83 neoclassical palace facing the Royal Palace.
+    box(g, 60, 22, 34, 0, 11, 420, materials.plaster, 'Palace of the Nation central block');
+    box(g, 40, 16, 26, -70, 8, 420, materials.plaster, 'Palace of the Nation west wing');
+    box(g, 40, 16, 26, 70, 8, 420, materials.plaster, 'Palace of the Nation east wing');
+    box(g, 62, 1.2, 36, 0, 22.6, 420, materials.warmStone, 'Palace of the Nation cornice');
+    for (let i = 0; i < 8; i++) {
+      cylinder(g, 0.75, 0.9, 15, -24 + i * 6.85, 7.5, 401.5, materials.plaster, 12).name = 'Palace of the Nation peristyle column';
+    }
+    const pnPed = new THREE.Shape();
+    pnPed.moveTo(-16, 0); pnPed.lineTo(16, 0); pnPed.lineTo(0, 5); pnPed.closePath();
+    mesh(g, new THREE.ShapeGeometry(pnPed), materials.warmStone, 0, 15.2, 401.6, 'Palace of the Nation pediment');
+    mesh(g, new THREE.SphereGeometry(1.0, 14, 10), materials.warmStone, 0, 18.6, 401.9, 'Palace of the Nation Justice relief');
+    for (let i = 0; i < 6; i++) {
+      box(g, 2.4, 8, 0.2, -22.5 + i * 9, 12, 402.9, materials.glass, 'Palace of the Nation facade window');
+    }
   });
     addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');
