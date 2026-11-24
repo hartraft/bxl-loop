@@ -5075,6 +5075,153 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       arch.rotation.z = Math.PI / 2;
       box(g, 0.12, 4.4, 0.34, sx * 6.5, 11.5, 30.28, materials.dark, 'Bourse cella window transom bar');
     }
+    // Round 31: slate gable roofs over the four Greek-cross arms, with ridge lines.
+    pedimentPrism(g, 34, 4.5, 21, 0, 26, 31, materials.slate, 'Bourse front arm slate gable roof');
+    pedimentPrism(g, 34, 4.5, 21, 0, 26, -31, materials.slate, 'Bourse rear arm slate gable roof (rue du Midi)');
+    {
+      const westRoof = pedimentPrism(g, 34, 4.5, 21, -42, 26, 0, materials.slate, 'Bourse west arm slate gable roof (rue Henri Maus)');
+      westRoof.rotation.y = Math.PI / 2;
+      const eastRoof = pedimentPrism(g, 34, 4.5, 21, 42, 26, 0, materials.slate, 'Bourse east arm slate gable roof (rue de la Bourse)');
+      eastRoof.rotation.y = Math.PI / 2;
+      for (const [rx, rz] of [[0, 31], [0, -31], [-42, 0], [42, 0]]) {
+        if (rx === 0) box(g, 0.5, 0.25, 20, rx, 30.6, rz, materials.roof, 'Bourse roof ridge line');
+        else box(g, 20, 0.25, 0.5, rx, 30.6, rz, materials.roof, 'Bourse roof ridge line');
+      }
+    }
+    // Round 32: slate dormers (lucarnes) on the arm roof slopes.
+    {
+      const dormers = new THREE.InstancedMesh(new THREE.BoxGeometry(2.2, 2.4, 1.6), materials.slate, 12);
+      const caps = new THREE.InstancedMesh(new THREE.ConeGeometry(1.7, 1.2, 4), materials.slate, 12);
+      const dummy = new THREE.Object3D();
+      let d2 = 0;
+      const spots = [[-10, 31, 27.6], [10, 31, 27.6], [-10, -31, 27.6], [10, -31, 27.6], [-42, -10, 27.6], [-42, 10, 27.6], [42, -10, 27.6], [42, 10, 27.6],
+        [-46, 31, 24.2], [46, 31, 24.2], [-46, -31, 24.2], [46, -31, 24.2]];
+      for (const [dx, dz, dy] of spots) {
+        dummy.position.set(dx, dy, dz);
+        dummy.updateMatrix();
+        dormers.setMatrixAt(d2, dummy.matrix);
+        dummy.position.set(dx, dy + 1.8, dz);
+        dummy.updateMatrix();
+        caps.setMatrixAt(d2++, dummy.matrix);
+      }
+      dormers.count = d2; dormers.name = 'Bourse arm roof dormers (lucarnes)';
+      dormers.castShadow = true; g.add(dormers);
+      caps.count = d2; caps.name = 'Bourse dormer caps';
+      caps.castShadow = true; g.add(caps);
+    }
+    // Round 33: chimney stacks with stone cap slabs on the arm roofs.
+    {
+      const stacks = new THREE.InstancedMesh(new THREE.BoxGeometry(1.2, 3.2, 1.2), materials.warmStone, 6);
+      const caps2 = new THREE.InstancedMesh(new THREE.BoxGeometry(1.7, 0.3, 1.7), materials.paleStone, 6);
+      const dummy = new THREE.Object3D();
+      const spots = [[-14, 24, 29.5], [14, 24, 29.5], [-14, -24, 29.5], [14, -24, 29.5], [-46, 6, 29.5], [46, -6, 29.5]];
+      for (let i = 0; i < 6; i++) {
+        dummy.position.set(spots[i][0], spots[i][2], spots[i][1]);
+        dummy.updateMatrix();
+        stacks.setMatrixAt(i, dummy.matrix);
+        dummy.position.set(spots[i][0], spots[i][2] + 1.75, spots[i][1]);
+        dummy.updateMatrix();
+        caps2.setMatrixAt(i, dummy.matrix);
+      }
+      stacks.count = 6; stacks.name = 'Bourse chimney stacks';
+      stacks.castShadow = true; g.add(stacks);
+      caps2.count = 6; caps2.name = 'Bourse chimney cap slabs';
+      caps2.castShadow = true; g.add(caps2);
+    }
+    // Round 34: the four corner pavilions carry hipped slate roofs with finials.
+    for (const sx of [-1, 1]) for (const sz of [-1, 1]) {
+      mesh(g, new THREE.ConeGeometry(15.6, 5, 4), materials.slate, sx * 42, 26.5, sz * 31, 'Bourse corner pavilion hipped slate roof');
+      mesh(g, new THREE.SphereGeometry(0.5, 8, 6), materials.gold, sx * 42, 29.4, sz * 31, 'Bourse pavilion roof finial');
+    }
+    // Round 35: the rear facade (rue du Midi side) is crowned by a curved pediment with the
+    // sculptural groups L'Asie and L'Afrique by Van Rasbourg, executed largely by Rodin in 1871
+    // (arau.org heritage analysis; monument.heritage.brussels A001/31241).
+    {
+      for (const sx of [-1, 1]) {
+        const grp = new THREE.Group();
+        grp.name = 'Bourse rear pediment group ' + (sx < 0 ? 'L\'Asie' : 'L\'Afrique') + ' (Van Rasbourg/Rodin 1871)';
+        grp.position.set(sx * 8, 27.5, -40.5);
+        box(grp, 1.4, 2.6, 0.5, 0, 1.3, 0, materials.warmStone, 'group central figure');
+        mesh(grp, new THREE.SphereGeometry(0.42, 8, 6), materials.warmStone, 0, 2.9, 0, 'group head');
+        box(grp, 0.9, 1.8, 0.4, sx * 1.4, 0.9, 0.1, materials.warmStone, 'group attendant');
+        g.add(grp);
+      }
+    }
+    // Round 36: on the rear upper level, two couples of caryatids designed by Rodin and signed
+    // Antoine-Joseph Van Rasbourgh — Protection, Commerce, Art, Victory — lean on the trumeaux
+    // of the three arched bays and support the entablature (en.wikipedia; nl.wikipedia).
+    {
+      const names = ['Protection', 'Commerce', 'Art', 'Victoire'];
+      const xs = [-7.5, -2.5, 2.5, 7.5];
+      for (let i = 0; i < 4; i++) {
+        const c = new THREE.Group();
+        c.name = 'Bourse caryatid ' + names[i] + ' (Rodin design, Van Rasbourgh)';
+        c.position.set(xs[i], 20, -41.2);
+        box(c, 0.9, 3.4, 0.4, 0, 1.7, 0, materials.warmStone, names[i] + ' caryatid body');
+        mesh(c, new THREE.SphereGeometry(0.32, 8, 6), materials.warmStone, 0, 3.75, 0, names[i] + ' caryatid head');
+        box(c, 1.1, 0.3, 0.5, 0, 3.5, 0, materials.warmStone, names[i] + ' caryatid capital block');
+        g.add(c);
+      }
+    }
+    // Round 37: above the caryatids, a globe carried by two putti (en.wikipedia).
+    {
+      mesh(g, new THREE.SphereGeometry(1.2, 14, 10), materials.bronze, 0, 25.2, -41.2, 'Bourse globe above the caryatids');
+      for (const sx of [-1, 1]) {
+        const p = new THREE.Group();
+        p.name = 'Bourse putti carrying the globe ' + (sx < 0 ? 'west' : 'east');
+        p.position.set(sx * 1.6, 23.4, -41.2);
+        box(p, 0.5, 1.0, 0.3, 0, 0.5, 0, materials.warmStone, 'putto body');
+        mesh(p, new THREE.SphereGeometry(0.26, 8, 6), materials.warmStone, 0, 1.2, 0, 'putto head');
+        g.add(p);
+      }
+    }
+    // Round 38: the central parts of the lateral facades (rue Henri Maus, rue de la Bourse)
+    // were opened up (ajourees) with great arched openings — Jules Brunfaut 1890-1893 and the
+    // 1930-1950 works (nl.wikipedia Beurspaleis; Reflexcity).
+    {
+      const great = new THREE.InstancedMesh(new THREE.BoxGeometry(4.2, 11, 0.5), materials.glass, 6);
+      const dummy = new THREE.Object3D();
+      let n = 0;
+      for (const wx of [-53.2, 53.2]) for (let i = 0; i < 3; i++) {
+        dummy.position.set(wx, 13, -8 + i * 8);
+        dummy.updateMatrix();
+        great.setMatrixAt(n++, dummy.matrix);
+      }
+      great.count = n;
+      great.name = 'Bourse side facade central ajouree great arches (Brunfaut 1890-93 / 1930-50)';
+      great.castShadow = true;
+      g.add(great);
+    }
+    // Round 39: the 2020-2023 restoration (Robbrecht & Daem, Baneton-Garrino, Popoff) created a
+    // roof terrace (toiture-terrasse) on the 4th floor of the rear arm, with a balustrade.
+    {
+      box(g, 30, 0.25, 16, 0, 30.8, -31, materials.pavingA, 'Bourse toiture-terrasse slab (roof terrace, 2023)');
+      const posts = new THREE.InstancedMesh(new THREE.BoxGeometry(0.18, 1.0, 0.18), materials.warmStone, 40);
+      const dummy = new THREE.Object3D();
+      let p = 0;
+      for (let i = 0; i < 20; i++) {
+        dummy.position.set(-14.5 + i * 1.5, 31.4, -38.6);
+        dummy.updateMatrix(); posts.setMatrixAt(p++, dummy.matrix);
+        dummy.position.set(-14.5 + i * 1.5, 31.4, -23.4);
+        dummy.updateMatrix(); posts.setMatrixAt(p++, dummy.matrix);
+      }
+      posts.count = p;
+      posts.name = 'Bourse roof terrace balustrade posts';
+      posts.castShadow = true;
+      g.add(posts);
+      box(g, 30, 0.12, 0.2, 0, 31.95, -38.6, materials.warmStone, 'Bourse roof terrace balustrade top rail south');
+      box(g, 30, 0.12, 0.2, 0, 31.95, -23.4, materials.warmStone, 'Bourse roof terrace balustrade top rail north');
+    }
+    // Round 40: the roof was converted into a panorama bar with terrace, covered by a brass
+    // canopy (luifel en laiton / messing) — Belgian Beer World opening September 2023.
+    {
+      const canopy = box(g, 20, 0.18, 20, 0, 46.5, 0, materials.gold, 'Bourse brass canopy over the panorama bar (luifel, 2023)');
+      canopy.castShadow = true;
+      for (let i = 0; i < 4; i++) {
+        const rib = box(g, 0.25, 0.25, 19, -7.5 + i * 5, 46.35, 0, materials.gold, 'Bourse brass canopy rib');
+        rib.castShadow = false;
+      }
+    }
     // __BOURSE_ROUNDS__
   });
   addLandmark('bourseSurroundings', (g) => {

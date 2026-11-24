@@ -215,4 +215,35 @@ testCase('rounds 26-30: clock ring/boss, Brussels arms cross, tympanum panel, do
   assert.match(bourse, /'Bourse cella window transom bar'/);
 });
 
+testCase('rounds 31-34: slate gable roofs on the arms, dormers, chimney stacks, hipped pavilion roofs', () => {
+  assert.match(bourse, /'Bourse front arm slate gable roof'/);
+  assert.match(bourse, /'Bourse rear arm slate gable roof \(rue du Midi\)'/);
+  assert.match(bourse, /'Bourse west arm slate gable roof \(rue Henri Maus\)'/);
+  assert.match(bourse, /westRoof\.rotation\.y = Math\.PI \/ 2/);
+  assert.match(bourse, /'Bourse arm roof dormers \(lucarnes\)'/);
+  assert.match(bourse, /dormers\.count = d2/);
+  assert.match(bourse, /'Bourse chimney stacks'/);
+  assert.match(bourse, /stacks\.count = 6/);
+  assert.match(bourse, /'Bourse corner pavilion hipped slate roof'/);
+  assert.match(bourse, /'Bourse pavilion roof finial'/);
+});
+
+testCase('rounds 35-37: rear curved pediment Asie/Afrique groups, four Rodin/Van Rasbourgh caryatids, globe + putti', () => {
+  assert.match(bourse, /grp\.name = 'Bourse rear pediment group ' \+ \(sx < 0 \? 'L\\'Asie' : 'L\\'Afrique'\) \+ ' \(Van Rasbourg\/Rodin 1871\)'/);
+  assert.match(bourse, /const names = \['Protection', 'Commerce', 'Art', 'Victoire'\];/);
+  assert.match(bourse, /c\.name = 'Bourse caryatid ' \+ names\[i\] \+ ' \(Rodin design, Van Rasbourgh\)'/);
+  assert.match(bourse, /'Bourse globe above the caryatids'/);
+  assert.match(bourse, /'Bourse putti carrying the globe '/);
+});
+
+testCase('rounds 38-40: side ajouree great arches, roof terrace balustrade, brass panorama canopy', () => {
+  assert.match(bourse, /'Bourse side facade central ajouree great arches \(Brunfaut 1890-93 \/ 1930-50\)'/);
+  assert.match(bourse, /great\.count = n/);
+  assert.match(bourse, /'Bourse toiture-terrasse slab \(roof terrace, 2023\)'/);
+  assert.match(bourse, /'Bourse roof terrace balustrade posts'/);
+  assert.match(bourse, /posts\.count = p/);
+  assert.match(bourse, /'Bourse brass canopy over the panorama bar \(luifel, 2023\)'/);
+  assert.match(bourse, /'Bourse brass canopy rib'/);
+});
+
 // __MORE_BOURSE_TESTS__
