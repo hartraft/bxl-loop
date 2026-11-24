@@ -68,6 +68,14 @@ testCase('the front garden holds the real three sunken parterres (central on the
   assert.match(palace, /\{ x: 38, w: 34, z: 12\.4, d: 2\.6 \}/);
 });
 
+testCase('stone cross-mullions (croisillons) divide every wing French window into panes', () => {
+  assert.match(palace, /cross-mullions \(croisillons/);
+  assert.match(palace, /'Palace window cross-mullions vertical'/);
+  assert.match(palace, /'Palace window cross-mullions horizontal'/);
+  assert.match(palace, /mullV\.count = mullH\.count = mi/);
+  assert.match(palace, /facadeZ \+ 0\.26/);
+});
+
 testCase('the central attic carries the oval garlanded medallion struck with Leopold II monogram', () => {
   assert.match(palace, /struck with Leopold/);
   assert.match(palace, /'Leopold II monogram medallion'/);
