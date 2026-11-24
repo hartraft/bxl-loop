@@ -219,7 +219,8 @@ const BRUSSELS_ZONES = [
   ['palaisDeJustice', 'palaisDeJustice', [], null, /Palace of Justice|Justitiepaleis|Palais de Justice/i],
   ['cinquantenaire', 'cinquantenaire', [], null, /Cinquantenaire|Jubelpark/i],
   ['europeanParliament', 'europeanParliament', [], null, /European Parliament|Europees Parlement|Parlement européen/i],
-  ['koekelbergBasilica', 'koekelbergBasilica', [], null, /Basilica of the Sacred Heart|Koekelberg/i]
+  ['koekelbergBasilica', 'koekelbergBasilica', [], null, /Basilica of the Sacred Heart|Koekelberg/i],
+  ['bourse', 'bourse', [], null, /Palais de la Bourse|Beurspaleis|Bourse de Commerce|Beursgebouw|Beurs van Brussel/i]
 ];
 const ZONES = BRUSSELS_ZONES;
 

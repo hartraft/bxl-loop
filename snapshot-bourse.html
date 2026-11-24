@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Brussels — Bourse (Palais de la Bourse) facade snapshot</title>
+<style>
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#b9c9d6}
+canvas{display:block;width:100%;height:100%}
+#caption{position:fixed;left:24px;bottom:20px;padding:10px 14px;background:#17212ddd;color:#fff;font:14px/1.4 system-ui,sans-serif;letter-spacing:.02em}
+</style>
+<script type="importmap">{"imports":{"three":"./vendor/three/build/three.webgpu.js","three/webgpu":"./vendor/three/build/three.webgpu.js","three/tsl":"./vendor/three/build/three.tsl.js","three/addons/":"./vendor/three/examples/jsm/"}}</script>
+</head>
+<body>
+<div id="caption">BRUSSELS · PALAIS DE LA BOURSE · BEURSPALEIS</div>
+<script type="module">
+import * as THREE from 'three/webgpu';
+import { buildBrusselsLandmarks } from './js/brussels-landmarks.js';
+const renderer = new THREE.WebGPURenderer({antialias:true,forceWebGL:true});
+renderer.setPixelRatio(Math.min(devicePixelRatio,1.5));
+renderer.setSize(innerWidth,innerHeight);
+renderer.toneMapping=THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure=1.05;
+document.body.appendChild(renderer.domElement);
+await renderer.init();
+const scene=new THREE.Scene();
+scene.background=new THREE.Color(0xb9c9d6);
+scene.fog=new THREE.Fog(0xb9c9d6,180,520);
+scene.add(new THREE.HemisphereLight(0xe7f1ff,0x756451,2.0));
+const sun=new THREE.DirectionalLight(0xffe0b4,3.2);
+sun.position.set(-70,110,90); scene.add(sun);
+// Forecourt pavement so the palace reads against ground, not blank sky.
+const ground=new THREE.Mesh(new THREE.CircleGeometry(700,48).rotateX(-Math.PI/2),new THREE.MeshStandardMaterial({color:0x8f8878,roughness:1}));
+ground.position.y=-0.05; scene.add(ground);
+const landmarks=buildBrusselsLandmarks(scene);
+const target=landmarks.landmarks.bourse.group;
+const bounds=new THREE.Box3().setFromObject(target);
+const size=bounds.getSize(new THREE.Vector3());
+const centre=bounds.getCenter(new THREE.Vector3());
+const camera=new THREE.PerspectiveCamera(36,innerWidth/innerHeight,0.1,1500);
+// The main facade is the landmark's local +Z (bearing ~306 deg, facing the Place de la Bourse):
+// pull the camera out along that axis so the peristyle, pediment and dome read head-on.
+const yaw=target.rotation.y;
+const dist=Math.max(190,size.x*1.35);
+camera.position.set(centre.x+Math.sin(yaw)*dist,centre.y+Math.max(24,size.y*.55),centre.z+Math.cos(yaw)*dist);
+camera.lookAt(centre.x,centre.y+size.y*.22,centre.z);
+camera.updateMatrixWorld(true);
+// Framing contract for tools/shot.py: raw NDC box of the target bounds.
+const corners=[];
+for (const x of [bounds.min.x,bounds.max.x]) for (const y of [bounds.min.y,bounds.max.y]) for (const z of [bounds.min.z,bounds.max.z]) corners.push(new THREE.Vector3(x,y,z));
+let x0=Infinity,y0=Infinity,x1=-Infinity,y1=-Infinity;
+for (const p of corners){const v=p.clone().project(camera);x0=Math.min(x0,v.x);y0=Math.min(y0,v.y);x1=Math.max(x1,v.x);y1=Math.max(y1,v.y);}
+window.__snapshotFraming={x0,y0,x1,y1};
+renderer.setAnimationLoop(()=>renderer.render(scene,camera));
+window.__snapshotReady=true;
+addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight)});
+</script>
+</body></html>

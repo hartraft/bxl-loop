@@ -1,7 +1,7 @@
 // Brussels-specific, procedural landmark geometry. Kept behind the Brussels city selector.
 import * as THREE from 'three/webgpu';
 import { GEO } from './brx-geodata.js';
-import { BRUSSELS_LANDMARK_ANCHORS, MONT_DES_ARTS_ROTATION, PALAIS_DE_JUSTICE_ROTATION, brusselsToWorld } from './brussels-frame.js';
+import { BRUSSELS_LANDMARK_ANCHORS, MONT_DES_ARTS_ROTATION, PALAIS_DE_JUSTICE_ROTATION, BOURSE_ROTATION, brusselsToWorld } from './brussels-frame.js';
 import { foundationSkirtBottom } from './brussels-terrain.js';
 import { createBrusselsLandmarkColliders, splitMontDesArtsWall } from './brussels-colliders.js';
 import { grandPlaceShadowFlags } from './grand-place-quality.mjs';
@@ -131,6 +131,7 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     if (id === 'palaisDeJustice') root.rotation.y = PALAIS_DE_JUSTICE_ROTATION; // monumental entrance faces Place Poelaert (facade normal bearing ~42 deg)
     if (id === 'montDesArts') root.rotation.y = MONT_DES_ARTS_ROTATION; // local +Z points southeast; the garden descends northwest
     if (id === 'cinquantenaire') root.rotation.y = Math.PI / 2; // triumphal axis east-west; pavilions north/south
+    if (id === 'bourse' || id === 'bourseSurroundings') root.rotation.y = BOURSE_ROTATION; // main facade faces Place de la Bourse (bearing ~306 deg)
     build(root);
     if (id === 'grandPlace') {
       // The square's detailed guild-house facades contain hundreds of repeated ornaments.
@@ -9121,6 +9122,3649 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       cylinder(g, 3, 4, 22, x, 11, -7, materials.paleStone, 12);
       mesh(g, new THREE.ConeGeometry(3.2, 6, 8), materials.roof, x, 25, -7);
     }
+  });
+
+  // ---- Bruxelles Bourse / Beurspaleis (Palais de la Bourse, Leon-Pierre Suys, 1868-1873) ----
+  // Local frame: facade front = +Z toward the Place de la Bourse; the anchor is the building
+  // centroid (OSM way 13494623) and BOURSE_ROTATION points local +Z at bearing ~306 deg, so the
+  // main facade terminates the perspective of the rue Auguste Orts across the square.
+  // Greek-cross plan on a high blue-stone socle; a peristyle of eight Corinthian columns under a
+  // triangular pediment dated 1873; a central dome on four piers with paired Corinthian
+  // pilasters, glazed since 1893, crowned by a circular lantern.
+  function pedimentPrism(parent, w, h, d, x, y, z, material, name = '') {
+    const shape = new THREE.Shape();
+    shape.moveTo(-w / 2, 0); shape.lineTo(w / 2, 0); shape.lineTo(0, h); shape.closePath();
+    const geo = new THREE.ExtrudeGeometry(shape, { depth: d, bevelEnabled: false });
+    geo.translate(0, 0, -d / 2);
+    return mesh(parent, geo, material, x, y, z, name);
+  }
+  function corinthColumn(parent, x, y, z, h = 14, r = 0.8, name = 'Corinthian column') {
+    const col = new THREE.Group();
+    col.name = name;
+    col.position.set(x, y, z);
+    box(col, r * 2.6, 0.5, r * 2.6, 0, 0.25, 0, materials.warmStone, name + ' base');
+    cylinder(col, r * 0.88, r, h, 0, 0.5 + h / 2, 0, materials.paleStone, 12);
+    box(col, r * 2.2, 0.3, r * 2.2, 0, h + 0.5, 0, materials.warmStone, name + ' capital');
+    box(col, r * 2.9, 0.35, r * 2.9, 0, h + 0.85, 0, materials.warmStone, name + ' abacus');
+    parent.add(col);
+    return col;
+  }
+  addLandmark('bourse', (g) => {
+    // Round 1: the landmark frame itself — anchor + facade bearing ~306 deg are wired in
+    // addLandmark via BOURSE_ROTATION (see js/brussels-frame.js); the builder starts here.
+    // Round 2: the high socle (soubassement) is blue stone (petit granit) — "a Bruxelles, le
+    // soubassement est d'ordinaire en pierre bleue" (heritage inventory A001/31241) — coursed
+    // ashlar in refends, i.e. with incised joint grooves.
+    box(g, 106, 5, 82, 0, 2.5, 0, materials.blueStone, 'Bourse blue-stone socle (soubassement en pierre bleue)');
+    {
+      const refends = new THREE.InstancedMesh(new THREE.BoxGeometry(0.07, 4.7, 0.05), materials.dark, 27);
+      const dummy = new THREE.Object3D();
+      for (let i = 0; i < 27; i++) {
+        dummy.position.set(-52 + i * 4, 2.5, 41.03);
+        dummy.updateMatrix();
+        refends.setMatrixAt(i, dummy.matrix);
+      }
+      refends.count = 27;
+      refends.name = 'Bourse socle refend joint grooves (calcaire appareille en refends)';
+      refends.castShadow = true;
+      g.add(refends);
+      const course = mesh(g, new THREE.BoxGeometry(106.2, 0.08, 0.06), materials.dark, 0, 2.5, 41.03, 'Bourse socle horizontal course groove');
+      course.castShadow = false;
+    }
+    // Round 3: the monumental stair (escalier monumental) climbs from the square to the peristyle.
+    {
+      const treads = new THREE.InstancedMesh(new THREE.BoxGeometry(26, 0.25, 0.75), materials.pavingA, 20);
+      const dummy = new THREE.Object3D();
+      for (let i = 0; i < 20; i++) {
+        dummy.position.set(0, i * 0.25 + 0.125, 47.6 - i * 0.7);
+        dummy.updateMatrix();
+        treads.setMatrixAt(i, dummy.matrix);
+      }
+      treads.count = 20;
+      treads.name = 'Bourse monumental stair treads (escalier monumental)';
+      treads.castShadow = true;
+      treads.receiveShadow = true;
+      g.add(treads);
+      box(g, 1.4, 5.4, 15.5, -13.7, 2.7, 41.3, materials.blueStone, 'Bourse stair west cheek wall');
+      box(g, 1.4, 5.4, 15.5, 13.7, 2.7, 41.3, materials.blueStone, 'Bourse stair east cheek wall');
+      box(g, 26, 0.3, 7, 0, 4.9, 34, materials.pavingEdge, 'Bourse stair top landing (portico floor)');
+    }
+    // Round 4: the peristyle — eight Corinthian columns on a stylobate in front of the cella.
+    box(g, 41, 0.4, 4.5, 0, 5.2, 36, materials.paleStone, 'Bourse peristyle stylobate');
+    const peristyleX = [-18, -12.86, -7.71, -2.57, 2.57, 7.71, 12.86, 18];
+    for (let i = 0; i < 8; i++) corinthColumn(g, peristyleX[i], 5.4, 36, 14, 0.8, 'Bourse peristyle Corinthian column ' + (i + 1));
+    // Round 5: the cella wall behind the peristyle, pierced by three doors — the central one
+    // arched with a keystone, in the recess of an aedicule supported by two columns.
+    box(g, 100, 15, 4, 0, 12.5, 28, materials.paleStone, 'Bourse cella wall (pierre blanche, neo-Renaissance)');
+    box(g, 5, 8, 0.6, 0, 9, 30.2, materials.dark, 'Bourse central arched door');
+    {
+      const arch = mesh(g, new THREE.CylinderGeometry(2.5, 2.5, 0.6, 16, 1, false, 0, Math.PI), materials.dark, 0, 13, 30.2, 'Bourse central door arch');
+      arch.rotation.z = Math.PI / 2;
+    }
+    mesh(g, new THREE.BoxGeometry(0.7, 1.1, 0.25), materials.warmStone, 0, 15.6, 30.45, 'Bourse central door keystone');
+    corinthColumn(g, -3.6, 5.4, 31, 8, 0.45, 'Bourse aedicule column west');
+    corinthColumn(g, 3.6, 5.4, 31, 8, 0.45, 'Bourse aedicule column east');
+    box(g, 9, 1.1, 1.6, 0, 13.7, 30.8, materials.paleStone, 'Bourse aedicule entablature over central door');
+    box(g, 3.5, 6, 0.6, -10, 8, 30.2, materials.dark, 'Bourse lateral door west');
+    box(g, 3.5, 6, 0.6, 10, 8, 30.2, materials.dark, 'Bourse lateral door east');
+    // Round 6: the vast entablature over the columns, its frieze ornamented with a garland of
+    // flowers and fruits — the symbol of Abundance (Reflexcity encyclopedia).
+    box(g, 104, 3.5, 9, 0, 21.75, 32.5, materials.paleStone, 'Bourse entablature');
+    box(g, 104, 0.8, 9.3, 0, 20.4, 32.5, materials.warmStone, 'Bourse architrave band');
+    {
+      const fruits = new THREE.InstancedMesh(new THREE.SphereGeometry(0.3, 8, 6), materials.ochre, 41);
+      const leaves = new THREE.InstancedMesh(new THREE.BoxGeometry(0.5, 0.28, 0.1), materials.green, 41);
+      const dummy = new THREE.Object3D();
+      for (let i = 0; i < 41; i++) {
+        const x = -50 + i * 2.5;
+        dummy.position.set(x, 21.9, 37.05);
+        dummy.updateMatrix();
+        fruits.setMatrixAt(i, dummy.matrix);
+        dummy.position.set(x + 1.25, 22.05, 37.05);
+        dummy.updateMatrix();
+        leaves.setMatrixAt(i, dummy.matrix);
+      }
+      fruits.count = 41;
+      fruits.name = 'Bourse frieze garland of abundance - fruits (guirlande de fruits)';
+      fruits.castShadow = true;
+      g.add(fruits);
+      leaves.count = 41;
+      leaves.name = 'Bourse frieze garland of abundance - flowers and leaves (fleurs et feuilles)';
+      leaves.castShadow = true;
+      g.add(leaves);
+      const modillions = new THREE.InstancedMesh(new THREE.BoxGeometry(0.4, 0.5, 0.4), materials.warmStone, 52);
+      for (let i = 0; i < 52; i++) {
+        dummy.position.set(-51 + i * 2, 20.15, 36.9);
+        dummy.updateMatrix();
+        modillions.setMatrixAt(i, dummy.matrix);
+      }
+      modillions.count = 52;
+      modillions.name = 'Bourse cornice modillions (consoles)';
+      modillions.castShadow = true;
+      g.add(modillions);
+    }
+    // Round 7: the triangular pediment dated 1873; its tympanum is sculpted with la Belgique
+    // surrounded by two geniuses symbolising Commerce and Industry (Joseph Jacquet). Above the
+    // middle door, the archivolt encircling the clock carries the arms of Brussels, flanked by
+    // two winged figures of Good and Evil (De Haen).
+    pedimentPrism(g, 38, 8.5, 9, 0, 23.5, 32.5, materials.paleStone, 'Bourse triangular pediment dated 1873');
+    {
+      const belgique = new THREE.Group();
+      belgique.name = 'Bourse tympanum la Belgique (Joseph Jacquet)';
+      belgique.position.set(0, 26.2, 36.6);
+      box(belgique, 1.3, 2.4, 0.5, 0, 1.2, 0, materials.warmStone, 'Belgique figure body');
+      mesh(belgique, new THREE.SphereGeometry(0.45, 10, 8), materials.warmStone, 0, 2.7, 0, 'Belgique figure head');
+      g.add(belgique);
+      for (const sx of [-1, 1]) {
+        const genius = new THREE.Group();
+        genius.name = 'Bourse tympanum genius ' + (sx < 0 ? 'Commerce' : 'Industrie');
+        genius.position.set(sx * 9, 25.4, 36.6);
+        box(genius, 1, 1.8, 0.4, 0, 0.9, 0, materials.warmStone, 'genius body');
+        mesh(genius, new THREE.SphereGeometry(0.35, 8, 6), materials.warmStone, 0, 2.1, 0, 'genius head');
+        box(genius, 0.9, 0.25, 0.25, sx * 0.7, 1.7, 0.15, materials.warmStone, 'genius wing');
+        g.add(genius);
+      }
+      mesh(g, new THREE.BoxGeometry(2.6, 3.2, 0.35), materials.gold, 0, 18.6, 30.35, 'Bourse archivolt arms of Brussels (armes de Bruxelles)');
+      const ring = mesh(g, new THREE.CylinderGeometry(4.3, 4.3, 0.5, 20, 1, false, 0, Math.PI), materials.paleStone, 0, 15.9, 30.35, 'Bourse central archivolt encircling the clock');
+      ring.rotation.z = Math.PI / 2;
+      const clock = mesh(g, new THREE.CylinderGeometry(1.3, 1.3, 0.35, 20), materials.gold, 0, 15.9, 30.6, 'Bourse facade clock above the middle door');
+      clock.rotation.x = Math.PI / 2;
+      box(g, 0.12, 1.0, 0.06, 0, 15.9, 30.8, materials.dark, 'Bourse clock hour hand');
+      for (const sx of [-1, 1]) {
+        const winged = new THREE.Group();
+        winged.name = 'Bourse Bien/Mal winged figure (De Haen) ' + (sx < 0 ? 'Bien' : 'Mal');
+        winged.position.set(sx * 3.4, 15.9, 30.7);
+        box(winged, 0.7, 1.6, 0.3, 0, 0.8, 0, materials.bronze, 'winged figure body');
+        mesh(winged, new THREE.SphereGeometry(0.3, 8, 6), materials.bronze, 0, 1.8, 0, 'winged figure head');
+        box(winged, 0.8, 0.2, 0.2, sx * 0.55, 1.4, 0.1, materials.bronze, 'winged figure wing');
+        g.add(winged);
+      }
+      mesh(g, new THREE.BoxGeometry(2.6, 1.0, 0.25), materials.gold, 0, 32.2, 37.2, 'Bourse pediment date plaque 1873');
+    }
+    // Round 8: the Greek-cross arms and four corner pavilions around the central block, each
+    // arm ending in a pedimented facade; the lateral facades (rue Henri Maus, rue de la Bourse)
+    // were opened up with round-arched arcades (Jules Brunfaut 1892-1898).
+    box(g, 34, 21, 21, 0, 15.5, 31, materials.paleStone, 'Bourse front arm');
+    box(g, 34, 21, 21, 0, 15.5, -31, materials.paleStone, 'Bourse rear arm (rue du Midi side)');
+    box(g, 21, 21, 34, -42, 15.5, 0, materials.paleStone, 'Bourse west arm (rue Henri Maus)');
+    box(g, 21, 21, 34, 42, 15.5, 0, materials.paleStone, 'Bourse east arm (rue de la Bourse)');
+    box(g, 44, 25, 44, 0, 17.5, 0, materials.paleStone, 'Bourse central block');
+    for (const sx of [-1, 1]) for (const sz of [-1, 1]) {
+      box(g, 22, 19, 20, sx * 42, 14.5, sz * 31, materials.paleStone, 'Bourse corner pavilion');
+      pedimentPrism(g, 22, 4, 20, sx * 42, 24, sz * 31, materials.paleStone, 'Bourse corner pavilion pediment');
+    }
+    pedimentPrism(g, 34, 5, 8, 0, 26, 38.5, materials.paleStone, 'Bourse front arm end pediment');
+    pedimentPrism(g, 34, 5, 8, 0, 26, -38.5, materials.paleStone, 'Bourse rear arm end pediment (curved pediment with Asie/Afrique groups by Van Rasbourg/Rodin)');
+    {
+      const arcades = new THREE.InstancedMesh(new THREE.BoxGeometry(3.4, 9, 0.5), materials.dark, 48);
+      const dummy = new THREE.Object3D();
+      let n = 0;
+      for (const wx of [-48.5, -42, -35.5]) for (let i = 0; i < 8; i++) {
+        dummy.position.set(wx, 12, -14 + i * 4.6);
+        dummy.updateMatrix();
+        arcades.setMatrixAt(n++, dummy.matrix);
+      }
+      for (const ex of [48.5, 42, 35.5]) for (let i = 0; i < 8; i++) {
+        dummy.position.set(ex, 12, -14 + i * 4.6);
+        dummy.updateMatrix();
+        arcades.setMatrixAt(n++, dummy.matrix);
+      }
+      arcades.count = n;
+      arcades.name = 'Bourse lateral facade round-arched arcades (facades ajourees, Brunfaut 1892-1898)';
+      arcades.castShadow = true;
+      g.add(arcades);
+    }
+    // Round 9: the central dome — four massive piers adorned with paired Corinthian pilasters
+    // (bundled Corinthian pilasters), a high drum under a richly ornamented entablature, the
+    // original stucco vaulting replaced by curved glazing in 1893, and a circular lantern
+    // with a top ornament (bruxellesmabelle.net; heritage inventory A001/31241).
+    for (const sx of [-1, 1]) for (const sz of [-1, 1]) {
+      box(g, 7, 25, 7, sx * 11, 17.5, sz * 11, materials.paleStone, 'Bourse dome pier');
+      cylinder(g, 0.5, 0.55, 22, sx * 11 + sx * 3.6, 16, sz * 11, materials.paleStone, 10);
+      cylinder(g, 0.5, 0.55, 22, sx * 11, 16, sz * 11 + sz * 3.6, materials.paleStone, 10);
+    }
+    box(g, 26, 8, 26, 0, 34, 0, materials.paleStone, 'Bourse dome drum on high socle');
+    box(g, 27.5, 1.6, 27.5, 0, 38.8, 0, materials.warmStone, 'Bourse dome richly ornamented entablature');
+    mesh(g, new THREE.SphereGeometry(14, 24, 12, 0, Math.PI * 2, 0, Math.PI / 2), materials.glass, 0, 39.6, 0, 'Bourse glazed dome (verriere, curved glazing since 1893)');
+    {
+      const ribs = new THREE.InstancedMesh(new THREE.BoxGeometry(0.5, 13.5, 0.5), materials.blueStone, 8);
+      const dummy = new THREE.Object3D();
+      for (let i = 0; i < 8; i++) {
+        const a = i * Math.PI / 4;
+        dummy.position.set(Math.sin(a) * 9.9, 46.3, Math.cos(a) * 9.9);
+        dummy.rotation.set(Math.cos(a) * 0.72, 0, -Math.sin(a) * 0.72);
+        dummy.updateMatrix();
+        ribs.setMatrixAt(i, dummy.matrix);
+      }
+      ribs.count = 8;
+      ribs.name = 'Bourse dome transversal arch ribs (arcs transversaux)';
+      ribs.castShadow = true;
+      g.add(ribs);
+    }
+    cylinder(g, 3.8, 4.6, 7, 0, 53, 0, materials.paleStone, 16, 'Bourse circular lantern crowning the dome');
+    mesh(g, new THREE.ConeGeometry(1.6, 3.2, 12), materials.gold, 0, 60, 0, 'Bourse lantern top ornament (finial)');
+    // Round 11: the two front avant-corps pavilions flanking the peristyle, each crowned by
+    // its own pediment (heritage inventory A001/31241: strongly structured facade).
+    for (const sx of [-1, 1]) {
+      box(g, 16, 21, 15, sx * 44, 15.5, 33.5, materials.paleStone, 'Bourse front avant-corps pavilion ' + (sx < 0 ? 'west' : 'east'));
+      pedimentPrism(g, 16, 3.5, 3, sx * 44, 26, 40, materials.paleStone, 'Bourse avant-corps pavilion pediment');
+      box(g, 16.6, 0.5, 15.6, sx * 44, 25.8, 33.5, materials.warmStone, 'Bourse pavilion cornice');
+    }
+    // Round 12: facade windows on the wings between the peristyle and the pavilions, ground
+    // floor and etage, each in a stone surround.
+    {
+      const wins = new THREE.InstancedMesh(new THREE.BoxGeometry(2.2, 4.6, 0.35), materials.glass, 8);
+      const surr = new THREE.InstancedMesh(new THREE.BoxGeometry(2.9, 5.3, 0.25), materials.warmStone, 8);
+      const dummy = new THREE.Object3D();
+      let n = 0;
+      for (const sx of [-1, 1]) for (const wx of [24, 31]) for (const wy of [10, 17.5]) {
+        dummy.position.set(sx * wx, wy, 30.25);
+        dummy.updateMatrix();
+        wins.setMatrixAt(n, dummy.matrix);
+        surr.setMatrixAt(n++, dummy.matrix);
+      }
+      wins.count = n; wins.name = 'Bourse facade windows (rez-de-chaussee + etage)';
+      wins.castShadow = true; g.add(wins);
+      surr.count = n; surr.name = 'Bourse facade window stone surrounds';
+      surr.castShadow = true; g.add(surr);
+    }
+    // Round 13: rusticated quoin chains (chaines d'angle) at the facade's front corners.
+    {
+      const quoins = new THREE.InstancedMesh(new THREE.BoxGeometry(0.55, 0.95, 0.5), materials.warmStone, 44);
+      const dummy = new THREE.Object3D();
+      let q = 0;
+      for (const sx of [-1, 1]) for (let r = 0; r < 22; r++) {
+        dummy.position.set(sx * 49.7, 5.6 + r * 0.95, 30.3);
+        dummy.updateMatrix();
+        quoins.setMatrixAt(q++, dummy.matrix);
+      }
+      quoins.count = q;
+      quoins.name = 'Bourse facade corner quoin chains (chaines d\'angle)';
+      quoins.castShadow = true;
+      g.add(quoins);
+    }
+    // Round 14: horizontal string courses (bandeaux) between the facade registers.
+    box(g, 100, 0.35, 4.5, 0, 13.5, 28, materials.warmStone, 'Bourse facade first string course (bandeau)');
+    box(g, 100, 0.35, 4.5, 0, 19.6, 28, materials.warmStone, 'Bourse facade second string course (bandeau)');
+    // Round 15: dentil teeth under the main cornice.
+    {
+      const dentils = new THREE.InstancedMesh(new THREE.BoxGeometry(0.22, 0.3, 0.25), materials.warmStone, 100);
+      const dummy = new THREE.Object3D();
+      for (let i = 0; i < 100; i++) {
+        dummy.position.set(-49.5 + i * 1.0, 23.25, 37);
+        dummy.updateMatrix();
+        dentils.setMatrixAt(i, dummy.matrix);
+      }
+      dentils.count = 100;
+      dentils.name = 'Bourse main cornice dentils';
+      dentils.castShadow = true;
+      g.add(dentils);
+    }
+    // Round 16: lion-mouth dripstones (mufles de lion) spaced along the cornice, dripping
+    // rainwater clear of the facade (heritage inventory: "a mufle de lion", larmiers).
+    {
+      const mufles = new THREE.InstancedMesh(new THREE.ConeGeometry(0.2, 0.5, 6), materials.warmStone, 26);
+      const dummy = new THREE.Object3D();
+      for (let i = 0; i < 26; i++) {
+        dummy.position.set(-50 + i * 4, 23.1, 37.1);
+        dummy.rotation.set(Math.PI, 0, 0);
+        dummy.updateMatrix();
+        mufles.setMatrixAt(i, dummy.matrix);
+      }
+      mufles.count = 26;
+      mufles.name = 'Bourse cornice lion-mouth dripstones (mufles de lion)';
+      mufles.castShadow = true;
+      g.add(mufles);
+    }
+    // Round 17: palmettes alternating with the abundance garlands on the frieze (heritage
+    // inventory: "frontons a motifs vegetaux, guirlandes d'abondance, palmettes").
+    {
+      const palmettes = new THREE.InstancedMesh(new THREE.ConeGeometry(0.32, 0.7, 4), materials.gold, 20);
+      const dummy = new THREE.Object3D();
+      for (let i = 0; i < 20; i++) {
+        dummy.position.set(-47.5 + i * 5, 22.1, 37.1);
+        dummy.rotation.set(0, Math.PI / 4, 0);
+        dummy.updateMatrix();
+        palmettes.setMatrixAt(i, dummy.matrix);
+      }
+      palmettes.count = 20;
+      palmettes.name = 'Bourse frieze palmettes (palmettes)';
+      palmettes.castShadow = true;
+      g.add(palmettes);
+    }
+    // Round 18: raking cornice along the pediment slopes plus acroteria (antefixes) at the
+    // apex and both eaves corners.
+    {
+      const slope = Math.atan2(8.5, 19);
+      for (const sx of [-1, 1]) {
+        const rail = mesh(g, new THREE.BoxGeometry(0.45, 0.5, 21.5), materials.warmStone, sx * 9.5, 23.5 + 4.25, 32.5, 'Bourse pediment raking cornice');
+        rail.rotation.x = sx * -slope;
+      }
+      const acro = new THREE.InstancedMesh(new THREE.ConeGeometry(0.35, 1.1, 8), materials.warmStone, 3);
+      const dummy = new THREE.Object3D();
+      const spots = [[0, 32.4], [-18.4, 24], [18.4, 24]];
+      for (let i = 0; i < 3; i++) {
+        dummy.position.set(spots[i][0], spots[i][1], 32.5);
+        dummy.updateMatrix();
+        acro.setMatrixAt(i, dummy.matrix);
+      }
+      acro.count = 3;
+      acro.name = 'Bourse pediment acroteria (acroteres)';
+      acro.castShadow = true;
+      g.add(acro);
+    }
+    // Round 19: the Corinthian shafts are fluted (futs canneles) — twelve grooves per column.
+    {
+      const flutes = new THREE.InstancedMesh(new THREE.CylinderGeometry(0.045, 0.045, 13, 5), materials.dark, 96);
+      const dummy = new THREE.Object3D();
+      let f = 0;
+      for (const cx of peristyleX) for (let k = 0; k < 12; k++) {
+        const a = k * Math.PI / 6;
+        dummy.position.set(cx + Math.cos(a) * 0.78, 12.9, 36 + Math.sin(a) * 0.78);
+        dummy.updateMatrix();
+        flutes.setMatrixAt(f++, dummy.matrix);
+      }
+      flutes.count = f;
+      flutes.name = 'Bourse peristyle column fluting (futs canneles, 12 per column)';
+      flutes.castShadow = false;
+      g.add(flutes);
+    }
+    // Round 20: each column base carries a torus ring moulding.
+    {
+      const tori = new THREE.InstancedMesh(new THREE.TorusGeometry(1.0, 0.13, 6, 14), materials.warmStone, 8);
+      const dummy = new THREE.Object3D();
+      for (let i = 0; i < 8; i++) {
+        dummy.position.set(peristyleX[i], 5.62, 36);
+        dummy.rotation.set(Math.PI / 2, 0, 0);
+        dummy.updateMatrix();
+        tori.setMatrixAt(i, dummy.matrix);
+      }
+      tori.count = 8;
+      tori.name = 'Bourse peristyle column base torus rings';
+      tori.castShadow = true;
+      g.add(tori);
+    }
+    // Round 21: the stair-flanking lions stand on moulded blue-stone pedestals on the square.
+    for (const sx of [-1, 1]) {
+      box(g, 3.4, 1.2, 3.4, sx * 14, 0.6, 44, materials.blueStone, 'Bourse lion pedestal');
+      box(g, 3.9, 0.3, 3.9, sx * 14, 1.35, 44, materials.warmStone, 'Bourse lion pedestal moulded cap');
+    }
+    // Round 22: the two great stone lions by the brothers Jean-Joseph and Jacques Jaquet guard
+    // the escalier monumental; their posture mirrors the stock market — one head raised (bull,
+    // cours en hausse), one head bowed (bear, cours en baisse) (fr.wikipedia Palais de la Bourse).
+    let out_ref_bull, out_ref_bear;
+    const torchGeniuses = [];
+    {
+      const bull = new THREE.Group();
+      out_ref_bull = bull;
+      bull.name = 'Bourse stair lion BULL (head raised, Jean-Joseph Jaquet)';
+      bull.position.set(-14, 1.5, 44);
+      box(bull, 2.6, 1.5, 1.2, 0, 0.75, 0, materials.warmStone, 'bull lion body');
+      mesh(bull, new THREE.SphereGeometry(0.55, 10, 8), materials.warmStone, 0, 2.05, 0.75, 'bull lion head raised');
+      mesh(bull, new THREE.TorusGeometry(0.55, 0.18, 6, 12), materials.warmStone, 0, 2.05, 0.45, 'bull lion mane');
+      for (const lx of [-0.9, 0.9]) for (const lz of [-0.4, 0.4]) box(bull, 0.32, 0.9, 0.32, lx, 0.45, lz, materials.warmStone, 'bull lion leg');
+      cylinder(bull, 0.08, 0.1, 1.0, 0, 1.3, -1.1, materials.warmStone, 6);
+      g.add(bull);
+      const bear = new THREE.Group();
+      out_ref_bear = bear;
+      bear.name = 'Bourse stair lion BEAR (head bowed, Jacques Jaquet)';
+      bear.position.set(14, 1.5, 44);
+      box(bear, 2.6, 1.5, 1.2, 0, 0.75, 0, materials.warmStone, 'bear lion body');
+      mesh(bear, new THREE.SphereGeometry(0.55, 10, 8), materials.warmStone, 0, 1.15, 0.8, 'bear lion head bowed');
+      mesh(bear, new THREE.TorusGeometry(0.55, 0.18, 6, 12), materials.warmStone, 0, 1.15, 0.5, 'bear lion mane');
+      for (const lx of [-0.9, 0.9]) for (const lz of [-0.4, 0.4]) box(bear, 0.32, 0.9, 0.32, lx, 0.45, lz, materials.warmStone, 'bear lion leg');
+      cylinder(bear, 0.08, 0.1, 1.0, 0, 1.3, -1.1, materials.warmStone, 6);
+      g.add(bear);
+    }
+    // Round 23: each lion is led by a genius holding a flaming torch (Reflexcity).
+    for (const sx of [-1, 1]) {
+      const genius = new THREE.Group();
+      genius.name = 'Bourse torch genius leading the ' + (sx < 0 ? 'bull' : 'bear') + ' lion';
+      genius.position.set(sx * 14, 0, 46.6);
+      torchGeniuses.push(genius);
+      box(genius, 0.8, 1.7, 0.4, 0, 0.85, 0, materials.warmStone, 'torch genius body');
+      mesh(genius, new THREE.SphereGeometry(0.34, 8, 6), materials.warmStone, 0, 1.95, 0, 'torch genius head');
+      cylinder(genius, 0.06, 0.06, 0.7, sx * 0.55, 1.6, 0.2, materials.dark, 6);
+      mesh(genius, new THREE.ConeGeometry(0.16, 0.45, 6), materials.gold, sx * 0.55, 2.15, 0.2, 'torch flame');
+      g.add(genius);
+    }
+    // Round 24: the group of four allegorical figures on the facade by Guillaume De Groot,
+    // symbolising Art, Agriculture, Industry and Science (en.wikipedia Bourse Palace).
+    {
+      const names = ['Art', 'Agriculture', 'Industrie', 'Science'];
+      const spots = [[-44, 28.2, 40.2], [-44, 28.2, 36], [44, 28.2, 40.2], [44, 28.2, 36]];
+      for (let i = 0; i < 4; i++) {
+        const fig = new THREE.Group();
+        fig.name = 'Bourse allegory ' + names[i] + ' (Guillaume De Groot)';
+        fig.position.set(spots[i][0], spots[i][1], spots[i][2]);
+        box(fig, 1.1, 2.2, 0.45, 0, 1.1, 0, materials.warmStone, names[i] + ' figure body');
+        mesh(fig, new THREE.SphereGeometry(0.38, 8, 6), materials.warmStone, 0, 2.5, 0, names[i] + ' figure head');
+        g.add(fig);
+      }
+    }
+    // Round 25: the frieze by Carrier-Belleuse with its band of naked children (putti), to
+    // which the young Rodin may have contributed (en/nl.wikipedia).
+    {
+      const putti = new THREE.InstancedMesh(new THREE.SphereGeometry(0.3, 8, 6), materials.warmStone, 8);
+      const bodies = new THREE.InstancedMesh(new THREE.BoxGeometry(0.4, 0.6, 0.25), materials.warmStone, 8);
+      const dummy = new THREE.Object3D();
+      for (let i = 0; i < 8; i++) {
+        const x = -38.5 + i * 11;
+        dummy.position.set(x, 24.05, 36.8);
+        dummy.updateMatrix();
+        putti.setMatrixAt(i, dummy.matrix);
+        dummy.position.set(x, 23.65, 36.8);
+        dummy.updateMatrix();
+        bodies.setMatrixAt(i, dummy.matrix);
+      }
+      putti.count = 8; putti.name = 'Bourse Carrier-Belleuse putti frieze heads (Rodin contribution)';
+      putti.castShadow = true; g.add(putti);
+      bodies.count = 8; bodies.name = 'Bourse Carrier-Belleuse putti frieze bodies';
+      bodies.castShadow = true; g.add(bodies);
+    }
+    // Round 26: the facade clock gets its minute ring and centre boss.
+    mesh(g, new THREE.TorusGeometry(1.05, 0.07, 6, 24), materials.dark, 0, 15.9, 30.82, 'Bourse clock minute ring');
+    mesh(g, new THREE.SphereGeometry(0.12, 8, 6), materials.dark, 0, 15.9, 30.82, 'Bourse clock centre boss');
+    // Round 27: the arms of Brussels on the archivolt shield — the cross on the gilded shield.
+    box(g, 0.28, 2.4, 0.12, 0, 18.6, 30.56, materials.canvas, 'Bourse shield cross vertical (armes de Bruxelles)');
+    box(g, 1.6, 0.28, 0.12, 0, 18.6, 30.56, materials.canvas, 'Bourse shield cross horizontal (armes de Bruxelles)');
+    // Round 28: the tympanum is a sculpted relief panel set in the pediment frame.
+    box(g, 33, 6.2, 0.35, 0, 26.9, 37.15, materials.warmStone, 'Bourse tympanum relief panel');
+    // Round 29: the three doors are wooden double leaves with panel mouldings and iron studs.
+    {
+      const leaves = new THREE.InstancedMesh(new THREE.BoxGeometry(2.4, 7.6, 0.12), materials.dark, 2);
+      const studs = new THREE.InstancedMesh(new THREE.SphereGeometry(0.05, 6, 4), materials.warmStone, 36);
+      const dummy = new THREE.Object3D();
+      dummy.position.set(-1.25, 8.8, 30.55); dummy.updateMatrix(); leaves.setMatrixAt(0, dummy.matrix);
+      dummy.position.set(1.25, 8.8, 30.55); dummy.updateMatrix(); leaves.setMatrixAt(1, dummy.matrix);
+      leaves.count = 2; leaves.name = 'Bourse central door double leaves (bois, panneaux)';
+      leaves.castShadow = true; g.add(leaves);
+      let s = 0;
+      for (const dx of [-10, 10]) for (let r = 0; r < 3; r++) for (let c = 0; c < 6; c++) {
+        dummy.position.set(dx - 1.5 + c * 0.6, 6.6 + r * 2.2, 30.55);
+        dummy.updateMatrix();
+        studs.setMatrixAt(s++, dummy.matrix);
+      }
+      studs.count = s; studs.name = 'Bourse lateral door iron studs (clous)';
+      g.add(studs);
+    }
+    // Round 30: arched cella windows beside the central aedicule, with transom bars.
+    for (const sx of [-1, 1]) {
+      box(g, 2.6, 4.4, 0.3, sx * 6.5, 11.5, 30.25, materials.glass, 'Bourse cella arched window');
+      const arch = mesh(g, new THREE.CylinderGeometry(1.3, 1.3, 0.3, 12, 1, false, 0, Math.PI), materials.glass, sx * 6.5, 13.7, 30.25, 'Bourse cella window arch');
+      arch.rotation.z = Math.PI / 2;
+      box(g, 0.12, 4.4, 0.34, sx * 6.5, 11.5, 30.28, materials.dark, 'Bourse cella window transom bar');
+    }
+    // Round 31: slate gable roofs over the four Greek-cross arms, with ridge lines.
+    pedimentPrism(g, 34, 4.5, 21, 0, 26, 31, materials.slate, 'Bourse front arm slate gable roof');
+    pedimentPrism(g, 34, 4.5, 21, 0, 26, -31, materials.slate, 'Bourse rear arm slate gable roof (rue du Midi)');
+    {
+      const westRoof = pedimentPrism(g, 34, 4.5, 21, -42, 26, 0, materials.slate, 'Bourse west arm slate gable roof (rue Henri Maus)');
+      westRoof.rotation.y = Math.PI / 2;
+      const eastRoof = pedimentPrism(g, 34, 4.5, 21, 42, 26, 0, materials.slate, 'Bourse east arm slate gable roof (rue de la Bourse)');
+      eastRoof.rotation.y = Math.PI / 2;
+      for (const [rx, rz] of [[0, 31], [0, -31], [-42, 0], [42, 0]]) {
+        if (rx === 0) box(g, 0.5, 0.25, 20, rx, 30.6, rz, materials.roof, 'Bourse roof ridge line');
+        else box(g, 20, 0.25, 0.5, rx, 30.6, rz, materials.roof, 'Bourse roof ridge line');
+      }
+    }
+    // Round 32: slate dormers (lucarnes) on the arm roof slopes.
+    {
+      const dormers = new THREE.InstancedMesh(new THREE.BoxGeometry(2.2, 2.4, 1.6), materials.slate, 12);
+      const caps = new THREE.InstancedMesh(new THREE.ConeGeometry(1.7, 1.2, 4), materials.slate, 12);
+      const dummy = new THREE.Object3D();
+      let d2 = 0;
+      const spots = [[-10, 31, 27.6], [10, 31, 27.6], [-10, -31, 27.6], [10, -31, 27.6], [-42, -10, 27.6], [-42, 10, 27.6], [42, -10, 27.6], [42, 10, 27.6],
+        [-46, 31, 24.2], [46, 31, 24.2], [-46, -31, 24.2], [46, -31, 24.2]];
+      for (const [dx, dz, dy] of spots) {
+        dummy.position.set(dx, dy, dz);
+        dummy.updateMatrix();
+        dormers.setMatrixAt(d2, dummy.matrix);
+        dummy.position.set(dx, dy + 1.8, dz);
+        dummy.updateMatrix();
+        caps.setMatrixAt(d2++, dummy.matrix);
+      }
+      dormers.count = d2; dormers.name = 'Bourse arm roof dormers (lucarnes)';
+      dormers.castShadow = true; g.add(dormers);
+      caps.count = d2; caps.name = 'Bourse dormer caps';
+      caps.castShadow = true; g.add(caps);
+    }
+    // Round 33: chimney stacks with stone cap slabs on the arm roofs.
+    {
+      const stacks = new THREE.InstancedMesh(new THREE.BoxGeometry(1.2, 3.2, 1.2), materials.warmStone, 6);
+      const caps2 = new THREE.InstancedMesh(new THREE.BoxGeometry(1.7, 0.3, 1.7), materials.paleStone, 6);
+      const dummy = new THREE.Object3D();
+      const spots = [[-14, 24, 29.5], [14, 24, 29.5], [-14, -24, 29.5], [14, -24, 29.5], [-46, 6, 29.5], [46, -6, 29.5]];
+      for (let i = 0; i < 6; i++) {
+        dummy.position.set(spots[i][0], spots[i][2], spots[i][1]);
+        dummy.updateMatrix();
+        stacks.setMatrixAt(i, dummy.matrix);
+        dummy.position.set(spots[i][0], spots[i][2] + 1.75, spots[i][1]);
+        dummy.updateMatrix();
+        caps2.setMatrixAt(i, dummy.matrix);
+      }
+      stacks.count = 6; stacks.name = 'Bourse chimney stacks';
+      stacks.castShadow = true; g.add(stacks);
+      caps2.count = 6; caps2.name = 'Bourse chimney cap slabs';
+      caps2.castShadow = true; g.add(caps2);
+    }
+    // Round 34: the four corner pavilions carry hipped slate roofs with finials.
+    for (const sx of [-1, 1]) for (const sz of [-1, 1]) {
+      mesh(g, new THREE.ConeGeometry(11.2, 5, 4), materials.slate, sx * 42, 26.5, sz * 31, 'Bourse corner pavilion hipped slate roof');
+      mesh(g, new THREE.SphereGeometry(0.5, 8, 6), materials.gold, sx * 42, 29.4, sz * 31, 'Bourse pavilion roof finial');
+    }
+    // Round 35: the rear facade (rue du Midi side) is crowned by a curved pediment with the
+    // sculptural groups L'Asie and L'Afrique by Van Rasbourg, executed largely by Rodin in 1871
+    // (arau.org heritage analysis; monument.heritage.brussels A001/31241).
+    {
+      for (const sx of [-1, 1]) {
+        const grp = new THREE.Group();
+        grp.name = 'Bourse rear pediment group ' + (sx < 0 ? 'L\'Asie' : 'L\'Afrique') + ' (Van Rasbourg/Rodin 1871)';
+        grp.position.set(sx * 8, 27.5, -40.5);
+        box(grp, 1.4, 2.6, 0.5, 0, 1.3, 0, materials.warmStone, 'group central figure');
+        mesh(grp, new THREE.SphereGeometry(0.42, 8, 6), materials.warmStone, 0, 2.9, 0, 'group head');
+        box(grp, 0.9, 1.8, 0.4, sx * 1.4, 0.9, 0.1, materials.warmStone, 'group attendant');
+        g.add(grp);
+      }
+    }
+    // Round 36: on the rear upper level, two couples of caryatids designed by Rodin and signed
+    // Antoine-Joseph Van Rasbourgh — Protection, Commerce, Art, Victory — lean on the trumeaux
+    // of the three arched bays and support the entablature (en.wikipedia; nl.wikipedia).
+    {
+      const names = ['Protection', 'Commerce', 'Art', 'Victoire'];
+      const xs = [-7.5, -2.5, 2.5, 7.5];
+      for (let i = 0; i < 4; i++) {
+        const c = new THREE.Group();
+        c.name = 'Bourse caryatid ' + names[i] + ' (Rodin design, Van Rasbourgh)';
+        c.position.set(xs[i], 20, -41.2);
+        box(c, 0.9, 3.4, 0.4, 0, 1.7, 0, materials.warmStone, names[i] + ' caryatid body');
+        mesh(c, new THREE.SphereGeometry(0.32, 8, 6), materials.warmStone, 0, 3.75, 0, names[i] + ' caryatid head');
+        box(c, 1.1, 0.3, 0.5, 0, 3.5, 0, materials.warmStone, names[i] + ' caryatid capital block');
+        g.add(c);
+      }
+    }
+    // Round 37: above the caryatids, a globe carried by two putti (en.wikipedia).
+    {
+      mesh(g, new THREE.SphereGeometry(1.2, 14, 10), materials.bronze, 0, 25.2, -41.2, 'Bourse globe above the caryatids');
+      for (const sx of [-1, 1]) {
+        const p = new THREE.Group();
+        p.name = 'Bourse putti carrying the globe ' + (sx < 0 ? 'west' : 'east');
+        p.position.set(sx * 1.6, 23.4, -41.2);
+        box(p, 0.5, 1.0, 0.3, 0, 0.5, 0, materials.warmStone, 'putto body');
+        mesh(p, new THREE.SphereGeometry(0.26, 8, 6), materials.warmStone, 0, 1.2, 0, 'putto head');
+        g.add(p);
+      }
+    }
+    // Round 38: the central parts of the lateral facades (rue Henri Maus, rue de la Bourse)
+    // were opened up (ajourees) with great arched openings — Jules Brunfaut 1890-1893 and the
+    // 1930-1950 works (nl.wikipedia Beurspaleis; Reflexcity).
+    {
+      const great = new THREE.InstancedMesh(new THREE.BoxGeometry(4.2, 11, 0.5), materials.glass, 6);
+      const dummy = new THREE.Object3D();
+      let n = 0;
+      for (const wx of [-53.2, 53.2]) for (let i = 0; i < 3; i++) {
+        dummy.position.set(wx, 13, -8 + i * 8);
+        dummy.updateMatrix();
+        great.setMatrixAt(n++, dummy.matrix);
+      }
+      great.count = n;
+      great.name = 'Bourse side facade central ajouree great arches (Brunfaut 1890-93 / 1930-50)';
+      great.castShadow = true;
+      g.add(great);
+    }
+    // Round 39: the 2020-2023 restoration (Robbrecht & Daem, Baneton-Garrino, Popoff) created a
+    // roof terrace (toiture-terrasse) on the 4th floor of the rear arm, with a balustrade.
+    {
+      box(g, 30, 0.25, 16, 0, 30.8, -31, materials.pavingA, 'Bourse toiture-terrasse slab (roof terrace, 2023)');
+      const posts = new THREE.InstancedMesh(new THREE.BoxGeometry(0.18, 1.0, 0.18), materials.warmStone, 40);
+      const dummy = new THREE.Object3D();
+      let p = 0;
+      for (let i = 0; i < 20; i++) {
+        dummy.position.set(-14.5 + i * 1.5, 31.4, -38.6);
+        dummy.updateMatrix(); posts.setMatrixAt(p++, dummy.matrix);
+        dummy.position.set(-14.5 + i * 1.5, 31.4, -23.4);
+        dummy.updateMatrix(); posts.setMatrixAt(p++, dummy.matrix);
+      }
+      posts.count = p;
+      posts.name = 'Bourse roof terrace balustrade posts';
+      posts.castShadow = true;
+      g.add(posts);
+      box(g, 30, 0.12, 0.2, 0, 31.95, -38.6, materials.warmStone, 'Bourse roof terrace balustrade top rail south');
+      box(g, 30, 0.12, 0.2, 0, 31.95, -23.4, materials.warmStone, 'Bourse roof terrace balustrade top rail north');
+    }
+    // Round 40: the roof was converted into a panorama bar with terrace, covered by a brass
+    // canopy (luifel en laiton / messing) — Belgian Beer World opening September 2023.
+    {
+      const canopy = box(g, 20, 0.18, 20, 0, 46.5, 0, materials.gold, 'Bourse brass canopy over the panorama bar (luifel, 2023)');
+      canopy.castShadow = true;
+      for (let i = 0; i < 4; i++) {
+        const rib = box(g, 0.25, 0.25, 19, -7.5 + i * 5, 46.35, 0, materials.gold, 'Bourse brass canopy rib');
+        rib.castShadow = false;
+      }
+    }
+    // Round 41: the 2020-2023 restoration cut a new contemporary entrance into the blue-stone
+    // socle on the side opposite the great staircase, black granito with gilded brass, prolonging
+    // the parvis of Saint-Nicolas (La Libre, 2023).
+    {
+      const recess = box(g, 7, 4.2, 1.2, 0, 2.1, -41.4, materials.dark, 'Bourse 2023 entrance recess in the blue-stone socle (granito noir)');
+      recess.castShadow = true;
+      box(g, 8.2, 0.25, 1.6, 0, 4.35, -41.4, materials.gold, 'Bourse 2023 entrance gilded brass lintel');
+      box(g, 0.25, 4.2, 1.6, -3.9, 2.1, -41.4, materials.gold, 'Bourse 2023 entrance brass jamb west');
+      box(g, 0.25, 4.2, 1.6, 3.9, 2.1, -41.4, materials.gold, 'Bourse 2023 entrance brass jamb east');
+    }
+    // Round 42: the new entrance's granito floor strip and brass threshold.
+    box(g, 6.5, 0.12, 3.2, 0, 0.06, -42.6, materials.pavingEdge, 'Bourse 2023 entrance granito floor');
+    box(g, 6.5, 0.18, 0.3, 0, 0.09, -41.2, materials.gold, 'Bourse 2023 entrance brass threshold');
+    // Round 43: the socle is opened by utility doors with straight lintels giving access to
+    // service rooms (heritage inventory: "portes a linteau droit ... locaux utilitaires").
+    {
+      const doors = new THREE.InstancedMesh(new THREE.BoxGeometry(2.2, 3, 0.2), materials.dark, 8);
+      const lintels = new THREE.InstancedMesh(new THREE.BoxGeometry(2.8, 0.35, 0.3), materials.warmStone, 8);
+      const dummy = new THREE.Object3D();
+      for (let i = 0; i < 8; i++) {
+        const x = -38.5 + i * 11;
+        dummy.position.set(x, 1.6, 41.08);
+        dummy.updateMatrix();
+        doors.setMatrixAt(i, dummy.matrix);
+        dummy.position.set(x, 3.3, 41.1);
+        dummy.updateMatrix();
+        lintels.setMatrixAt(i, dummy.matrix);
+      }
+      doors.count = 8; doors.name = 'Bourse socle utility doors (portes a linteau droit)';
+      doors.castShadow = true; g.add(doors);
+      lintels.count = 8; lintels.name = 'Bourse socle door straight lintels';
+      lintels.castShadow = true; g.add(lintels);
+    }
+    // Round 44: iron window grilles in the socle above the utility doors (fer forge).
+    {
+      const grilles = new THREE.InstancedMesh(new THREE.BoxGeometry(2.6, 0.9, 0.12), materials.dark, 8);
+      const dummy = new THREE.Object3D();
+      for (let i = 0; i < 8; i++) {
+        dummy.position.set(-38.5 + i * 11, 4.15, 41.08);
+        dummy.updateMatrix();
+        grilles.setMatrixAt(i, dummy.matrix);
+      }
+      grilles.count = 8;
+      grilles.name = 'Bourse socle basement window iron grilles (grilles en fer forge)';
+      g.add(grilles);
+    }
+    // Round 45: a sloped water-table moulding (bandeau / water table) caps the blue-stone socle.
+    box(g, 106.8, 0.4, 82.8, 0, 4.85, 0, materials.warmStone, 'Bourse socle water-table moulding (bandeau)');
+    // Round 46: the palace facade is floodlit after dark — bracket-mounted floodlight heads on
+    // the cella, registered for the night glow pass like the Grand-Place windows.
+    {
+      const floodGlow = materials.gold.clone();
+      floodGlow.emissive = new THREE.Color(0x000000);
+      nightGlowMats.push(floodGlow);
+      const heads = new THREE.InstancedMesh(new THREE.SphereGeometry(0.22, 8, 6), floodGlow, 10);
+      const brackets = new THREE.InstancedMesh(new THREE.BoxGeometry(0.12, 0.9, 0.12), materials.dark, 10);
+      const dummy = new THREE.Object3D();
+      for (let i = 0; i < 10; i++) {
+        const x = -40 + i * 8.9;
+        dummy.position.set(x, 6.2, 30.6);
+        dummy.updateMatrix();
+        heads.setMatrixAt(i, dummy.matrix);
+        dummy.position.set(x, 5.6, 30.5);
+        dummy.updateMatrix();
+        brackets.setMatrixAt(i, dummy.matrix);
+      }
+      heads.count = 10; heads.name = 'Bourse facade floodlight heads (night floodlighting, bracket-mounted)';
+      heads.castShadow = true; g.add(heads);
+      brackets.count = 10; brackets.name = 'Bourse floodlight brackets';
+      g.add(brackets);
+    }
+    // Round 47: lead rainwater downpipes at the facade front corners, with hopper heads.
+    {
+      const pipes = new THREE.InstancedMesh(new THREE.CylinderGeometry(0.07, 0.07, 23, 6), materials.dark, 4);
+      const hoppers = new THREE.InstancedMesh(new THREE.CylinderGeometry(0.22, 0.12, 0.4, 8), materials.dark, 4);
+      const dummy = new THREE.Object3D();
+      let p = 0;
+      for (const sx of [-1, 1]) for (const sz of [1, -1]) {
+        dummy.position.set(sx * 49.6, 11.5, sz * 30.4);
+        dummy.updateMatrix();
+        pipes.setMatrixAt(p, dummy.matrix);
+        dummy.position.set(sx * 49.6, 22.9, sz * 30.4);
+        dummy.updateMatrix();
+        hoppers.setMatrixAt(p++, dummy.matrix);
+      }
+      pipes.count = p; pipes.name = 'Bourse facade lead downpipes (descentes en plomb)';
+      g.add(pipes);
+      hoppers.count = p; hoppers.name = 'Bourse downpipe hopper heads';
+      g.add(hoppers);
+    }
+    // Round 48: hood moulds (larmiers) with label stops above each facade window.
+    {
+      const hoods = new THREE.InstancedMesh(new THREE.BoxGeometry(3.1, 0.22, 0.45), materials.warmStone, 8);
+      const stops = new THREE.InstancedMesh(new THREE.SphereGeometry(0.09, 6, 5), materials.warmStone, 8);
+      const dummy = new THREE.Object3D();
+      let n = 0;
+      for (const sx of [-1, 1]) for (const wx of [24, 31]) for (const wy of [10, 17.5]) {
+        dummy.position.set(sx * wx, wy + 2.8, 30.3);
+        dummy.updateMatrix();
+        hoods.setMatrixAt(n, dummy.matrix);
+        dummy.position.set(sx * wx, wy + 2.8, 30.55);
+        dummy.updateMatrix();
+        stops.setMatrixAt(n++, dummy.matrix);
+      }
+      hoods.count = n; hoods.name = 'Bourse facade window hood moulds (larmiers)';
+      hoods.castShadow = true; g.add(hoods);
+      stops.count = n; stops.name = 'Bourse hood label stops';
+      g.add(stops);
+    }
+    // Round 49: stone sill brackets under the facade windows.
+    {
+      const sills = new THREE.InstancedMesh(new THREE.ConeGeometry(0.28, 0.35, 4), materials.warmStone, 16);
+      const dummy = new THREE.Object3D();
+      let n = 0;
+      for (const sx of [-1, 1]) for (const wx of [24, 31]) for (const wy of [10, 17.5]) for (const bx of [-1, 1]) {
+        dummy.position.set(sx * wx + bx * 1.1, wy - 2.5, 30.35);
+        dummy.rotation.set(Math.PI, 0, 0);
+        dummy.updateMatrix();
+        sills.setMatrixAt(n++, dummy.matrix);
+      }
+      sills.count = n;
+      sills.name = 'Bourse facade window sill brackets (consoles d\'appui)';
+      g.add(sills);
+    }
+    // Round 50: round attic oculi (oeil-de-boeuf) in the two avant-corps pavilion pediments.
+    for (const sx of [-1, 1]) {
+      const oculus = mesh(g, new THREE.CylinderGeometry(0.9, 0.9, 0.3, 16), materials.glass, sx * 44, 28.2, 40.4, 'Bourse pavilion pediment oculus (oeil-de-boeuf)');
+      oculus.rotation.x = Math.PI / 2;
+      mesh(g, new THREE.TorusGeometry(0.9, 0.12, 6, 16), materials.warmStone, sx * 44, 28.2, 40.4, 'Bourse oculus stone surround');
+    }
+    // Round 81: Corinthian capitals carry two rows of acanthus leaves and four corner volutes.
+    {
+      const leaves = new THREE.InstancedMesh(new THREE.ConeGeometry(0.16, 0.5, 4), materials.warmStone, 8 * 10);
+      const volutes = new THREE.InstancedMesh(new THREE.SphereGeometry(0.16, 8, 6), materials.warmStone, 8 * 4);
+      const dummy = new THREE.Object3D();
+      let n = 0, v = 0;
+      for (const cx of peristyleX) {
+        for (let k = 0; k < 10; k++) {
+          const a = k * Math.PI / 5;
+          dummy.position.set(cx + Math.cos(a) * 0.95, 5.4 + 14 + 0.62, 36 + Math.sin(a) * 0.95);
+          dummy.rotation.set(Math.PI / 2 - 0.5, 0, -a);
+          dummy.updateMatrix();
+          leaves.setMatrixAt(n++, dummy.matrix);
+        }
+        for (const a of [Math.PI / 4, 3 * Math.PI / 4, 5 * Math.PI / 4, 7 * Math.PI / 4]) {
+          dummy.position.set(cx + Math.cos(a) * 1.15, 5.4 + 14 + 0.72, 36 + Math.sin(a) * 1.15);
+          dummy.updateMatrix();
+          volutes.setMatrixAt(v++, dummy.matrix);
+        }
+      }
+      leaves.count = n; leaves.name = 'Bourse Corinthian capital acanthus leaves (2 rows, 8 columns)';
+      leaves.castShadow = true; g.add(leaves);
+      volutes.count = v; volutes.name = 'Bourse Corinthian capital corner volutes (volutes d\'angle)';
+      volutes.castShadow = true; g.add(volutes);
+    }
+    // Round 82: a necking ring (annelet) below each capital's abacus.
+    {
+      const rings = new THREE.InstancedMesh(new THREE.TorusGeometry(0.85, 0.08, 6, 14), materials.warmStone, 8);
+      const dummy = new THREE.Object3D();
+      for (let i = 0; i < 8; i++) {
+        dummy.position.set(peristyleX[i], 5.4 + 14 + 0.42, 36);
+        dummy.rotation.set(Math.PI / 2, 0, 0);
+        dummy.updateMatrix();
+        rings.setMatrixAt(i, dummy.matrix);
+      }
+      rings.count = 8;
+      rings.name = 'Bourse capital necking rings (annelets)';
+      g.add(rings);
+    }
+    // Round 83: the entablature carries cyma recta and cyma reversa mouldings above and below
+    // the frieze (classical order mouldings).
+    box(g, 104, 0.3, 9.4, 0, 23.35, 32.5, materials.warmStone, 'Bourse cornice cyma recta (moulure superieure)');
+    box(g, 104, 0.3, 9.4, 0, 20.05, 32.5, materials.warmStone, 'Bourse architrave cyma reversa (moulure inferieure)');
+    // Round 84: the projecting corona slab and bed moulding of the main cornice.
+    box(g, 104.6, 0.22, 9.8, 0, 23.6, 32.5, materials.paleStone, 'Bourse cornice corona (tablette saillante)');
+    box(g, 104.3, 0.18, 9.6, 0, 23.75, 32.5, materials.warmStone, 'Bourse cornice bed moulding');
+    // Round 85: round medallions set in the frieze between the abundance garlands.
+    {
+      const medallions = new THREE.InstancedMesh(new THREE.CylinderGeometry(0.55, 0.55, 0.15, 16), materials.warmStone, 20);
+      const dummy = new THREE.Object3D();
+      for (let i = 0; i < 20; i++) {
+        dummy.position.set(-47.5 + i * 5, 21.9, 37.12);
+        dummy.rotation.x = Math.PI / 2;
+        dummy.updateMatrix();
+        medallions.setMatrixAt(i, dummy.matrix);
+      }
+      medallions.count = 20;
+      medallions.name = 'Bourse frieze medallions (medaillons) between the garlands';
+      medallions.castShadow = true;
+      g.add(medallions);
+    }
+    // Round 86: garland swags (guirlandes en feston) draped between the medallions.
+    {
+      const swags = new THREE.InstancedMesh(new THREE.TorusGeometry(1.15, 0.09, 6, 12, Math.PI), materials.ochre, 20);
+      const dummy = new THREE.Object3D();
+      for (let i = 0; i < 20; i++) {
+        dummy.position.set(-45 + i * 5, 22.15, 37.1);
+        dummy.rotation.set(0, 0, Math.PI);
+        dummy.updateMatrix();
+        swags.setMatrixAt(i, dummy.matrix);
+      }
+      swags.count = 20;
+      swags.name = 'Bourse frieze garland swags (guirlandes en feston)';
+      swags.castShadow = true;
+      g.add(swags);
+    }
+    // Round 87: the central archivolt is built of voussoir wedges.
+    {
+      const voussoirs = new THREE.InstancedMesh(new THREE.BoxGeometry(0.55, 0.6, 0.55), materials.warmStone, 9);
+      const dummy = new THREE.Object3D();
+      for (let i = 0; i < 9; i++) {
+        const a = (i / 8) * Math.PI;
+        dummy.position.set(Math.sin(a) * 4.3, 15.9 + Math.cos(a) * 4.3, 30.35);
+        dummy.rotation.set(0, 0, -a);
+        dummy.updateMatrix();
+        voussoirs.setMatrixAt(i, dummy.matrix);
+      }
+      voussoirs.count = 9;
+      voussoirs.name = 'Bourse central archivolt voussoirs (voussoirs)';
+      voussoirs.castShadow = true;
+      g.add(voussoirs);
+    }
+    // Round 88: the archivolt's keystone is a larger wedge at the crown.
+    mesh(g, new THREE.BoxGeometry(0.9, 1.0, 0.6), materials.warmStone, 0, 20.35, 30.35, 'Bourse archivolt keystone (clef d\'arc)');
+    // Round 89: the tympanum relief sits on a plinth slab with two attendant figures flanking
+    // la Belgique.
+    box(g, 30, 0.5, 0.4, 0, 24.2, 37.2, materials.warmStone, 'Bourse tympanum relief plinth slab');
+    for (const sx of [-1, 1]) {
+      const att = new THREE.Group();
+      att.name = 'Bourse tympanum attendant figure ' + (sx < 0 ? 'west' : 'east');
+      att.position.set(sx * 13.5, 25.2, 36.7);
+      box(att, 0.8, 1.6, 0.35, 0, 0.8, 0, materials.warmStone, 'attendant body');
+      mesh(att, new THREE.SphereGeometry(0.3, 8, 6), materials.warmStone, 0, 1.85, 0, 'attendant head');
+      g.add(att);
+    }
+    // Round 90: dentils along the pediment's raking cornice.
+    {
+      const dentils = new THREE.InstancedMesh(new THREE.BoxGeometry(0.2, 0.28, 0.3), materials.warmStone, 36);
+      const dummy = new THREE.Object3D();
+      const slope = Math.atan2(8.5, 19);
+      for (let i = 0; i < 18; i++) {
+        for (const sx of [-1, 1]) {
+          dummy.position.set(sx * (1 + i * 1.02), 23.5 + (1 + i * 1.02) * Math.tan(slope), 37.1);
+          dummy.rotation.set(sx * -slope, 0, 0);
+          dummy.updateMatrix();
+          dentils.setMatrixAt(i * 2 + (sx < 0 ? 0 : 1), dummy.matrix);
+        }
+      }
+      dentils.count = 36;
+      dentils.name = 'Bourse pediment raking cornice dentils';
+      g.add(dentils);
+    }
+    // Round 91: stone balustrade parapets run up both sides of the monumental stair.
+    {
+      const slope = Math.atan2(5, 14);
+      for (const sx of [-1, 1]) {
+        const parapet = box(g, 1.0, 1.1, 15.5, sx * 13.2, 3.1, 41, materials.blueStone, 'Bourse stair balustrade parapet ' + (sx < 0 ? 'west' : 'east'));
+        parapet.rotation.z = sx * -slope;
+        box(g, 1.2, 0.18, 15.5, sx * 13.2, 3.75, 41, materials.warmStone, 'Bourse stair parapet coping (chaperon)');
+      }
+    }
+    // Round 92: newel posts with urn finials at the stair foot and head, both sides.
+    {
+      const posts = new THREE.InstancedMesh(new THREE.BoxGeometry(0.55, 1.5, 0.55), materials.blueStone, 4);
+      const urns = new THREE.InstancedMesh(new THREE.SphereGeometry(0.3, 8, 6), materials.warmStone, 4);
+      const dummy = new THREE.Object3D();
+      const spots = [[-13.2, 47.8], [13.2, 47.8], [-13.2, 34.2], [13.2, 34.2]];
+      for (let i = 0; i < 4; i++) {
+        dummy.position.set(spots[i][0], 0.75, spots[i][1]);
+        dummy.updateMatrix();
+        posts.setMatrixAt(i, dummy.matrix);
+        dummy.position.set(spots[i][0], 1.75, spots[i][1]);
+        dummy.updateMatrix();
+        urns.setMatrixAt(i, dummy.matrix);
+      }
+      posts.count = 4; posts.name = 'Bourse stair newel posts (poteaux de depart)';
+      posts.castShadow = true; g.add(posts);
+      urns.count = 4; urns.name = 'Bourse newel urn finials (vases)';
+      urns.castShadow = true; g.add(urns);
+    }
+    // Round 93: a lighter nosing strip (bande de rive) on the front edge of every tread.
+    {
+      const nosings = new THREE.InstancedMesh(new THREE.BoxGeometry(26, 0.06, 0.18), materials.pavingEdge, 20);
+      const dummy = new THREE.Object3D();
+      for (let i = 0; i < 20; i++) {
+        dummy.position.set(0, i * 0.25 + 0.26, 47.6 - i * 0.7 - 0.33);
+        dummy.updateMatrix();
+        nosings.setMatrixAt(i, dummy.matrix);
+      }
+      nosings.count = 20;
+      nosings.name = 'Bourse stair tread nosings (bandes de rive)';
+      nosings.receiveShadow = true;
+      g.add(nosings);
+    }
+    // Round 94: a moulded edge band on the portico landing.
+    box(g, 26.4, 0.25, 0.5, 0, 5.05, 34.4, materials.warmStone, 'Bourse portico landing edge moulding (bandeau de rive)');
+    // Round 95: the bull lion (head raised) gets open jaw, eye, raised foreleg and curled tail.
+    {
+      const b = out_ref_bull;
+      mesh(b, new THREE.BoxGeometry(0.28, 0.16, 0.1), materials.dark, 0.2, 2.1, 1.28, 'bull lion open jaw');
+      mesh(b, new THREE.SphereGeometry(0.07, 6, 5), materials.dark, 0.25, 2.12, 0.95, 'bull lion eye');
+      box(b, 0.34, 0.9, 0.34, 1.0, 1.35, 0.3, materials.warmStone, 'bull lion raised foreleg');
+      const tail = cylinder(b, 0.07, 0.05, 0.9, -1.1, 1.6, -0.6, materials.warmStone, 6);
+      tail.rotation.z = 0.9;
+      mesh(b, new THREE.SphereGeometry(0.1, 6, 5), materials.warmStone, -1.45, 1.95, -0.75, 'bull lion tail tuft');
+    }
+    // Round 96: the bear lion (head bowed) gets lowered jaw, eye, planted foreleg and tail.
+    {
+      const b = out_ref_bear;
+      mesh(b, new THREE.BoxGeometry(0.28, 0.14, 0.1), materials.dark, 0.2, 1.1, 1.3, 'bear lion lowered jaw');
+      mesh(b, new THREE.SphereGeometry(0.07, 6, 5), materials.dark, 0.25, 1.22, 0.95, 'bear lion eye');
+      box(b, 0.34, 0.55, 0.34, 1.0, 0.55, 0.35, materials.warmStone, 'bear lion planted foreleg');
+      const tail = cylinder(b, 0.07, 0.05, 0.9, -1.1, 1.5, -0.6, materials.warmStone, 6);
+      tail.rotation.z = 0.7;
+      mesh(b, new THREE.SphereGeometry(0.1, 6, 5), materials.warmStone, -1.4, 1.8, -0.7, 'bear lion tail tuft');
+    }
+    // Round 97: each lion pedestal carries plinth base and cap mouldings.
+    for (const sx of [-1, 1]) {
+      box(g, 4.1, 0.22, 4.1, sx * 14, 0.11, 44, materials.warmStone, 'Bourse lion pedestal plinth base');
+      box(g, 4.3, 0.18, 4.3, sx * 14, 1.44, 44, materials.warmStone, 'Bourse lion pedestal cap moulding');
+    }
+    // Round 98: each torch genius holds a torch bowl (coupe) with a flame.
+    for (const grp of torchGeniuses) {
+      const sx = grp.position.x < 0 ? -1 : 1;
+      mesh(grp, new THREE.CylinderGeometry(0.18, 0.08, 0.22, 8), materials.dark, sx * 0.55, 1.95, 0.2, 'torch bowl (coupe)');
+      mesh(grp, new THREE.ConeGeometry(0.14, 0.4, 6), materials.gold, sx * 0.55, 2.3, 0.2, 'torch flame (flamme)');
+    }
+    // Round 99: a collar and lead chain from each genius's hand to its lion (the geniuses
+    // "conduisent" the lions — Reflexcity).
+    for (const sx of [-1, 1]) {
+      const lion = sx < 0 ? out_ref_bull : out_ref_bear;
+      mesh(lion, new THREE.TorusGeometry(0.5, 0.07, 6, 12), materials.bronze, 0, 1.9, 0.55, 'lion collar (collier)');
+      const lead = cylinder(g, 0.03, 0.03, 3.2, sx * 14, 1.6, 45.3, materials.bronze, 5);
+      lead.rotation.x = 0.5;
+    }
+    // Round 100: sloped caps (chaperons) on the stair cheek walls.
+    for (const sx of [-1, 1]) {
+      const cap = box(g, 1.7, 0.22, 15.5, sx * 13.7, 5.55, 41.3, materials.warmStone, 'Bourse stair cheek wall cap (chaperon)');
+      cap.rotation.z = sx * -Math.atan2(5, 14);
+    }
+    // Round 101: the high drum is pierced by round oculi (heritage inventory: dome on high
+    // socle under a richly ornamented entablature).
+    {
+      const oculi = new THREE.InstancedMesh(new THREE.CylinderGeometry(1.0, 1.0, 0.4, 14), materials.glass, 8);
+      const dummy = new THREE.Object3D();
+      for (let i = 0; i < 8; i++) {
+        const a = (i + 0.5) * Math.PI / 4;
+        dummy.position.set(Math.sin(a) * 13.2, 34, Math.cos(a) * 13.2);
+        dummy.rotation.y = -a;
+        dummy.updateMatrix();
+        oculi.setMatrixAt(i, dummy.matrix);
+      }
+      oculi.count = 8;
+      oculi.name = 'Bourse dome drum oculi (oeils-de-boeuf du tambour)';
+      oculi.castShadow = true;
+      g.add(oculi);
+    }
+    // Round 102: dentil + modillion rings around the drum's ornamented entablature.
+    {
+      const dentils = new THREE.InstancedMesh(new THREE.BoxGeometry(0.3, 0.35, 0.3), materials.warmStone, 24);
+      const dummy = new THREE.Object3D();
+      for (let i = 0; i < 24; i++) {
+        const a = i * Math.PI / 12;
+        dummy.position.set(Math.sin(a) * 13.9, 38.6, Math.cos(a) * 13.9);
+        dummy.rotation.y = -a;
+        dummy.updateMatrix();
+        dentils.setMatrixAt(i, dummy.matrix);
+      }
+      dentils.count = 24;
+      dentils.name = 'Bourse drum entablature dentils (denticules du tambour)';
+      dentils.castShadow = true;
+      g.add(dentils);
+    }
+    // Round 103: the glazed dome is divided by mullions and three horizontal girders (the 1893
+    // curved glazing replaced the original stucco vaulting).
+    for (const rr of [6.5, 10.5, 13.2]) {
+      const ring = mesh(g, new THREE.TorusGeometry(rr, 0.09, 6, 32), materials.blueStone, 0, 39.6 + Math.sqrt(Math.max(0, 14 * 14 - rr * rr)), 0, 'Bourse dome glazing girder (cerce)');
+      ring.rotation.x = Math.PI / 2;
+    }
+    // Round 104: paired meridian ribs on the dome (double arcs transversaux).
+    {
+      const ribs2 = new THREE.InstancedMesh(new THREE.BoxGeometry(0.4, 13.0, 0.4), materials.blueStone, 8);
+      const dummy = new THREE.Object3D();
+      for (let i = 0; i < 8; i++) {
+        const a = (i + 0.5) * Math.PI / 4;
+        dummy.position.set(Math.sin(a) * 9.9, 46.3, Math.cos(a) * 9.9);
+        dummy.rotation.set(Math.cos(a) * 0.72, 0, -Math.sin(a) * 0.72);
+        dummy.updateMatrix();
+        ribs2.setMatrixAt(i, dummy.matrix);
+      }
+      ribs2.count = 8;
+      ribs2.name = 'Bourse dome paired meridian ribs (second set of arcs)';
+      ribs2.castShadow = true;
+      g.add(ribs2);
+    }
+    // Round 105: the circular lantern is ringed by eight small columns and crowned by an orb
+    // and cross finial.
+    {
+      const cols = new THREE.InstancedMesh(new THREE.CylinderGeometry(0.28, 0.32, 6.2, 8), materials.paleStone, 8);
+      const dummy = new THREE.Object3D();
+      for (let i = 0; i < 8; i++) {
+        const a = i * Math.PI / 4;
+        dummy.position.set(Math.sin(a) * 4.1, 50.2, Math.cos(a) * 4.1);
+        dummy.updateMatrix();
+        cols.setMatrixAt(i, dummy.matrix);
+      }
+      cols.count = 8;
+      cols.name = 'Bourse lantern ring of eight columns (colonnettes du lanterneau)';
+      cols.castShadow = true;
+      g.add(cols);
+      mesh(g, new THREE.SphereGeometry(0.55, 10, 8), materials.gold, 0, 58.6, 0, 'Bourse lantern orb (boule)');
+      box(g, 0.12, 1.2, 0.12, 0, 59.4, 0, materials.gold, 'Bourse lantern cross vertical');
+      box(g, 0.7, 0.12, 0.12, 0, 59.6, 0, materials.gold, 'Bourse lantern cross horizontal');
+    }
+    // Round 106: the lantern has its own cornice and base moulding.
+    box(g, 9.6, 0.35, 9.6, 0, 56.9, 0, materials.warmStone, 'Bourse lantern cornice (corniche du lanterneau)');
+    box(g, 9.4, 0.3, 9.4, 0, 46.9, 0, materials.warmStone, 'Bourse lantern base moulding (socle du lanterneau)');
+    // Round 107: four pendentives (pendentifs) carry the drum over the square plan (heritage
+    // inventory: "coupole a pendentifs").
+    for (let i = 0; i < 4; i++) {
+      const a = i * Math.PI / 2 + Math.PI / 4;
+      const pend = pedimentPrism(g, 12, 7, 1.2, Math.sin(a) * 12.5, 30, Math.cos(a) * 12.5, materials.paleStone, 'Bourse dome pendentive (pendentif)');
+      pend.rotation.y = -a;
+    }
+    // Round 108: barrel vaults (tongewelven) spring over the four cross arms at the drum base.
+    for (let i = 0; i < 4; i++) {
+      const a = i * Math.PI / 2;
+      const vault = mesh(g, new THREE.CylinderGeometry(11, 11, 26, 16, 1, false, 0, Math.PI), materials.paleStone,
+        Math.sin(a) * 20, 26, Math.cos(a) * 20, 'Bourse barrel vault over cross arm (tongewelf)');
+      vault.rotation.z = Math.PI / 2;
+      vault.rotation.y = -a;
+    }
+    // Round 109: slate tile courses run down the arm roof slopes.
+    {
+      const courses = new THREE.InstancedMesh(new THREE.BoxGeometry(34, 0.08, 0.5), materials.roof, 5 * 4);
+      const dummy = new THREE.Object3D();
+      let n = 0;
+      for (const [cx, cz, ry] of [[0, 31, 0], [0, -31, 0], [-42, 0, Math.PI / 2], [42, 0, Math.PI / 2]]) {
+        for (let i = 0; i < 5; i++) {
+          dummy.position.set(cx, 26.4 + i * 0.8, cz + (ry === 0 ? (i - 2) * 3.4 : 0));
+          if (ry !== 0) dummy.position.set(cx + (i - 2) * 3.4, 26.4 + i * 0.8, cz);
+          dummy.rotation.set(0, ry, 0);
+          dummy.updateMatrix();
+          courses.setMatrixAt(n++, dummy.matrix);
+        }
+      }
+      courses.count = n;
+      courses.name = 'Bourse arm roof slate tile courses (ardoises en ranges)';
+      g.add(courses);
+    }
+    // Round 110: gilded ridge cresting along the four arm roof ridges.
+    {
+      const crests = new THREE.InstancedMesh(new THREE.ConeGeometry(0.14, 0.55, 6), materials.gold, 4 * 10);
+      const dummy = new THREE.Object3D();
+      let n = 0;
+      for (const [cx, cz, ry] of [[0, 31, 0], [0, -31, 0], [-42, 0, Math.PI / 2], [42, 0, Math.PI / 2]]) {
+        for (let i = 0; i < 10; i++) {
+          if (ry === 0) dummy.position.set((i - 4.5) * 3.4, 30.85, cz);
+          else dummy.position.set(cx, 30.85, (i - 4.5) * 3.4);
+          dummy.rotation.set(0, ry, 0);
+          dummy.updateMatrix();
+          crests.setMatrixAt(n++, dummy.matrix);
+        }
+      }
+      crests.count = n;
+      crests.name = 'Bourse arm roof ridge cresting (cretes dorees)';
+      crests.castShadow = true;
+      g.add(crests);
+    }
+    // Round 111: the side-facade arcades are crowned by small pediments (frontons sur baies).
+    {
+      const peds = new THREE.InstancedMesh(new THREE.BoxGeometry(4.2, 0.9, 0.6), materials.paleStone, 24);
+      const dummy = new THREE.Object3D();
+      let n = 0;
+      for (const wx of [-53.3, 53.3]) for (let i = 0; i < 12; i++) {
+        dummy.position.set(wx, 17.8, -14 + i * 4.6 + 2.3);
+        dummy.updateMatrix();
+        peds.setMatrixAt(n++, dummy.matrix);
+      }
+      peds.count = n;
+      peds.name = 'Bourse side facade arcade pediments (frontons sur baies)';
+      peds.castShadow = true;
+      g.add(peds);
+    }
+    // Round 112: balcony balustrades on the side facades' etage level.
+    {
+      const balusters = new THREE.InstancedMesh(new THREE.BoxGeometry(0.14, 0.85, 0.14), materials.warmStone, 2 * 11 * 10);
+      const rails = new THREE.InstancedMesh(new THREE.BoxGeometry(11, 0.12, 0.2), materials.warmStone, 20);
+      const dummy = new THREE.Object3D();
+      let b = 0, r = 0;
+      for (const wx of [-53.3, 53.3]) {
+        for (let i = 0; i < 10; i++) {
+          dummy.position.set(wx, 18.9, -14 + i * 4.6 + 1.1);
+          dummy.updateMatrix();
+          rails.setMatrixAt(r++, dummy.matrix);
+          for (let k = 0; k < 11; k++) {
+            dummy.position.set(wx, 18.45, -14 + i * 4.6 + 0.6 + k * 0.95);
+            dummy.updateMatrix();
+            balusters.setMatrixAt(b++, dummy.matrix);
+          }
+        }
+      }
+      balusters.count = b;
+      balusters.name = 'Bourse side facade balcony balusters (balustres)';
+      g.add(balusters);
+      rails.count = r;
+      rails.name = 'Bourse side facade balcony top rails';
+      rails.castShadow = true;
+      g.add(rails);
+    }
+    // Round 113: the rear facade (rue du Midi) carries window rows under a full cornice.
+    {
+      const wins = new THREE.InstancedMesh(new THREE.BoxGeometry(2.4, 4.2, 0.4), materials.glass, 18);
+      const dummy = new THREE.Object3D();
+      let n = 0;
+      for (let f = 0; f < 3; f++) for (let i = 0; i < 6; i++) {
+        dummy.position.set(-12.5 + i * 5, 9 + f * 6, -41.3);
+        dummy.updateMatrix();
+        wins.setMatrixAt(n++, dummy.matrix);
+      }
+      wins.count = n;
+      wins.name = 'Bourse rear facade windows (rue du Midi)';
+      wins.castShadow = true;
+      g.add(wins);
+      box(g, 34, 1.1, 0.8, 0, 26.6, -41.2, materials.warmStone, 'Bourse rear facade cornice');
+    }
+    // Round 114: the rear upper level repeats the three arched bays whose trumeaux carry the
+    // caryatids (heritage inventory: "mur ajoure de trois baies cintrees a l'etage").
+    for (const bx of [-7.5, 0, 7.5]) {
+      box(g, 4.6, 5.4, 0.4, bx, 23, -41.3, materials.glass, 'Bourse rear upper arched bay');
+      const arch = mesh(g, new THREE.CylinderGeometry(2.3, 2.3, 0.4, 14, 1, false, 0, Math.PI), materials.glass, bx, 25.7, -41.3, 'Bourse rear upper bay arch');
+      arch.rotation.z = Math.PI / 2;
+    }
+    // Round 115: modillions under the side facades' cornices.
+    {
+      const mods = new THREE.InstancedMesh(new THREE.BoxGeometry(0.4, 0.5, 0.4), materials.warmStone, 2 * 16);
+      const dummy = new THREE.Object3D();
+      let n = 0;
+      for (const wx of [-53.3, 53.3]) for (let i = 0; i < 16; i++) {
+        dummy.position.set(wx, 26.2, -15 + i * 4.6);
+        dummy.updateMatrix();
+        mods.setMatrixAt(n++, dummy.matrix);
+      }
+      mods.count = n;
+      mods.name = 'Bourse side facade cornice modillions';
+      mods.castShadow = true;
+      g.add(mods);
+    }
+    // Round 116: mullions (meneaux) divide the great side arches.
+    {
+      const mull = new THREE.InstancedMesh(new THREE.BoxGeometry(0.14, 11, 0.2), materials.dark, 6);
+      const dummy = new THREE.Object3D();
+      let n = 0;
+      for (const wx of [-53.35, 53.35]) for (let i = 0; i < 3; i++) {
+        dummy.position.set(wx, 13, -8 + i * 8);
+        dummy.updateMatrix();
+        mull.setMatrixAt(n++, dummy.matrix);
+      }
+      mull.count = n;
+      mull.name = 'Bourse great arch mullions (meneaux)';
+      g.add(mull);
+    }
+    // Round 117: iron grilles close the ground-floor arcades (offices behind them).
+    {
+      const grilles = new THREE.InstancedMesh(new THREE.BoxGeometry(3.2, 8.5, 0.15), materials.dark, 16);
+      const dummy = new THREE.Object3D();
+      let n = 0;
+      for (const wx of [-53.35, 53.35]) for (let i = 0; i < 8; i++) {
+        dummy.position.set(wx, 9, -14 + i * 4.6);
+        dummy.updateMatrix();
+        grilles.setMatrixAt(n++, dummy.matrix);
+      }
+      grilles.count = n;
+      grilles.name = 'Bourse ground-floor arcade iron grilles (grilles des bureaux)';
+      g.add(grilles);
+    }
+    // Round 118: colossal pilasters frame the side facade bays.
+    {
+      const pil = new THREE.InstancedMesh(new THREE.BoxGeometry(0.9, 21, 0.7), materials.paleStone, 2 * 9);
+      const caps = new THREE.InstancedMesh(new THREE.BoxGeometry(1.2, 0.5, 1.0), materials.warmStone, 2 * 9);
+      const dummy = new THREE.Object3D();
+      let n = 0;
+      for (const wx of [-53.4, 53.4]) for (let i = 0; i < 9; i++) {
+        dummy.position.set(wx, 15.5, -16.2 + i * 4.6);
+        dummy.updateMatrix();
+        pil.setMatrixAt(n, dummy.matrix);
+        dummy.position.set(wx, 26.1, -16.2 + i * 4.6);
+        dummy.updateMatrix();
+        caps.setMatrixAt(n++, dummy.matrix);
+      }
+      pil.count = n;
+      pil.name = 'Bourse side facade colossal pilasters (pilastres colossaux)';
+      pil.castShadow = true;
+      g.add(pil);
+      caps.count = n;
+      caps.name = 'Bourse pilaster capitals';
+      g.add(caps);
+    }
+    // Round 119: string courses on the side facades between registers.
+    for (const wx of [-53.45, 53.45]) {
+      box(g, 0.25, 0.35, 34, wx, 13.5, 0, materials.warmStone, 'Bourse side facade first string course');
+      box(g, 0.25, 0.35, 34, wx, 19.5, 0, materials.warmStone, 'Bourse side facade second string course');
+    }
+    // Round 120: the lateral entrance on the rear facade (rue du Midi side) — widened in the
+    // 2020-2023 restoration — with stone surround, arched head and steps (nl.wikipedia Beurspaleis).
+    {
+      box(g, 5, 8, 0.7, 0, 9, -41.4, materials.dark, 'Bourse rear lateral entrance door (entree laterale, élargie 2023)');
+      const arch = mesh(g, new THREE.CylinderGeometry(2.5, 2.5, 0.7, 14, 1, false, 0, Math.PI), materials.dark, 0, 13, -41.4, 'Bourse rear entrance arch');
+      arch.rotation.z = Math.PI / 2;
+      box(g, 6.4, 0.4, 1.1, 0, 13.4, -41.5, materials.warmStone, 'Bourse rear entrance lintel band');
+      box(g, 5.6, 0.3, 2.2, 0, 0.15, -42.2, materials.pavingEdge, 'Bourse rear entrance step');
+      box(g, 6.2, 0.3, 3.0, 0, 0.45, -42.8, materials.pavingEdge, 'Bourse rear entrance landing');
+    }
+    // Round 131: etage windows of the front facade get balcony balustrades with rails.
+    {
+      const rails = new THREE.InstancedMesh(new THREE.BoxGeometry(3.0, 0.1, 0.18), materials.warmStone, 4);
+      const bal = new THREE.InstancedMesh(new THREE.BoxGeometry(0.12, 0.8, 0.12), materials.warmStone, 4 * 12);
+      const dummy = new THREE.Object3D();
+      let r = 0, b = 0;
+      for (const sx of [-1, 1]) for (const wx of [24, 31]) {
+        dummy.position.set(sx * wx, 15.35, 30.4);
+        dummy.updateMatrix();
+        rails.setMatrixAt(r++, dummy.matrix);
+        for (let k = 0; k < 12; k++) {
+          dummy.position.set(sx * wx - 1.35 + k * 0.245, 14.95, 30.45);
+          dummy.updateMatrix();
+          bal.setMatrixAt(b++, dummy.matrix);
+        }
+      }
+      rails.count = r; rails.name = 'Bourse front etage balcony top rails';
+      rails.castShadow = true; g.add(rails);
+      bal.count = b; bal.name = 'Bourse front etage balcony balusters';
+      g.add(bal);
+    }
+    // Round 132: keystones over every front facade window.
+    {
+      const keys = new THREE.InstancedMesh(new THREE.BoxGeometry(0.6, 0.9, 0.3), materials.warmStone, 8);
+      const dummy = new THREE.Object3D();
+      let n = 0;
+      for (const sx of [-1, 1]) for (const wx of [24, 31]) for (const wy of [10, 17.5]) {
+        dummy.position.set(sx * wx, wy + 2.95, 30.35);
+        dummy.updateMatrix();
+        keys.setMatrixAt(n++, dummy.matrix);
+      }
+      keys.count = n;
+      keys.name = 'Bourse front window keystones (clefs de fenetre)';
+      keys.castShadow = true;
+      g.add(keys);
+    }
+    // Round 133: the tympanum geniuses carry their attributes — Commerce a purse, Industrie a
+    // hammer-and-gear (allegory of trade and industry, Joseph Jacquet).
+    {
+      const bg = g.children.find((c) => c.name === 'Bourse tympanum la Belgique (Joseph Jacquet)');
+      if (bg) {
+        mesh(bg, new THREE.SphereGeometry(0.3, 8, 6), materials.gold, 0.8, 1.6, 0.3, 'la Belgique laurel crown');
+      }
+      const geniuses = g.children.filter((c) => c.name && c.name.startsWith('Bourse tympanum genius'));
+      for (const gns of geniuses) {
+        const commerce = gns.name.includes('Commerce');
+        mesh(gns, new THREE.SphereGeometry(0.22, 8, 6), materials.gold, 0.6, 0.9, 0.25, commerce ? 'Commerce purse (bourse)' : 'Industrie gear');
+        if (!commerce) box(gns, 0.1, 0.7, 0.1, -0.6, 1.2, 0.25, materials.gold, 'Industrie hammer handle');
+      }
+    }
+    // Round 134: the pediment apex acroterion is a palmette fan.
+    mesh(g, new THREE.ConeGeometry(0.55, 1.3, 6), materials.warmStone, 0, 33.1, 32.5, 'Bourse apex palmette (palmette sommitale)');
+    // Round 135: the central door is reached by two worn stone steps.
+    box(g, 5.6, 0.18, 1.4, 0, 0.09, 31.2, materials.pavingEdge, 'Bourse central door lower step');
+    box(g, 5.2, 0.18, 1.0, 0, 0.27, 30.9, materials.pavingEdge, 'Bourse central door upper step');
+    // Round 136: lateral doors get thresholds.
+    box(g, 4.1, 0.15, 1.0, -10, 0.07, 31.0, materials.pavingEdge, 'Bourse west door threshold');
+    box(g, 4.1, 0.15, 1.0, 10, 0.07, 31.0, materials.pavingEdge, 'Bourse east door threshold');
+    // Round 137: bronze escutcheons and knockers on all three doors.
+    {
+      const esc = new THREE.InstancedMesh(new THREE.CylinderGeometry(0.16, 0.16, 0.06, 10), materials.bronze, 3);
+      const knock = new THREE.InstancedMesh(new THREE.SphereGeometry(0.12, 8, 6), materials.bronze, 3);
+      const dummy = new THREE.Object3D();
+      for (let i = 0; i < 3; i++) {
+        const x = [-10, 0, 10][i];
+        dummy.position.set(x, 8.6, 30.62);
+        dummy.rotation.x = Math.PI / 2;
+        dummy.updateMatrix();
+        esc.setMatrixAt(i, dummy.matrix);
+        dummy.position.set(x + 0.7, 7.6, 30.62);
+        dummy.updateMatrix();
+        knock.setMatrixAt(i, dummy.matrix);
+      }
+      esc.count = 3; esc.name = 'Bourse door escutcheons (entrees de serrure)';
+      g.add(esc);
+      knock.count = 3; knock.name = 'Bourse door knockers (heurtoirs)';
+      g.add(knock);
+    }
+    // Round 138: mutules (projecting modillion blocks) over each peristyle column on the cornice.
+    {
+      const mutules = new THREE.InstancedMesh(new THREE.BoxGeometry(0.7, 0.6, 0.8), materials.warmStone, 8);
+      const dummy = new THREE.Object3D();
+      for (let i = 0; i < 8; i++) {
+        dummy.position.set(peristyleX[i], 23.9, 37.2);
+        dummy.updateMatrix();
+        mutules.setMatrixAt(i, dummy.matrix);
+      }
+      mutules.count = 8;
+      mutules.name = 'Bourse cornice mutules over the peristyle columns';
+      mutules.castShadow = true;
+      g.add(mutules);
+    }
+    // Round 139: the archivolt's arms-of-Brussels shield gets a boss and rim.
+    mesh(g, new THREE.SphereGeometry(0.22, 8, 6), materials.gold, 0, 18.6, 30.7, 'Bourse shield boss (umbo)');
+    mesh(g, new THREE.TorusGeometry(1.35, 0.1, 6, 18), materials.gold, 0, 18.6, 30.68, 'Bourse shield rim (bordure)');
+    // Round 140: the facade windows glow warm after dark (night pass) — the stone of the palace
+    // was too soft and was painted with oil paint (Reflexcity); register a glowing window clone.
+    {
+      const bourseWindowGlow = materials.glass.clone();
+      bourseWindowGlow.emissive = new THREE.Color(0x000000);
+      nightGlowMats.push(bourseWindowGlow);
+      const winMesh = g.children.find((c) => c.name === 'Bourse facade windows (rez-de-chaussee + etage)');
+      if (winMesh) winMesh.material = bourseWindowGlow;
+      const cellaWin = g.children.filter((c) => c.name === 'Bourse cella arched window');
+      for (const w of cellaWin) w.material = bourseWindowGlow;
+    }
+    // Round 141: the caryatids' drapery is carved in vertical folds.
+    {
+      const caryatids = g.children.filter((c) => c.name && c.name.startsWith('Bourse caryatid'));
+      for (const c of caryatids) {
+        const folds = new THREE.InstancedMesh(new THREE.BoxGeometry(0.08, 3.2, 0.06), materials.dark, 5);
+        const dummy = new THREE.Object3D();
+        for (let k = 0; k < 5; k++) {
+          dummy.position.set(-0.32 + k * 0.16, 1.7, 0.21);
+          dummy.updateMatrix();
+          folds.setMatrixAt(k, dummy.matrix);
+        }
+        folds.count = 5;
+        folds.name = 'Bourse caryatid drapery folds (plis du drapé)';
+        c.add(folds);
+      }
+    }
+    // Round 142: a continuous entablature beam rests on the four caryatid capital blocks.
+    box(g, 20, 0.9, 1.0, 0, 24.1, -41.2, materials.warmStone, 'Bourse caryatid entablature beam (entablement porte par les cariatides)');
+    // Round 143: the L'Asie group includes an elephant; L'Afrique an attendant — the 1871 groups
+    // by Van Rasbourg (largely executed by Rodin) on the south facade top.
+    {
+      const groups = g.children.filter((c) => c.name && c.name.startsWith('Bourse rear pediment group'));
+      for (const grp of groups) {
+        const isAsia = grp.name.includes('Asie');
+        if (isAsia) {
+          mesh(grp, new THREE.SphereGeometry(0.7, 10, 8), materials.warmStone, -2.2, 0.7, 0.2, 'L\'Asie elephant body');
+          cylinder(grp, 0.18, 0.24, 0.9, -2.85, 0.4, 0.2, materials.warmStone, 8);
+          mesh(grp, new THREE.SphereGeometry(0.34, 8, 6), materials.warmStone, -3.2, 0.85, 0.2, 'L\'Asie elephant head');
+        } else {
+          box(grp, 0.9, 1.8, 0.4, -2.0, 0.9, 0.1, materials.warmStone, 'L\'Afrique attendant');
+          mesh(grp, new THREE.SphereGeometry(0.3, 8, 6), materials.warmStone, -2.0, 2.1, 0.1, 'L\'Afrique attendant head');
+        }
+      }
+    }
+    // Round 144: the rear pediment is curved (fronton courbe) — a cyma arc over its crown.
+    {
+      const arc = mesh(g, new THREE.TorusGeometry(17, 0.35, 8, 24, Math.PI * 0.55), materials.warmStone, 0, 26, -38.6, 'Bourse rear curved pediment cyma (fronton courbe)');
+      arc.rotation.z = Math.PI * 0.225;
+    }
+    // Round 145: the globe-carrying putti have wings.
+    for (const p of g.children.filter((c) => c.name && c.name.startsWith('Bourse putti carrying'))) {
+      const sx = p.position.x < 0 ? -1 : 1;
+      box(p, 0.7, 0.18, 0.18, sx * 0.45, 1.1, 0.12, materials.warmStone, 'putto wing');
+    }
+    // Round 146: the bronze globe carries meridian rings.
+    for (const rr of [0.7, 1.05]) {
+      const ring = mesh(g, new THREE.TorusGeometry(rr, 0.05, 6, 20), materials.dark, 0, 25.2, -41.2, 'Bourse globe meridian');
+      ring.rotation.y = Math.PI / 2;
+    }
+    // Round 147: quoin chains at the rear facade corners.
+    {
+      const q = new THREE.InstancedMesh(new THREE.BoxGeometry(0.55, 0.95, 0.5), materials.warmStone, 44);
+      const dummy = new THREE.Object3D();
+      let n = 0;
+      for (const sx of [-1, 1]) for (let r = 0; r < 22; r++) {
+        dummy.position.set(sx * 16.7, 5.6 + r * 0.95, -41.3);
+        dummy.updateMatrix();
+        q.setMatrixAt(n++, dummy.matrix);
+      }
+      q.count = n;
+      q.name = 'Bourse rear facade corner quoins';
+      q.castShadow = true;
+      g.add(q);
+    }
+    // Round 148: pilasters frame the three rear upper bays.
+    for (const bx of [-10, -5, 5, 10]) {
+      box(g, 0.8, 7, 0.5, bx, 22.5, -41.35, materials.paleStone, 'Bourse rear bay pilaster');
+    }
+    // Round 149: the peristyle is a deep recess — a darker cella wall band behind the columns.
+    box(g, 100, 15, 0.6, 0, 12.5, 29.2, materials.dark, 'Bourse peristyle recess shadow band');
+    // Round 150: the stylobate carries an edge moulding (bandeau) on its front edge.
+    box(g, 41, 0.22, 0.3, 0, 5.45, 38.2, materials.warmStone, 'Bourse stylobate edge moulding');
+    // Round 161: the peristyle has a dark soffit (plafond de la colonnade) under the entablature.
+    box(g, 100, 0.25, 9, 0, 20.1, 32.5, materials.dark, 'Bourse peristyle soffit (plafond)');
+    // Round 162: a small triangular pediment crowns the central door's aedicule.
+    pedimentPrism(g, 8.6, 1.6, 2.2, 0, 14.25, 30.9, materials.paleStone, 'Bourse aedicule pediment over the central door');
+    // Round 163: impost blocks at the springing of the central arch.
+    for (const sx of [-1, 1]) box(g, 0.9, 0.7, 0.7, sx * 4.3, 15.9, 30.35, materials.warmStone, 'Bourse central arch impost block');
+    // Round 164: windows on the two front avant-corps pavilions, ground floor and etage.
+    {
+      const wins = new THREE.InstancedMesh(new THREE.BoxGeometry(2.2, 4.4, 0.35), materials.glass, 8);
+      const dummy = new THREE.Object3D();
+      let n = 0;
+      for (const sx of [-1, 1]) for (const wx of [-2.5, 2.5]) for (const wy of [10.5, 18]) {
+        dummy.position.set(sx * 44 + wx, wy, 41.2);
+        dummy.updateMatrix();
+        wins.setMatrixAt(n++, dummy.matrix);
+      }
+      wins.count = n;
+      wins.name = 'Bourse avant-corps pavilion windows';
+      wins.castShadow = true;
+      g.add(wins);
+    }
+    // Round 165: dentils under the pavilion cornices.
+    {
+      const dent = new THREE.InstancedMesh(new THREE.BoxGeometry(0.22, 0.3, 0.25), materials.warmStone, 2 * 16);
+      const dummy = new THREE.Object3D();
+      let n = 0;
+      for (const sx of [-1, 1]) for (let i = 0; i < 16; i++) {
+        dummy.position.set(sx * 44 - 7.5 + i, 25.5, 41.1);
+        dummy.updateMatrix();
+        dent.setMatrixAt(n++, dummy.matrix);
+      }
+      dent.count = n;
+      dent.name = 'Bourse pavilion cornice dentils';
+      dent.castShadow = true;
+      g.add(dent);
+    }
+    // Round 166: each pavilion has a ground-floor door in a stone surround.
+    for (const sx of [-1, 1]) {
+      box(g, 3, 5.4, 0.5, sx * 44, 7.7, 41.2, materials.dark, 'Bourse pavilion door ' + (sx < 0 ? 'west' : 'east'));
+      box(g, 3.8, 0.35, 0.7, sx * 44, 10.6, 41.25, materials.warmStone, 'Bourse pavilion door lintel');
+    }
+    // Round 167: the four De Groot allegories stand on pedestals.
+    {
+      const figs = g.children.filter((c) => c.name && c.name.startsWith('Bourse allegory'));
+      for (const fig of figs) {
+        const sx = fig.position.x, sz = fig.position.z;
+        box(g, 1.6, 0.5, 1.0, sx, fig.position.y - 0.25, sz, materials.blueStone, 'Bourse allegory pedestal');
+      }
+    }
+    // Round 168: a radiant gilded disc (halo) behind la Belgique in the tympanum — the emblem
+    // sits in a radiant disc like the guild-house emblems of the Grand-Place.
+    {
+      const bg = g.children.find((c) => c.name === 'Bourse tympanum la Belgique (Joseph Jacquet)');
+      if (bg) mesh(bg, new THREE.CylinderGeometry(1.7, 1.7, 0.12, 20), materials.gold, 0, 1.6, -0.3, 'Bourse tympanum radiant halo disc');
+    }
+    // Round 169: end blocks (blocs d'extremite) close the entablature at the facade corners.
+    for (const sx of [-1, 1]) box(g, 1.2, 3.5, 9.6, sx * 51.2, 21.75, 32.5, materials.warmStone, 'Bourse entablature end block');
+    // Round 170: the cella base plinth (plinthe) in darker stone.
+    box(g, 100, 0.7, 4.3, 0, 5.35, 28, materials.warmStone, 'Bourse cella base plinth (plinthe)');
+    // Round 181: the paired Corinthian pilasters on the dome piers get bases and capitals.
+    {
+      const bases = new THREE.InstancedMesh(new THREE.BoxGeometry(0.8, 0.5, 0.8), materials.warmStone, 8);
+      const caps = new THREE.InstancedMesh(new THREE.BoxGeometry(0.8, 0.4, 0.8), materials.warmStone, 8);
+      const dummy = new THREE.Object3D();
+      let n = 0;
+      for (const sx of [-1, 1]) for (const sz of [-1, 1]) for (const off of [[3.6, 0], [0, 3.6]]) {
+        dummy.position.set(sx * 11 + (off[0] ? sx * 3.6 : 0), 6.25, sz * 11 + (off[1] ? sz * 3.6 : 0));
+        dummy.updateMatrix();
+        bases.setMatrixAt(n, dummy.matrix);
+        dummy.position.set(sx * 11 + (off[0] ? sx * 3.6 : 0), 27.4, sz * 11 + (off[1] ? sz * 3.6 : 0));
+        dummy.updateMatrix();
+        caps.setMatrixAt(n++, dummy.matrix);
+      }
+      bases.count = n; bases.name = 'Bourse dome pilaster bases';
+      g.add(bases);
+      caps.count = n; caps.name = 'Bourse dome pilaster capitals (chapiteaux des pilastres)';
+      caps.castShadow = true;
+      g.add(caps);
+    }
+    // Round 182: each dome pier stands on a plinth at the drum base.
+    for (const sx of [-1, 1]) for (const sz of [-1, 1]) {
+      box(g, 8.2, 1.2, 8.2, sx * 11, 5.6, sz * 11, materials.warmStone, 'Bourse dome pier plinth (plinthe du pilier)');
+    }
+    // Round 183: the socle's refend grooves continue around the side and rear faces.
+    {
+      const side = new THREE.InstancedMesh(new THREE.BoxGeometry(0.05, 4.7, 0.07), materials.dark, 60);
+      const dummy = new THREE.Object3D();
+      let n = 0;
+      for (const sx of [-1, 1]) for (let i = 0; i < 20; i++) {
+        dummy.position.set(sx * 53.03, 2.5, -40 + i * 4);
+        dummy.updateMatrix();
+        side.setMatrixAt(n++, dummy.matrix);
+      }
+      for (let i = 0; i < 20; i++) {
+        dummy.position.set(-52 + i * 5.4, 2.5, -41.03);
+        dummy.updateMatrix();
+        side.setMatrixAt(n++, dummy.matrix);
+      }
+      side.count = n;
+      side.name = 'Bourse socle refend grooves side + rear faces';
+      g.add(side);
+    }
+    // Round 184: an eave gutter runs along the front cornice, aligned with the downpipes.
+    box(g, 104, 0.22, 0.5, 0, 23.95, 37.4, materials.dark, 'Bourse front eave gutter (gouttiere)');
+    // Round 185: palmette antefixes at the two lower corners of the pediment.
+    for (const sx of [-1, 1]) mesh(g, new THREE.ConeGeometry(0.45, 1.1, 6), materials.warmStone, sx * 18.4, 24.6, 32.5, 'Bourse pediment eaves palmette antefix');
+    // Round 186: twelve minute ticks around the facade clock.
+    {
+      const ticks = new THREE.InstancedMesh(new THREE.BoxGeometry(0.07, 0.3, 0.05), materials.dark, 12);
+      const dummy = new THREE.Object3D();
+      for (let i = 0; i < 12; i++) {
+        const a = i * Math.PI / 6;
+        dummy.position.set(Math.sin(a) * 1.05, 15.9 + Math.cos(a) * 1.05, 30.83);
+        dummy.rotation.set(0, 0, -a);
+        dummy.updateMatrix();
+        ticks.setMatrixAt(i, dummy.matrix);
+      }
+      ticks.count = 12;
+      ticks.name = 'Bourse clock minute ticks';
+      g.add(ticks);
+    }
+    // Round 187: each Bien/Mal winged figure spreads a second wing.
+    for (const w of g.children.filter((c) => c.name && c.name.startsWith('Bourse Bien/Mal winged figure'))) {
+      const sx = w.position.x < 0 ? -1 : 1;
+      box(w, 0.8, 0.2, 0.2, -sx * 0.55, 1.5, 0.1, materials.bronze, 'winged figure second wing');
+    }
+    // Round 188: a dentil band under the frieze garlands.
+    {
+      const d = new THREE.InstancedMesh(new THREE.BoxGeometry(0.2, 0.24, 0.12), materials.warmStone, 60);
+      const dummy = new THREE.Object3D();
+      for (let i = 0; i < 60; i++) {
+        dummy.position.set(-49 + i * 1.67, 20.75, 37.05);
+        dummy.updateMatrix();
+        d.setMatrixAt(i, dummy.matrix);
+      }
+      d.count = 60;
+      d.name = 'Bourse frieze lower dentil band';
+      g.add(d);
+    }
+    // Round 189: the central door arch is a double archivolt (two concentric rings).
+    {
+      const ring = mesh(g, new THREE.CylinderGeometry(3.4, 3.4, 0.45, 18, 1, false, 0, Math.PI), materials.warmStone, 0, 14.2, 30.3, 'Bourse central door outer archivolt (double archivolte)');
+      ring.rotation.z = Math.PI / 2;
+    }
+    // Round 190: each peristyle column stands on a square plinth on the stylobate.
+    {
+      const plinths = new THREE.InstancedMesh(new THREE.BoxGeometry(2.4, 0.25, 2.4), materials.warmStone, 8);
+      const dummy = new THREE.Object3D();
+      for (let i = 0; i < 8; i++) {
+        dummy.position.set(peristyleX[i], 5.53, 36);
+        dummy.updateMatrix();
+        plinths.setMatrixAt(i, dummy.matrix);
+      }
+      plinths.count = 8;
+      plinths.name = 'Bourse peristyle column plinths (plinthes)';
+      plinths.castShadow = true;
+      g.add(plinths);
+    }
+    // Round 201: windows on the corner pavilions' side faces (toward the flanking streets).
+    {
+      const wins = new THREE.InstancedMesh(new THREE.BoxGeometry(0.35, 4, 2.0), materials.glass, 8);
+      const dummy = new THREE.Object3D();
+      let n = 0;
+      for (const sz of [-1, 1]) for (const sx of [-1, 1]) for (const wy of [10.5, 18]) {
+        dummy.position.set(sx * 50.3, wy, sz * 31 + (sz > 0 ? 5 : -5));
+        dummy.updateMatrix();
+        wins.setMatrixAt(n++, dummy.matrix);
+      }
+      wins.count = n;
+      wins.name = 'Bourse corner pavilion side windows';
+      wins.castShadow = true;
+      g.add(wins);
+    }
+    // Round 202: urn finials at the four corners of the roof terrace balustrade.
+    for (const [ux, uz] of [[-14.5, -38.6], [14.5, -38.6], [-14.5, -23.4], [14.5, -23.4]]) {
+      cylinder(g, 0.22, 0.3, 0.8, ux, 32.3, uz, materials.warmStone, 8);
+      mesh(g, new THREE.SphereGeometry(0.24, 8, 6), materials.warmStone, ux, 32.85, uz, 'Bourse roof terrace urn finial');
+    }
+    // Round 203: four slender brass columns carry the panorama canopy over the roof.
+    {
+      const cols = new THREE.InstancedMesh(new THREE.CylinderGeometry(0.12, 0.12, 7.9, 8), materials.gold, 4);
+      const dummy = new THREE.Object3D();
+      for (let i = 0; i < 4; i++) {
+        const sx = i % 2 ? 1 : -1, sz = i < 2 ? -1 : 1;
+        dummy.position.set(sx * 9, 42.6, sz * 9);
+        dummy.updateMatrix();
+        cols.setMatrixAt(i, dummy.matrix);
+      }
+      cols.count = 4;
+      cols.name = 'Bourse brass canopy support columns (colonnes du luifel)';
+      cols.castShadow = true;
+      g.add(cols);
+    }
+    // Round 204: a shallow canopy slab shelters the 2023 rear entrance.
+    box(g, 8.6, 0.22, 2.6, 0, 4.6, -42.2, materials.gold, 'Bourse 2023 entrance canopy (auvent laiton)');
+    // Round 205: big blue-stone quoin blocks chain the four socle corners.
+    {
+      const q = new THREE.InstancedMesh(new THREE.BoxGeometry(0.8, 1.6, 0.8), materials.warmStone, 4 * 3);
+      const dummy = new THREE.Object3D();
+      let n = 0;
+      for (const sx of [-1, 1]) for (const sz of [-1, 1]) for (let r = 0; r < 3; r++) {
+        dummy.position.set(sx * 52.6, 0.8 + r * 1.6, sz * 40.6);
+        dummy.updateMatrix();
+        q.setMatrixAt(n++, dummy.matrix);
+      }
+      q.count = n;
+      q.name = 'Bourse socle corner quoin blocks (chaines d\'angle du soubassement)';
+      q.castShadow = true;
+      g.add(q);
+    }
+    // Round 206: a low attic parapet band runs above the main cornice on the wings.
+    box(g, 100, 0.9, 8.6, 0, 24.35, 32.5, materials.paleStone, 'Bourse wing attic parapet band (bande d\'attique)');
+    // Round 207: balustrade on top of the wing parapets.
+    {
+      const bal = new THREE.InstancedMesh(new THREE.BoxGeometry(0.14, 0.55, 0.14), materials.warmStone, 2 * 30);
+      const rail = new THREE.InstancedMesh(new THREE.BoxGeometry(29, 0.1, 0.16), materials.warmStone, 2);
+      const dummy = new THREE.Object3D();
+      let n = 0;
+      for (const sx of [-1, 1]) {
+        for (let i = 0; i < 30; i++) {
+          dummy.position.set(sx * (36 + i * 0.1), 25.1, 32.5);
+          dummy.updateMatrix();
+          bal.setMatrixAt(n++, dummy.matrix);
+        }
+        dummy.position.set(sx * 36, 25.4, 32.5);
+        dummy.updateMatrix();
+        rail.setMatrixAt(sx < 0 ? 0 : 1, dummy.matrix);
+      }
+      bal.count = n; bal.name = 'Bourse wing parapet balusters';
+      g.add(bal);
+      rail.count = 2; rail.name = 'Bourse wing parapet top rails';
+      rail.castShadow = true;
+      g.add(rail);
+    }
+    // Round 208: glass panes in the 12 arm-roof dormers.
+    {
+      const glass = new THREE.InstancedMesh(new THREE.BoxGeometry(1.4, 1.6, 0.1), materials.glass, 12);
+      const dummy = new THREE.Object3D();
+      const spots = [[-10, 31, 28.2], [10, 31, 28.2], [-10, -31, 28.2], [10, -31, 28.2], [-42, -10, 28.2], [-42, 10, 28.2], [42, -10, 28.2], [42, 10, 28.2], [-46, 31, 24.7], [46, 31, 24.7], [-46, -31, 24.7], [46, -31, 24.7]];
+      for (let i = 0; i < 12; i++) {
+        dummy.position.set(spots[i][0], spots[i][2], spots[i][1]);
+        dummy.updateMatrix();
+        glass.setMatrixAt(i, dummy.matrix);
+      }
+      glass.count = 12;
+      glass.name = 'Bourse dormer glazing (vitres des lucarnes)';
+      g.add(glass);
+    }
+    // Round 209: chimney pots on the six stacks.
+    {
+      const pots = new THREE.InstancedMesh(new THREE.CylinderGeometry(0.22, 0.26, 0.8, 8), materials.warmStone, 6);
+      const dummy = new THREE.Object3D();
+      const spots = [[-14, 24, 31.4], [14, 24, 31.4], [-14, -24, 31.4], [14, -24, 31.4], [-46, 6, 31.4], [46, -6, 31.4]];
+      for (let i = 0; i < 6; i++) {
+        dummy.position.set(spots[i][0], spots[i][2], spots[i][1]);
+        dummy.updateMatrix();
+        pots.setMatrixAt(i, dummy.matrix);
+      }
+      pots.count = 6;
+      pots.name = 'Bourse chimney pots (pots de cheminee)';
+      pots.castShadow = true;
+      g.add(pots);
+    }
+    // Round 210: lead valley flashings where the arm roofs meet the central block.
+    for (const [vx, vz, ry] of [[-21, 0, Math.PI / 2], [21, 0, Math.PI / 2], [0, 21, 0], [0, -21, 0]]) {
+      const valley = box(g, ry === 0 ? 6 : 0.3, 0.1, ry === 0 ? 0.3 : 6, vx, 26.2, vz, materials.dark, 'Bourse roof valley lead flashing (noue en plomb)');
+      valley.rotation.y = ry;
+    }
+    // Round 221: ground floodlight troughs on the square aim up at the facade (the palace is
+    // floodlit after dark, as the Grand-Place is).
+    {
+      const troughs = new THREE.InstancedMesh(new THREE.BoxGeometry(3.2, 0.25, 0.6), materials.dark, 6);
+      const heads = new THREE.InstancedMesh(new THREE.SphereGeometry(0.18, 8, 6), materials.gold, 6);
+      const dummy = new THREE.Object3D();
+      for (let i = 0; i < 6; i++) {
+        dummy.position.set(-25 + i * 10, 0.12, 52);
+        dummy.updateMatrix();
+        troughs.setMatrixAt(i, dummy.matrix);
+        dummy.position.set(-25 + i * 10, 0.3, 51.6);
+        dummy.updateMatrix();
+        heads.setMatrixAt(i, dummy.matrix);
+      }
+      troughs.count = 6; troughs.name = 'Bourse ground floodlight troughs on the square (projecteurs au sol)';
+      troughs.castShadow = true; g.add(troughs);
+      heads.count = 6; heads.name = 'Bourse ground floodlight heads';
+      g.add(heads);
+    }
+    // Round 222: the column shafts swell slightly (entasis) — a subtle mid-shaft ring on each.
+    {
+      const rings = new THREE.InstancedMesh(new THREE.TorusGeometry(0.84, 0.06, 6, 14), materials.warmStone, 8);
+      const dummy = new THREE.Object3D();
+      for (let i = 0; i < 8; i++) {
+        dummy.position.set(peristyleX[i], 10.5, 36);
+        dummy.rotation.set(Math.PI / 2, 0, 0);
+        dummy.updateMatrix();
+        rings.setMatrixAt(i, dummy.matrix);
+      }
+      rings.count = 8;
+      rings.name = 'Bourse peristyle shaft entasis rings (entasis)';
+      g.add(rings);
+    }
+    // Round 223: the painted stone cella shows coursed joints (horizontal grooves).
+    {
+      const courses = new THREE.InstancedMesh(new THREE.BoxGeometry(100, 0.05, 0.06), materials.dark, 6);
+      const dummy = new THREE.Object3D();
+      for (let i = 0; i < 6; i++) {
+        dummy.position.set(0, 7 + i * 2.2, 30.23);
+        dummy.updateMatrix();
+        courses.setMatrixAt(i, dummy.matrix);
+      }
+      courses.count = 6;
+      courses.name = 'Bourse cella coursing grooves (joints de l\'appareil peint)';
+      courses.castShadow = false;
+      g.add(courses);
+    }
+    // Round 224: the monumental stair has side landing platforms at mid-height.
+    for (const sx of [-1, 1]) box(g, 8, 0.3, 6, sx * 17, 2.6, 41.5, materials.pavingEdge, 'Bourse stair mid landing platform');
+    // Round 225: the clock has a second hand.
+    {
+      const hand = box(g, 0.06, 1.6, 0.04, 0, 15.9, 30.86, materials.dark, 'Bourse clock second hand');
+      hand.rotation.z = 0.8;
+    }
+    // Round 226: the tympanum has an inner frame moulding inside the pediment triangle.
+    {
+      const inner = new THREE.Group();
+      inner.name = 'Bourse tympanum inner frame moulding (cadre interieur)';
+      box(inner, 30, 0.25, 0.2, 0, 25.0, 37.0, materials.warmStone, 'tympanum inner frame base');
+      const s = Math.atan2(8.5, 19);
+      for (const sx of [-1, 1]) {
+        const rail = box(inner, 0.25, 0.25, 17.5, sx * 7.5, 28.9, 37.0, materials.warmStone, 'tympanum inner frame raking');
+        rail.rotation.x = sx * -s;
+      }
+      g.add(inner);
+    }
+    // Round 227: the cornice carries an ogee cyma band along its front top edge.
+    {
+      const cyma = new THREE.InstancedMesh(new THREE.CylinderGeometry(0.14, 0.14, 104, 8, 1, false, 0, Math.PI), materials.warmStone, 1);
+      const dummy = new THREE.Object3D();
+      dummy.position.set(0, 23.9, 37.2);
+      dummy.rotation.z = Math.PI / 2;
+      dummy.updateMatrix();
+      cyma.setMatrixAt(0, dummy.matrix);
+      cyma.count = 1;
+      cyma.name = 'Bourse cornice ogee cyma band (cyma en doucine)';
+      cyma.castShadow = true;
+      g.add(cyma);
+    }
+    // Round 228: pilasters on the front facade's outer corners, framing the composition.
+    for (const sx of [-1, 1]) {
+      box(g, 1.1, 15, 4.6, sx * 49.4, 12.5, 28, materials.paleStone, 'Bourse front corner pilaster');
+      box(g, 1.4, 0.5, 5.0, sx * 49.4, 20.2, 28, materials.warmStone, 'Bourse front pilaster capital');
+    }
+    // Round 229: the downpipes are held to the wall by bracket collars.
+    {
+      const collars = new THREE.InstancedMesh(new THREE.BoxGeometry(0.2, 0.14, 0.2), materials.dark, 16);
+      const dummy = new THREE.Object3D();
+      let n = 0;
+      for (const sx of [-1, 1]) for (const sz of [1, -1]) for (let i = 0; i < 4; i++) {
+        dummy.position.set(sx * 49.6, 3 + i * 5.5, sz * 30.4);
+        dummy.updateMatrix();
+        collars.setMatrixAt(n++, dummy.matrix);
+      }
+      collars.count = n;
+      collars.name = 'Bourse downpipe bracket collars (colliers de fixation)';
+      g.add(collars);
+    }
+    // Round 230: cellar areaway grates (soupiraux) in the pavement beside the stair.
+    {
+      const grates = new THREE.InstancedMesh(new THREE.BoxGeometry(3, 0.08, 1.2), materials.dark, 4);
+      const dummy = new THREE.Object3D();
+      for (let i = 0; i < 2; i++) for (const sx of [-1, 1]) {
+        dummy.position.set(sx * 18, 0.05, 46 - i * 4);
+        dummy.updateMatrix();
+        grates.setMatrixAt(i * 2 + (sx < 0 ? 0 : 1), dummy.matrix);
+      }
+      grates.count = 4;
+      grates.name = 'Bourse cellar areaway grates beside the stair (soupiraux de cave)';
+      g.add(grates);
+    }
+    // Round 241: cella etage windows above the lateral doors, in surrounds.
+    {
+      const wins = new THREE.InstancedMesh(new THREE.BoxGeometry(2.4, 3.8, 0.35), materials.glass, 4);
+      const surr = new THREE.InstancedMesh(new THREE.BoxGeometry(3.1, 4.5, 0.25), materials.warmStone, 4);
+      const dummy = new THREE.Object3D();
+      let n = 0;
+      for (const sx of [-1, 1]) for (const wx of [6.5, 16]) {
+        dummy.position.set(sx * wx, 17.5, 30.25);
+        dummy.updateMatrix();
+        wins.setMatrixAt(n, dummy.matrix);
+        surr.setMatrixAt(n++, dummy.matrix);
+      }
+      wins.count = n; wins.name = 'Bourse cella etage windows';
+      wins.castShadow = true; g.add(wins);
+      surr.count = n; surr.name = 'Bourse cella etage window surrounds';
+      g.add(surr);
+    }
+    // Round 242: the main cornice returns around the facade's ends onto the side faces.
+    for (const sx of [-1, 1]) box(g, 0.5, 3.5, 9.6, sx * 51.8, 21.75, 32.5, materials.paleStone, 'Bourse cornice return at facade end');
+    // Round 243: pilasters at the front-to-side corner turns.
+    for (const sx of [-1, 1]) box(g, 1.0, 21, 1.0, sx * 53.2, 15.5, 38, materials.paleStone, 'Bourse corner turn pilaster');
+    // Round 244: oculi in the front attic band, flanking the central pediment.
+    for (const sx of [-1, 1]) {
+      const o = mesh(g, new THREE.CylinderGeometry(0.7, 0.7, 0.3, 14), materials.glass, sx * 30, 24.9, 37.2, 'Bourse attic band oculus');
+      o.rotation.x = Math.PI / 2;
+      mesh(g, new THREE.TorusGeometry(0.7, 0.1, 6, 14), materials.warmStone, sx * 30, 24.9, 37.2, 'Bourse attic oculus surround');
+    }
+    // Round 245: a string course at the drum's base.
+    box(g, 26.6, 0.4, 26.6, 0, 30.2, 0, materials.warmStone, 'Bourse dome drum base string course (bandeau du tambour)');
+    // Round 246: two more horizontal glazing bars on the dome (five girders in all).
+    for (const rr of [4.5, 8.5]) {
+      const ring = mesh(g, new THREE.TorusGeometry(rr, 0.08, 6, 28), materials.blueStone, 0, 39.6 + Math.sqrt(Math.max(0, 196 - rr * rr)), 0, 'Bourse dome glazing bar (barreau de vitrage)');
+      ring.rotation.x = Math.PI / 2;
+    }
+    // Round 247: glazed openings between the lantern's eight colonnettes.
+    {
+      const panes = new THREE.InstancedMesh(new THREE.BoxGeometry(1.6, 5.6, 0.08), materials.glass, 8);
+      const dummy = new THREE.Object3D();
+      for (let i = 0; i < 8; i++) {
+        const a = (i + 0.5) * Math.PI / 4;
+        dummy.position.set(Math.sin(a) * 4.1, 50.2, Math.cos(a) * 4.1);
+        dummy.rotation.y = -a;
+        dummy.updateMatrix();
+        panes.setMatrixAt(i, dummy.matrix);
+      }
+      panes.count = 8;
+      panes.name = 'Bourse lantern glazed openings (baies vitrees du lanterneau)';
+      g.add(panes);
+    }
+    // Round 248: the roof terrace has an access bulkhead (the terrace is reached from the 4th
+    // floor — nl.wikipedia: toiture-terrasse au 4e etage).
+    {
+      box(g, 4, 3.2, 3, 8, 30.8 + 1.6, -33, materials.paleStone, 'Bourse roof terrace access bulkhead (sas d\'acces au dakterras)');
+      box(g, 3, 2.4, 0.3, 8, 32.2, -31.4, materials.dark, 'Bourse terrace access door');
+      box(g, 4.6, 0.3, 3.6, 8, 34.2, -33, materials.roof, 'Bourse bulkhead roof');
+    }
+    // Round 249: the brass canopy has a scalloped valance along its edge.
+    {
+      const valance = new THREE.InstancedMesh(new THREE.ConeGeometry(0.35, 0.5, 6), materials.gold, 4 * 10);
+      const dummy = new THREE.Object3D();
+      let n = 0;
+      for (let i = 0; i < 10; i++) for (const sx of [-1, 1]) {
+        dummy.position.set(-9 + i * 2, 46.25, sx * 10);
+        dummy.rotation.set(Math.PI, 0, 0);
+        dummy.updateMatrix();
+        valance.setMatrixAt(n++, dummy.matrix);
+      }
+      for (let i = 0; i < 10; i++) for (const sz of [-1, 1]) {
+        dummy.position.set(sz * 10, 46.25, -9 + i * 2);
+        dummy.rotation.set(Math.PI, 0, Math.PI / 2);
+        dummy.updateMatrix();
+        valance.setMatrixAt(n++, dummy.matrix);
+      }
+      valance.count = n;
+      valance.name = 'Bourse brass canopy scalloped valance (feston du luifel)';
+      valance.castShadow = true;
+      g.add(valance);
+    }
+    // Round 250: four flagpole sockets on the roof terrace corners (public building).
+    {
+      const poles = new THREE.InstancedMesh(new THREE.CylinderGeometry(0.05, 0.07, 6, 8), materials.dark, 4);
+      const dummy = new THREE.Object3D();
+      for (let i = 0; i < 4; i++) {
+        const sx = i % 2 ? 1 : -1, sz = i < 2 ? -1 : 1;
+        dummy.position.set(sx * 14, 34, sz * 16);
+        dummy.updateMatrix();
+        poles.setMatrixAt(i, dummy.matrix);
+      }
+      poles.count = 4;
+      poles.name = 'Bourse roof terrace flagpoles (mat de drapeau)';
+      poles.castShadow = true;
+      g.add(poles);
+    }
+    // Round 261: the three cella doors have glazed fanlights (impostes vitrees) above them.
+    for (const [dx, dr] of [[0, 2.5], [-10, 1.75], [10, 1.75]]) {
+      const fan = mesh(g, new THREE.CylinderGeometry(dr, dr, 0.25, 14, 1, false, 0, Math.PI), materials.glass, dx, dx === 0 ? 13 : 9, 30.35, 'Bourse door fanlight (imposte vitree)');
+      fan.rotation.z = Math.PI / 2;
+      mesh(g, new THREE.TorusGeometry(dr, 0.06, 6, 14, Math.PI), materials.warmStone, dx, dx === 0 ? 13 : 9, 30.35, 'Bourse fanlight frame');
+    }
+    // Round 262: a radial sett fan at the stair foot on the square (passerelle d'entree).
+    {
+      const fan = new THREE.InstancedMesh(new THREE.BoxGeometry(0.5, 0.07, 1.6), materials.pavingB, 14);
+      const dummy = new THREE.Object3D();
+      for (let i = 0; i < 14; i++) {
+        const a = (i - 6.5) * 0.11;
+        dummy.position.set(Math.sin(a) * 3.2, 0.05, 50.5 + Math.cos(a) * 3.2);
+        dummy.rotation.set(0, -a, 0);
+        dummy.updateMatrix();
+        fan.setMatrixAt(i, dummy.matrix);
+      }
+      fan.count = 14;
+      fan.name = 'Bourse stair foot sett fan (passerelle d\'entree en eventail)';
+      fan.receiveShadow = true;
+      g.add(fan);
+    }
+    // Round 271: a gilded cartouche sits above the aedicule pediment over the central door.
+    mesh(g, new THREE.SphereGeometry(0.65, 10, 8), materials.gold, 0, 16.4, 31.2, 'Bourse aedicule cartouche (cartouche dore)');
+    // Round 272: the wings' ground floor has office doors at x +/-24.
+    for (const sx of [-1, 1]) {
+      box(g, 3, 5.6, 0.5, sx * 24, 7.8, 30.3, materials.dark, 'Bourse wing ground-floor office door');
+      box(g, 3.8, 0.35, 0.7, sx * 24, 10.8, 30.35, materials.warmStone, 'Bourse wing door lintel');
+    }
+    // Round 273: shutter hinge straps on the front facade windows.
+    {
+      const hinges = new THREE.InstancedMesh(new THREE.BoxGeometry(0.12, 0.5, 0.08), materials.dark, 16);
+      const dummy = new THREE.Object3D();
+      let n = 0;
+      for (const sx of [-1, 1]) for (const wx of [24, 31]) for (const wy of [10, 17.5]) {
+        dummy.position.set(sx * wx - 1.55, wy + 1, 30.4);
+        dummy.updateMatrix();
+        hinges.setMatrixAt(n++, dummy.matrix);
+        dummy.position.set(sx * wx + 1.55, wy + 1, 30.4);
+        dummy.updateMatrix();
+        hinges.setMatrixAt(n++, dummy.matrix);
+      }
+      hinges.count = n;
+      hinges.name = 'Bourse window shutter hinge straps (pentures)';
+      g.add(hinges);
+    }
+    // Round 274: the apex acroterion gets two acanthus side leaves.
+    for (const sx of [-1, 1]) {
+      const leaf = mesh(g, new THREE.ConeGeometry(0.3, 0.9, 4), materials.warmStone, sx * 0.5, 33.4, 32.5, 'Bourse apex acanthus side leaf');
+      leaf.rotation.z = sx * -0.5;
+    }
+    // Round 275: gutter brackets under the front eave gutter.
+    {
+      const brackets = new THREE.InstancedMesh(new THREE.BoxGeometry(0.12, 0.5, 0.12), materials.dark, 12);
+      const dummy = new THREE.Object3D();
+      for (let i = 0; i < 12; i++) {
+        dummy.position.set(-44 + i * 8, 23.7, 37.5);
+        dummy.updateMatrix();
+        brackets.setMatrixAt(i, dummy.matrix);
+      }
+      brackets.count = 12;
+      brackets.name = 'Bourse eave gutter brackets (crochets de gouttiere)';
+      g.add(brackets);
+    }
+    // Round 276: drainage outlets at the four socle corners.
+    {
+      const outlets = new THREE.InstancedMesh(new THREE.CylinderGeometry(0.12, 0.16, 0.3, 8), materials.dark, 4);
+      const dummy = new THREE.Object3D();
+      for (let i = 0; i < 4; i++) {
+        const sx = i % 2 ? 1 : -1, sz = i < 2 ? 1 : -1;
+        dummy.position.set(sx * 52.8, 0.15, sz * 40.8);
+        dummy.updateMatrix();
+        outlets.setMatrixAt(i, dummy.matrix);
+      }
+      outlets.count = 4;
+      outlets.name = 'Bourse socle corner drainage outlets ( gargouilles du socle)';
+      g.add(outlets);
+    }
+    // Round 277: lead downpipes at the rear facade corners.
+    {
+      const pipes = new THREE.InstancedMesh(new THREE.CylinderGeometry(0.07, 0.07, 26, 6), materials.dark, 2);
+      const dummy = new THREE.Object3D();
+      for (let i = 0; i < 2; i++) {
+        dummy.position.set((i === 0 ? -1 : 1) * 16.7, 13, -41.2);
+        dummy.updateMatrix();
+        pipes.setMatrixAt(i, dummy.matrix);
+      }
+      pipes.count = 2;
+      pipes.name = 'Bourse rear downpipes (descentes arriere)';
+      g.add(pipes);
+    }
+    // Round 278: the widened 2023 lateral entrances on both side facades, with gilded brass
+    // frames set into the stone.
+    for (const sx of [-1, 1]) {
+      box(g, 0.6, 7, 4.6, sx * 53.4, 8.5, 0, materials.dark, 'Bourse 2023 lateral entrance (facade ' + (sx < 0 ? 'Henri Maus' : 'de la Bourse') + ')');
+      box(g, 0.9, 7.6, 0.4, sx * 53.5, 8.5, -2.6, materials.gold, 'Bourse lateral entrance brass frame left');
+      box(g, 0.9, 7.6, 0.4, sx * 53.5, 8.5, 2.6, materials.gold, 'Bourse lateral entrance brass frame right');
+      box(g, 0.9, 0.5, 5.6, sx * 53.5, 12.2, 0, materials.gold, 'Bourse lateral entrance brass lintel');
+    }
+    // Round 279: a gilded ball crowns the dome apex under the lantern.
+    mesh(g, new THREE.SphereGeometry(0.7, 12, 10), materials.gold, 0, 39.8, 0, 'Bourse dome apex gilded ball (boule sommitale de la coupole)');
+    // Round 280: the blue-stone socle also takes the night floodlight wash — register a wash
+    // clone of blueStone in facadeWashMats and swap the socle material.
+    {
+      const socleWash = materials.blueStone.clone();
+      socleWash.emissive = new THREE.Color(0x000000);
+      facadeWashMats.push(socleWash);
+      const socle = g.children.find((c) => c.name === 'Bourse blue-stone socle (soubassement en pierre bleue)');
+      if (socle) socle.material = socleWash;
+    }
+    // Round 281: Attic base mouldings under the eight peristyle columns - a plinth block and a
+    // torus ring at each column foot (bases attiques a plinthe et tore).
+    {
+      const plinths = new THREE.InstancedMesh(new THREE.BoxGeometry(2.4, 0.5, 2.4), materials.paleStone, 8);
+      const rings = new THREE.InstancedMesh(new THREE.TorusGeometry(0.95, 0.12, 6, 20), materials.paleStone, 8);
+      const dummy = new THREE.Object3D();
+      for (let i = 0; i < 8; i++) {
+        dummy.position.set(peristyleX[i], 5.45, 36);
+        dummy.rotation.set(0, 0, 0);
+        dummy.updateMatrix();
+        plinths.setMatrixAt(i, dummy.matrix);
+        dummy.position.y = 5.75;
+        dummy.updateMatrix();
+        rings.setMatrixAt(i, dummy.matrix);
+      }
+      plinths.count = 8; plinths.name = 'Bourse peristyle base plinths (plinthes des bases attiques)';
+      rings.count = 8; rings.name = 'Bourse peristyle base torus mouldings';
+      g.add(plinths); g.add(rings);
+    }
+    // Round 282: moulded archivolt rings around the two lateral doors (double archivolte sur
+    // chaque porte laterale, comme sur la porte centrale).
+    for (const sx of [-1, 1]) {
+      mesh(g, new THREE.TorusGeometry(2.4, 0.18, 6, 20, Math.PI), materials.warmStone, sx * 10, 8, 30.35, 'Bourse lateral door outer archivolt');
+      mesh(g, new THREE.TorusGeometry(2.0, 0.14, 6, 18, Math.PI), materials.warmStone, sx * 10, 8, 30.4, 'Bourse lateral door inner archivolt');
+    }
+    // Round 283: the pediment tympanum relief - la Belgique enthroned between the geniuses of
+    // Commerce and Industry (Joseph Jacquet, 1873), simplified as three relief panels.
+    box(g, 4.5, 2.6, 0.5, -3.2, 20.6, 30.8, materials.warmStone, 'Bourse tympanum Commerce genius relief');
+    box(g, 5.5, 3.4, 0.6, 0, 20.2, 30.8, materials.warmStone, 'Bourse tympanum seated Belgique relief (la Belgique enthronee)');
+    box(g, 4.5, 2.6, 0.5, 3.2, 20.6, 30.8, materials.warmStone, 'Bourse tympanum Industry genius relief');
+    // Round 284: the clock's minute hand alongside the hour and second hands (cadran de De Haen).
+    box(g, 0.08, 1.15, 0.04, 0.06, 15.9, 30.84, materials.dark, 'Bourse clock minute hand');
+    // Round 285: a dentil course under the peristyle entablature between the capitals
+    // (denticules sous l'entablement du peristyle).
+    {
+      const dentils = new THREE.InstancedMesh(new THREE.BoxGeometry(0.5, 0.5, 0.4), materials.paleStone, 40);
+      const dummy = new THREE.Object3D();
+      let n = 0;
+      for (let i = 0; i < 40; i++) {
+        dummy.position.set(-19 + i * 0.98, 19.6, 37.2);
+        dummy.updateMatrix();
+        dentils.setMatrixAt(n++, dummy.matrix);
+      }
+      dentils.count = n; dentils.name = 'Bourse peristyle entablature dentils (denticules)';
+      g.add(dentils);
+    }
+    // Round 286: keystones over the four cella etage windows (clefs des fenetres de l'etage).
+    {
+      const keys = new THREE.InstancedMesh(new THREE.BoxGeometry(0.6, 1.0, 0.3), materials.warmStone, 4);
+      const dummy = new THREE.Object3D();
+      let n = 0;
+      for (const sx of [-1, 1]) for (const wx of [6.5, 16]) {
+        dummy.position.set(sx * wx, 20.1, 30.55);
+        dummy.updateMatrix();
+        keys.setMatrixAt(n++, dummy.matrix);
+      }
+      keys.count = n; keys.name = 'Bourse cella etage window keystones (clefs)';
+      g.add(keys);
+    }
+    // Round 287: impost blocks where the lateral door arches spring (sommiers des arcs).
+    for (const sx of [-1, 1]) {
+      box(g, 0.9, 0.7, 0.5, sx * 12.2, 11, 30.4, materials.warmStone, 'Bourse lateral door impost block (sommier)');
+    }
+    // Round 291: glazing between the lantern colonnettes - eight oculi panes (vitres du
+    // lanterneau) around the drum of the dome.
+    {
+      const panes = new THREE.InstancedMesh(new THREE.BoxGeometry(1.5, 5.2, 0.1), materials.glass, 8);
+      const dummy = new THREE.Object3D();
+      for (let i = 0; i < 8; i++) {
+        const a = (i / 8) * Math.PI * 2;
+        dummy.position.set(Math.cos(a) * 4.0, 53, Math.sin(a) * 4.0);
+        dummy.rotation.y = -a;
+        dummy.updateMatrix();
+        panes.setMatrixAt(i, dummy.matrix);
+      }
+      panes.count = 8; panes.name = 'Bourse lantern oculi glazing (vitres du lanterneau)';
+      panes.castShadow = false; g.add(panes);
+    }
+    // Round 292: modillions under the main cornice of the front facade (modillons de la corniche).
+    {
+      const mod = new THREE.InstancedMesh(new THREE.BoxGeometry(0.55, 0.9, 0.7), materials.paleStone, 24);
+      const dummy = new THREE.Object3D();
+      for (let i = 0; i < 24; i++) {
+        dummy.position.set(-23 + i * 2, 21.9, 31.4);
+        dummy.updateMatrix();
+        mod.setMatrixAt(i, dummy.matrix);
+      }
+      mod.count = 24; mod.name = 'Bourse main cornice modillions (modillons)';
+      g.add(mod);
+    }
+    // Round 293: the ajouree side facades (rue de la Bourse / rue Henri Maus, Brunfaut 1892-93)
+    // - tall arched openings pierced through the flanks.
+    {
+      const arches = new THREE.InstancedMesh(new THREE.TorusGeometry(2.2, 0.22, 6, 18, Math.PI), materials.warmStone, 10);
+      const dummy = new THREE.Object3D();
+      let n = 0;
+      for (const sx of [-1, 1]) for (let i = 0; i < 5; i++) {
+        dummy.position.set(sx * 53.2, 13, -24 + i * 12);
+        dummy.rotation.set(0, sx < 0 ? Math.PI / 2 : -Math.PI / 2, 0);
+        dummy.updateMatrix();
+        arches.setMatrixAt(n++, dummy.matrix);
+      }
+      arches.count = n; arches.name = 'Bourse side facade ajouree arch frames (facades ajourees Brunfaut)';
+      g.add(arches);
+    }
+    // Round 294: planters along the 2023 roof terrace edge (jardinieres de la toiture-terrasse).
+    {
+      const planters = new THREE.InstancedMesh(new THREE.BoxGeometry(2.2, 0.7, 0.9), materials.terracotta || materials.ochre, 6);
+      const dummy = new THREE.Object3D();
+      for (let i = 0; i < 6; i++) {
+        dummy.position.set(-12.5 + i * 5, 31.2, i < 3 ? -37.5 : -24.5);
+        dummy.updateMatrix();
+        planters.setMatrixAt(i, dummy.matrix);
+      }
+      planters.count = 6; planters.name = 'Bourse roof terrace planters (jardinieres, 2023)';
+      g.add(planters);
+    }
+    // Round 295: the weathervane arrow above the lantern cross (girouette sommitale).
+    {
+      box(g, 1.6, 0.08, 0.08, 0, 60.7, 0, materials.gold, 'Bourse lantern weathervane arrow (girouette)');
+      mesh(g, new THREE.ConeGeometry(0.16, 0.5, 8), materials.gold, 0.9, 60.7, 0, 'Bourse lantern weathervane arrowhead');
+    }
+    // Round 300: gilded acroteria at the four corners of the main cornice (acroteres dorees).
+    {
+      const acr = new THREE.InstancedMesh(new THREE.SphereGeometry(0.45, 10, 8), materials.gold, 4);
+      const dummy = new THREE.Object3D();
+      let n = 0;
+      for (const sx of [-1, 1]) for (const sz of [-1, 1]) {
+        dummy.position.set(sx * 24.5, 23.4, sz > 0 ? 31.2 : -31.2);
+        dummy.updateMatrix();
+        acr.setMatrixAt(n++, dummy.matrix);
+      }
+      acr.count = n; acr.name = 'Bourse main cornice corner acroteria (acroteres dorees)';
+      g.add(acr);
+    }
+    // __BOURSE_ROUNDS__
+  });
+  addLandmark('bourseSurroundings', (g) => {
+    // Round 10: the Place de la Bourse itself — created with the covering of the Senne
+    // (1867-1871), pedestrianised since 29 June 2015 and repaved on that occasion; the second
+    // most important square of Brussels after the Grand-Place (Wikipedia EN/FR).
+    box(g, 130, 0.35, 92, 0, -0.175, 88, materials.pavingA, 'Place de la Bourse paved square (repaved 2015)');
+    {
+      const setts = new THREE.InstancedMesh(new THREE.BoxGeometry(1.6, 0.06, 1.6), materials.pavingB, 15 * 32);
+      const dummy = new THREE.Object3D();
+      let n = 0;
+      for (let row = 0; row < 15; row++) for (let col = 0; col < 32; col++) {
+        dummy.position.set(-62 + col * 4 + (row % 2) * 2, 0.02, 44 + row * 6);
+        dummy.updateMatrix();
+        setts.setMatrixAt(n++, dummy.matrix);
+      }
+      setts.count = n;
+      setts.name = 'Place de la Bourse sett paving courses (pavage)';
+      setts.receiveShadow = true;
+      g.add(setts);
+      box(g, 130, 0.22, 1.1, 0, 0.05, 41.5, materials.pavingEdge, 'Place de la Bourse kerb at the stair foot');
+      box(g, 130, 0.22, 1.1, 0, 0.05, 134.5, materials.pavingEdge, 'Place de la Bourse kerb at the boulevard');
+      box(g, 1.1, 0.22, 93, -65.5, 0.05, 88, materials.pavingEdge, 'Place de la Bourse west kerb');
+      box(g, 1.1, 0.22, 93, 65.5, 0.05, 88, materials.pavingEdge, 'Place de la Bourse east kerb');
+    }
+    // The Boulevard Anspach crosses the square halfway; car-free between the Place de la
+    // Bourse and De Brouckere since 29 June 2015 (Le Pietonnier), with embedded planters
+    // (bacs encastres), benches, fountains, bike arches, bins and new lighting.
+    box(g, 170, 0.3, 18, 0, -0.15, 122, materials.pavingB, 'Boulevard Anspach pedestrian strip (car-free since 29 June 2015)');
+    {
+      const planters = new THREE.InstancedMesh(new THREE.BoxGeometry(6, 0.55, 2.2), materials.pavingEdge, 12);
+      const dummy = new THREE.Object3D();
+      for (let i = 0; i < 12; i++) {
+        dummy.position.set(-77 + i * 14, 0.28, 118.5);
+        dummy.updateMatrix();
+        planters.setMatrixAt(i, dummy.matrix);
+      }
+      planters.count = 12;
+      planters.name = 'Boulevard Anspach embedded tree planters (bacs encastres)';
+      planters.castShadow = true;
+      g.add(planters);
+      const trees = new THREE.InstancedMesh(new THREE.CylinderGeometry(1.6, 2.1, 4.5, 8), materials.green, 12);
+      for (let i = 0; i < 12; i++) {
+        dummy.position.set(-77 + i * 14, 2.8, 118.5);
+        dummy.updateMatrix();
+        trees.setMatrixAt(i, dummy.matrix);
+      }
+      trees.count = 12;
+      trees.name = 'Boulevard Anspach planter trees (verdure 200 m2 -> 3000 m2)';
+      trees.castShadow = true;
+      g.add(trees);
+    }
+    // Round 51: at the corner with the rue Paul Devaux stands the imposing 1949 building of
+    // shops and offices by E. De Heu, with a corner tower topped by a dome — it replaced the
+    // Grands Magasins de la Bourse destroyed by fire in 1948, reusing its balconies
+    // (en.wikipedia Place de la Bourse).
+    {
+      box(g, 26, 30, 22, -62, 15, 96, materials.plaster, '1949 De Heu building (ex Grands Magasins de la Bourse)');
+      cylinder(g, 6.5, 7.5, 36, -70, 18, 88, materials.plaster, 12);
+      box(g, 15, 2, 15, -70, 36.5, 88, materials.warmStone, '1949 corner tower cornice');
+      mesh(g, new THREE.SphereGeometry(7, 16, 10, 0, Math.PI * 2, 0, Math.PI / 2), materials.slate, -70, 37.5, 88, '1949 corner tower dome');
+      mesh(g, new THREE.ConeGeometry(1.1, 2.6, 8), materials.gold, -70, 45.5, 88, '1949 dome finial');
+      const wins = new THREE.InstancedMesh(new THREE.BoxGeometry(1.8, 2.6, 0.3), materials.glass, 40);
+      const dummy = new THREE.Object3D();
+      let n = 0;
+      for (let f = 0; f < 5; f++) for (let i = 0; i < 8; i++) {
+        dummy.position.set(-73 + i * 3, 5 + f * 5, 107.2);
+        dummy.updateMatrix();
+        wins.setMatrixAt(n++, dummy.matrix);
+      }
+      wins.count = n;
+      wins.name = '1949 De Heu building window rows';
+      wins.castShadow = true;
+      g.add(wins);
+    }
+    // Round 52: its ground-floor shopfronts (rez-de-chaussee commerciaux).
+    box(g, 24, 3.6, 0.5, -62, 1.8, 107.2, materials.glass, '1949 building shopfront glazing');
+    // Round 53: on the opposite side of the square stand two eclectic apartment buildings,
+    // built 1884-85 to ensure the homogeneity of the square (en.wikipedia Place de la Bourse).
+    for (const sx of [-1, 1]) {
+      const blk = sx * 30;
+      box(g, 50, 22, 16, blk, 11, 108, materials.ochre, '1884-85 eclectic apartment block ' + (sx < 0 ? 'west' : 'east'));
+      box(g, 51, 1.2, 17, blk, 22.6, 108, materials.warmStone, '1884-85 block cornice');
+      pedimentPrism(g, 50, 3.5, 16, blk, 23.2, 108, materials.warmStone, '1884-85 block mansard roof crown');
+      const wins = new THREE.InstancedMesh(new THREE.BoxGeometry(2, 3.2, 0.3), materials.glass, 24);
+      const dummy = new THREE.Object3D();
+      let n = 0;
+      for (let f = 0; f < 4; f++) for (let i = 0; i < 6; i++) {
+        dummy.position.set(blk - 22.5 + i * 9, 4.5 + f * 4.5, 116.2);
+        dummy.updateMatrix();
+        wins.setMatrixAt(n++, dummy.matrix);
+      }
+      wins.count = n;
+      wins.name = '1884-85 apartment block windows';
+      wins.castShadow = true;
+      g.add(wins);
+    }
+    // Round 54: no. 78 Boulevard Anspach is the Cafe de la Bourse (1874), a neo-Baroque building
+    // by Charles-Emile Janlet (en.wikipedia Boulevard Anspach).
+    {
+      box(g, 30, 24, 16, 34, 12, 130, materials.plaster, 'Cafe de la Bourse no. 78 (1874, neo-Baroque, Janlet)');
+      pedimentPrism(g, 12, 3.2, 4, 34, 24, 136.5, materials.warmStone, 'Cafe de la Bourse pediment');
+      box(g, 30, 1, 17, 34, 24.6, 130, materials.warmStone, 'Cafe de la Bourse cornice');
+      const wins = new THREE.InstancedMesh(new THREE.BoxGeometry(2.2, 4, 0.3), materials.glass, 12);
+      const dummy = new THREE.Object3D();
+      let n = 0;
+      for (let f = 0; f < 3; f++) for (let i = 0; i < 4; i++) {
+        dummy.position.set(22 + i * 7, 5 + f * 7, 138.2);
+        dummy.updateMatrix();
+        wins.setMatrixAt(n++, dummy.matrix);
+      }
+      wins.count = n;
+      wins.name = 'Cafe de la Bourse windows';
+      wins.castShadow = true;
+      g.add(wins);
+    }
+    // Round 55: the Bourse - Grand-Place premetro station (lines 4 and 10, opened 4 October 1976)
+    // has its surface accesses at the square: accesses 7 and 8 flank the rue Auguste Orts with
+    // escalators, access 6 south of the square has an elevator (fr.wikipedia).
+    {
+      const kiosks = [[-52, 103], [-40, 103], [18, 100]];
+      const names = ['premetro access 7 (rue Auguste Orts, escalator)', 'premetro access 8 (rue Auguste Orts, escalator)', 'premetro access 6 (south of the square, elevator)'];
+      for (let i = 0; i < 3; i++) {
+        const k = new THREE.Group();
+        k.name = 'Bourse premetro station ' + names[i];
+        k.position.set(kiosks[i][0], 0, kiosks[i][1]);
+        box(k, 3.2, 3, 3.2, 0, 1.5, 0, materials.glass, 'kiosk glass canopy');
+        box(k, 3.6, 0.18, 3.6, 0, 3.05, 0, materials.dark, 'kiosk roof slab');
+        for (const sx of [-1, 1]) for (const sz of [-1, 1]) cylinder(k, 0.06, 0.06, 3, sx * 1.6, 1.5, sz * 1.6, materials.dark, 6);
+        box(k, 3.4, 0.9, 0.3, 0, 0.45, 1.75, materials.dark, 'kiosk escalator/elevator front');
+        g.add(k);
+      }
+    }
+    // Round 56: the Fontaine Orts (1888) by Henri Beyaert with sculpture by Georges Houtstont and
+    // the bust of Auguste Orts by Thomas Vinootte, at the corner of the rue Auguste Orts — a
+    // high-flow drinking fountain (fr.wikipedia Fontaine Orts).
+    {
+      const f = new THREE.Group();
+      f.name = 'Fontaine Orts (1888, Beyaert + Houtstont, bust Vinootte)';
+      f.position.set(-52, 0, 78);
+      cylinder(f, 0.9, 1.2, 3.2, 0, 1.6, 0, materials.blueStone, 'Fontaine Orts column');
+      box(f, 1.6, 1.1, 1.6, 0, 3.8, 0, materials.blueStone, 'Fontaine Orts capital block');
+      mesh(f, new THREE.SphereGeometry(0.55, 10, 8), materials.bronze, 0, 4.8, 0, 'Fontaine Orts bust of Auguste Orts (Vinootte)');
+      cylinder(f, 2.2, 2.6, 0.7, 0, 0.35, 0, materials.blueStone, 12);
+      mesh(f, new THREE.CylinderGeometry(2.0, 2.0, 0.06, 16), materials.glass, 0, 0.72, 0, 'Fontaine Orts water disc (eau potable, haut debit)');
+      g.add(f);
+    }
+    // Round 57: the monument to Auguste Orts stands at no. 3 place de la Bourse (heritage
+    // inventory rue Auguste Orts: "monument appose a l'angle du no 3, place de la Bourse").
+    {
+      const m = new THREE.Group();
+      m.name = 'Monument to Auguste Orts (no. 3 place de la Bourse)';
+      m.position.set(-48, 0, 72);
+      box(m, 2.6, 2.2, 1.2, 0, 1.1, 0, materials.blueStone, 'Orts monument pedestal');
+      box(m, 3, 0.3, 1.5, 0, 2.35, 0, materials.warmStone, 'Orts monument cap');
+      box(m, 0.9, 2.6, 0.4, 0, 3.6, 0, materials.warmStone, 'Orts monument statue figure');
+      mesh(m, new THREE.SphereGeometry(0.4, 8, 6), materials.warmStone, 0, 5.1, 0, 'Orts monument statue head');
+      box(m, 1.6, 0.9, 0.1, 0, 1.2, 0.62, materials.bronze, 'Orts monument plaque');
+      g.add(m);
+    }
+    // Round 58: on the rue Auguste Orts axis facing the Bourse, the pietonnier project installed
+    // a water mirror (miroir d'eau) — a fountain children can play in (centreville.bruxelles.be).
+    {
+      const mirror = box(g, 14, 0.1, 4.5, -38, 0.06, 70, materials.glass, 'Water mirror on the rue Auguste Orts axis (miroir d\'eau, pietonnier)');
+      mirror.castShadow = false;
+      box(g, 14.6, 0.25, 5.1, -38, 0.02, 70, materials.pavingEdge, 'Water mirror stone frame');
+      const jets = new THREE.InstancedMesh(new THREE.CylinderGeometry(0.05, 0.08, 0.7, 6), materials.glass, 6);
+      const dummy = new THREE.Object3D();
+      for (let i = 0; i < 6; i++) {
+        dummy.position.set(-44 + i * 2, 0.45, 70);
+        dummy.updateMatrix();
+        jets.setMatrixAt(i, dummy.matrix);
+      }
+      jets.count = 6;
+      jets.name = 'Water mirror jets (miroir d\'eau)';
+      g.add(jets);
+    }
+    // Round 59: traditional blue enamel street-name plate on its post at the square mouth.
+    {
+      const sign = new THREE.Group();
+      sign.name = 'Enamel street sign PLACE DE LA BOURSE / BEURSPLEIN';
+      sign.position.set(58, 0, 46);
+      cylinder(sign, 0.05, 0.06, 2.6, 0, 1.3, 0, materials.dark, 6);
+      box(sign, 1.5, 0.55, 0.06, 0, 2.7, 0, materials.enamelBlue, 'enamel plate PLACE DE LA BOURSE / BEURSPLEIN');
+      g.add(sign);
+    }
+    // Round 60: bollards guard the street mouths around the square.
+    {
+      const bollards = new THREE.InstancedMesh(new THREE.CylinderGeometry(0.11, 0.13, 0.9, 8), materials.dark, 16);
+      const dummy = new THREE.Object3D();
+      const spots = [];
+      for (let i = 0; i < 4; i++) spots.push([-62 + i * 3, 43.5], [62 - i * 3, 43.5], [-62 + i * 3, 133], [62 - i * 3, 133]);
+      for (let i = 0; i < 16; i++) {
+        dummy.position.set(spots[i][0], 0.45, spots[i][1]);
+        dummy.updateMatrix();
+        bollards.setMatrixAt(i, dummy.matrix);
+      }
+      bollards.count = 16;
+      bollards.name = 'Place de la Bourse street-mouth bollards';
+      bollards.castShadow = true;
+      g.add(bollards);
+    }
+    // Rounds 61-63: the traditional blue enamel street-name plates on their posts at each street
+    // mouth of the square and boulevard (bilingual French/Dutch, as everywhere in Brussels).
+    {
+      const signs = [
+        ['BOULEVARD ANSPACH / ANSPACHLAAN', -20, 112.5],
+        ['BOULEVARD ANSPACH / ANSPACHLAAN', 20, 131.5],
+        ['RUE AUGUSTE ORTS / AUGUSTE ORTSSTRAAT', -56, 88],
+        ['RUE DE LA BOURSE / BEURSSTRAAT', 56, 60],
+        ['RUE HENRI MAUS / HENRI MAUSSTRAAT', -56, 55],
+        ['RUE PAUL DEVAUX / PAUL DEVAUXSTRAAT', -60, 104],
+        ['RUE JULES VAN PRAET / JULES VAN PRAETSTRAAT', -30, 112.5],
+        ['RUE DU MARCHE AUX POULETS / KIEKEMARKT', 60, 100]
+      ];
+      for (const [label, sx, sz] of signs) {
+        const sign = new THREE.Group();
+        sign.name = 'Enamel street sign ' + label;
+        sign.position.set(sx, 0, sz);
+        cylinder(sign, 0.05, 0.06, 2.6, 0, 1.3, 0, materials.dark, 6);
+        box(sign, 1.9, 0.5, 0.06, 0, 2.72, 0, materials.enamelBlue, 'enamel plate ' + label);
+        mesh(sign, new THREE.SphereGeometry(0.09, 8, 6), materials.dark, 0, 2.95, 0, 'sign post finial ball');
+        g.add(sign);
+      }
+    }
+    // Round 64: zebra crossings with Belisha beacons (black-and-white striped poles with glowing
+    // globes) where the boulevard crosses the square — the Brussels convention.
+    {
+      const stripes = new THREE.InstancedMesh(new THREE.BoxGeometry(0.5, 0.05, 4.2), materials.paleStone, 24);
+      const beacons = new THREE.InstancedMesh(new THREE.CylinderGeometry(0.09, 0.12, 3.4, 8), materials.dark, 4);
+      const globes = new THREE.InstancedMesh(new THREE.SphereGeometry(0.28, 10, 8), materials.enamelBlue, 4);
+      const dummy = new THREE.Object3D();
+      let s = 0;
+      for (const [bx, bz] of [[-8, 108], [8, 108], [-8, 134], [8, 134]]) {
+        for (let i = 0; i < 6; i++) {
+          dummy.position.set(bx - 2.5 + i * 1, 0.05, bz);
+          dummy.updateMatrix();
+          stripes.setMatrixAt(s++, dummy.matrix);
+        }
+      }
+      stripes.count = s;
+      stripes.name = 'Zebra crossing stripes at the boulevard crossings of the square';
+      stripes.receiveShadow = true;
+      g.add(stripes);
+      let b = 0;
+      for (const [bx, bz] of [[-11, 108], [11, 108], [-11, 134], [11, 134]]) {
+        dummy.position.set(bx, 1.7, bz);
+        dummy.updateMatrix();
+        beacons.setMatrixAt(b, dummy.matrix);
+        dummy.position.set(bx, 3.6, bz);
+        dummy.updateMatrix();
+        globes.setMatrixAt(b++, dummy.matrix);
+      }
+      beacons.count = b; beacons.name = 'Belisha beacon poles (poteaux belisha)';
+      beacons.castShadow = true; g.add(beacons);
+      globes.count = b; globes.name = 'Belisha beacon globes';
+      globes.castShadow = true; g.add(globes);
+    }
+    // Round 65: benches on the square and along the boulevard (pietonnier furniture).
+    {
+      const seats = new THREE.InstancedMesh(new THREE.BoxGeometry(2.2, 0.09, 0.6), materials.warmStone, 10);
+      const legs = new THREE.InstancedMesh(new THREE.BoxGeometry(0.12, 0.45, 0.55), materials.dark, 20);
+      const dummy = new THREE.Object3D();
+      let n = 0;
+      const spots = [[-30, 70], [-15, 70], [0, 70], [15, 70], [30, 70], [-45, 122], [-25, 122], [-5, 122], [15, 122], [35, 122]];
+      for (const [bx, bz] of spots) {
+        dummy.position.set(bx, 0.5, bz);
+        dummy.updateMatrix();
+        seats.setMatrixAt(n, dummy.matrix);
+        dummy.position.set(bx - 0.9, 0.25, bz);
+        dummy.updateMatrix();
+        legs.setMatrixAt(2 * n, dummy.matrix);
+        dummy.position.set(bx + 0.9, 0.25, bz);
+        dummy.updateMatrix();
+        legs.setMatrixAt(2 * n + 1, dummy.matrix);
+        n++;
+      }
+      seats.count = n; seats.name = 'Square and boulevard benches (bancs, pietonnier)';
+      seats.castShadow = true; g.add(seats);
+      legs.count = 2 * n; legs.name = 'Bench legs';
+      g.add(legs);
+    }
+    // Round 66: public litter bins along the boulevard.
+    {
+      const bins = new THREE.InstancedMesh(new THREE.CylinderGeometry(0.32, 0.28, 0.85, 10), materials.green, 6);
+      const lids = new THREE.InstancedMesh(new THREE.CylinderGeometry(0.34, 0.34, 0.08, 10), materials.dark, 6);
+      const dummy = new THREE.Object3D();
+      for (let i = 0; i < 6; i++) {
+        dummy.position.set(-60 + i * 24, 0.43, 126.5);
+        dummy.updateMatrix();
+        bins.setMatrixAt(i, dummy.matrix);
+        dummy.position.set(-60 + i * 24, 0.9, 126.5);
+        dummy.updateMatrix();
+        lids.setMatrixAt(i, dummy.matrix);
+      }
+      bins.count = 6; bins.name = 'Boulevard public bins (poubelles publiques)';
+      bins.castShadow = true; g.add(bins);
+      lids.count = 6; lids.name = 'Bin lids';
+      g.add(lids);
+    }
+    // Round 67: bicycle arches (arceaux velo) at the square edges — the station has a bike park.
+    {
+      const arches = new THREE.InstancedMesh(new THREE.TorusGeometry(0.55, 0.035, 6, 12, Math.PI), materials.dark, 8);
+      const dummy = new THREE.Object3D();
+      for (let i = 0; i < 8; i++) {
+        dummy.position.set(-58 + i * 3, 0, 50);
+        dummy.rotation.set(Math.PI / 2, 0, 0);
+        dummy.updateMatrix();
+        arches.setMatrixAt(i, dummy.matrix);
+      }
+      arches.count = 8;
+      arches.name = 'Bicycle arches (arceaux velo) at the square edge';
+      arches.castShadow = true;
+      g.add(arches);
+    }
+    // Round 68: the new public lighting of the pietonnier — lamp columns along the boulevard.
+    {
+      const poles = new THREE.InstancedMesh(new THREE.CylinderGeometry(0.09, 0.12, 7.5, 8), materials.dark, 8);
+      const heads = new THREE.InstancedMesh(new THREE.SphereGeometry(0.3, 10, 8), materials.glass, 8);
+      const dummy = new THREE.Object3D();
+      for (let i = 0; i < 8; i++) {
+        dummy.position.set(-70 + i * 20, 3.75, 118.5);
+        dummy.updateMatrix();
+        poles.setMatrixAt(i, dummy.matrix);
+        dummy.position.set(-70 + i * 20, 7.7, 118.5);
+        dummy.updateMatrix();
+        heads.setMatrixAt(i, dummy.matrix);
+      }
+      poles.count = 8; poles.name = 'Pietonnier lighting columns (nouvel eclairage)';
+      poles.castShadow = true; g.add(poles);
+      heads.count = 8; heads.name = 'Pietonnier lamp heads';
+      heads.castShadow = true; g.add(heads);
+    }
+    // Round 69: fountains on the pedestrianised boulevard (fontaines du pietonnier).
+    {
+      const basins = new THREE.InstancedMesh(new THREE.CylinderGeometry(1.6, 1.8, 0.5, 14), materials.pavingEdge, 3);
+      const water = new THREE.InstancedMesh(new THREE.CylinderGeometry(1.45, 1.45, 0.08, 14), materials.glass, 3);
+      const jets = new THREE.InstancedMesh(new THREE.CylinderGeometry(0.06, 0.1, 1.6, 6), materials.glass, 3);
+      const dummy = new THREE.Object3D();
+      for (let i = 0; i < 3; i++) {
+        const x = -30 + i * 30, z = 122;
+        dummy.position.set(x, 0.25, z); dummy.updateMatrix(); basins.setMatrixAt(i, dummy.matrix);
+        dummy.position.set(x, 0.52, z); dummy.updateMatrix(); water.setMatrixAt(i, dummy.matrix);
+        dummy.position.set(x, 1.2, z); dummy.updateMatrix(); jets.setMatrixAt(i, dummy.matrix);
+      }
+      basins.count = 3; basins.name = 'Boulevard Anspach pietonnier fountain basins (fontaines)';
+      basins.castShadow = true; g.add(basins);
+      water.count = 3; water.name = 'Fountain water discs';
+      g.add(water);
+      jets.count = 3; jets.name = 'Fountain jets';
+      g.add(jets);
+    }
+    // Round 70: pedestrian-zone entry signs at the boulevard mouths (zone pietonne, since
+    // 29 June 2015 the boulevard is car-free between the Bourse and De Brouckere).
+    for (const [sx, sz] of [[-20, 112], [20, 131]]) {
+      const sign = new THREE.Group();
+      sign.name = 'Pedestrian-zone entry sign (zone pietonne, 29 June 2015)';
+      sign.position.set(sx, 0, sz);
+      cylinder(sign, 0.06, 0.07, 3.2, 0, 1.6, 0, materials.dark, 6);
+      const plate = mesh(sign, new THREE.CylinderGeometry(0.55, 0.55, 0.05, 20), materials.enamelBlue, 0, 3.0, 0, 'pedestrian zone sign disc (disque bleu zone pietonne)');
+      plate.rotation.x = Math.PI / 2;
+      g.add(sign);
+    }
+    // Round 71: each street mouth opens with a fan of radial setts (pavage en eventail) in the
+    // square's paving, as on the Grand-Place.
+    {
+      const fans = new THREE.InstancedMesh(new THREE.BoxGeometry(0.5, 0.07, 1.4), materials.pavingB, 60);
+      const dummy = new THREE.Object3D();
+      let n = 0;
+      for (const [cx, cz, ang] of [[-58, 44, Math.PI / 2], [58, 44, Math.PI / 2], [-58, 132, -Math.PI / 2], [58, 132, -Math.PI / 2], [-62, 90, 0], [62, 75, Math.PI]]) {
+        for (let i = 0; i < 10; i++) {
+          const a = ang + (i - 4.5) * 0.16;
+          dummy.position.set(cx + Math.cos(a) * 2.2, 0.04, cz + Math.sin(a) * 2.2);
+          dummy.rotation.set(0, -a, 0);
+          dummy.updateMatrix();
+          fans.setMatrixAt(n++, dummy.matrix);
+        }
+      }
+      fans.count = n;
+      fans.name = 'Place de la Bourse street-mouth sett fans (pavage en eventail)';
+      fans.receiveShadow = true;
+      g.add(fans);
+    }
+    // Round 72: kerb end stones close each kerb line at the street mouths.
+    {
+      const ends = new THREE.InstancedMesh(new THREE.BoxGeometry(1.1, 0.3, 1.1), materials.pavingEdge, 12);
+      const dummy = new THREE.Object3D();
+      const spots = [[-65, 44], [-58, 44], [58, 44], [65, 44], [-65, 134], [-58, 134], [58, 134], [65, 134], [-65.5, 70], [-65.5, 100], [65.5, 50], [65.5, 85]];
+      for (let i = 0; i < 12; i++) {
+        dummy.position.set(spots[i][0], 0.1, spots[i][1]);
+        dummy.updateMatrix();
+        ends.setMatrixAt(i, dummy.matrix);
+      }
+      ends.count = 12;
+      ends.name = 'Square kerb end stones (pierres de bout)';
+      ends.castShadow = true;
+      g.add(ends);
+    }
+    // Round 73: tactile paving strips (bandes podotactiles, rows of bumps) lead to each zebra crossing.
+    {
+      const bumps = new THREE.InstancedMesh(new THREE.SphereGeometry(0.09, 6, 5), materials.pavingEdge, 4 * 2 * 6);
+      const dummy = new THREE.Object3D();
+      let n = 0;
+      for (const [bx, bz] of [[-8, 106], [8, 106], [-8, 136], [8, 136]]) {
+        for (let r = 0; r < 2; r++) for (let i = 0; i < 6; i++) {
+          dummy.position.set(bx - 2.5 + i * 1, 0.09, bz + (r - 0.5) * 0.5);
+          dummy.updateMatrix();
+          bumps.setMatrixAt(n++, dummy.matrix);
+        }
+      }
+      bumps.count = n;
+      bumps.name = 'Tactile paving bumps at the crossings (bandes podotactiles)';
+      g.add(bumps);
+    }
+    // Round 74: drainage gully slots along the square kerb line.
+    {
+      const gullies = new THREE.InstancedMesh(new THREE.BoxGeometry(0.35, 0.04, 1.2), materials.dark, 24);
+      const dummy = new THREE.Object3D();
+      for (let i = 0; i < 24; i++) {
+        dummy.position.set(-60 + i * 5.2, 0.06, i % 2 ? 42 : 135);
+        dummy.updateMatrix();
+        gullies.setMatrixAt(i, dummy.matrix);
+      }
+      gullies.count = 24;
+      gullies.name = 'Square kerb drainage gullies';
+      g.add(gullies);
+    }
+    // Round 75: manhole covers set in the square's paving.
+    {
+      const covers = new THREE.InstancedMesh(new THREE.CylinderGeometry(0.45, 0.45, 0.05, 12), materials.dark, 8);
+      const dummy = new THREE.Object3D();
+      for (let i = 0; i < 8; i++) {
+        dummy.position.set(-52 + (i % 4) * 36, 0.05, 60 + Math.floor(i / 4) * 40);
+        dummy.updateMatrix();
+        covers.setMatrixAt(i, dummy.matrix);
+      }
+      covers.count = 8;
+      covers.name = 'Square manhole covers (plaques d\'egout)';
+      g.add(covers);
+    }
+    // Round 76: ventilation grilles of the 1976 North-South premetro tunnel, which took the place
+    // of the covered Senne under the boulevard (en.wikipedia Boulevard Anspach / Covering of the Senne).
+    {
+      const grilles = new THREE.InstancedMesh(new THREE.BoxGeometry(4, 0.06, 1.6), materials.dark, 6);
+      const dummy = new THREE.Object3D();
+      for (let i = 0; i < 6; i++) {
+        dummy.position.set(-50 + i * 20, 0.05, 117);
+        dummy.updateMatrix();
+        grilles.setMatrixAt(i, dummy.matrix);
+      }
+      grilles.count = 6;
+      grilles.name = 'Premetro tunnel ventilation grilles on the boulevard (tunnel 1976, ancien lit de la Senne)';
+      g.add(grilles);
+    }
+    // Round 77: a commemorative plaque for the former Butter Market (Marche au Beurre) and the
+    // 13th-century Recollets Franciscan convent whose ruins lie under the square (Bruxella 1238).
+    {
+      const plaque = new THREE.Group();
+      plaque.name = 'Plaque Marche au Beurre / Recollets convent / Bruxella 1238';
+      plaque.position.set(-20, 0, 44.2);
+      box(plaque, 1.8, 1.1, 0.08, 0, 1.5, 0, materials.bronze, 'bronze commemorative plaque');
+      cylinder(plaque, 0.05, 0.06, 3, 0, 1.5, -0.15, materials.dark, 6);
+      g.add(plaque);
+    }
+    // Round 78: a brasserie terrace with parasols and tables on the square, beside the corner
+    // buildings — the square is ringed with cafes and restaurants.
+    {
+      const parasols = new THREE.InstancedMesh(new THREE.ConeGeometry(1.4, 0.7, 8), materials.canvas, 4);
+      const poles2 = new THREE.InstancedMesh(new THREE.CylinderGeometry(0.05, 0.05, 2.2, 6), materials.dark, 4);
+      const tables = new THREE.InstancedMesh(new THREE.CylinderGeometry(0.5, 0.5, 0.05, 10), materials.warmStone, 4);
+      const dummy = new THREE.Object3D();
+      const spots = [[-40, 55], [-34, 58], [40, 55], [34, 58]];
+      for (let i = 0; i < 4; i++) {
+        dummy.position.set(spots[i][0], 2.2, spots[i][1]);
+        dummy.updateMatrix();
+        parasols.setMatrixAt(i, dummy.matrix);
+        dummy.position.set(spots[i][0], 1.1, spots[i][1]);
+        dummy.updateMatrix();
+        poles2.setMatrixAt(i, dummy.matrix);
+        dummy.position.set(spots[i][0], 0.75, spots[i][1]);
+        dummy.updateMatrix();
+        tables.setMatrixAt(i, dummy.matrix);
+      }
+      parasols.count = 4; parasols.name = 'Brasserie terrace parasols on the square';
+      parasols.castShadow = true; g.add(parasols);
+      poles2.count = 4; poles2.name = 'Parasol poles';
+      g.add(poles2);
+      tables.count = 4; tables.name = 'Terrace tables';
+      tables.castShadow = true; g.add(tables);
+    }
+    // Round 79: the "Bourse - Beurs" stop sign with its shelter on the boulevard — surface
+    // connections with buses 46, 48, 86 and 95 (fr.wikipedia premetro station).
+    {
+      const stop = new THREE.Group();
+      stop.name = 'Stop sign Bourse - Beurs (bus 46/48/86/95) + shelter';
+      stop.position.set(-6, 0, 126);
+      cylinder(stop, 0.06, 0.07, 3.4, 0, 1.7, 0, materials.dark, 6);
+      const disc = mesh(stop, new THREE.CylinderGeometry(0.5, 0.5, 0.06, 18), materials.enamelBlue, 0, 3.1, 0, 'stop sign disc Bourse - Beurs');
+      disc.rotation.x = Math.PI / 2;
+      box(stop, 3, 0.06, 1.4, 2.2, 2.6, 0, materials.glass, 'shelter glass panel');
+      box(stop, 3.4, 0.1, 1.8, 2.2, 2.7, 0, materials.dark, 'shelter roof');
+      g.add(stop);
+    }
+    // Round 80: along the rue Auguste Orts, monumental eclectic facades largely built around
+    // 1885 line the street that was pierced (1890) to frame the view of the Bourse
+    // (monument.heritage.brussels rue Auguste Orts; reflexcity).
+    {
+      const facades = new THREE.InstancedMesh(new THREE.BoxGeometry(10, 20, 0.8), materials.ochre, 5);
+      const wins = new THREE.InstancedMesh(new THREE.BoxGeometry(1.8, 3, 0.2), materials.glass, 20);
+      const dummy = new THREE.Object3D();
+      let n = 0;
+      for (let i = 0; i < 5; i++) {
+        dummy.position.set(-58 - i * 11, 10, 62 - i * 9);
+        dummy.rotation.set(0, 0.5, 0);
+        dummy.updateMatrix();
+        facades.setMatrixAt(i, dummy.matrix);
+        for (let f = 0; f < 4; f++) {
+          dummy.position.set(-58 - i * 11 - 3 + f * 2, 5 + f * 4, 62 - i * 9 + 0.5);
+          dummy.rotation.set(0, 0.5, 0);
+          dummy.updateMatrix();
+          wins.setMatrixAt(n++, dummy.matrix);
+        }
+      }
+      facades.count = 5;
+      facades.name = 'Rue Auguste Orts monumental eclectic facades (vers 1885)';
+      facades.castShadow = true;
+      g.add(facades);
+      wins.count = n;
+      wins.name = 'Rue Orts facade windows';
+      g.add(wins);
+    }
+    // Round 121: the 1949 corner tower's dome is ribbed (huit nervures) and its shaft glazed.
+    {
+      const ribs = new THREE.InstancedMesh(new THREE.BoxGeometry(0.25, 6.5, 0.25), materials.roof, 8);
+      const twins = new THREE.InstancedMesh(new THREE.BoxGeometry(1.6, 2.4, 0.3), materials.glass, 3 * 6);
+      const dummy = new THREE.Object3D();
+      for (let i = 0; i < 8; i++) {
+        const a = i * Math.PI / 4;
+        dummy.position.set(-70 + Math.sin(a) * 6.2, 40.5, 88 + Math.cos(a) * 6.2);
+        dummy.rotation.set(Math.cos(a) * 0.7, 0, -Math.sin(a) * 0.7);
+        dummy.updateMatrix();
+        ribs.setMatrixAt(i, dummy.matrix);
+      }
+      ribs.count = 8;
+      ribs.name = '1949 tower dome meridian ribs (nervures de la coupole)';
+      ribs.castShadow = true;
+      g.add(ribs);
+      let n = 0;
+      for (let f = 0; f < 3; f++) for (let i = 0; i < 6; i++) {
+        dummy.position.set(-76.5 + i * 3, 8 + f * 9, 88.2);
+        dummy.updateMatrix();
+        twins.setMatrixAt(n++, dummy.matrix);
+      }
+      twins.count = n;
+      twins.name = '1949 tower shaft windows';
+      twins.castShadow = true;
+      g.add(twins);
+    }
+    // Round 122: the 1949 building reused balconies recovered from the burned Grands Magasins
+    // de la Bourse (en.wikipedia Place de la Bourse).
+    {
+      const balconies = new THREE.InstancedMesh(new THREE.BoxGeometry(4.4, 0.18, 1.4), materials.paleStone, 8);
+      const rails = new THREE.InstancedMesh(new THREE.BoxGeometry(4.4, 0.9, 0.1), materials.dark, 8);
+      const dummy = new THREE.Object3D();
+      for (let i = 0; i < 8; i++) {
+        dummy.position.set(-73 + (i % 4) * 6, 7 + Math.floor(i / 4) * 9, 107.3);
+        dummy.updateMatrix();
+        balconies.setMatrixAt(i, dummy.matrix);
+        dummy.position.set(-73 + (i % 4) * 6, 7.6 + Math.floor(i / 4) * 9, 107.9);
+        dummy.updateMatrix();
+        rails.setMatrixAt(i, dummy.matrix);
+      }
+      balconies.count = 8;
+      balconies.name = '1949 building reused balconies (balcons recuperes des Grands Magasins)';
+      balconies.castShadow = true;
+      g.add(balconies);
+      rails.count = 8;
+      rails.name = '1949 balcony iron rails';
+      g.add(rails);
+    }
+    // Round 123: the 1884-85 blocks have stone window surrounds and etage balcony balustrades.
+    {
+      const surr = new THREE.InstancedMesh(new THREE.BoxGeometry(2.7, 3.9, 0.25), materials.warmStone, 48);
+      const rails = new THREE.InstancedMesh(new THREE.BoxGeometry(2.4, 0.85, 0.12), materials.dark, 24);
+      const dummy = new THREE.Object3D();
+      let n = 0, r = 0;
+      for (const sx of [-1, 1]) {
+        const blk = sx * 30;
+        for (let f = 0; f < 4; f++) for (let i = 0; i < 6; i++) {
+          dummy.position.set(blk - 22.5 + i * 9, 4.5 + f * 4.5, 116.25);
+          dummy.updateMatrix();
+          surr.setMatrixAt(n++, dummy.matrix);
+          if (f === 1) {
+            dummy.position.set(blk - 22.5 + i * 9, 7.4, 116.5);
+            dummy.updateMatrix();
+            rails.setMatrixAt(r++, dummy.matrix);
+          }
+        }
+      }
+      surr.count = n;
+      surr.name = '1884-85 block window stone surrounds';
+      surr.castShadow = true;
+      g.add(surr);
+      rails.count = r;
+      rails.name = '1884-85 block etage balcony rails';
+      g.add(rails);
+    }
+    // Round 124: modillions under the 1884-85 cornices + dormers on the mansard crowns.
+    {
+      const mods = new THREE.InstancedMesh(new THREE.BoxGeometry(0.35, 0.45, 0.35), materials.warmStone, 2 * 25);
+      const dorm = new THREE.InstancedMesh(new THREE.BoxGeometry(2, 2.2, 1.4), materials.ochre, 6);
+      const dummy = new THREE.Object3D();
+      let n = 0;
+      for (const sx of [-1, 1]) for (let i = 0; i < 25; i++) {
+        dummy.position.set(sx * 30 - 24 + i * 2, 22.2, 108);
+        dummy.updateMatrix();
+        mods.setMatrixAt(n++, dummy.matrix);
+      }
+      mods.count = n;
+      mods.name = '1884-85 block cornice modillions';
+      mods.castShadow = true;
+      g.add(mods);
+      let d = 0;
+      for (const sx of [-1, 1]) for (let i = 0; i < 3; i++) {
+        dummy.position.set(sx * 30 - 15 + i * 15, 25.5, 108);
+        dummy.updateMatrix();
+        dorm.setMatrixAt(d++, dummy.matrix);
+      }
+      dorm.count = d;
+      dorm.name = '1884-85 block mansard dormers (lucarnes)';
+      dorm.castShadow = true;
+      g.add(dorm);
+    }
+    // Round 125: the Cafe de la Bourse (1874 neo-Baroque) carries a sculpted cartouche over its
+    // entrance and an oriel window above (neo-Baroque front, Charles-Emile Janlet).
+    {
+      box(g, 4.5, 2.2, 0.5, 34, 3, 138.3, materials.dark, 'Cafe de la Bourse entrance door');
+      mesh(g, new THREE.SphereGeometry(1.1, 10, 8), materials.warmStone, 34, 6.2, 138.4, 'Cafe de la Bourse cartouche (cartouche sculpte)');
+      box(g, 3.4, 3.6, 1.2, 34, 14, 136.8, materials.glass, 'Cafe de la Bourse oriel (oriel vitre)');
+      box(g, 3.8, 0.3, 1.6, 34, 16, 136.8, materials.warmStone, 'Cafe de la Bourse oriel cornice');
+    }
+    // Round 126: the cafe's canvas awning over the terrace side (generic brasserie awning).
+    {
+      const awning = box(g, 10, 0.08, 3, 34, 4.6, 136.2, materials.canvas, 'Cafe de la Bourse canvas awning (store)');
+      awning.rotation.x = 0.35;
+      for (const sx of [-1, 1]) cylinder(g, 0.05, 0.05, 3.4, 34 + sx * 4.8, 3.1, 136.6, materials.dark, 6);
+    }
+    // Round 127: the premetro kiosks get mullioned glass panes, metal frames and handrails.
+    for (const k of g.children) {
+      if (!k.name || !k.name.startsWith('Bourse premetro station')) continue;
+      for (const sx of [-1, 1]) for (const sz of [-1, 1]) {
+        cylinder(k, 0.04, 0.04, 3, sx * 1.55, 1.5, sz * 1.55, materials.dark, 5);
+      }
+      box(k, 0.06, 3, 3.2, -1.62, 1.5, 0, materials.dark, 'kiosk frame post west');
+      box(k, 0.06, 3, 3.2, 1.62, 1.5, 0, materials.dark, 'kiosk frame post east');
+      box(k, 3.3, 0.07, 0.07, 0, 1.1, 1.7, materials.dark, 'kiosk handrail (garde-corps)');
+    }
+    // Round 128: access 6 (south of the square) carries a glazed elevator shaft beside the stair.
+    {
+      const k = g.children.find((c) => c.name && c.name.includes('access 6'));
+      if (k) {
+        box(k, 1.6, 5.5, 1.6, 2.6, 2.75, -1.2, materials.glass, 'premetro access 6 glazed elevator shaft (ascenseur)');
+        box(k, 1.9, 0.15, 1.9, 2.6, 5.55, -1.2, materials.dark, 'elevator shaft roof');
+      }
+    }
+    // Round 129: the Fontaine Orts column shaft is fluted and its basin has a rim moulding
+    // plus a drinking spout (fontaine d'eau potable a haut debit, 1888).
+    {
+      const f = g.children.find((c) => c.name && c.name.startsWith('Fontaine Orts'));
+      if (f) {
+        const flutes = new THREE.InstancedMesh(new THREE.CylinderGeometry(0.04, 0.04, 3.0, 5), materials.dark, 8);
+        const dummy = new THREE.Object3D();
+        for (let i = 0; i < 8; i++) {
+          const a = i * Math.PI / 4;
+          dummy.position.set(Math.cos(a) * 0.95, 1.6, Math.sin(a) * 0.95);
+          dummy.updateMatrix();
+          flutes.setMatrixAt(i, dummy.matrix);
+        }
+        flutes.count = 8;
+        flutes.name = 'Fontaine Orts fluted shaft (fut cannele)';
+        f.add(flutes);
+        const rim = mesh(f, new THREE.TorusGeometry(2.35, 0.12, 6, 16), materials.warmStone, 0, 0.72, 0, 'Fontaine Orts basin rim moulding');
+        rim.rotation.x = Math.PI / 2;
+        cylinder(f, 0.06, 0.06, 0.5, 0, 4.3, 0.9, materials.bronze, 6);
+        mesh(f, new THREE.SphereGeometry(0.09, 6, 5), materials.bronze, 0, 4.3, 1.15, 'Fontaine Orts drinking spout (bec verseur)');
+      }
+    }
+    // Round 130: the Orts monument gets a stepped base, moulded cap and bronze plaque frame.
+    {
+      const m = g.children.find((c) => c.name && c.name.startsWith('Monument to Auguste Orts'));
+      if (m) {
+        box(m, 3.2, 0.25, 1.8, 0, 0.12, 0, materials.warmStone, 'Orts monument stepped base');
+        box(m, 3.1, 0.16, 1.6, 0, 2.5, 0, materials.blueStone, 'Orts monument cap moulding');
+        box(m, 1.7, 1.0, 0.06, 0, 1.2, 0.66, materials.gold, 'Orts monument plaque frame (cadre bronze dore)');
+      }
+    }
+    // Round 151: the square's calepinage alternates two stone tones in courses (repaved 2015).
+    {
+      const alt = new THREE.InstancedMesh(new THREE.BoxGeometry(1.6, 0.05, 1.6), materials.pavingEdge, 14 * 32);
+      const dummy = new THREE.Object3D();
+      let n = 0;
+      for (let row = 0; row < 14; row++) for (let col = 0; col < 32; col++) {
+        if ((row + col) % 2 === 0) continue;
+        dummy.position.set(-62 + col * 4 + (row % 2) * 2, 0.045, 46 + row * 6);
+        dummy.updateMatrix();
+        alt.setMatrixAt(n++, dummy.matrix);
+      }
+      alt.count = n;
+      alt.name = 'Place de la Bourse alternating calepinage courses';
+      alt.receiveShadow = true;
+      g.add(alt);
+    }
+    // Round 152: wear lines along the square's main axes (the busiest pedestrian paths).
+    {
+      const wear = new THREE.InstancedMesh(new THREE.BoxGeometry(90, 0.03, 2.2), materials.pavingEdge, 2);
+      const dummy = new THREE.Object3D();
+      dummy.position.set(0, 0.06, 88); dummy.updateMatrix(); wear.setMatrixAt(0, dummy.matrix);
+      dummy.position.set(0, 0.06, 108); dummy.updateMatrix(); wear.setMatrixAt(1, dummy.matrix);
+      wear.count = 2;
+      wear.name = 'Place de la Bourse wear lines (lignes d\'usure)';
+      wear.receiveShadow = true;
+      g.add(wear);
+    }
+    // Round 153: bordered sett patches (repair patches in the paving).
+    {
+      const patches = new THREE.InstancedMesh(new THREE.BoxGeometry(6, 0.04, 4), materials.pavingB, 6);
+      const borders = new THREE.InstancedMesh(new THREE.BoxGeometry(6.4, 0.05, 4.4), materials.pavingEdge, 6);
+      const dummy = new THREE.Object3D();
+      const spots = [[-30, 60], [20, 75], [-10, 95], [35, 100], [-45, 110], [10, 120]];
+      for (let i = 0; i < 6; i++) {
+        dummy.position.set(spots[i][0], 0.07, spots[i][1]);
+        dummy.updateMatrix();
+        patches.setMatrixAt(i, dummy.matrix);
+        borders.setMatrixAt(i, dummy.matrix);
+      }
+      patches.count = 6; patches.name = 'Place de la Bourse sett repair patches';
+      g.add(patches);
+      borders.count = 6; borders.name = 'Sett patch borders (bordures de ragréage)';
+      g.add(borders);
+    }
+    // Round 154: accent cobbles at the four corners of the square.
+    {
+      const accent = new THREE.InstancedMesh(new THREE.BoxGeometry(1.2, 0.07, 1.2), materials.pavingEdge, 4 * 9);
+      const dummy = new THREE.Object3D();
+      let n = 0;
+      for (const [cx, cz] of [[-62, 44], [62, 44], [-62, 134], [62, 134]]) {
+        for (let i = 0; i < 9; i++) {
+          dummy.position.set(cx + (i % 3) * 1.4 - 1.4, 0.08, cz + Math.floor(i / 3) * 1.4 - 1.4);
+          dummy.updateMatrix();
+          accent.setMatrixAt(n++, dummy.matrix);
+        }
+      }
+      accent.count = n;
+      accent.name = 'Square corner accent cobbles (cobles d\'angle)';
+      g.add(accent);
+    }
+    // Round 155: the boulevard's central spine is paved in a contrasting tone (pietonnier design).
+    box(g, 170, 0.28, 6, 0, -0.14, 122, materials.pavingEdge, 'Boulevard Anspach central spine (bande centrale)');
+    // Round 156: paving stubs continue into the side streets (rue Paul Devaux, rue Jules Van Praet).
+    box(g, 14, 0.26, 40, -58, -0.13, 100, materials.pavingB, 'Rue Paul Devaux paving stub');
+    box(g, 12, 0.26, 34, -28, -0.13, 112, materials.pavingB, 'Rue Jules Van Praet paving stub');
+    // Round 157: each embedded planter holds soil and a shrub ball.
+    {
+      const soil = new THREE.InstancedMesh(new THREE.CylinderGeometry(2.6, 2.6, 0.12, 10), materials.dark, 12);
+      const shrubs = new THREE.InstancedMesh(new THREE.SphereGeometry(0.9, 8, 6), materials.green, 12);
+      const dummy = new THREE.Object3D();
+      for (let i = 0; i < 12; i++) {
+        dummy.position.set(-77 + i * 14, 0.6, 118.5);
+        dummy.updateMatrix();
+        soil.setMatrixAt(i, dummy.matrix);
+        dummy.position.set(-77 + i * 14, 1.4, 118.5);
+        dummy.updateMatrix();
+        shrubs.setMatrixAt(i, dummy.matrix);
+      }
+      soil.count = 12; soil.name = 'Planter soil (terreau des bacs encastres)';
+      g.add(soil);
+      shrubs.count = 12; shrubs.name = 'Planter shrubs (arbustes des bacs)';
+      shrubs.castShadow = true;
+      g.add(shrubs);
+    }
+    // Round 158: tree trunks + protective grilles around the boulevard trees.
+    {
+      const trunks = new THREE.InstancedMesh(new THREE.CylinderGeometry(0.18, 0.24, 2.6, 8), materials.dark, 12);
+      const guards = new THREE.InstancedMesh(new THREE.TorusGeometry(0.9, 0.05, 6, 12), materials.dark, 12);
+      const dummy = new THREE.Object3D();
+      for (let i = 0; i < 12; i++) {
+        dummy.position.set(-77 + i * 14, 1.3, 118.5);
+        dummy.updateMatrix();
+        trunks.setMatrixAt(i, dummy.matrix);
+        dummy.position.set(-77 + i * 14, 0.5, 118.5);
+        dummy.rotation.set(Math.PI / 2, 0, 0);
+        dummy.updateMatrix();
+        guards.setMatrixAt(i, dummy.matrix);
+      }
+      trunks.count = 12; trunks.name = 'Boulevard tree trunks (fûts)';
+      g.add(trunks);
+      guards.count = 12; guards.name = 'Tree guard grilles (grilles de protection)';
+      g.add(guards);
+    }
+    // Round 159: tactile paving strip across the stair foot (accessibility to the peristyle).
+    {
+      const bumps = new THREE.InstancedMesh(new THREE.SphereGeometry(0.09, 6, 5), materials.pavingEdge, 2 * 26);
+      const dummy = new THREE.Object3D();
+      let n = 0;
+      for (let r = 0; r < 2; r++) for (let i = 0; i < 26; i++) {
+        dummy.position.set(-12.5 + i * 1, 0.09, 49 + (r - 0.5) * 0.5);
+        dummy.updateMatrix();
+        bumps.setMatrixAt(n++, dummy.matrix);
+      }
+      bumps.count = n;
+      bumps.name = 'Tactile strip at the monumental stair foot (bande podotactile)';
+      g.add(bumps);
+    }
+    // Round 160: kerb ramps (abaissés de trottoir) at the four boulevard crossings.
+    {
+      const ramps = new THREE.InstancedMesh(new THREE.BoxGeometry(4, 0.1, 1.6), materials.pavingEdge, 4);
+      const dummy = new THREE.Object3D();
+      for (let i = 0; i < 4; i++) {
+        dummy.position.set(i % 2 ? 8 : -8, 0.1, i < 2 ? 107.2 : 134.8);
+        dummy.updateMatrix();
+        ramps.setMatrixAt(i, dummy.matrix);
+      }
+      ramps.count = 4;
+      ramps.name = 'Kerb ramps at the crossings (abaissés de trottoir)';
+      g.add(ramps);
+    }
+    // Round 171: rue de la Bourse runs along the palace's east flank from the square south-east
+    // (en.wikipedia Place de la Bourse: two side streets run along each side of the building).
+    box(g, 12, 0.26, 55, 62, -0.13, 20, materials.pavingB, 'Rue de la Bourse paving (east flank of the palace)');
+    {
+      const facades = new THREE.InstancedMesh(new THREE.BoxGeometry(9, 18, 0.8), materials.plaster, 4);
+      const dummy = new THREE.Object3D();
+      for (let i = 0; i < 4; i++) {
+        dummy.position.set(67, 9, -2 - i * 13);
+        dummy.updateMatrix();
+        facades.setMatrixAt(i, dummy.matrix);
+      }
+      facades.count = 4;
+      facades.name = 'Rue de la Bourse facade row';
+      facades.castShadow = true;
+      g.add(facades);
+    }
+    // Round 172: rue Henri Maus runs along the palace's west flank.
+    box(g, 12, 0.26, 55, -62, -0.13, 20, materials.pavingB, 'Rue Henri Maus paving (west flank of the palace)');
+    {
+      const facades = new THREE.InstancedMesh(new THREE.BoxGeometry(9, 18, 0.8), materials.ochre, 4);
+      const dummy = new THREE.Object3D();
+      for (let i = 0; i < 4; i++) {
+        dummy.position.set(-67, 9, -2 - i * 13);
+        dummy.updateMatrix();
+        facades.setMatrixAt(i, dummy.matrix);
+      }
+      facades.count = 4;
+      facades.name = 'Rue Henri Maus facade row';
+      facades.castShadow = true;
+      g.add(facades);
+    }
+    // Round 173: the rue du Marche aux Poulets reaches the square from the south-east
+    // (fr.wikipedia: the square receives rue de la Bourse, rue du Marche aux Poulets, ...).
+    box(g, 12, 0.26, 40, 45, -0.13, -5, materials.pavingB, 'Rue du Marche aux Poulets connection to the square');
+    // Round 174: neoclassical 1870s blocks line the boulevard south of the square (toward
+    // Boulevard Maurice Lemonnier) — the boulevard's uniform facades of the Anspach scheme.
+    {
+      const blocks = new THREE.InstancedMesh(new THREE.BoxGeometry(16, 20, 14), materials.plaster, 4);
+      const dummy = new THREE.Object3D();
+      for (let i = 0; i < 4; i++) {
+        dummy.position.set(-30 + i * 20, 10, 142);
+        dummy.updateMatrix();
+        blocks.setMatrixAt(i, dummy.matrix);
+      }
+      blocks.count = 4;
+      blocks.name = 'Boulevard Anspach south facade row (facades uniformes du scheme Anspach, vers 1870)';
+      blocks.castShadow = true;
+      g.add(blocks);
+    }
+    // Round 175: the Ancienne Belgique concert hall fronts the boulevard north of the square
+    // (en.wikipedia Boulevard Anspach: places of interest include the Bourse and the Ancienne Belgique).
+    {
+      box(g, 26, 26, 16, -34, 13, 142, materials.warmStone, 'Ancienne Belgique concert hall frontage (Boulevard Anspach)');
+      box(g, 27, 1.4, 17, -34, 26.7, 142, materials.dark, 'Ancienne Belgique cornice');
+      const wins = new THREE.InstancedMesh(new THREE.BoxGeometry(2.4, 5, 0.3), materials.glass, 8);
+      const dummy = new THREE.Object3D();
+      let n = 0;
+      for (let f = 0; f < 2; f++) for (let i = 0; i < 4; i++) {
+        dummy.position.set(-43 + i * 6.5, 8 + f * 9, 150.2);
+        dummy.updateMatrix();
+        wins.setMatrixAt(n++, dummy.matrix);
+      }
+      wins.count = n;
+      wins.name = 'Ancienne Belgique windows';
+      wins.castShadow = true;
+      g.add(wins);
+    }
+    // Round 176: eclectic blocks line the boulevard north of the square toward De Brouckere.
+    {
+      const blocks = new THREE.InstancedMesh(new THREE.BoxGeometry(15, 19, 14), materials.ochre, 4);
+      const dummy = new THREE.Object3D();
+      for (let i = 0; i < 4; i++) {
+        dummy.position.set(28 + i * 19, 9.5, 100);
+        dummy.updateMatrix();
+        blocks.setMatrixAt(i, dummy.matrix);
+      }
+      blocks.count = 4;
+      blocks.name = 'Boulevard Anspach north facade row (blocs eclectiques, style 1870-85)';
+      blocks.castShadow = true;
+      g.add(blocks);
+    }
+    // Round 177: the rue des Bogards mouth south of the square, with its enamel sign.
+    {
+      box(g, 12, 0.26, 30, 0, -0.13, -60, materials.pavingB, 'Rue des Bogards mouth paving');
+      const sign = new THREE.Group();
+      sign.name = 'Enamel street sign RUE DES BOGARDS / BOGARDSTRAAT';
+      sign.position.set(6, 0, -58);
+      cylinder(sign, 0.05, 0.06, 2.6, 0, 1.3, 0, materials.dark, 6);
+      box(sign, 1.7, 0.5, 0.06, 0, 2.72, 0, materials.enamelBlue, 'enamel plate RUE DES BOGARDS / BOGARDSTRAAT');
+      g.add(sign);
+    }
+    // Round 178: paving continues from the rue Henri Maus south end toward the boulevard du Midi.
+    box(g, 12, 0.26, 45, -62, -0.13, -25, materials.pavingB, 'Rue Henri Maus south continuation toward Boulevard du Midi');
+    // Round 179: the facades along the square's east and west edges (beside the flanking streets).
+    {
+      const rows = new THREE.InstancedMesh(new THREE.BoxGeometry(10, 17, 0.8), materials.plaster, 6);
+      const dummy = new THREE.Object3D();
+      for (let i = 0; i < 3; i++) {
+        dummy.position.set(69, 8.5, 60 + i * 22);
+        dummy.updateMatrix();
+        rows.setMatrixAt(i, dummy.matrix);
+        dummy.position.set(-69, 8.5, 60 + i * 22);
+        dummy.updateMatrix();
+        rows.setMatrixAt(3 + i, dummy.matrix);
+      }
+      rows.count = 6;
+      rows.name = 'Square edge facade rows (immeubles bordant la place)';
+      rows.castShadow = true;
+      g.add(rows);
+    }
+    // Round 180: the pietonnier lamp heads glow after dark — register them in nightGlowMats.
+    {
+      const lampGlow = materials.glass.clone();
+      lampGlow.emissive = new THREE.Color(0x000000);
+      nightGlowMats.push(lampGlow);
+      const heads = g.children.find((c) => c.name === 'Pietonnier lamp heads');
+      if (heads) heads.material = lampGlow;
+      const beacons = g.children.find((c) => c.name === 'Belisha beacon globes');
+      if (beacons) beacons.material = lampGlow;
+    }
+    // Round 191: every sign post has a base collar and a sett ring at its foot.
+    {
+      const collars = [];
+      const rings = [];
+      for (const c of g.children) {
+        if (c.name && (c.name.startsWith('Enamel street sign') || c.name.startsWith('Pedestrian-zone'))) {
+          collars.push([c.position.x, c.position.z]);
+        }
+      }
+      const col = new THREE.InstancedMesh(new THREE.CylinderGeometry(0.1, 0.12, 0.25, 8), materials.dark, collars.length);
+      const ring = new THREE.InstancedMesh(new THREE.TorusGeometry(0.35, 0.05, 6, 12), materials.pavingEdge, collars.length);
+      const dummy = new THREE.Object3D();
+      for (let i = 0; i < collars.length; i++) {
+        dummy.position.set(collars[i][0], 0.12, collars[i][1]);
+        dummy.updateMatrix();
+        col.setMatrixAt(i, dummy.matrix);
+        dummy.position.set(collars[i][0], 0.03, collars[i][1]);
+        dummy.rotation.set(Math.PI / 2, 0, 0);
+        dummy.updateMatrix();
+        ring.setMatrixAt(i, dummy.matrix);
+      }
+      col.count = collars.length; col.name = 'Street sign post base collars (colliers)';
+      g.add(col);
+      ring.count = collars.length; ring.name = 'Sign post sett rings (anneaux de pavé)';
+      g.add(ring);
+    }
+    // Round 192: the enamel plates have white border frames with corner rivets.
+    {
+      const plates = g.children.filter((c) => c.name && c.name.startsWith('Enamel street sign'));
+      const frames = new THREE.InstancedMesh(new THREE.BoxGeometry(2.0, 0.6, 0.04), materials.paleStone, plates.length);
+      const dummy = new THREE.Object3D();
+      for (let i = 0; i < plates.length; i++) {
+        dummy.position.set(plates[i].position.x, 2.72, plates[i].position.z - 0.035);
+        dummy.updateMatrix();
+        frames.setMatrixAt(i, dummy.matrix);
+      }
+      frames.count = plates.length;
+      frames.name = 'Enamel plate white border frames (bordures blanches)';
+      g.add(frames);
+    }
+    // Round 193: the bollards are capped with rounded heads.
+    {
+      const caps = new THREE.InstancedMesh(new THREE.SphereGeometry(0.13, 8, 6), materials.dark, 16);
+      const dummy = new THREE.Object3D();
+      const spots = [];
+      for (let i = 0; i < 4; i++) spots.push([-62 + i * 3, 43.5], [62 - i * 3, 43.5], [-62 + i * 3, 133], [62 - i * 3, 133]);
+      for (let i = 0; i < 16; i++) {
+        dummy.position.set(spots[i][0], 0.95, spots[i][1]);
+        dummy.updateMatrix();
+        caps.setMatrixAt(i, dummy.matrix);
+      }
+      caps.count = 16;
+      caps.name = 'Bollard rounded cap heads (têtes de bornes)';
+      caps.castShadow = true;
+      g.add(caps);
+    }
+    // Round 194: the benches get back slats and armrests.
+    {
+      const backs = new THREE.InstancedMesh(new THREE.BoxGeometry(2.2, 0.5, 0.07), materials.warmStone, 10);
+      const arms = new THREE.InstancedMesh(new THREE.BoxGeometry(0.08, 0.35, 0.55), materials.dark, 20);
+      const dummy = new THREE.Object3D();
+      const spots = [[-30, 70], [-15, 70], [0, 70], [15, 70], [30, 70], [-45, 122], [-25, 122], [-5, 122], [15, 122], [35, 122]];
+      for (let i = 0; i < 10; i++) {
+        dummy.position.set(spots[i][0], 0.85, spots[i][1] - 0.28);
+        dummy.rotation.set(-0.25, 0, 0);
+        dummy.updateMatrix();
+        backs.setMatrixAt(i, dummy.matrix);
+        dummy.rotation.set(0, 0, 0);
+        dummy.position.set(spots[i][0] - 1.0, 0.62, spots[i][1]);
+        dummy.updateMatrix();
+        arms.setMatrixAt(2 * i, dummy.matrix);
+        dummy.position.set(spots[i][0] + 1.0, 0.62, spots[i][1]);
+        dummy.updateMatrix();
+        arms.setMatrixAt(2 * i + 1, dummy.matrix);
+      }
+      backs.count = 10; backs.name = 'Bench back slats (dossiers des bancs)';
+      backs.castShadow = true; g.add(backs);
+      arms.count = 20; arms.name = 'Bench armrests (accoudoirs)';
+      g.add(arms);
+    }
+    // Round 195: the water mirror gets a moulded stone frame with corner stones.
+    {
+      box(g, 15.2, 0.32, 0.6, -38, 0.1, 67.7, materials.pavingEdge, 'Water mirror north frame moulding');
+      box(g, 15.2, 0.32, 0.6, -38, 0.1, 72.3, materials.pavingEdge, 'Water mirror south frame moulding');
+      box(g, 0.6, 0.32, 5.2, -45.6, 0.1, 70, materials.pavingEdge, 'Water mirror west frame moulding');
+      box(g, 0.6, 0.32, 5.2, -30.4, 0.1, 70, materials.pavingEdge, 'Water mirror east frame moulding');
+    }
+    // Round 196: the premetro kiosks get a door panel and a tinted glass band.
+    for (const k of g.children) {
+      if (!k.name || !k.name.startsWith('Bourse premetro station')) continue;
+      box(k, 1.4, 2.2, 0.1, 0, 1.1, -1.7, materials.dark, 'kiosk door panel (porte)');
+      box(k, 3.3, 0.5, 3.3, 0, 2.4, 0, materials.glass, 'kiosk tinted glass band (bande vitree teintee)');
+    }
+    // Round 197: terrace chairs around the parasol tables.
+    {
+      const chairs = new THREE.InstancedMesh(new THREE.BoxGeometry(0.45, 0.5, 0.45), materials.warmStone, 12);
+      const dummy = new THREE.Object3D();
+      const spots = [[-40, 55], [-34, 58], [40, 55], [34, 58]];
+      let n = 0;
+      for (const [px, pz] of spots) for (const [dx, dz] of [[1.6, 0], [-1.6, 0], [0, 1.6]]) {
+        dummy.position.set(px + dx, 0.25, pz + dz);
+        dummy.updateMatrix();
+        chairs.setMatrixAt(n++, dummy.matrix);
+      }
+      chairs.count = n;
+      chairs.name = 'Terrace chairs (chaises de terrasse)';
+      chairs.castShadow = true;
+      g.add(chairs);
+    }
+    // Round 198: the boulevard fountain basins get rim mouldings and centre nozzles.
+    {
+      const rims = new THREE.InstancedMesh(new THREE.TorusGeometry(1.75, 0.09, 6, 16), materials.pavingEdge, 3);
+      const nozzles = new THREE.InstancedMesh(new THREE.CylinderGeometry(0.1, 0.14, 0.3, 8), materials.bronze, 3);
+      const dummy = new THREE.Object3D();
+      for (let i = 0; i < 3; i++) {
+        const x = -30 + i * 30;
+        dummy.position.set(x, 0.52, 122);
+        dummy.rotation.set(Math.PI / 2, 0, 0);
+        dummy.updateMatrix();
+        rims.setMatrixAt(i, dummy.matrix);
+        dummy.position.set(x, 0.6, 122);
+        dummy.rotation.set(0, 0, 0);
+        dummy.updateMatrix();
+        nozzles.setMatrixAt(i, dummy.matrix);
+      }
+      rims.count = 3; rims.name = 'Fountain basin rim mouldings';
+      g.add(rims);
+      nozzles.count = 3; nozzles.name = 'Fountain centre nozzles (gicleurs)';
+      g.add(nozzles);
+    }
+    // Round 199: the bins get a foot pedal and lid hinge.
+    {
+      const pedals = new THREE.InstancedMesh(new THREE.BoxGeometry(0.2, 0.05, 0.3), materials.dark, 6);
+      const dummy = new THREE.Object3D();
+      for (let i = 0; i < 6; i++) {
+        dummy.position.set(-60 + i * 24, 0.03, 127.1);
+        dummy.updateMatrix();
+        pedals.setMatrixAt(i, dummy.matrix);
+      }
+      pedals.count = 6;
+      pedals.name = 'Bin foot pedals (pedales)';
+      g.add(pedals);
+    }
+    // Round 200: each bike arch is a double rail (two concentric arcs).
+    {
+      const arches2 = new THREE.InstancedMesh(new THREE.TorusGeometry(0.4, 0.03, 6, 12, Math.PI), materials.dark, 8);
+      const dummy = new THREE.Object3D();
+      for (let i = 0; i < 8; i++) {
+        dummy.position.set(-58 + i * 3, 0, 50);
+        dummy.rotation.set(Math.PI / 2, 0, 0);
+        dummy.updateMatrix();
+        arches2.setMatrixAt(i, dummy.matrix);
+      }
+      arches2.count = 8;
+      arches2.name = 'Bicycle arch inner rails (second rail des arceaux)';
+      g.add(arches2);
+    }
+    // Round 211: the 1949 main block carries a mansard roof with dormers.
+    {
+      pedimentPrism(g, 26, 4, 22, -62, 30, 96, materials.slate, '1949 building mansard roof');
+      const dorm = new THREE.InstancedMesh(new THREE.BoxGeometry(2, 2.2, 1.4), materials.plaster, 4);
+      const dummy = new THREE.Object3D();
+      for (let i = 0; i < 4; i++) {
+        dummy.position.set(-69 + i * 4.7, 31.5, 96);
+        dummy.updateMatrix();
+        dorm.setMatrixAt(i, dummy.matrix);
+      }
+      dorm.count = 4;
+      dorm.name = '1949 building mansard dormers';
+      dorm.castShadow = true;
+      g.add(dorm);
+    }
+    // Round 212: each 1884-85 block has a central avant-corps with its own pediment on the
+    // square facade (homogeneous eclectic composition of 1884-85).
+    for (const sx of [-1, 1]) {
+      box(g, 12, 23, 18, sx * 30, 11.5, 108, materials.ochre, '1884-85 block central avant-corps');
+      pedimentPrism(g, 12, 3, 4, sx * 30, 23.5, 108, materials.warmStone, '1884-85 avant-corps pediment (fronton)');
+    }
+    // Round 213: the Cafe de la Bourse (neo-Baroque 1874) has a corner oriel and mansard roof.
+    {
+      box(g, 4, 12, 4, 47, 18, 130, materials.plaster, 'Cafe de la Bourse corner oriel');
+      pedimentPrism(g, 30, 3.4, 16, 34, 24.6, 130, materials.slate, 'Cafe de la Bourse mansard roof');
+    }
+    // Round 214: each premetro access carries a generic unbranded transit roundel disc (the repo
+    // rule is no real operator logos — a plain blue enamel disc marks the access).
+    for (const k of g.children) {
+      if (!k.name || !k.name.startsWith('Bourse premetro station')) continue;
+      const disc = mesh(k, new THREE.CylinderGeometry(0.42, 0.42, 0.07, 18), materials.enamelBlue, 0, 3.35, 0, 'premetro access sign disc (roundel generique, sans marque)');
+      disc.rotation.x = Math.PI / 2;
+    }
+    // Round 215: two steps descend from each kiosk to the escalator/elevator front.
+    for (const k of g.children) {
+      if (!k.name || !k.name.startsWith('Bourse premetro station')) continue;
+      box(k, 3.6, 0.16, 1.0, 0, 0.08, 2.3, materials.pavingEdge, 'kiosk lower step');
+      box(k, 3.6, 0.16, 1.0, 0, 0.24, 2.9, materials.pavingEdge, 'kiosk upper step');
+    }
+    // Round 216: the Fontaine Orts has two side drinking spouts and an overflow notch.
+    {
+      const f = g.children.find((c) => c.name && c.name.startsWith('Fontaine Orts'));
+      if (f) {
+        for (const sx of [-1, 1]) {
+          cylinder(f, 0.05, 0.05, 0.4, sx * 1.0, 3.4, 0, materials.bronze, 6);
+          mesh(f, new THREE.SphereGeometry(0.08, 6, 5), materials.bronze, sx * 1.2, 3.4, 0, 'Fontaine Orts side spout (bec lateral)');
+        }
+      }
+    }
+    // Round 217: corner stones at the water mirror's four corners.
+    {
+      const corners = new THREE.InstancedMesh(new THREE.BoxGeometry(0.8, 0.4, 0.8), materials.pavingEdge, 4);
+      const dummy = new THREE.Object3D();
+      for (let i = 0; i < 4; i++) {
+        dummy.position.set([-45.2, -30.8][i % 2], 0.14, [67.4, 72.6][Math.floor(i / 2)]);
+        dummy.updateMatrix();
+        corners.setMatrixAt(i, dummy.matrix);
+      }
+      corners.count = 4;
+      corners.name = 'Water mirror corner stones (pierres d\'angle du miroir)';
+      g.add(corners);
+    }
+    // Round 218: each embedded planter has a stone rim moulding.
+    {
+      const rims = new THREE.InstancedMesh(new THREE.BoxGeometry(6.3, 0.12, 2.5), materials.pavingEdge, 12);
+      const dummy = new THREE.Object3D();
+      for (let i = 0; i < 12; i++) {
+        dummy.position.set(-77 + i * 14, 0.6, 118.5);
+        dummy.updateMatrix();
+        rims.setMatrixAt(i, dummy.matrix);
+      }
+      rims.count = 12;
+      rims.name = 'Planter rim mouldings (bords des bacs)';
+      rims.castShadow = true;
+      g.add(rims);
+    }
+    // Round 219: the lighting columns get base collars and a curved arm to the lamp head.
+    {
+      const collars = new THREE.InstancedMesh(new THREE.CylinderGeometry(0.16, 0.2, 0.4, 8), materials.dark, 8);
+      const dummy = new THREE.Object3D();
+      for (let i = 0; i < 8; i++) {
+        dummy.position.set(-70 + i * 20, 0.2, 118.5);
+        dummy.updateMatrix();
+        collars.setMatrixAt(i, dummy.matrix);
+      }
+      collars.count = 8;
+      collars.name = 'Lighting column base collars';
+      collars.castShadow = true;
+      g.add(collars);
+    }
+    // Round 220: register colliders for the three premetro kiosks so vehicles stop at them.
+    // (Collider layout entries themselves live in js/brussels-colliders.js — see that file.)
+    // Round 231: quoin chains at the 1949 tower's corners.
+    {
+      const q = new THREE.InstancedMesh(new THREE.BoxGeometry(0.5, 1.1, 0.5), materials.warmStone, 2 * 16);
+      const dummy = new THREE.Object3D();
+      let n = 0;
+      for (const sx of [-1, 1]) for (let r = 0; r < 16; r++) {
+        dummy.position.set(-70 + sx * 7.2, 2 + r * 2.2, 88);
+        dummy.updateMatrix();
+        q.setMatrixAt(n++, dummy.matrix);
+      }
+      q.count = n;
+      q.name = '1949 tower corner quoins (chaines d\'angle de la tour)';
+      q.castShadow = true;
+      g.add(q);
+    }
+    // Round 232: ground-floor shopfronts on the 1884-85 blocks (rez-de-chaussee commerciaux).
+    {
+      const shops = new THREE.InstancedMesh(new THREE.BoxGeometry(48, 3.4, 0.4), materials.glass, 2);
+      const dummy = new THREE.Object3D();
+      for (let i = 0; i < 2; i++) {
+        dummy.position.set((i === 0 ? -1 : 1) * 30, 1.7, 116.25);
+        dummy.updateMatrix();
+        shops.setMatrixAt(i, dummy.matrix);
+      }
+      shops.count = 2;
+      shops.name = '1884-85 blocks ground-floor shopfronts';
+      shops.castShadow = true;
+      g.add(shops);
+    }
+    // Round 233: the Cafe de la Bourse has a glazed ground-floor band under the awning.
+    box(g, 26, 3.2, 0.4, 34, 1.6, 138.25, materials.glass, 'Cafe de la Bourse ground-floor glazing');
+    // Round 234: the Ancienne Belgique gets an entrance canopy and a marquee band.
+    {
+      box(g, 8, 0.2, 3, -34, 5.2, 150.6, materials.dark, 'Ancienne Belgique entrance canopy (marquise)');
+      box(g, 24, 1.2, 0.5, -34, 20, 150.4, materials.enamelBlue, 'Ancienne Belgique marquee band');
+    }
+    // Round 235: cornices + window surrounds on the boulevard facade rows.
+    {
+      const cornices = new THREE.InstancedMesh(new THREE.BoxGeometry(17, 0.9, 15), materials.warmStone, 8);
+      const dummy = new THREE.Object3D();
+      for (let i = 0; i < 4; i++) {
+        dummy.position.set(-30 + i * 20, 20.4, 142);
+        dummy.updateMatrix();
+        cornices.setMatrixAt(i, dummy.matrix);
+        dummy.position.set(28 + i * 19, 19.4, 100);
+        dummy.updateMatrix();
+        cornices.setMatrixAt(4 + i, dummy.matrix);
+      }
+      cornices.count = 8;
+      cornices.name = 'Boulevard facade row cornices';
+      cornices.castShadow = true;
+      g.add(cornices);
+    }
+    // Round 236: cornices + quoins on the rue Auguste Orts facades (vers 1885).
+    {
+      const cornices = new THREE.InstancedMesh(new THREE.BoxGeometry(10.6, 0.7, 0.9), materials.warmStone, 5);
+      const dummy = new THREE.Object3D();
+      for (let i = 0; i < 5; i++) {
+        dummy.position.set(-58 - i * 11, 20.3, 62 - i * 9);
+        dummy.rotation.set(0, 0.5, 0);
+        dummy.updateMatrix();
+        cornices.setMatrixAt(i, dummy.matrix);
+      }
+      cornices.count = 5;
+      cornices.name = 'Rue Orts facade cornices (corniches)';
+      cornices.castShadow = true;
+      g.add(cornices);
+    }
+    // Round 237: shopfronts at ground level of the square edge facade rows.
+    {
+      const shops = new THREE.InstancedMesh(new THREE.BoxGeometry(9, 3, 0.4), materials.glass, 6);
+      const dummy = new THREE.Object3D();
+      for (let i = 0; i < 3; i++) {
+        dummy.position.set(69.4, 1.5, 60 + i * 22);
+        dummy.updateMatrix();
+        shops.setMatrixAt(i, dummy.matrix);
+        dummy.position.set(-69.4, 1.5, 60 + i * 22);
+        dummy.updateMatrix();
+        shops.setMatrixAt(3 + i, dummy.matrix);
+      }
+      shops.count = 6;
+      shops.name = 'Square edge shopfronts (vitrines rez-de-chaussee)';
+      g.add(shops);
+    }
+    // Round 238: flowering plants in the boulevard planters (fleurissement des bacs).
+    {
+      const flowers = new THREE.InstancedMesh(new THREE.SphereGeometry(0.22, 6, 5), materials.canvas, 12 * 3);
+      const dummy = new THREE.Object3D();
+      let n = 0;
+      for (let i = 0; i < 12; i++) for (let k = 0; k < 3; k++) {
+        dummy.position.set(-77 + i * 14 + (k - 1) * 1.6, 1.15, 118.5 + (k - 1) * 0.5);
+        dummy.updateMatrix();
+        flowers.setMatrixAt(n++, dummy.matrix);
+      }
+      flowers.count = n;
+      flowers.name = 'Planter flowers (fleurs des bacs)';
+      flowers.castShadow = true;
+      g.add(flowers);
+    }
+    // Round 239: four benches face the Bourse across the square by the water mirror.
+    {
+      const seats = new THREE.InstancedMesh(new THREE.BoxGeometry(2.2, 0.09, 0.6), materials.warmStone, 4);
+      const dummy = new THREE.Object3D();
+      for (let i = 0; i < 4; i++) {
+        dummy.position.set(-46 + i * 4, 0.5, 74);
+        dummy.updateMatrix();
+        seats.setMatrixAt(i, dummy.matrix);
+      }
+      seats.count = 4;
+      seats.name = 'Benches facing the Bourse by the water mirror (bancs face a la Bourse)';
+      seats.castShadow = true;
+      g.add(seats);
+    }
+    // Round 240: the stop shelter gets a bench and a timetable case.
+    {
+      const stop = g.children.find((c) => c.name && c.name.startsWith('Stop sign Bourse - Beurs'));
+      if (stop) {
+        box(stop, 2.6, 0.09, 0.5, 2.2, 0.45, 0, materials.warmStone, 'shelter bench (banc de l\'abri)');
+        box(stop, 1.0, 1.4, 0.08, 2.2, 1.4, -0.8, materials.glass, 'timetable case (fiche horaire)');
+      }
+    }
+    // Round 251: chamfer corner stones where the square meets the boulevard's north edge.
+    {
+      const chamfers = new THREE.InstancedMesh(new THREE.BoxGeometry(1.6, 0.3, 1.6), materials.pavingEdge, 4);
+      const dummy = new THREE.Object3D();
+      for (let i = 0; i < 4; i++) {
+        dummy.position.set([-62, -52, 52, 62][i], 0.1, 113.5);
+        dummy.updateMatrix();
+        chamfers.setMatrixAt(i, dummy.matrix);
+      }
+      chamfers.count = 4;
+      chamfers.name = 'Square-boulevard junction chamfer stones (pierres biaises)';
+      chamfers.castShadow = true;
+      g.add(chamfers);
+    }
+    // Round 252: the boulevard continues north from the square toward De Brouckere.
+    box(g, 36, 0.28, 30, 0, -0.14, 100, materials.pavingB, 'Boulevard Anspach north continuation (vers De Brouckere)');
+    // Round 253: the boulevard continues south from the square toward Place Fontainas /
+    // Boulevard Maurice Lemonnier.
+    box(g, 36, 0.28, 26, 0, -0.14, 147, materials.pavingB, 'Boulevard Anspach south continuation (vers Fontainas / Lemonnier)');
+    // Round 254: facade row on the north side of the rue Paul Devaux.
+    {
+      const rows = new THREE.InstancedMesh(new THREE.BoxGeometry(12, 16, 0.8), materials.plaster, 3);
+      const dummy = new THREE.Object3D();
+      for (let i = 0; i < 3; i++) {
+        dummy.position.set(-70 + i * 14, 8, 112);
+        dummy.updateMatrix();
+        rows.setMatrixAt(i, dummy.matrix);
+      }
+      rows.count = 3;
+      rows.name = 'Rue Paul Devaux facade row (north side)';
+      rows.castShadow = true;
+      g.add(rows);
+    }
+    // Round 255: facade row on the rue Jules Van Praet.
+    {
+      const rows = new THREE.InstancedMesh(new THREE.BoxGeometry(12, 15, 0.8), materials.ochre, 3);
+      const dummy = new THREE.Object3D();
+      for (let i = 0; i < 3; i++) {
+        dummy.position.set(-38 + i * 13, 7.5, 112);
+        dummy.updateMatrix();
+        rows.setMatrixAt(i, dummy.matrix);
+      }
+      rows.count = 3;
+      rows.name = 'Rue Jules Van Praet facade row';
+      rows.castShadow = true;
+      g.add(rows);
+    }
+    // Round 256: the Ancienne Belgique's side elevation faces the rue des Bogards side.
+    {
+      box(g, 0.8, 24, 18, -43, 12, 142, materials.warmStone, 'Ancienne Belgique side elevation (pignon lateral)');
+      const wins = new THREE.InstancedMesh(new THREE.BoxGeometry(0.3, 4, 2.2), materials.glass, 6);
+      const dummy = new THREE.Object3D();
+      for (let i = 0; i < 6; i++) {
+        dummy.position.set(-43.5, 7 + i * 3.2, 138 + (i % 2) * 8);
+        dummy.updateMatrix();
+        wins.setMatrixAt(i, dummy.matrix);
+      }
+      wins.count = 6;
+      wins.name = 'Ancienne Belgique side windows';
+      g.add(wins);
+    }
+    // Round 257: rear (north) face of the 1949 building with window rows.
+    {
+      const wins = new THREE.InstancedMesh(new THREE.BoxGeometry(1.8, 2.6, 0.3), materials.glass, 15);
+      const dummy = new THREE.Object3D();
+      let n = 0;
+      for (let f = 0; f < 5; f++) for (let i = 0; i < 3; i++) {
+        dummy.position.set(-70 + i * 6, 5 + f * 5, 84.8);
+        dummy.updateMatrix();
+        wins.setMatrixAt(n++, dummy.matrix);
+      }
+      wins.count = n;
+      wins.name = '1949 building rear windows (face nord)';
+      wins.castShadow = true;
+      g.add(wins);
+    }
+    // Round 258: a paved terrace area in front of the Cafe de la Bourse.
+    box(g, 24, 0.24, 8, 34, -0.12, 142, materials.pavingA, 'Cafe de la Bourse terrace paving (terrasse)');
+    // Round 259: a drainage channel (caniveau) along the boulevard spine.
+    box(g, 170, 0.06, 0.5, 0, -0.05, 122, materials.dark, 'Boulevard spine drainage channel (caniveau central)');
+    // Round 260: register colliders for the Ancienne Belgique and the Cafe de la Bourse blocks
+    // (layout entries in js/brussels-colliders.js).
+    // Round 263: the 1949 building's entrance door with stone surround at its base.
+    {
+      box(g, 4, 5, 0.6, -62, 2.5, 107.4, materials.dark, '1949 building entrance door');
+      box(g, 5, 0.4, 0.9, -62, 5.2, 107.5, materials.warmStone, '1949 entrance lintel');
+      box(g, 4.6, 0.25, 1.6, -62, 0.12, 108.2, materials.pavingEdge, '1949 entrance step');
+    }
+    // Round 264: the water mirror has a water-level rim inside its frame.
+    mesh(g, new THREE.TorusGeometry(6.9, 0.07, 6, 28), materials.glass, -38, 0.12, 70, 'Water mirror inner rim (niveau d\'eau)');
+    // Round 265: each premetro kiosk roof has an edge moulding.
+    for (const k of g.children) {
+      if (!k.name || !k.name.startsWith('Bourse premetro station')) continue;
+      box(k, 3.8, 0.12, 3.8, 0, 3.12, 0, materials.dark, 'kiosk roof edge moulding');
+    }
+    // Round 266: the Fontaine Orts is crowned by a gilded finial ball.
+    {
+      const f = g.children.find((c) => c.name && c.name.startsWith('Fontaine Orts'));
+      if (f) mesh(f, new THREE.SphereGeometry(0.22, 8, 6), materials.gold, 0, 5.5, 0, 'Fontaine Orts finial (boule sommitale)');
+    }
+    // Round 267: three steps surround the Orts monument pedestal.
+    {
+      const m = g.children.find((c) => c.name && c.name.startsWith('Monument to Auguste Orts'));
+      if (m) {
+        box(m, 4.4, 0.15, 3.0, 0, 0.07, 0, materials.pavingEdge, 'Orts monument step 1');
+        box(m, 5.0, 0.15, 3.6, 0, 0.22, 0, materials.pavingEdge, 'Orts monument step 2');
+        box(m, 5.6, 0.15, 4.2, 0, 0.37, 0, materials.pavingEdge, 'Orts monument step 3');
+      }
+    }
+    // Round 268: each bin has a second recycling flap on the lid.
+    {
+      const flaps = new THREE.InstancedMesh(new THREE.BoxGeometry(0.2, 0.02, 0.2), materials.enamelBlue, 6);
+      const dummy = new THREE.Object3D();
+      for (let i = 0; i < 6; i++) {
+        dummy.position.set(-60 + i * 24 + 0.1, 0.95, 126.5);
+        dummy.updateMatrix();
+        flaps.setMatrixAt(i, dummy.matrix);
+      }
+      flaps.count = 6;
+      flaps.name = 'Bin recycling flaps (trappe de recyclage)';
+      g.add(flaps);
+    }
+    // Round 269: each lighting pole has a base flange ring.
+    {
+      const flanges = new THREE.InstancedMesh(new THREE.CylinderGeometry(0.22, 0.26, 0.12, 10), materials.dark, 8);
+      const dummy = new THREE.Object3D();
+      for (let i = 0; i < 8; i++) {
+        dummy.position.set(-70 + i * 20, 0.06, 118.5);
+        dummy.updateMatrix();
+        flanges.setMatrixAt(i, dummy.matrix);
+      }
+      flanges.count = 8;
+      flanges.name = 'Lighting pole base flanges (socles de mat)';
+      flanges.castShadow = true;
+      g.add(flanges);
+    }
+    // Round 270: a contrasting paved axis band runs from the water mirror to the Bourse facade
+    // along the rue Auguste Orts view axis.
+    box(g, 4, 0.3, 82, 0, -0.1, 94, materials.pavingEdge, 'Rue Orts view axis band toward the Bourse (bande d\'axe)');
+    // Round 288: chains linking the bollards across the boulevard street mouths (chaines de
+    // poteaux anti-stationnement).
+    {
+      const links = new THREE.InstancedMesh(new THREE.TorusGeometry(0.09, 0.03, 5, 10), materials.dark, 48);
+      const dummy = new THREE.Object3D();
+      let n = 0;
+      for (const mz of [40, 132]) for (let i = 0; i < 24; i++) {
+        dummy.position.set(-11 + i * 0.95, 0.75 + Math.sin(i * 0.55) * 0.12, mz);
+        dummy.rotation.set(0, 0, i % 2 ? 0.5 : -0.5);
+        dummy.updateMatrix();
+        links.setMatrixAt(n++, dummy.matrix);
+      }
+      links.count = n; links.name = 'Place de la Bourse bollard chains across street mouths (chaines)';
+      g.add(links);
+    }
+    // Round 289: manhole rings in the boulevard carriageway (plaques d'egout sur l'Anspach).
+    {
+      const rings = new THREE.InstancedMesh(new THREE.TorusGeometry(0.55, 0.06, 6, 18), materials.dark, 6);
+      const dummy = new THREE.Object3D();
+      for (let i = 0; i < 6; i++) {
+        dummy.position.set(-6 + (i % 2) * 12, 0.03, 56 + i * 12);
+        dummy.rotation.set(-Math.PI / 2, 0, 0);
+        dummy.updateMatrix();
+        rings.setMatrixAt(i, dummy.matrix);
+      }
+      rings.count = 6; rings.name = 'Boulevard Anspach manhole rings (plaques d\'egout)';
+      g.add(rings);
+    }
+    // Round 290: the classified-monument plaque on the socle beside the great stair (inventaire
+    // A001/31241 du patrimoine immobilier de la Région de Bruxelles-Capitale).
+    box(g, 1.6, 1.1, 0.12, -16.5, 3.2, 41.1, materials.bronze, 'Bourse classified-monument plaque (plaque monument classe A001/31241)');
+    // Round 296: the blue enamel metro M discs on the three premetro surface accesses
+    // (disques M du premetro Bourse-Grand-Place, lignes 4 et 10).
+    for (const k of g.children) {
+      if (!k.name || !k.name.startsWith('Bourse premetro station')) continue;
+      const disc = mesh(k, new THREE.CylinderGeometry(0.45, 0.45, 0.1, 16), materials.enamelBlue, 0, 4.9, 1.35, 'Premetro access metro M disc (disque M email bleu)');
+      disc.rotation.x = Math.PI / 2;
+    }
+    // Round 297: blue enamel street-name plaques on the square's ring buildings (plaques de rue).
+    {
+      const plaques = new THREE.InstancedMesh(new THREE.BoxGeometry(1.8, 0.5, 0.08), materials.enamelBlue, 4);
+      const dummy = new THREE.Object3D();
+      const spots = [[-30, 6, 116.3], [30, 6, 116.3], [34, 6, 138.2], [-62, 8, 96.2]];
+      for (let i = 0; i < 4; i++) {
+        dummy.position.set(spots[i][0], spots[i][1], spots[i][2]);
+        dummy.updateMatrix();
+        plaques.setMatrixAt(i, dummy.matrix);
+      }
+      plaques.count = 4; plaques.name = 'Street name enamel plaques on the square ring (plaques de rue en email bleu)';
+      g.add(plaques);
+    }
+    // Round 298: the Cafe de la Bourse (no. 78, 1874, Janlet) canvas awning over its terrace
+    // (store banne du Cafe de la Bourse).
+    {
+      box(g, 10, 0.12, 3.2, 34, 4.6, 137.2, materials.canvas, 'Cafe de la Bourse canvas awning (store banne)');
+      for (const px of [29.5, 38.5]) box(g, 0.12, 4.6, 0.12, px, 2.3, 138.6, materials.dark, 'Cafe de la Bourse awning pole');
+    }
+    // Round 299: stone coping ring around the Fontaine Orts basin (bordure du bassin).
+    mesh(g, new THREE.TorusGeometry(2.45, 0.16, 6, 24), materials.blueStone, -52, 0.78, 78, 'Fontaine Orts basin rim coping (bordure du bassin)');
+    // __SURROUNDINGS_ROUNDS__
   });
 
   scene?.add(group);

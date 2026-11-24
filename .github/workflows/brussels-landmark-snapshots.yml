@@ -6,8 +6,10 @@ on:
       - "snapshot-grand-place.html"
       - "snapshot-grand-place-wide.html"
       - "snapshot-royal-palace.html"
+      - "snapshot-bourse.html"
       - "js/brussels-landmarks.js"
       - "tests/grand-place.test.mjs"
+      - "tests/brussels-bourse.test.mjs"
       - ".github/workflows/brussels-landmark-snapshots.yml"
   workflow_dispatch:
 permissions:
@@ -43,10 +45,10 @@ jobs:
           for file in metadata.json heightmap.f32; do
             curl --fail --location --retry 4 "$base/data/brussels-terrain/$file" -o "data/brussels-terrain/$file"
           done
-      - name: Check landmark source syntax, Grand-Place and Royal Palace geometry
+      - name: Check landmark source syntax, Grand-Place, Royal Palace and Bourse geometry
         run: |
           node --check js/brussels-landmarks.js
-          node --test tests/grand-place.test.mjs tests/brussels-royal-palace.test.mjs tests/brussels-landmark-colliders.test.mjs
+          node --test tests/grand-place.test.mjs tests/brussels-royal-palace.test.mjs tests/brussels-bourse.test.mjs tests/brussels-landmark-colliders.test.mjs
       - name: Cache Playwright Chromium binaries
         id: playwright-cache
         uses: actions/cache@v4
@@ -87,6 +89,14 @@ jobs:
           trap 'kill $SERVER_PID' EXIT
           for i in $(seq 1 30); do curl --fail http://localhost:4173/snapshot-royal-palace.html >/dev/null && break || sleep 1; done
           python tools/shot.py http://localhost:4173/snapshot-royal-palace.html artifacts/brussels-royal-palace.png 12 0.15
+      - name: Capture Bourse Palace main facade (Place de la Bourse side)
+        run: |
+          mkdir -p artifacts
+          python -m http.server 4173 > /tmp/snapshot-server.log 2>&1 &
+          SERVER_PID=$!
+          trap 'kill $SERVER_PID' EXIT
+          for i in $(seq 1 30); do curl --fail http://localhost:4173/snapshot-bourse.html >/dev/null && break || sleep 1; done
+          python tools/shot.py http://localhost:4173/snapshot-bourse.html artifacts/brussels-bourse-facade.png 12 0.15
       - uses: actions/upload-artifact@v4
         with:
           name: brussels-landmark-elevations
@@ -94,5 +104,6 @@ jobs:
             artifacts/brussels-grand-place-town-hall.png
             artifacts/brussels-grand-place-wide.png
             artifacts/brussels-royal-palace.png
+            artifacts/brussels-bourse-facade.png
           if-no-files-found: error
           retention-days: 30

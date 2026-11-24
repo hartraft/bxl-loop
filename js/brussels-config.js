@@ -26,7 +26,8 @@ const landmarkMeta = [
   ['palaisDeJustice', 'Palace of Justice / Palais de Justice', 'Palace of Justice', 'Marolles', 110],
   ['cinquantenaire', 'Parc du Cinquantenaire / Jubelpark', 'Cinquantenaire', 'European Quarter', 150],
   ['europeanParliament', 'European Parliament', 'European Parliament', 'European Quarter', 100],
-  ['koekelbergBasilica', 'National Basilica of the Sacred Heart', 'Koekelberg Basilica', 'Koekelberg', 130]
+  ['koekelbergBasilica', 'National Basilica of the Sacred Heart', 'Koekelberg Basilica', 'Koekelberg', 130],
+  ['bourse', 'Palais de la Bourse / Beurspaleis', 'Bourse', 'Pentagon', 95]
 ];
 
 export const BRUSSELS_LANDMARKS = landmarkMeta.map(([id, name, short, district, r]) => {
@@ -36,6 +37,7 @@ export const BRUSSELS_LANDMARKS = landmarkMeta.map(([id, name, short, district, 
 });
 const teleports = [
   ['grandPlace', 'Grand-Place', 'Grote Markt', 50.84725, 4.35315],
+  ['bourse', 'Palais de la Bourse / Beurspaleis', 'Place de la Bourse', 50.84859, 4.34903],
   ['mannekenPis', 'Manneken Pis', 'Rue de l’Étuve', 50.84478, 4.34985],
   ['montDesArts', 'Mont des Arts', 'Kunstberg', 50.84280, 4.35765],
   ['royalPalace', 'Royal Palace', 'Place des Palais', 50.84175, 4.36315],

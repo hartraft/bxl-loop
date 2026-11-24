@@ -21,6 +21,13 @@ export const MONT_DES_ARTS_ROTATION = Math.PI / 4;
 // (0.727 rad) from north, and rotation.y = PI - 0.727 maps local +Z onto that bearing.
 export const PALAIS_DE_JUSTICE_ROTATION = Math.PI - 0.727;
 
+// The Bourse Palace (OSM way 13494623) sits on the south-east side of the Place de la Bourse
+// (OSM way 787954099): from the building centroid (50.84795, 4.35043) to the square centroid
+// (50.84832, 4.34963) is bearing ~306 deg, so the main facade normal (local +Z) points at
+// ~306 deg from north and rotation.y = PI - 5.34 maps local +Z onto that bearing. The facade
+// terminates the perspective of the rue Auguste Orts across the square.
+export const BOURSE_ROTATION = Math.PI - 5.34;
+
 export const BRUSSELS_M_PER_DEG_LAT =
   111132.92 - 559.82 * Math.cos(2 * phi) + 1.175 * Math.cos(4 * phi);
 export const BRUSSELS_M_PER_DEG_LON =
@@ -60,5 +67,7 @@ export const BRUSSELS_LANDMARK_ANCHORS = {
   cinquantenaire: { lat: 50.84105, lon: 4.39248, name: 'Parc du Cinquantenaire' },
   europeanParliament: { lat: 50.83890, lon: 4.37560, name: 'European Parliament' },
   atomium: { lat: 50.89492, lon: 4.34155, name: 'Atomium' },
-  koekelbergBasilica: { lat: 50.86684, lon: 4.31640, name: 'National Basilica of the Sacred Heart' }
+  koekelbergBasilica: { lat: 50.86684, lon: 4.31640, name: 'National Basilica of the Sacred Heart' },
+  bourse: { lat: 50.84795, lon: 4.35043, name: 'Palais de la Bourse / Beurspaleis (Bruxelles Bourse)' },
+  bourseSurroundings: { lat: 50.84795, lon: 4.35043, name: 'Bourse surroundings (Place de la Bourse / Beursplein, Boulevard Anspach)' }
 };
