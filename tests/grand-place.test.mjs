@@ -166,6 +166,14 @@ test('café awnings over the ground-floor arcades of the brasserie houses', () =
   assert.equal((square.match(/terrace: true \}\)/g) || []).length, 6, 'six houses carry terraces');
 });
 
+test('Le Roy d’Espagne carries Roman emperor medallions and the St Aubert bust', () => {
+  assert.ok(square.includes('emblem: \'vane\', balustradeStatues: true, terrace: true, medallions: true }'));
+  assert.ok(square.includes(" Roman emperor medallions'"));
+  assert.ok(square.includes('new THREE.CylinderGeometry(0.55, 0.55, 0.12, 20).rotateX(Math.PI / 2), materials.gold, 4)'));
+  assert.ok(square.includes(" St Aubert bust'"));
+  assert.ok(square.includes('medallions.count = 4'));
+});
+
 test('signature house emblems: Le Cornet horse, Le Roy d’Espagne cupola-vane and six statues', () => {
   assert.ok(square.includes("emblem: 'horse'"));
   assert.ok(square.includes("emblem: 'vane'"));

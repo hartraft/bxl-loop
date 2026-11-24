@@ -361,6 +361,23 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     pediments.name = name + ' window pediments';
     pediments.castShadow = true;
     root.add(pediments);
+    if (spec.medallions) {
+      // Le Roy d'Espagne (bakers' house): gilded round medallions of the Roman emperors Marcus
+      // Aurelius, Nerva, Decius and Trajan at the pilaster joints, and a bust of St Aubert,
+      // patron saint of bakers, on the first floor above the arcade.
+      const wy2 = 4.4 + (height - 6.6) / Math.max(1, floors - 1);
+      const medallions = new THREE.InstancedMesh(new THREE.CylinderGeometry(0.55, 0.55, 0.12, 20).rotateX(Math.PI / 2), materials.gold, 4);
+      for (let i = 0; i < 4; i++) {
+        pedDummy.position.set(-(width - 2.8) / 2 + i * bayStep, (4.4 + wy2) / 2, 0.26);
+        pedDummy.updateMatrix();
+        medallions.setMatrixAt(i, pedDummy.matrix);
+      }
+      medallions.count = 4;
+      medallions.name = name + ' Roman emperor medallions';
+      root.add(medallions);
+      box(root, 0.5, 0.18, 0.15, 0, 5.45, 0.4, materials.warmStone, name + ' St Aubert bust plinth');
+      mesh(root, new THREE.SphereGeometry(0.22, 10, 8), materials.gold, 0, 5.78, 0.44, name + ' St Aubert bust');
+    }
     return root;
   }
 
@@ -903,7 +920,7 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     plaza.add(west);
     // West side, numbered from the north corner like the real nos. 1-7, with the street
     // mouths left open at both ends: Rue au Beurre (north) and Rue de la Tête d'or (south).
-    guildHouse(west, { name: 'Guild House – Le Roy d’Espagne', x: 23, width: 8.5, height: 24, floors: 4, style: 'bell', stone: materials.plaster, emblem: 'vane', balustradeStatues: true, terrace: true });
+    guildHouse(west, { name: 'Guild House – Le Roy d’Espagne', x: 23, width: 8.5, height: 24, floors: 4, style: 'bell', stone: materials.plaster, emblem: 'vane', balustradeStatues: true, terrace: true, medallions: true });
     guildHouse(west, { name: 'Guild House – La Brouette', x: 13.5, width: 8.5, height: 20, style: 'stepped', stone: materials.plaster });
     guildHouse(west, { name: 'Guild House – Le Sac', x: 4, width: 8.5, height: 22, style: 'gable', stone: materials.warmStone });
     guildHouse(west, { name: 'Guild House – La Louve', x: -5.5, width: 8.5, height: 23, floors: 3, style: 'scroll', stone: materials.ochre, emblem: true, terrace: true });
