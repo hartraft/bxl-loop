@@ -5134,6 +5134,11 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     for (const side of [-1, 1]) {
       box(g, 0.3, 0.6, 1.4, side * 2.9, 0.3, 401.6, materials.paleStone, 'Palace of the Nation step cheek');
     }
+
+    // Cheek stones flank the BELvue entrance steps.
+    for (const side of [-1, 1]) {
+      box(g, 0.3, 0.6, 1.0, 168 + side * 2.5, 0.3, 21.2, materials.paleStone, 'BELvue step cheek');
+    }
   });
     addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');

@@ -1758,3 +1758,7 @@ testCase('collar rings decorate the perron lamp standards', () => {
 testCase('cheek stones flank the Palace of the Nation entrance steps', () => {
   assert.match(palace, /'Palace of the Nation step cheek'/);
 });
+
+testCase('cheek stones flank the BELvue entrance steps', () => {
+  assert.match(palace, /'BELvue step cheek'/);
+});
