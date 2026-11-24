@@ -2086,3 +2086,7 @@ testCase('a gate opens in the Royal Stables courtyard wall', () => {
   assert.match(palace, /'Royal Stables yard gate pier'/);
   assert.match(palace, /'Royal Stables yard gate lintel'/);
 });
+
+testCase('keystones crown the BELvue attic windows', () => {
+  assert.match(palace, /'BELvue attic window keystone'/);
+});

@@ -5540,6 +5540,12 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       box(g, 0.8, 1.8, 0.5, gx, 0.9, -98, materials.ochre, 'Royal Stables yard gate pier');
     }
     box(g, 7, 0.4, 0.5, -70, 1.9, -98, materials.warmStone, 'Royal Stables yard gate lintel');
+
+    // Keystones crown the BELvue attic windows above their lintels.
+    for (let i = 0; i < 5; i++) {
+      const wx = 168 - 13 + i * 6.5;
+      box(g, 0.4, 0.5, 0.3, wx, 22.25, 22.15, materials.warmStone, 'BELvue attic window keystone');
+    }
   });
     addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');
