@@ -1916,3 +1916,7 @@ testCase('a door with lintel pierces the east wing of the Palace of the Nation',
   assert.match(palace, /'Palace of the Nation east wing door'/);
   assert.match(palace, /'Palace of the Nation east wing door lintel'/);
 });
+
+testCase('a moulding closes the underside of the central balcony slab', () => {
+  assert.match(palace, /'Central balcony underside moulding'/);
+});
