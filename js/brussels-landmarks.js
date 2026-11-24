@@ -565,11 +565,21 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
 
     // Repeated pointed ground-floor arcade: dark recessed openings, piers and pointed heads.
     const bays = 16, bayW = width / bays;
+    // The arcade pillars are adorned with statues of knights and squires of the Seven Noble
+    // Houses of Brussels — instanced gilded figures on top of every pier.
+    const knightStatues = new THREE.InstancedMesh(new THREE.BoxGeometry(0.22, 0.95, 0.12), materials.gold, bays * 2);
+    const knightDummy = new THREE.Object3D();
+    let kn = 0;
     for (let i = 0; i < bays; i++) {
       const x = -width / 2 + bayW * (i + 0.5);
       box(root, 1.72, 6.0, 0.24, x, 4.0, 0.19, glass, 'Town Hall recessed Gothic arcade');
       box(root, 0.34, 7.1, 0.55, x - bayW / 2 + 0.12, 4.1, 0.22, trim, 'Arcade pier');
       box(root, 0.34, 7.1, 0.55, x + bayW / 2 - 0.12, 4.1, 0.22, trim, 'Arcade pier');
+      for (const px of [x - bayW / 2 + 0.12, x + bayW / 2 - 0.12]) {
+        knightDummy.position.set(px, 7.85, 0.3);
+        knightDummy.updateMatrix();
+        knightStatues.setMatrixAt(kn++, knightDummy.matrix);
+      }
       // pointed arch head, built from two sloping stone ribs
       const archL = box(root, 2.05, 0.28, 0.48, x - 0.52, 7.12, 0.22, trim, 'Pointed arcade arch');
       archL.rotation.z = -0.55;
@@ -577,6 +587,10 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       archR.rotation.z = 0.55;
       box(root, bayW - 0.55, 0.24, 0.5, x, 7.55, 0.22, darkStone, 'Arcade string course');
     }
+    knightStatues.count = kn;
+    knightStatues.name = 'Arcade pillar knight statues (Noble Houses)';
+    knightStatues.castShadow = true;
+    root.add(knightStatues);
 
     // Upper storeys: paired lancets with stone mouldings, balconies, a buttress rhythm at
     // alternating bay joints, and a gilded statue in a niche at the remaining joints — the
