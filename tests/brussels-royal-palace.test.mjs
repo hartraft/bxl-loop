@@ -1294,3 +1294,8 @@ testCase('a top rail closes the BELvue roof terrace balustrade', () => {
 testCase('each of the eleven great flower pots stands on a stone pedestal', () => {
   assert.match(palace, /'Flower pot pedestal'/);
 });
+
+testCase('a circular sett ring surrounds the equestrian statue on the Place du Trone', () => {
+  assert.match(palace, /'Place du Trone statue sett ring'/);
+  assert.match(palace, /trRing\.count = tri4/);
+});

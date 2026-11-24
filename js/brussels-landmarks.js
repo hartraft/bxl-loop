@@ -4508,6 +4508,19 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     box(g, 0.3, 0.12, 9.4, 168 + 4.5, 30.05, 36, materials.warmStone, 'BELvue roof terrace rail');
     box(g, 9.4, 0.12, 0.3, 168, 30.05, 36 - 4.5, materials.warmStone, 'BELvue roof terrace rail');
     box(g, 9.4, 0.12, 0.3, 168, 30.05, 36 + 4.5, materials.warmStone, 'BELvue roof terrace rail');
+
+    // A circular sett-paved ring surrounds the equestrian statue on the Place du Trone.
+    const trRing = new THREE.InstancedMesh(new THREE.BoxGeometry(1.1, 0.1, 0.5), materials.pavingB, 24);
+    const trd3 = new THREE.Object3D();
+    let tri4 = 0;
+    for (let ca = 0; ca < 24; ca++) {
+      const a = ca * Math.PI / 12;
+      trd3.position.set(-120 + Math.cos(a) * 8, 0.05, -60 + Math.sin(a) * 8);
+      trd3.rotation.y = -a;
+      trd3.updateMatrix();
+      trRing.setMatrixAt(tri4++, trd3.matrix);
+    }
+    trRing.count = tri4; trRing.name = 'Place du Trone statue sett ring'; g.add(trRing);
   });
     addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');
