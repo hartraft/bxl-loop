@@ -374,7 +374,7 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     facadeNiches.castShadow = facadeStatues.castShadow = true;
     root.add(facadeNiches, facadeStatues);
     // Gargoyles: projecting spouts on the buttresses — the real facade is covered in them.
-    const facadeGargoyles = new THREE.InstancedMesh(new THREE.BoxGeometry(0.3, 0.5, 0.7), darkStone, bays);
+    const facadeGargoyles = new THREE.InstancedMesh(new THREE.BoxGeometry(0.3, 0.5, 0.7), darkStone, bays * 2);
     const gd = new THREE.Object3D();
     let gi = 0;
     for (let i = 0; i <= bays; i += 2) {
