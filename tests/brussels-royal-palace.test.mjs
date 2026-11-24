@@ -1507,3 +1507,7 @@ testCase('each wing balcony rests on a projecting stone slab', () => {
 testCase('an architrave spans the Academy Palace portico under the pediment', () => {
   assert.match(palace, /'Academy Palace portico architrave'/);
 });
+
+testCase('bollards mark the four corners of the Place des Palais', () => {
+  assert.match(palace, /'Square corner bollard'/);
+});

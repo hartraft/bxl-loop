@@ -4791,6 +4791,13 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
 
     // An architrave beam spans the Academy Palace portico columns under the pediment.
     box(g, 18, 0.8, 1.2, -168, 12.4, 19.7, materials.warmStone, 'Academy Palace portico architrave');
+
+    // Bollards mark the four corners of the paved Place des Palais.
+    for (const cx of [-168, 168]) {
+      for (const cz of [16, 56]) {
+        cylinder(g, 0.09, 0.12, 0.9, cx, 0.45, cz, materials.dark, 8).name = 'Square corner bollard';
+      }
+    }
   });
     addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');
