@@ -5580,6 +5580,16 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       }
     }
     pwDn.count = pwDi; pwDn.name = 'Palace of the Nation wing cornice dentil'; g.add(pwDn);
+
+    // A dentil course runs under the Academy Palace portico architrave.
+    const apPd = new THREE.InstancedMesh(new THREE.BoxGeometry(0.22, 0.28, 0.28), materials.warmStone, 10);
+    const apPdd = new THREE.Object3D();
+    let apPi = 0;
+    for (let di7 = 0; di7 < 10; di7++) {
+      apPdd.position.set(-176.4 + di7 * 1.6, 11.9, 19.75); apPdd.rotation.y = 0; apPdd.updateMatrix();
+      apPd.setMatrixAt(apPi++, apPdd.matrix);
+    }
+    apPd.count = apPi; apPd.name = 'Academy portico dentil'; g.add(apPd);
   });
     addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');

@@ -2115,3 +2115,8 @@ testCase('dentil courses run under both Palace of the Nation wing cornices', () 
 testCase('scroll ends finish both ends of the central balcony rail', () => {
   assert.match(palace, /'Central balcony scroll end'/);
 });
+
+testCase('a dentil course runs under the Academy portico architrave', () => {
+  assert.match(palace, /'Academy portico dentil'/);
+  assert.match(palace, /apPd\.count = apPi/);
+});
