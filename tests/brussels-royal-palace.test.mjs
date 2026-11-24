@@ -1337,3 +1337,8 @@ testCase('bases and capitals finish the Academy Palace pilaster order', () => {
   assert.match(palace, /'Academy Palace pilaster base'/);
   assert.match(palace, /'Academy Palace pilaster capital'/);
 });
+
+testCase('flower boxes with plantings hang under the central balcony', () => {
+  assert.match(palace, /'Central balcony flower box'/);
+  assert.match(palace, /'Central balcony flower box planting'/);
+});

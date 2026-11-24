@@ -3773,6 +3773,12 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     for (const side of [-1, 1]) {
       box(g, 0.3, 0.12, 3.2, side * 1.65, 0.07, 12.4, moulding, 'Central garden walk edging');
     }
+
+    // Flower boxes with plantings hang under the central portico balcony.
+    box(g, 2.9, 0.3, 0.5, 0, 10.9, centralFace + 1.1, bronze, 'Central balcony flower box');
+    for (const fx of [-1.0, 0, 1.0]) {
+      mesh(g, new THREE.SphereGeometry(0.3, 8, 6), flowerMat, fx, 11.15, centralFace + 1.1, 'Central balcony flower box planting');
+    }
   });
   addLandmark('palaceSurroundings', (g) => {
     // Real-world sources: en/fr Wikipedia (Royal Palace of Brussels, Brussels Park, Place des Palais,
