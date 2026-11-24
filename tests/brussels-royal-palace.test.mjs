@@ -68,6 +68,13 @@ testCase('the front garden holds the real three sunken parterres (central on the
   assert.match(palace, /\{ x: 38, w: 34, z: 12\.4, d: 2\.6 \}/);
 });
 
+testCase('the main cornice stands on a row of corbelled modillions (wings + central corps)', () => {
+  assert.match(palace, /pourvue de modillons/);
+  assert.match(palace, /'Main cornice modillions'/);
+  assert.match(palace, /modillions\.count = mdi/);
+  assert.match(palace, /mdd\.position\.set\(mx, 22\.1, centralFace \+ 0\.6\)/);
+});
+
 testCase('a monumental pilaster order divides every bay of the wings', () => {
   assert.match(palace, /ordre monumental de pilastres/);
   assert.match(palace, /for \(let i = 0; i <= 9; i\+\+\)/);

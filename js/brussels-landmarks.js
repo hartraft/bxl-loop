@@ -1560,6 +1560,29 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     mullV.castShadow = mullH.castShadow = true;
     g.add(mullV, mullH);
 
+    // Corbelled modillions under the main cornice of the wings and the central corps —
+    // the real projecting cornice is "souvent pourvue de modillons" (heritage inventory).
+    const modillions = new THREE.InstancedMesh(new THREE.BoxGeometry(0.34, 0.5, 0.4), ashlar, 130);
+    const mdd = new THREE.Object3D();
+    let mdi = 0;
+    for (const x of wingXs) {
+      for (let mx = -wingW / 2 + 0.6; mx <= wingW / 2 - 0.6; mx += 1.1) {
+        mdd.position.set(x + mx, 20.15, facadeZ + 0.45);
+        mdd.rotation.y = 0;
+        mdd.updateMatrix();
+        modillions.setMatrixAt(mdi++, mdd.matrix);
+      }
+    }
+    for (let mx = -16.6; mx <= 16.61; mx += 1.1) {
+      mdd.position.set(mx, 22.1, centralFace + 0.6);
+      mdd.updateMatrix();
+      modillions.setMatrixAt(mdi++, mdd.matrix);
+    }
+    modillions.count = mdi;
+    modillions.name = 'Main cornice modillions';
+    modillions.castShadow = true;
+    g.add(modillions);
+
     // The real ground storey is a rusticated soubassement a bossages: alternating
     // projecting stone blocks dress every arcade pier across the wings and the
     // central corps. One instanced mesh keeps it to a single draw call.
