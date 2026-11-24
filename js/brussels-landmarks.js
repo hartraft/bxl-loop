@@ -1507,8 +1507,9 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       const mansardGeo = new THREE.ExtrudeGeometry(mansard, { depth: 17, bevelEnabled: false });
       mansardGeo.translate(0, 22.0, -10.0);
       mesh(g, mansardGeo, roof, x, 0, -1.5, 'Wing sloping slate mansard');
-      for (let i = 0; i < 7; i++) {
-        const bx = x - 21 + i * 7;
+      // The real mansard roof carries nine oeil-de-boeuf per wing ("neuf œils-de-bœuf").
+      for (let i = 0; i < 9; i++) {
+        const bx = x - 24 + i * 6;
         const oval = mesh(g, new THREE.TorusGeometry(0.72, 0.11, 8, 24), moulding, bx, 22.95, facadeZ + 0.45, 'Wing oval oeil-de-boeuf surround');
         oval.scale.set(1.35, 0.78, 1);
         const pane = mesh(g, new THREE.CircleGeometry(0.66, 24), glass, bx, 22.95, facadeZ + 0.42, 'Wing oval roof window');
