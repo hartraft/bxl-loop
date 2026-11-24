@@ -5000,6 +5000,12 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       const a = ba * Math.PI / 8;
       cylinder(g, 1.1, 1.2, 0.3, Math.cos(a) * 17.6, 0.15, 150 + Math.sin(a) * 17.6, materials.paleStone, 10).name = 'Pond emperor bust collar';
     }
+
+    // Collars anchor the statue pedestals in the Academy Palace garden.
+    for (let i = 0; i < agStat.length; i++) {
+      const gx = -196 + i * 10;
+      box(g, 1.9, 0.25, 1.9, gx, 0.12, 64, materials.warmStone, 'Academy statue base collar');
+    }
   });
     addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');

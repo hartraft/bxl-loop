@@ -1663,3 +1663,7 @@ testCase('collar rings anchor the emperor bust pedestals around the pond', () =>
 testCase('a moulded cap finishes the front edge of the portico stylobate', () => {
   assert.match(palace, /'Stylobate edge cap'/);
 });
+
+testCase('collars anchor the statue pedestals in the Academy garden', () => {
+  assert.match(palace, /'Academy statue base collar'/);
+});
