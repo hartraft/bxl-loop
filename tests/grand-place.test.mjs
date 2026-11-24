@@ -73,6 +73,9 @@ test("the King's House matches Jamaer's measured Broodhuis: 30.78 m facade, 20.2
   assert.ok(square.includes('King’s House central tower octagonal top'));
   assert.ok(square.includes('King’s House tower domed slate spire'));
   assert.ok(square.includes('King’s House standard-bearer statue'));
+  assert.ok(square.includes('King’s House Charles V statue'));
+  assert.ok(square.includes('King’s House Virgin Mary statue'));
+  assert.ok(square.includes('King’s House saint statue'));
 });
 
 test('guild houses carry the real names on the real sides, with Baroque detailing', () => {
