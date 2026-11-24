@@ -806,3 +806,9 @@ testCase('the portico colonnade stands on a raised paved stylobate', () => {
   assert.match(palace, /'Portico stylobate floor'/);
   assert.match(palace, /'Portico stylobate edge'/);
 });
+
+testCase('the main pediment is crowned with corner and apex acroteria', () => {
+  assert.match(palace, /acroteria/);
+  assert.match(palace, /'Pediment acroterion figure'/);
+  assert.match(palace, /'Pediment acroterion head'/);
+});
