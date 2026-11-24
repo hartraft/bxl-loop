@@ -4867,6 +4867,11 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       const wx = 168 - 13 + i * 6.5;
       box(g, 2.4, 0.18, 0.3, wx, 12.75, 22.15, materials.warmStone, 'BELvue piano nobile sill');
     }
+
+    // Keystones crown the facade windows of the Palace of the Nation.
+    for (let i = 0; i < 7; i++) {
+      box(g, 0.5, 0.7, 0.3, -22.5 + i * 9, 16.2, 403.0, materials.warmStone, 'Palace of the Nation window keystone');
+    }
   });
     addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');

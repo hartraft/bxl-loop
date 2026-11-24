@@ -1566,3 +1566,7 @@ testCase('stone sills sit under each BELvue piano nobile window', () => {
 testCase('newel posts finish both ends of the central balcony rail', () => {
   assert.match(palace, /'Central balcony end newel'/);
 });
+
+testCase('keystones crown the Palace of the Nation facade windows', () => {
+  assert.match(palace, /'Palace of the Nation window keystone'/);
+});
