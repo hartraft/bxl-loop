@@ -4004,6 +4004,11 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
         box(g, 0.6, 0.6, 0.6, side * 70.1, 0.3, -3.5 - i * 5, ashlar, 'Wing end pilaster base');
       }
     }
+
+    // Flower bands border the central garden walk.
+    for (const side of [-1, 1]) {
+      box(g, 0.5, 0.08, 3.2, side * 1.9, 0.1, 12.4, flowerMat, 'Garden walk flower band');
+    }
   });
   addLandmark('palaceSurroundings', (g) => {
     // Real-world sources: en/fr Wikipedia (Royal Palace of Brussels, Brussels Park, Place des Palais,

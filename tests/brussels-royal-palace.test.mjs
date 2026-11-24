@@ -1804,3 +1804,7 @@ testCase('a balustrade crowns the BELvue attic storey', () => {
   assert.match(palace, /'BELvue attic baluster'/);
   assert.match(palace, /'BELvue attic balustrade rail'/);
 });
+
+testCase('flower bands border the central garden walk', () => {
+  assert.match(palace, /'Garden walk flower band'/);
+});
