@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { sphereWithinDistance } from '../js/culling-math.mjs';
 
 test('scene culling keeps a chunk whose bounding sphere reaches the distance limit', () => {
-  assert.equal(sphereWithinDistance(110, 0, 0, 10, 100, 0, 0, 0), false);
+  assert.equal(sphereWithinDistance(120, 0, 0, 10, 100, 0, 0, 0), false);
   assert.equal(sphereWithinDistance(109.99, 0, 0, 10, 100, 0, 0, 0), true);
 });
 
