@@ -68,6 +68,12 @@ testCase('the front garden holds the real three sunken parterres (central on the
   assert.match(palace, /\{ x: 38, w: 34, z: 12\.4, d: 2\.6 \}/);
 });
 
+testCase('the palace is floodlit at night: stone wash + glowing windows via the shared night systems', () => {
+  assert.match(palace, /floodlit after dark/);
+  assert.match(palace, /facadeWashMats\.push\(stone, ashlar, moulding\)/);
+  assert.match(palace, /nightGlowMats\.push\(glass\)/);
+});
+
 testCase('each wing mansard carries the real nine oeil-de-boeuf dormer windows', () => {
   assert.match(palace, /nine oeil-de-boeuf/);
   assert.match(palace, /const bx = x - 24 \+ i \* 6;/);
