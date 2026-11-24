@@ -5549,6 +5549,14 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       const wx = 168 - 13 + i * 6.5;
       box(g, 0.4, 0.5, 0.3, wx, 22.25, 22.15, materials.warmStone, 'BELvue attic window keystone');
     }
+
+    // Kerbs edge both sides of the Palace of the Nation peristyle steps.
+    for (const cz of [400.6, 400.0]) {
+      const cw = cz > 400 ? 25 : 23;
+      for (const side of [-1, 1]) {
+        box(g, 0.3, 0.5, 1.2, side * cw, 0.25, cz, materials.pavingEdge, 'Palace of the Nation step kerb');
+      }
+    }
   });
     addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');

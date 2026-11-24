@@ -2094,3 +2094,7 @@ testCase('keystones crown the BELvue attic windows', () => {
 testCase('a contrasting sett line runs down the centre of the garden walk', () => {
   assert.match(palace, /'Garden walk centre sett line'/);
 });
+
+testCase('kerbs edge both sides of the Palace of the Nation peristyle steps', () => {
+  assert.match(palace, /'Palace of the Nation step kerb'/);
+});
