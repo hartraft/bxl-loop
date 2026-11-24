@@ -1429,8 +1429,12 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
   });
   addLandmark('royalPalace', (g) => {
     // North façade after Henri Maquet's 1904–09 Beaux-Arts reconstruction.
-    // Keep the measured hierarchy legible at city scale: 13-bay wings, rusticated
+    // Keep the measured hierarchy legible at city scale: long wings, rusticated
     // arcade level, piano nobile, upper register, central six-column portico and dome.
+    // The real frontage runs about 160 m along the Place des Palais — Leopold II's two
+    // symmetrical curved galleries nearly doubled the palace and left a façade roughly
+    // half as long again as Buckingham Palace's 108 m front — so the model spans the
+    // full ~160 m: wings at ±44 with 52 m frontage each and terminal pavilions at ±76.
     const stone = new THREE.MeshStandardMaterial({ color: 0xd9d1c4, roughness: 0.88 });
     const ashlar = new THREE.MeshStandardMaterial({ color: 0xc8beae, roughness: 0.9 });
     const moulding = new THREE.MeshStandardMaterial({ color: 0xe2dacc, roughness: 0.84 });
@@ -1440,10 +1444,11 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     const bronze = new THREE.MeshStandardMaterial({ color: 0x74664d, metalness: 0.48, roughness: 0.58 });
     const shadow = new THREE.MeshStandardMaterial({ color: 0x303638, roughness: 0.84 });
     const facadeZ = 8.15;
-    const wingW = 39, wingH = 20.5, wingD = 19;
-    const wingXs = [-42, 42];
+    const wingW = 52, wingH = 20.5, wingD = 19;
+    const wingXs = [-44, 44];
 
-    // The two long wings each have thirteen narrow bays over three registers.
+    // The two long wings each carry nine bays over three registers, spread across the
+    // real ~52 m wing frontage.
     for (const x of wingXs) {
       box(g, wingW, wingH, wingD, x, wingH / 2, -1.5, stone, 'Royal Palace thirteen-bay wing');
       box(g, wingW + 0.8, 1.2, wingD + 0.8, x, 0.6, -1.5, ashlar, 'Wing rusticated plinth');
@@ -1451,7 +1456,7 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       box(g, wingW + 1.0, 0.34, wingD + 0.9, x, 13.65, facadeZ, moulding, 'Wing second string course');
 
       for (let i = 0; i < 9; i++) {
-        const bx = x - 18 + i * 4.5;
+        const bx = x - 22 + i * 5.5;
         // Ground-floor arcades: broad rusticated piers and round-headed openings.
         const wingArch = new THREE.Shape();
         wingArch.moveTo(-1.16, 0); wingArch.lineTo(1.16, 0); wingArch.lineTo(1.16, 3.75);
@@ -1485,7 +1490,7 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
 
       // Subtle vertical divisions every third bay and a continuous attic balustrade.
       for (let i = 0; i <= 3; i++) {
-        const px = x - 19.2 + i * 12.8;
+        const px = x - 24 + i * 16;
         box(g, 0.28, 19.2, 0.42, px, 10.2, facadeZ + 0.12, ashlar, 'Wing bay pilaster');
       }
       box(g, wingW + 1.5, 0.75, wingD + 1.1, x, 20.75, -1.5, ashlar, 'Wing main cornice');
@@ -1501,14 +1506,14 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       mansardGeo.translate(0, 22.0, -10.0);
       mesh(g, mansardGeo, roof, x, 0, -1.5, 'Wing sloping slate mansard');
       for (let i = 0; i < 7; i++) {
-        const bx = x - 16.5 + i * 5.5;
+        const bx = x - 21 + i * 7;
         const oval = mesh(g, new THREE.TorusGeometry(0.72, 0.11, 8, 24), moulding, bx, 22.95, facadeZ + 0.45, 'Wing oval oeil-de-boeuf surround');
         oval.scale.set(1.35, 0.78, 1);
         const pane = mesh(g, new THREE.CircleGeometry(0.66, 24), glass, bx, 22.95, facadeZ + 0.42, 'Wing oval roof window');
         pane.scale.set(1.35, 0.78, 1);
       }
       for (let i = 0; i < 27; i++) {
-        const bx = x - 19 + i * 1.46;
+        const bx = x - 25 + i * 1.9;
         box(g, 0.28, 0.72, 0.28, bx, 22.0, facadeZ + 0.35, ashlar, 'Wing attic baluster');
       }
     }
@@ -1644,7 +1649,7 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
 
     // Terminal pavilions close the long façade; each has a pavilion roof and a stronger
     // corner risalit, while the iron-and-stone forecourt boundary stays visually light.
-    for (const x of [-65, 65]) {
+    for (const x of [-76, 76]) {
       box(g, 8, 23, 21, x, 11.5, -1, stone, 'Palace terminal pavilion');
       box(g, 9.5, 0.9, 22, x, 23.25, -1, moulding, 'Terminal pavilion cornice');
       mesh(g, new THREE.ConeGeometry(6.6, 2.0, 4), roof, x, 25.0, -1, 'Terminal pavilion pavilion roof');
@@ -1652,9 +1657,9 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
         box(g, 1.55, 4.4, 0.22, x + dx, 14.0, facadeZ + 0.1, glass, 'Terminal pavilion window');
       }
     }
-    for (let x = -58; x <= 58; x += 2.4) {
+    for (let x = -74; x <= 74; x += 2.4) {
       cylinder(g, 0.1, 0.14, 1.1, x, 0.55, 14, ashlar, 8);
-      if (x < 57.9) box(g, 2.4, 0.07, 0.07, x + 1.2, 0.9, 14, bronze, 'Forecourt railing');
+      if (x < 73.9) box(g, 2.4, 0.07, 0.07, x + 1.2, 0.9, 14, bronze, 'Forecourt railing');
     }
   });
     addLandmark('cathedral', (g) => {
