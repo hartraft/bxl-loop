@@ -403,3 +403,10 @@ testCase('the octagonal basin (1780) with eight Hermes busts rings the north end
   assert.match(palace, /'Park Hermes bust'/);
   assert.match(palace, /for \(let hk = 0; hk < 8; hk\+\+\)/);
 });
+
+testCase('two bandstands: Cluysenaar 1841 twelve-sided kiosk and the 1913 Vauxhall bandstand', () => {
+  assert.match(palace, /twelve-sided cast-iron kiosk by Cluysenaar \(1841\)/);
+  assert.match(palace, /'Park main bandstand kiosk'/);
+  assert.match(palace, /'Park Vauxhall bandstand kiosk'/);
+  assert.match(palace, /'Park Vauxhall bandstand dome'/);
+});
