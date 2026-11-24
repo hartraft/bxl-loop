@@ -46,6 +46,7 @@ jobs:
           node --check js/traffic.js
           node --check js/brussels-bus.js
           node --check js/street-details.js
+          node --check js/tsl-materials.js
           node --check js/city/roads.js
           node --check js/brussels-city.js
           node --check js/controllers.js
