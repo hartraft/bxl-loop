@@ -183,4 +183,36 @@ testCase('rounds 18-20: pediment raking cornice + acroteria, column fluting, bas
   assert.match(bourse, /tori\.count = 8/);
 });
 
+testCase('rounds 21-23: lion pedestals, bull/bear lions (Jaquet brothers), torch geniuses', () => {
+  assert.match(bourse, /'Bourse lion pedestal'/);
+  assert.match(bourse, /'Bourse lion pedestal moulded cap'/);
+  assert.match(bourse, /'Bourse stair lion BULL \(head raised, Jean-Joseph Jaquet\)'/);
+  assert.match(bourse, /'Bourse stair lion BEAR \(head bowed, Jacques Jaquet\)'/);
+  assert.match(bourse, /'bull lion head raised'/);
+  assert.match(bourse, /'bear lion head bowed'/);
+  assert.match(bourse, /'Bourse torch genius leading the '/);
+  assert.match(bourse, /'torch flame'/);
+});
+
+testCase('rounds 24-25: De Groot allegories (Art/Agriculture/Industrie/Science) + Carrier-Belleuse putti frieze', () => {
+  assert.match(bourse, /const names = \['Art', 'Agriculture', 'Industrie', 'Science'\];/);
+  assert.match(bourse, /fig\.name = 'Bourse allegory ' \+ names\[i\] \+ ' \(Guillaume De Groot\)'/);
+  assert.match(bourse, /'Bourse Carrier-Belleuse putti frieze heads \(Rodin contribution\)'/);
+  assert.match(bourse, /putti\.count = 8/);
+  assert.match(bourse, /'Bourse Carrier-Belleuse putti frieze bodies'/);
+});
+
+testCase('rounds 26-30: clock ring/boss, Brussels arms cross, tympanum panel, door leaves+studs, cella arched windows', () => {
+  assert.match(bourse, /'Bourse clock minute ring'/);
+  assert.match(bourse, /'Bourse clock centre boss'/);
+  assert.match(bourse, /'Bourse shield cross vertical \(armes de Bruxelles\)'/);
+  assert.match(bourse, /'Bourse tympanum relief panel'/);
+  assert.match(bourse, /'Bourse central door double leaves \(bois, panneaux\)'/);
+  assert.match(bourse, /leaves\.count = 2/);
+  assert.match(bourse, /'Bourse lateral door iron studs \(clous\)'/);
+  assert.match(bourse, /studs\.count = s/);
+  assert.match(bourse, /'Bourse cella arched window'/);
+  assert.match(bourse, /'Bourse cella window transom bar'/);
+});
+
 // __MORE_BOURSE_TESTS__

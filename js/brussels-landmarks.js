@@ -4969,6 +4969,112 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       tori.castShadow = true;
       g.add(tori);
     }
+    // Round 21: the stair-flanking lions stand on moulded blue-stone pedestals on the square.
+    for (const sx of [-1, 1]) {
+      box(g, 3.4, 1.2, 3.4, sx * 14, 0.6, 44, materials.blueStone, 'Bourse lion pedestal');
+      box(g, 3.9, 0.3, 3.9, sx * 14, 1.35, 44, materials.warmStone, 'Bourse lion pedestal moulded cap');
+    }
+    // Round 22: the two great stone lions by the brothers Jean-Joseph and Jacques Jaquet guard
+    // the escalier monumental; their posture mirrors the stock market — one head raised (bull,
+    // cours en hausse), one head bowed (bear, cours en baisse) (fr.wikipedia Palais de la Bourse).
+    {
+      const bull = new THREE.Group();
+      bull.name = 'Bourse stair lion BULL (head raised, Jean-Joseph Jaquet)';
+      bull.position.set(-14, 1.5, 44);
+      box(bull, 2.6, 1.5, 1.2, 0, 0.75, 0, materials.warmStone, 'bull lion body');
+      mesh(bull, new THREE.SphereGeometry(0.55, 10, 8), materials.warmStone, 0, 2.05, 0.75, 'bull lion head raised');
+      mesh(bull, new THREE.TorusGeometry(0.55, 0.18, 6, 12), materials.warmStone, 0, 2.05, 0.45, 'bull lion mane');
+      for (const lx of [-0.9, 0.9]) for (const lz of [-0.4, 0.4]) box(bull, 0.32, 0.9, 0.32, lx, 0.45, lz, materials.warmStone, 'bull lion leg');
+      cylinder(bull, 0.08, 0.1, 1.0, 0, 1.3, -1.1, materials.warmStone, 6);
+      g.add(bull);
+      const bear = new THREE.Group();
+      bear.name = 'Bourse stair lion BEAR (head bowed, Jacques Jaquet)';
+      bear.position.set(14, 1.5, 44);
+      box(bear, 2.6, 1.5, 1.2, 0, 0.75, 0, materials.warmStone, 'bear lion body');
+      mesh(bear, new THREE.SphereGeometry(0.55, 10, 8), materials.warmStone, 0, 1.15, 0.8, 'bear lion head bowed');
+      mesh(bear, new THREE.TorusGeometry(0.55, 0.18, 6, 12), materials.warmStone, 0, 1.15, 0.5, 'bear lion mane');
+      for (const lx of [-0.9, 0.9]) for (const lz of [-0.4, 0.4]) box(bear, 0.32, 0.9, 0.32, lx, 0.45, lz, materials.warmStone, 'bear lion leg');
+      cylinder(bear, 0.08, 0.1, 1.0, 0, 1.3, -1.1, materials.warmStone, 6);
+      g.add(bear);
+    }
+    // Round 23: each lion is led by a genius holding a flaming torch (Reflexcity).
+    for (const sx of [-1, 1]) {
+      const genius = new THREE.Group();
+      genius.name = 'Bourse torch genius leading the ' + (sx < 0 ? 'bull' : 'bear') + ' lion';
+      genius.position.set(sx * 14, 0, 46.6);
+      box(genius, 0.8, 1.7, 0.4, 0, 0.85, 0, materials.warmStone, 'torch genius body');
+      mesh(genius, new THREE.SphereGeometry(0.34, 8, 6), materials.warmStone, 0, 1.95, 0, 'torch genius head');
+      cylinder(genius, 0.06, 0.06, 0.7, sx * 0.55, 1.6, 0.2, materials.dark, 6);
+      mesh(genius, new THREE.ConeGeometry(0.16, 0.45, 6), materials.gold, sx * 0.55, 2.15, 0.2, 'torch flame');
+      g.add(genius);
+    }
+    // Round 24: the group of four allegorical figures on the facade by Guillaume De Groot,
+    // symbolising Art, Agriculture, Industry and Science (en.wikipedia Bourse Palace).
+    {
+      const names = ['Art', 'Agriculture', 'Industrie', 'Science'];
+      const spots = [[-44, 28.2, 40.2], [-44, 28.2, 36], [44, 28.2, 40.2], [44, 28.2, 36]];
+      for (let i = 0; i < 4; i++) {
+        const fig = new THREE.Group();
+        fig.name = 'Bourse allegory ' + names[i] + ' (Guillaume De Groot)';
+        fig.position.set(spots[i][0], spots[i][1], spots[i][2]);
+        box(fig, 1.1, 2.2, 0.45, 0, 1.1, 0, materials.warmStone, names[i] + ' figure body');
+        mesh(fig, new THREE.SphereGeometry(0.38, 8, 6), materials.warmStone, 0, 2.5, 0, names[i] + ' figure head');
+        g.add(fig);
+      }
+    }
+    // Round 25: the frieze by Carrier-Belleuse with its band of naked children (putti), to
+    // which the young Rodin may have contributed (en/nl.wikipedia).
+    {
+      const putti = new THREE.InstancedMesh(new THREE.SphereGeometry(0.3, 8, 6), materials.warmStone, 8);
+      const bodies = new THREE.InstancedMesh(new THREE.BoxGeometry(0.4, 0.6, 0.25), materials.warmStone, 8);
+      const dummy = new THREE.Object3D();
+      for (let i = 0; i < 8; i++) {
+        const x = -38.5 + i * 11;
+        dummy.position.set(x, 24.05, 36.8);
+        dummy.updateMatrix();
+        putti.setMatrixAt(i, dummy.matrix);
+        dummy.position.set(x, 23.65, 36.8);
+        dummy.updateMatrix();
+        bodies.setMatrixAt(i, dummy.matrix);
+      }
+      putti.count = 8; putti.name = 'Bourse Carrier-Belleuse putti frieze heads (Rodin contribution)';
+      putti.castShadow = true; g.add(putti);
+      bodies.count = 8; bodies.name = 'Bourse Carrier-Belleuse putti frieze bodies';
+      bodies.castShadow = true; g.add(bodies);
+    }
+    // Round 26: the facade clock gets its minute ring and centre boss.
+    mesh(g, new THREE.TorusGeometry(1.05, 0.07, 6, 24), materials.dark, 0, 15.9, 30.82, 'Bourse clock minute ring');
+    mesh(g, new THREE.SphereGeometry(0.12, 8, 6), materials.dark, 0, 15.9, 30.82, 'Bourse clock centre boss');
+    // Round 27: the arms of Brussels on the archivolt shield — the cross on the gilded shield.
+    box(g, 0.28, 2.4, 0.12, 0, 18.6, 30.56, materials.canvas, 'Bourse shield cross vertical (armes de Bruxelles)');
+    box(g, 1.6, 0.28, 0.12, 0, 18.6, 30.56, materials.canvas, 'Bourse shield cross horizontal (armes de Bruxelles)');
+    // Round 28: the tympanum is a sculpted relief panel set in the pediment frame.
+    box(g, 33, 6.2, 0.35, 0, 26.9, 37.15, materials.warmStone, 'Bourse tympanum relief panel');
+    // Round 29: the three doors are wooden double leaves with panel mouldings and iron studs.
+    {
+      const leaves = new THREE.InstancedMesh(new THREE.BoxGeometry(2.4, 7.6, 0.12), materials.dark, 2);
+      const studs = new THREE.InstancedMesh(new THREE.SphereGeometry(0.05, 6, 4), materials.warmStone, 36);
+      const dummy = new THREE.Object3D();
+      dummy.position.set(-1.25, 8.8, 30.55); dummy.updateMatrix(); leaves.setMatrixAt(0, dummy.matrix);
+      dummy.position.set(1.25, 8.8, 30.55); dummy.updateMatrix(); leaves.setMatrixAt(1, dummy.matrix);
+      leaves.count = 2; leaves.name = 'Bourse central door double leaves (bois, panneaux)';
+      leaves.castShadow = true; g.add(leaves);
+      let s = 0;
+      for (const dx of [-10, 10]) for (let r = 0; r < 3; r++) for (let c = 0; c < 6; c++) {
+        dummy.position.set(dx - 1.5 + c * 0.6, 6.6 + r * 2.2, 30.55);
+        dummy.updateMatrix();
+        studs.setMatrixAt(s++, dummy.matrix);
+      }
+      studs.count = s; studs.name = 'Bourse lateral door iron studs (clous)';
+      g.add(studs);
+    }
+    // Round 30: arched cella windows beside the central aedicule, with transom bars.
+    for (const sx of [-1, 1]) {
+      box(g, 2.6, 4.4, 0.3, sx * 6.5, 11.5, 30.25, materials.glass, 'Bourse cella arched window');
+      const arch = mesh(g, new THREE.CylinderGeometry(1.3, 1.3, 0.3, 12, 1, false, 0, Math.PI), materials.glass, sx * 6.5, 13.7, 30.25, 'Bourse cella window arch');
+      arch.rotation.z = Math.PI / 2;
+      box(g, 0.12, 4.4, 0.34, sx * 6.5, 11.5, 30.28, materials.dark, 'Bourse cella window transom bar');
+    }
     // __BOURSE_ROUNDS__
   });
   addLandmark('bourseSurroundings', (g) => {
