@@ -64,6 +64,16 @@ test('the massing matches the real hors tout 186 x 177 m podium on the 160 x 150
   assert.ok(palace.includes('for (const x of [-66, 66]) for (const z of [-61.5, 64])'));
 });
 
+test('four monumental marble jurist statues stand at the foot of the grand stairs', () => {
+  assert.ok(palace.includes("'Jurist statue plinth'"));
+  assert.ok(palace.includes('const marble = new THREE.MeshStandardMaterial({ color: 0xe6deca, roughness: 0.7 })'));
+  for (const figure of ['Demosthenes', 'Lycurgus', 'Cicero', 'Ulpian']) {
+    assert.ok(palace.includes(`'${figure}', `), figure + ' named on the west/east stair sides');
+  }
+  assert.ok(palace.includes("figure + ' statue head'"));
+  assert.ok(palace.includes("figure + ' statue arm'"));
+});
+
 test('the four corner pavilions carry hipped pavilion roofs and the north pair projects past the facade', () => {
   assert.ok(palace.includes("'Corner pavilion hipped roof (toit en pavillon)'"));
   assert.ok(palace.includes('new THREE.ConeGeometry(21, 6.5, 4)'));

@@ -1711,6 +1711,16 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       box(g, 56 + step * 0.7, 0.46, 1.45, 0, 0.55 + step * 0.44, 95 - step * 1.35, light, 'Monumental entrance stair (full-width emmarchement)');
     }
     box(g, 58, 3.0, 20, 0, 5.0, 78, stone, 'Main entrance terrace');
+    // Four monumental marble statues of the great orators and legislators of Antiquity stand
+    // at the foot of the grand stairs: Demosthenes and Lycurgus (A. Cattier) on the west side,
+    // Cicero and Ulpian (A.F. Boure) on the east side.
+    const marble = new THREE.MeshStandardMaterial({ color: 0xe6deca, roughness: 0.7 });
+    for (const [figure, x] of [['Demosthenes', -38], ['Lycurgus', -31], ['Cicero', 31], ['Ulpian', 38]]) {
+      box(g, 2.8, 1.2, 2.8, x, 1.9, 93, weathered, 'Jurist statue plinth');
+      cylinder(g, 0.55, 0.78, 4.6, x, 5.5, 93, marble, 10);
+      mesh(g, new THREE.SphereGeometry(0.5, 12, 10), marble, x, 8.0, 93, figure + ' statue head');
+      box(g, 0.5, 2.2, 0.3, x + 0.8, 6.2, 93, marble, figure + ' statue arm');
+    }
     // Double colonnade of Doric columns on the entrance terrace: base, shaft, echinus, abacus,
     // then architrave and entablature carrying the pediment.
     box(g, 50, 1.8, 15, 0, 23.5, 76, weathered, 'Principal portico entablature');
