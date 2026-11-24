@@ -122,6 +122,19 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
 
     box(root, width, height, depth, 0, height / 2, -depth / 2, stone, name + ' masonry');
     box(root, width + 0.8, 0.65, depth + 0.4, 0, height - 0.35, -depth / 2, materials.gold, name + ' cornice');
+    // The real Baroque cornices stand on a row of stone corbels (modillions) — instanced.
+    const modillionCount = Math.max(4, Math.round(width / 1.2));
+    const modillions = new THREE.InstancedMesh(new THREE.BoxGeometry(0.3, 0.34, 0.34), materials.warmStone, modillionCount);
+    const modDummy = new THREE.Object3D();
+    for (let i = 0; i < modillionCount; i++) {
+      modDummy.position.set(-width / 2 + 0.5 + i * (width - 1.0) / (modillionCount - 1), height - 0.85, 0.16);
+      modDummy.updateMatrix();
+      modillions.setMatrixAt(i, modDummy.matrix);
+    }
+    modillions.count = modillionCount;
+    modillions.name = name + ' corbelled cornice modillions';
+    modillions.castShadow = true;
+    root.add(modillions);
     box(root, width + 0.45, 0.45, 0.35, 0, 1.15, 0.12, materials.warmStone, name + ' plinth');
 
     const bays = Math.max(3, Math.round(width / 2.8));

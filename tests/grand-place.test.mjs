@@ -100,6 +100,13 @@ test("the King's House matches Jamaer's measured Broodhuis: 30.78 m facade, 20.2
   assert.ok(square.includes('King’s House saint statue'));
 });
 
+test('guild-house cornices stand on a row of stone corbels (modillions)', () => {
+  assert.ok(square.includes(" corbelled cornice modillions'"));
+  assert.ok(square.includes('const modillionCount = Math.max(4, Math.round(width / 1.2))'));
+  assert.ok(square.includes('modillions.count = modillionCount'));
+  assert.ok(square.includes("box(root, width + 0.8, 0.65, depth + 0.4, 0, height - 0.35, -depth / 2, materials.gold, name + ' cornice')"));
+});
+
 test('guild houses carry the real names on the real sides, with Baroque detailing', () => {
   for (const name of ['Le Roy d’Espagne', 'La Brouette', 'Le Sac', 'La Louve', 'Le Cornet', 'Le Renard',
     'Le Heaume', 'Le Paon', 'Sainte-Barbe', 'Le Cerf', 'L’Ange', 'La Chaloupe d’Or',
