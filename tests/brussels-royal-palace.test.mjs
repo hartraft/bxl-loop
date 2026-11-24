@@ -2197,3 +2197,7 @@ testCase('a paved floor covers the Palace of the Nation peristyle', () => {
 testCase('cap slabs finish the central balcony corbels', () => {
   assert.match(palace, /'Central balcony corbel cap'/);
 });
+
+testCase('a kerb borders the front edge of the peristyle floor', () => {
+  assert.match(palace, /'Peristyle floor border kerb'/);
+});
