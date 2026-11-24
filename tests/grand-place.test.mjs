@@ -1127,3 +1127,19 @@ test('rounds 293-302: side lancet hoods, gallery drip + modillions, roof ridge c
   assert.ok(square.includes('attic window hood mould'));
   assert.ok(square.includes('Corner turret base door'));
 });
+
+test('rounds 303-312: Broodhuis portal outer archivolt + attendant niches, window lintels, arcade capitals, diagonal joints, TH portal lantern, parasol tips, Broodhuis corner pilasters', () => {
+  assert.ok(square.includes('King’s House portal outer archivolt'));
+  assert.ok(square.includes('King’s House portal attendant statue'));
+  assert.ok(square.includes('window segmental lintels'));
+  assert.ok(square.includes('lintelArches.count = la'));
+  assert.ok(square.includes('arcade pier capitals'));
+  assert.ok(square.includes('arcadeCaps.count = acap'));
+  assert.ok(square.includes('Grand-Place diagonal paving joints'));
+  assert.ok(square.includes('diagJoints.count = 12'));
+  assert.ok(square.includes('Town Hall portal lantern'));
+  assert.ok(square.includes('parasol finial tips'));
+  assert.ok(square.includes('parasolTips.count = bays'));
+  assert.ok(square.includes('King’s House corner pilasters'));
+  assert.ok(square.includes('khCornerPilasters.count = 2'));
+});

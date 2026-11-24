@@ -386,6 +386,23 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     reveals.count = rv;
     reveals.name = name + ' window inner reveals';
     root.add(reveals);
+    // Segmental arch lintels crown every window, as on the real facades.
+    const lintelShape = new THREE.Shape();
+    lintelShape.moveTo(-0.7, 0); lintelShape.quadraticCurveTo(0, 0.5, 0.7, 0); lintelShape.lineTo(0.7, -0.08); lintelShape.lineTo(-0.7, -0.08); lintelShape.closePath();
+    const lintelArches = new THREE.InstancedMesh(new THREE.ShapeGeometry(lintelShape), stone, bays * floors);
+    let la = 0;
+    for (let floor = 1; floor <= floors; floor++) {
+      const wy = 4.4 + (floor - 1) * ((height - 6.6) / Math.max(1, floors - 1));
+      for (let bay = 0; bay < bays; bay++) {
+        const wx = (bay - (bays - 1) / 2) * (width - 2.8) / Math.max(1, bays - 1);
+        dummy.position.set(wx, wy + 0.88, 0.18);
+        dummy.updateMatrix();
+        lintelArches.setMatrixAt(la++, dummy.matrix);
+      }
+    }
+    lintelArches.count = la;
+    lintelArches.name = name + ' window segmental lintels';
+    root.add(lintelArches);
     // Stone corbels under every window sill, carrying the sills of the real facades.
     const sillCorbels = new THREE.InstancedMesh(new THREE.BoxGeometry(0.2, 0.18, 0.24), materials.warmStone, bays * floors * 2);
     let scc = 0;
@@ -458,6 +475,20 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     soffits.name = name + ' arcade soffit panels';
     glazingBars.name = name + ' shopfront glazing bars';
     root.add(soffits, glazingBars);
+    // Capitals widen the tops of the ground-arcade piers, as on the real arcades.
+    const arcadeCaps = new THREE.InstancedMesh(new THREE.BoxGeometry(0.4, 0.22, 0.5), materials.warmStone, bays * 2);
+    let acap = 0;
+    for (let bay = 0; bay < bays; bay++) {
+      const wx = (bay - (bays - 1) / 2) * (width - 2.8) / Math.max(1, bays - 1);
+      for (const side of [-1, 1]) {
+        arcDummy.position.set(wx + side * ((width - 2.8) / bays / 2 - 0.1), 3.3, 0.42);
+        arcDummy.updateMatrix();
+        arcadeCaps.setMatrixAt(acap++, arcDummy.matrix);
+      }
+    }
+    arcadeCaps.count = acap;
+    arcadeCaps.name = name + ' arcade pier capitals';
+    root.add(arcadeCaps);
     // Arched door leaf with a gilded fanlight in the centre arcade bay of every house.
     box(root, 0.95, 2.5, 0.12, 0, 1.55, 0.42, materials.dark, name + ' arched door leaf');
     const fanlight = cylinder(root, 0.4, 0.4, 0.08, 0, 3.02, 0.44, materials.gold, 16);
@@ -699,6 +730,17 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       chairBacks.name = name + ' terrace chair backs';
       menuBoards.name = name + ' terrace menu boards';
       root.add(chairBacks, menuBoards);
+      // Gilded finial balls crown each terrace parasol, as on the real brasserie parasols.
+      const parasolTips = new THREE.InstancedMesh(new THREE.SphereGeometry(0.06, 6, 5), materials.gold, bays);
+      for (let bay = 0; bay < bays; bay++) {
+        const wx = (bay - (bays - 1) / 2) * (width - 2.8) / Math.max(1, bays - 1);
+        arcDummy.position.set(wx, 2.42, 2.4);
+        arcDummy.updateMatrix();
+        parasolTips.setMatrixAt(bay, arcDummy.matrix);
+      }
+      parasolTips.count = bays;
+      parasolTips.name = name + ' parasol finial tips';
+      root.add(parasolTips);
     }
 
     // Baroque guild-house dressing, as on the real frontages: pilasters between the
@@ -2282,6 +2324,8 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     }
     // A bronze commemorative plaque hangs beside the portal, as on the real tower base.
     box(tower, 0.6, 0.8, 0.08, 3.4, 4.5, towerW / 2 + 0.12, materials.bronze, 'Portal side commemorative plaque');
+    // A lit lantern hangs over the Town Hall portal at night, as on the real tower base.
+    box(tower, 0.3, 0.4, 0.2, 0, 11.9, towerW / 2 + 0.3, glass, 'Town Hall portal lantern');
     // Massive wooden door leaves with a gilded transom bar and kick plates.
     box(tower, 2.3, 3.4, 0.18, 0, 1.9, towerW / 2 + 0.2, materials.dark, 'Portal door leaves');
     box(tower, 2.3, 0.12, 0.1, 0, 3.68, towerW / 2 + 0.24, materials.gold, 'Portal door transom bar');
@@ -2752,6 +2796,16 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     root.add(khDentils);
     // Drip mould under the upper cornice sheds water off the Broodhuis facade.
     box(root, width + 1.0, 0.08, 0.4, 0, height - 0.95, 0.3, darkStone, 'King’s House cornice drip mould');
+    // Full-height corner pilasters frame the Broodhuis main block, as on Jamaer's facade.
+    const khCornerPilasters = new THREE.InstancedMesh(new THREE.BoxGeometry(0.4, height - 1.6, 0.24), trim, 2);
+    for (let i = 0; i < 2; i++) {
+      khQd.position.set((i === 0 ? -1 : 1) * (width / 2 - 0.2), 1.0 + (height - 1.6) / 2, 0.14);
+      khQd.updateMatrix();
+      khCornerPilasters.setMatrixAt(i, khQd.matrix);
+    }
+    khCornerPilasters.count = 2;
+    khCornerPilasters.name = 'King’s House corner pilasters';
+    root.add(khCornerPilasters);
 
     // Ground-floor arcade gallery: recessed arched openings between piers, pointed heads.
     const bays = 9, bayW = width / bays;
@@ -3325,6 +3379,12 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     portL.rotation.z = -0.6;
     const portR = box(root, 1.6, 0.24, 0.4, 0.55, 5.35, 0.2, trim, 'King’s House portal pointed arch');
     portR.rotation.z = 0.6;
+    // An outer archivolt ring encircles the Broodhuis portal, as in the real double-moulded
+    // entrance.
+    const portOL = box(root, 1.9, 0.26, 0.44, -0.75, 5.6, 0.2, darkStone, 'King’s House portal outer archivolt');
+    portOL.rotation.z = -0.68;
+    const portOR = box(root, 1.9, 0.26, 0.44, 0.75, 5.6, 0.2, darkStone, 'King’s House portal outer archivolt');
+    portOR.rotation.z = 0.68;
     const tymp = new THREE.Shape();
     tymp.moveTo(-1.1, 0); tymp.lineTo(1.1, 0); tymp.lineTo(0, 0.85); tymp.closePath();
     mesh(root, new THREE.ShapeGeometry(tymp), darkStone, 0, 5.6, 0.2, 'King’s House portal tympanum');
@@ -3339,6 +3399,11 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     portalOculus.name = 'King’s House portal oculus rim';
     portalOculus.rotation.x = Math.PI / 2;
     mesh(root, new THREE.CircleGeometry(0.24, 12), glass, 0, 7.85, 0.32, 'King’s House portal oculus');
+    // Gilded attendant figures flank the Broodhuis portal in niches, as on the real facade.
+    for (const side of [-1, 1]) {
+      box(root, 0.5, 2.0, 0.18, side * 2.2, 1.4, 0.2, darkStone, 'King’s House portal attendant niche');
+      box(root, 0.22, 1.1, 0.12, side * 2.2, 1.4, 0.32, materials.gold, 'King’s House portal attendant statue');
+    }
     // Arms of the City of Brussels with a crown above the central gallery, as on the
     // real Broodhuis facade.
     const shield = new THREE.Shape();
@@ -3431,6 +3496,22 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     jointsX.name = 'Grand-Place paving joints (long axis)';
     jointsZ.name = 'Grand-Place paving joints (cross axis)';
     plaza.add(jointsX, jointsZ);
+    // Diagonal joints cross the central field of the calepinage.
+    const diagJoints = new THREE.InstancedMesh(new THREE.BoxGeometry(0.07, 0.02, 30), materials.pavingEdge, 12);
+    for (let i = 0; i < 6; i++) {
+      dummy.position.set(-30 + i * 12, 0.006, 0);
+      dummy.rotation.y = Math.PI / 4;
+      dummy.updateMatrix();
+      diagJoints.setMatrixAt(i, dummy.matrix);
+      dummy.position.set(-30 + i * 12, 0.006, 0);
+      dummy.rotation.y = -Math.PI / 4;
+      dummy.updateMatrix();
+      diagJoints.setMatrixAt(6 + i, dummy.matrix);
+      dummy.rotation.y = 0;
+    }
+    diagJoints.count = 12;
+    diagJoints.name = 'Grand-Place diagonal paving joints';
+    plaza.add(diagJoints);
     // Patch repairs in the calepinage — newer slabs set into the old paving, as on the
     // real square's worn surface.
     const repairs = new THREE.InstancedMesh(new THREE.BoxGeometry(3.2, 0.1, 2.0), materials.pavingB, 12);
