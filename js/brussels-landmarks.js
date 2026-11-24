@@ -2625,6 +2625,10 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     stArch.absarc(0, 4.2, 3.2, 0, Math.PI, false); stArch.lineTo(-3.2, 0); stArch.closePath();
     mesh(g, new THREE.ShapeGeometry(stArch), materials.glass, -70, 0, -72.8, 'Royal Stables carriage arch');
     box(g, 8, 1.0, 1.0, -70, 7.6, -72.8, materials.warmStone, 'Royal Stables arch impost');
+    // The Boulevard du Régent (Small Ring) runs south-east from the Place du Trône, past the
+    // equestrian statue of Leopold II, on the site of the old second city walls (R20).
+    const bdR = box(g, 150, 0.06, 18, -185, 0.03, -125, materials.pavingA, 'Boulevard du Régent street strip');
+    bdR.rotation.y = Math.PI / 4;
   });
     addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');

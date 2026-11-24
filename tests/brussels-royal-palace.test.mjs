@@ -624,3 +624,9 @@ testCase('the Royal Stables open with a carriage arch onto the courtyard road', 
   assert.match(palace, /'Royal Stables carriage arch'/);
   assert.match(palace, /'Royal Stables arch impost'/);
 });
+
+testCase('the Boulevard du Régent runs south-east from the Place du Trône (Small Ring)', () => {
+  assert.match(palace, /Boulevard du Régent \(Small Ring\)/);
+  assert.match(palace, /'Boulevard du Régent street strip'/);
+  assert.match(palace, /bdR\.rotation\.y = Math\.PI \/ 4/);
+});
