@@ -5110,6 +5110,9 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     for (let i = 0; i < 7; i++) {
       box(g, 0.08, 4.5, 0.06, -168 - 24 + i * 8, 5, 21.0, materials.warmStone, 'Academy Palace ground mullion');
     }
+
+    // A frieze band runs above the Palace of the Nation peristyle architrave.
+    box(g, 52, 0.7, 2.6, 0, 16.35, 401.2, materials.warmStone, 'Palace of the Nation frieze band');
   });
     addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');

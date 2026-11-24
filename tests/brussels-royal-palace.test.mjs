@@ -1738,3 +1738,7 @@ testCase('glazed side lights flank the central portico door', () => {
 testCase('mullions divide the Academy Palace ground-floor arched windows', () => {
   assert.match(palace, /'Academy Palace ground mullion'/);
 });
+
+testCase('a frieze band runs above the Palace of the Nation architrave', () => {
+  assert.match(palace, /'Palace of the Nation frieze band'/);
+});
