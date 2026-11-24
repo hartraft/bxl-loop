@@ -426,4 +426,31 @@ testCase('rounds 95-100: bull/bear lion anatomy, pedestal mouldings, torch bowls
   assert.match(bourse, /'Bourse stair cheek wall cap \(chaperon\)'/);
 });
 
+testCase('rounds 101-104: drum oculi, drum dentils, dome girders, paired meridian ribs', () => {
+  assert.match(bourse, /'Bourse dome drum oculi \(oeils-de-boeuf du tambour\)'/);
+  assert.match(bourse, /oculi\.count = 8/);
+  assert.match(bourse, /'Bourse drum entablature dentils \(denticules du tambour\)'/);
+  assert.match(bourse, /dentils\.count = 24/);
+  assert.match(bourse, /'Bourse dome glazing girder \(cerce\)'/);
+  assert.match(bourse, /'Bourse dome paired meridian ribs \(second set of arcs\)'/);
+  assert.match(bourse, /ribs2\.count = 8/);
+});
+
+testCase('rounds 105-108: lantern columns + orb/cross, lantern mouldings, pendentives, barrel vaults', () => {
+  assert.match(bourse, /'Bourse lantern ring of eight columns \(colonnettes du lanterneau\)'/);
+  assert.match(bourse, /cols\.count = 8/);
+  assert.match(bourse, /'Bourse lantern orb \(boule\)'/);
+  assert.match(bourse, /'Bourse lantern cross vertical'/);
+  assert.match(bourse, /'Bourse lantern cornice \(corniche du lanterneau\)'/);
+  assert.match(bourse, /'Bourse dome pendentive \(pendentif\)'/);
+  assert.match(bourse, /'Bourse barrel vault over cross arm \(tongewelf\)'/);
+});
+
+testCase('rounds 109-110: slate tile courses + gilded ridge cresting on the arm roofs', () => {
+  assert.match(bourse, /'Bourse arm roof slate tile courses \(ardoises en ranges\)'/);
+  assert.match(bourse, /courses\.count = n/);
+  assert.match(bourse, /'Bourse arm roof ridge cresting \(cretes dorees\)'/);
+  assert.match(bourse, /crests\.count = n/);
+});
+
 // __MORE_BOURSE_TESTS__

@@ -5567,6 +5567,135 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       const cap = box(g, 1.7, 0.22, 15.5, sx * 13.7, 5.55, 41.3, materials.warmStone, 'Bourse stair cheek wall cap (chaperon)');
       cap.rotation.z = sx * -Math.atan2(5, 14);
     }
+    // Round 101: the high drum is pierced by round oculi (heritage inventory: dome on high
+    // socle under a richly ornamented entablature).
+    {
+      const oculi = new THREE.InstancedMesh(new THREE.CylinderGeometry(1.0, 1.0, 0.4, 14), materials.glass, 8);
+      const dummy = new THREE.Object3D();
+      for (let i = 0; i < 8; i++) {
+        const a = (i + 0.5) * Math.PI / 4;
+        dummy.position.set(Math.sin(a) * 13.2, 34, Math.cos(a) * 13.2);
+        dummy.rotation.y = -a;
+        dummy.updateMatrix();
+        oculi.setMatrixAt(i, dummy.matrix);
+      }
+      oculi.count = 8;
+      oculi.name = 'Bourse dome drum oculi (oeils-de-boeuf du tambour)';
+      oculi.castShadow = true;
+      g.add(oculi);
+    }
+    // Round 102: dentil + modillion rings around the drum's ornamented entablature.
+    {
+      const dentils = new THREE.InstancedMesh(new THREE.BoxGeometry(0.3, 0.35, 0.3), materials.warmStone, 24);
+      const dummy = new THREE.Object3D();
+      for (let i = 0; i < 24; i++) {
+        const a = i * Math.PI / 12;
+        dummy.position.set(Math.sin(a) * 13.9, 38.6, Math.cos(a) * 13.9);
+        dummy.rotation.y = -a;
+        dummy.updateMatrix();
+        dentils.setMatrixAt(i, dummy.matrix);
+      }
+      dentils.count = 24;
+      dentils.name = 'Bourse drum entablature dentils (denticules du tambour)';
+      dentils.castShadow = true;
+      g.add(dentils);
+    }
+    // Round 103: the glazed dome is divided by mullions and three horizontal girders (the 1893
+    // curved glazing replaced the original stucco vaulting).
+    for (const rr of [6.5, 10.5, 13.2]) {
+      const ring = mesh(g, new THREE.TorusGeometry(rr, 0.09, 6, 32), materials.blueStone, 0, 39.6 + Math.sqrt(Math.max(0, 14 * 14 - rr * rr)), 0, 'Bourse dome glazing girder (cerce)');
+      ring.rotation.x = Math.PI / 2;
+    }
+    // Round 104: paired meridian ribs on the dome (double arcs transversaux).
+    {
+      const ribs2 = new THREE.InstancedMesh(new THREE.BoxGeometry(0.4, 13.0, 0.4), materials.blueStone, 8);
+      const dummy = new THREE.Object3D();
+      for (let i = 0; i < 8; i++) {
+        const a = (i + 0.5) * Math.PI / 4;
+        dummy.position.set(Math.sin(a) * 9.9, 46.3, Math.cos(a) * 9.9);
+        dummy.rotation.set(Math.cos(a) * 0.72, 0, -Math.sin(a) * 0.72);
+        dummy.updateMatrix();
+        ribs2.setMatrixAt(i, dummy.matrix);
+      }
+      ribs2.count = 8;
+      ribs2.name = 'Bourse dome paired meridian ribs (second set of arcs)';
+      ribs2.castShadow = true;
+      g.add(ribs2);
+    }
+    // Round 105: the circular lantern is ringed by eight small columns and crowned by an orb
+    // and cross finial.
+    {
+      const cols = new THREE.InstancedMesh(new THREE.CylinderGeometry(0.28, 0.32, 6.2, 8), materials.paleStone, 8);
+      const dummy = new THREE.Object3D();
+      for (let i = 0; i < 8; i++) {
+        const a = i * Math.PI / 4;
+        dummy.position.set(Math.sin(a) * 4.1, 50.2, Math.cos(a) * 4.1);
+        dummy.updateMatrix();
+        cols.setMatrixAt(i, dummy.matrix);
+      }
+      cols.count = 8;
+      cols.name = 'Bourse lantern ring of eight columns (colonnettes du lanterneau)';
+      cols.castShadow = true;
+      g.add(cols);
+      mesh(g, new THREE.SphereGeometry(0.55, 10, 8), materials.gold, 0, 58.6, 0, 'Bourse lantern orb (boule)');
+      box(g, 0.12, 1.2, 0.12, 0, 59.4, 0, materials.gold, 'Bourse lantern cross vertical');
+      box(g, 0.7, 0.12, 0.12, 0, 59.6, 0, materials.gold, 'Bourse lantern cross horizontal');
+    }
+    // Round 106: the lantern has its own cornice and base moulding.
+    box(g, 9.6, 0.35, 9.6, 0, 56.9, 0, materials.warmStone, 'Bourse lantern cornice (corniche du lanterneau)');
+    box(g, 9.4, 0.3, 9.4, 0, 46.9, 0, materials.warmStone, 'Bourse lantern base moulding (socle du lanterneau)');
+    // Round 107: four pendentives (pendentifs) carry the drum over the square plan (heritage
+    // inventory: "coupole a pendentifs").
+    for (let i = 0; i < 4; i++) {
+      const a = i * Math.PI / 2 + Math.PI / 4;
+      const pend = pedimentPrism(g, 12, 7, 1.2, Math.sin(a) * 12.5, 30, Math.cos(a) * 12.5, materials.paleStone, 'Bourse dome pendentive (pendentif)');
+      pend.rotation.y = -a;
+    }
+    // Round 108: barrel vaults (tongewelven) spring over the four cross arms at the drum base.
+    for (let i = 0; i < 4; i++) {
+      const a = i * Math.PI / 2;
+      const vault = mesh(g, new THREE.CylinderGeometry(11, 11, 26, 16, 1, false, 0, Math.PI), materials.paleStone,
+        Math.sin(a) * 20, 26, Math.cos(a) * 20, 'Bourse barrel vault over cross arm (tongewelf)');
+      vault.rotation.z = Math.PI / 2;
+      vault.rotation.y = -a;
+    }
+    // Round 109: slate tile courses run down the arm roof slopes.
+    {
+      const courses = new THREE.InstancedMesh(new THREE.BoxGeometry(34, 0.08, 0.5), materials.roof, 5 * 4);
+      const dummy = new THREE.Object3D();
+      let n = 0;
+      for (const [cx, cz, ry] of [[0, 31, 0], [0, -31, 0], [-42, 0, Math.PI / 2], [42, 0, Math.PI / 2]]) {
+        for (let i = 0; i < 5; i++) {
+          dummy.position.set(cx, 26.4 + i * 0.8, cz + (ry === 0 ? (i - 2) * 3.4 : 0));
+          if (ry !== 0) dummy.position.set(cx + (i - 2) * 3.4, 26.4 + i * 0.8, cz);
+          dummy.rotation.set(0, ry, 0);
+          dummy.updateMatrix();
+          courses.setMatrixAt(n++, dummy.matrix);
+        }
+      }
+      courses.count = n;
+      courses.name = 'Bourse arm roof slate tile courses (ardoises en ranges)';
+      g.add(courses);
+    }
+    // Round 110: gilded ridge cresting along the four arm roof ridges.
+    {
+      const crests = new THREE.InstancedMesh(new THREE.ConeGeometry(0.14, 0.55, 6), materials.gold, 4 * 10);
+      const dummy = new THREE.Object3D();
+      let n = 0;
+      for (const [cx, cz, ry] of [[0, 31, 0], [0, -31, 0], [-42, 0, Math.PI / 2], [42, 0, Math.PI / 2]]) {
+        for (let i = 0; i < 10; i++) {
+          if (ry === 0) dummy.position.set((i - 4.5) * 3.4, 30.85, cz);
+          else dummy.position.set(cx, 30.85, (i - 4.5) * 3.4);
+          dummy.rotation.set(0, ry, 0);
+          dummy.updateMatrix();
+          crests.setMatrixAt(n++, dummy.matrix);
+        }
+      }
+      crests.count = n;
+      crests.name = 'Bourse arm roof ridge cresting (cretes dorees)';
+      crests.castShadow = true;
+      g.add(crests);
+    }
     // __BOURSE_ROUNDS__
   });
   addLandmark('bourseSurroundings', (g) => {
