@@ -3648,6 +3648,12 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     // The portico entablature is finished with a cymatium and a projecting corona band.
     box(g, 36.2, 0.3, 23.2, 0, 23.3, -1, ashlar, 'Portico entablature cymatium');
     box(g, 37.2, 0.55, 24.2, 0, 23.75, -1, moulding, 'Portico entablature corona');
+
+    // The pediment tympanum is an inset sculpted panel within its moulded frame.
+    const tymp = new THREE.Shape();
+    tymp.moveTo(-9.6, 0); tymp.lineTo(9.6, 0); tymp.lineTo(0, 4.6); tymp.closePath();
+    mesh(g, new THREE.ShapeGeometry(tymp), stone, 0, 23.85, centralFace + 0.24, 'Pediment tympanum panel');
+    box(g, 23.0, 0.3, 0.5, 0, 23.62, centralFace + 0.3, moulding, 'Pediment tympanum frame base');
   });
   addLandmark('palaceSurroundings', (g) => {
     // Real-world sources: en/fr Wikipedia (Royal Palace of Brussels, Brussels Park, Place des Palais,

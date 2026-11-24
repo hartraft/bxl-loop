@@ -1068,3 +1068,9 @@ testCase('the portico entablature has a cymatium and projecting corona', () => {
   assert.match(palace, /'Portico entablature cymatium'/);
   assert.match(palace, /'Portico entablature corona'/);
 });
+
+testCase('the pediment tympanum is an inset panel within its moulded frame', () => {
+  assert.match(palace, /inset sculpted panel/);
+  assert.match(palace, /'Pediment tympanum panel'/);
+  assert.match(palace, /'Pediment tympanum frame base'/);
+});
