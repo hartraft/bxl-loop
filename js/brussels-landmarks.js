@@ -2320,6 +2320,18 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     for (const x of [-76, 76]) {
       mesh(g, new THREE.SphereGeometry(0.5, 12, 10), gilded, x, 26.3, -1, 'Pavilion roof gilded finial');
     }
+
+    // Ground-floor wing openings are protected by wrought-iron grilles, matching the
+    // palace's ironwork (Suys' balcony, garden railings).
+    for (const x of wingXs) {
+      for (let i = 0; i < 9; i++) {
+        const bx = x - 22 + i * 5.5;
+        box(g, 1.7, 3.1, 0.06, bx, 3.6, facadeZ + 0.22, bronze, 'Wing ground-floor window grille');
+        for (let gk = 0; gk < 5; gk++) {
+          box(g, 0.04, 3.1, 0.04, bx - 0.7 + gk * 0.35, 3.6, facadeZ + 0.26, bronze, 'Wing grille bar');
+        }
+      }
+    }
   });
   addLandmark('palaceSurroundings', (g) => {
     // Brussels Park (Parc de Bruxelles): the rectangular 13.1 ha neoclassical park north of the
