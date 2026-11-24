@@ -136,6 +136,16 @@ jobs:
           else
             python -m playwright install --with-deps chromium
           fi
+      - name: Verify the staged site actually boots in Chromium/WebGPU
+        run: |
+          python -m http.server 4173 --bind 127.0.0.1 --directory _site >/tmp/brussels-runtime-server.log 2>&1 &
+          SERVER_PID=$!
+          trap 'kill $SERVER_PID' EXIT
+          for i in $(seq 1 30); do
+            if curl --fail --silent http://127.0.0.1:4173/ >/dev/null; then break; fi
+            sleep 1
+          done
+          python tools/browser-runtime-smoke.py http://127.0.0.1:4173/
       - name: Render the Grand-Place Town Hall PNG into the Pages site
         run: |
           mkdir -p _site/snapshots
