@@ -3911,6 +3911,11 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
         box(g, 0.55, 1.8, 0.4, side * 70.1, qy, facadeZ + 0.25, ashlar, 'Facade corner quoin');
       }
     }
+
+    // Rim stones finish the two perron planters.
+    for (const side of [-1, 1]) {
+      box(g, 1.8, 0.12, 1.8, side * 9.8, 1.06, centralFace + 0.9, stone, 'Perron planter rim');
+    }
   });
   addLandmark('palaceSurroundings', (g) => {
     // Real-world sources: en/fr Wikipedia (Royal Palace of Brussels, Brussels Park, Place des Palais,

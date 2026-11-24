@@ -1639,3 +1639,7 @@ testCase('lanterns flank the main door of the Palace of the Nation', () => {
   assert.match(palace, /'Palace of the Nation entrance lantern'/);
   assert.match(palace, /'Palace of the Nation entrance lantern glass'/);
 });
+
+testCase('rim stones finish the two perron planters', () => {
+  assert.match(palace, /'Perron planter rim'/);
+});
