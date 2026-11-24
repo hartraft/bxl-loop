@@ -4250,6 +4250,12 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     for (let i = 0; i < 5; i++) {
       box(g, 2.4, 5, 0.2, -168 - 16 + i * 8, 6, 71.9, materials.glass, 'Academy stables arched window');
     }
+
+    // The BELvue museum entrance: a recessed door on the square facade with stone steps.
+    box(g, 3.6, 6.2, 0.3, 168, 3.1, 21.85, materials.dark, 'BELvue entrance door');
+    box(g, 4.4, 0.3, 1.2, 168, 0.15, 21.2, materials.pavingEdge, 'BELvue entrance step');
+    box(g, 4.0, 0.3, 1.0, 168, 0.45, 20.7, materials.pavingEdge, 'BELvue entrance step');
+    box(g, 4.0, 0.28, 0.5, 168, 6.5, 21.8, materials.warmStone, 'BELvue entrance lintel');
   });
     addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');

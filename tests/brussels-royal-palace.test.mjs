@@ -1116,3 +1116,9 @@ testCase('the Academy Palace stables block (1823-28) stands behind the palace', 
   assert.match(palace, /'Academy Palace stables roof'/);
   assert.match(palace, /'Academy stables arched window'/);
 });
+
+testCase('the BELvue museum has an entrance door with stone steps on the square facade', () => {
+  assert.match(palace, /'BELvue entrance door'/);
+  assert.match(palace, /'BELvue entrance lintel'/);
+  assert.match(palace, /'BELvue entrance step'/);
+});
