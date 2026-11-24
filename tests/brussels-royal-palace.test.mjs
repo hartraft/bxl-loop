@@ -1996,3 +1996,7 @@ testCase('dark soil fills the wing balcony flower boxes', () => {
 testCase('hayloft windows pierce the Academy stables block under the eaves', () => {
   assert.match(palace, /'Academy stables hayloft window'/);
 });
+
+testCase('dark soil fills the central balcony flower box', () => {
+  assert.match(palace, /'Central flower box soil'/);
+});
