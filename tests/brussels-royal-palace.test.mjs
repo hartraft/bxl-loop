@@ -1838,3 +1838,7 @@ testCase('a glazed fanlight crowns the BELvue entrance door', () => {
 testCase('a leaf split divides the portico main door into two leaves', () => {
   assert.match(palace, /'Portico door leaf split'/);
 });
+
+testCase('volutes finish the Academy Palace pilaster capitals', () => {
+  assert.match(palace, /'Academy pilaster volute'/);
+});
