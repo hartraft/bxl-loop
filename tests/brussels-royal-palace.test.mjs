@@ -695,3 +695,9 @@ testCase('benches line the central avenue of Brussels Park', () => {
   assert.match(palace, /'Park avenue bench seat'/);
   assert.match(palace, /'Park avenue bench back'/);
 });
+
+testCase('the perron is flanked by stone balustrade ramps', () => {
+  assert.match(palace, /flanked by stone balustrade ramps/);
+  assert.match(palace, /'Perron side balustrade'/);
+  assert.match(palace, /'Perron side rail'/);
+});
