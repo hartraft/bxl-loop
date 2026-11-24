@@ -5244,6 +5244,14 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
 
     // A projecting plinth bases the Palace of the Nation facade.
     box(g, 62, 0.5, 0.6, 0, 0.25, 403.1, materials.paleStone, 'Palace of the Nation base plinth');
+
+    // Side gates with piers and lintels open in the east and west park railings.
+    for (const rx of [-172, 172]) {
+      for (const side of [-1, 1]) {
+        box(g, 0.5, 3.0, 1.2, rx, 1.5, 232 + side * 3, materials.paleStone, 'Park side gate pier');
+      }
+      box(g, 0.5, 0.5, 14, rx, 3.2, 232, materials.dark, 'Park side gate lintel');
+    }
   });
     addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');

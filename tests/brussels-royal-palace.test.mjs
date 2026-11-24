@@ -1850,3 +1850,8 @@ testCase('a projecting plinth bases the Palace of the Nation facade', () => {
 testCase('a moulded edge finishes the front of each wing balcony slab', () => {
   assert.match(palace, /'Wing balcony slab edge'/);
 });
+
+testCase('side gates open in the east and west park railings', () => {
+  assert.match(palace, /'Park side gate pier'/);
+  assert.match(palace, /'Park side gate lintel'/);
+});
