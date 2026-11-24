@@ -1227,3 +1227,8 @@ testCase('attic bases and capitals ring all twelve portico column shafts', () =>
   assert.match(palace, /'Portico column base'/);
   assert.match(palace, /'Portico column capital'/);
 });
+
+testCase('glazing muntins divide the central piano nobile French doors into panes', () => {
+  assert.match(palace, /'Central French door muntin vertical'/);
+  assert.match(palace, /'Central French door muntin horizontal'/);
+});

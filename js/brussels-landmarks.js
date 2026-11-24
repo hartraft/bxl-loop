@@ -3721,6 +3721,17 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
         cylinder(g, 1.55, 1.45, 0.7, x, 21.5, z, moulding).name = 'Portico column capital';
       }
     }
+
+    // Glazing muntins divide each central piano nobile French door into panes.
+    for (let i = 0; i < 5; i++) {
+      const x = -10 + i * 5;
+      for (const mx of [-0.66, 0, 0.66]) {
+        box(g, 0.06, 6.6, 0.05, x + mx, 14.6, centralFace + 0.27, bronze, 'Central French door muntin vertical');
+      }
+      for (const my of [13.5, 15.7]) {
+        box(g, 2.65, 0.06, 0.05, x, my, centralFace + 0.27, bronze, 'Central French door muntin horizontal');
+      }
+    }
   });
   addLandmark('palaceSurroundings', (g) => {
     // Real-world sources: en/fr Wikipedia (Royal Palace of Brussels, Brussels Park, Place des Palais,
