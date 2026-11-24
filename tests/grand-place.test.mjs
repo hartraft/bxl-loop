@@ -16,6 +16,8 @@ test('the square is the real entirely paved, completely open Grand-Place', () =>
   assert.ok(source.includes('110 x 68 metres and is paved edge-to-edge'));
   assert.ok(source.includes('for (let row = 0; row < 15; row++)'));
   assert.ok(source.includes('for (let col = 0; col < 16; col++)'));
+  assert.ok(source.includes('Grand-Place entrance sett strips (passerelles)'));
+  assert.equal((source.match(/\[-55, -30, 1, 0\]|\[17, 36, 0, -1\]|\[55, 30, -1, 0\]|\[17, -36, 0, 1\]/g) || []).length, 4, 'entrance strips at the street mouths');
   assert.ok(!source.includes('Historic square lantern'), 'the real square carries no corner lanterns');
   assert.ok(!source.includes('0.32, 0.42, 0.9'), 'the real square carries no bollards');
 });

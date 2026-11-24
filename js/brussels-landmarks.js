@@ -705,6 +705,33 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     cobblesA.receiveShadow = cobblesB.receiveShadow = true;
     plaza.add(cobblesA, cobblesB);
 
+    // Flat sett walkways (passerelles en pavés platines) run from each of the seven
+    // street entrances into the square, as in the real 1883/1899 calepinage.
+    const mouths = [
+      [-55, -30, 1, 0], [-55, 31, 1, 0],          // Rue au Beurre (NW), Rue de la Tête d'or (SW)
+      [17, 36, 0, -1], [52.5, 36, 0, -1],          // Rue des Chapeliers, Rue Charles Buls (south)
+      [55, 30, -1, 0], [55, -30, -1, 0],           // Rue de la Colline (E), Rue d'Arenberg (NE)
+      [17, -36, 0, 1]                              // Rue Chair et Pain (north)
+    ];
+    const stripGeo = new THREE.BoxGeometry(1.1, 0.08, 1.1);
+    const strips = new THREE.InstancedMesh(stripGeo, materials.pavingEdge, 240);
+    const sd = new THREE.Object3D();
+    let si = 0;
+    for (const [mx, mz, dx, dz] of mouths) {
+      for (let d = 1.2; d <= 12; d += 1.3) {
+        for (let w = -1.4; w <= 1.41; w += 1.2) {
+          sd.position.set(mx + dx * d + (dz ? w : 0), -0.07, mz + dz * d + (dx ? w : 0));
+          sd.rotation.y = 0;
+          sd.updateMatrix();
+          strips.setMatrixAt(si++, sd.matrix);
+        }
+      }
+    }
+    strips.count = si;
+    strips.name = 'Grand-Place entrance sett strips (passerelles)';
+    strips.receiveShadow = true;
+    plaza.add(strips);
+
     // Perimeter facades frame the plaza with the real houses, by name and side.
     // North = negative Z; south = positive Z. The Town Hall holds the south-west of the
     // south side with guild houses to its east; the King's House faces it from the north.
