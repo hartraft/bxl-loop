@@ -2273,3 +2273,7 @@ testCase('steps lead up to the park bandstand platform', () => {
 testCase('steps lead up to the Vauxhall bandstand platform', () => {
   assert.match(palace, /'Vauxhall bandstand step'/);
 });
+
+testCase('plinths anchor the perron lamp standard flanges', () => {
+  assert.match(palace, /'Perron lamp base plinth'/);
+});

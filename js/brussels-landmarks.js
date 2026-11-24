@@ -4220,6 +4220,11 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     for (const side of [-1, 1]) {
       box(g, 1.0, 0.25, 2.4, side * 8.9, 0.12, centralFace + 1.2, ashlar, 'Perron cheek wall base');
     }
+
+    // Plinths anchor the perron lamp standard flanges.
+    for (const side of [-1, 1]) {
+      box(g, 0.4, 0.15, 0.4, side * 9.6, 1.02, centralFace + 1.6, ashlar, 'Perron lamp base plinth');
+    }
   });
   addLandmark('palaceSurroundings', (g) => {
     // Real-world sources: en/fr Wikipedia (Royal Palace of Brussels, Brussels Park, Place des Palais,
