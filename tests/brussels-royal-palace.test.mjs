@@ -1944,3 +1944,7 @@ testCase('brackets carry the wing balcony flower boxes', () => {
 testCase('stone sills sit under the Royal Stables arched windows', () => {
   assert.match(palace, /'Royal Stables window sill'/);
 });
+
+testCase('keystones crown the BELvue ground-floor windows', () => {
+  assert.match(palace, /'BELvue ground window keystone'/);
+});

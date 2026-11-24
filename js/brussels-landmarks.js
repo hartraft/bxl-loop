@@ -5350,6 +5350,12 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     for (let i = 0; i < 5; i++) {
       box(g, 2.8, 0.18, 0.3, -70 - 16 + i * 8, 3.4, -73.0, materials.warmStone, 'Royal Stables window sill');
     }
+
+    // Keystones crown the BELvue ground-floor windows above their lintels.
+    for (let i = 0; i < 5; i++) {
+      const wx = 168 - 13 + i * 6.5;
+      box(g, 0.4, 0.55, 0.3, wx, 9.6, 22.15, materials.warmStone, 'BELvue ground window keystone');
+    }
   });
     addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');
