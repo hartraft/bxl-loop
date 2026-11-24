@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { BRUSSELS_LANDMARK_ANCHORS, brusselsToWorld, MONT_DES_ARTS_ROTATION } from '../js/brussels-frame.js';
+import { BRUSSELS_LANDMARK_ANCHORS, brusselsToWorld, MONT_DES_ARTS_ROTATION, PALAIS_DE_JUSTICE_ROTATION } from '../js/brussels-frame.js';
 import { BRUSSELS_LANDMARK_COLLIDER_LAYOUT, createBrusselsLandmarkColliders, splitMontDesArtsWall } from '../js/brussels-colliders.js';
 
 function localCollider(collider, anchor, yaw) {
@@ -18,7 +18,7 @@ function overlapsRect(c, rect) {
 }
 
 test('Palais de Justice and Mont des Arts each register world-space colliders near their anchors', () => {
-  for (const [id, yaw] of [['palaisDeJustice', Math.PI], ['montDesArts', MONT_DES_ARTS_ROTATION]]) {
+  for (const [id, yaw] of [['palaisDeJustice', PALAIS_DE_JUSTICE_ROTATION], ['montDesArts', MONT_DES_ARTS_ROTATION]]) {
     const anchor = brusselsToWorld(BRUSSELS_LANDMARK_ANCHORS[id].lat, BRUSSELS_LANDMARK_ANCHORS[id].lon);
     const colliders = createBrusselsLandmarkColliders(id, anchor, yaw, 2.5);
     assert.ok(colliders.length >= 10, id + ' should register principal solid masses and retaining walls');
@@ -34,12 +34,21 @@ test('Palais de Justice and Mont des Arts each register world-space colliders ne
 
 test('Palais de Justice collider layout leaves the principal Place Poelaert stair approach open', () => {
   const anchor = brusselsToWorld(BRUSSELS_LANDMARK_ANCHORS.palaisDeJustice.lat, BRUSSELS_LANDMARK_ANCHORS.palaisDeJustice.lon);
-  const colliders = createBrusselsLandmarkColliders('palaisDeJustice', anchor, Math.PI);
+  const colliders = createBrusselsLandmarkColliders('palaisDeJustice', anchor, PALAIS_DE_JUSTICE_ROTATION);
   const approach = { x: 0, z: 85, hx: 38, hz: 7 };
   for (const collider of colliders) {
-    assert.equal(overlapsRect(localCollider(collider, anchor, Math.PI), approach), false,
+    assert.equal(overlapsRect(localCollider(collider, anchor, PALAIS_DE_JUSTICE_ROTATION), approach), false,
       'no solid collider may cover the central monumental stair/landing corridor');
   }
+});
+
+test('Palais de Justice rotation points the monumental entrance at Place Poelaert (bearing ~42 deg, not due north)', () => {
+  const yaw = PALAIS_DE_JUSTICE_ROTATION;
+  const bearing = Math.atan2(Math.sin(yaw), -Math.cos(yaw)); // bearing from north of the local +Z (entrance) axis
+  assert.ok(bearing > 0.6 && bearing < 0.85, `entrance axis bearing ${bearing.toFixed(3)} rad should be ~0.73 rad (42 deg)`);
+  const anchor = brusselsToWorld(BRUSSELS_LANDMARK_ANCHORS.palaisDeJustice.lat, BRUSSELS_LANDMARK_ANCHORS.palaisDeJustice.lon);
+  const portico = { x: anchor.x + 90 * Math.sin(yaw), z: anchor.z + 90 * Math.cos(yaw) };
+  assert.ok(portico.z < anchor.z && portico.x > anchor.x, 'the portico must end up north-east of the anchor, toward Place Poelaert');
 });
 
 test('Mont des Arts terrace retaining walls preserve the central 18 m stair corridor', () => {

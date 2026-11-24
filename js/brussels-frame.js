@@ -16,6 +16,11 @@ const phi = BRUSSELS_FRAME.lat0 * RAD;
 // Local +Z is the upper-city end of the Mont des Arts axis (southeast); the garden descends toward -Z (northwest).
 export const MONT_DES_ARTS_ROTATION = Math.PI / 4;
 
+// The Palais de Justice block is rotated in the real city: its Place Poelaert front edge runs at
+// bearing ~131.7 deg, so the facade normal (local +Z of the landmark model) points at ~41.7 deg
+// (0.727 rad) from north, and rotation.y = PI - 0.727 maps local +Z onto that bearing.
+export const PALAIS_DE_JUSTICE_ROTATION = Math.PI - 0.727;
+
 export const BRUSSELS_M_PER_DEG_LAT =
   111132.92 - 559.82 * Math.cos(2 * phi) + 1.175 * Math.cos(4 * phi);
 export const BRUSSELS_M_PER_DEG_LON =

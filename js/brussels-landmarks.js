@@ -1,7 +1,7 @@
 // Brussels-specific, procedural landmark geometry. Kept behind the Brussels city selector.
 import * as THREE from 'three/webgpu';
 import { GEO } from './brx-geodata.js';
-import { BRUSSELS_LANDMARK_ANCHORS, MONT_DES_ARTS_ROTATION, brusselsToWorld } from './brussels-frame.js';
+import { BRUSSELS_LANDMARK_ANCHORS, MONT_DES_ARTS_ROTATION, PALAIS_DE_JUSTICE_ROTATION, brusselsToWorld } from './brussels-frame.js';
 import { foundationSkirtBottom } from './brussels-terrain.js';
 import { createBrusselsLandmarkColliders, splitMontDesArtsWall } from './brussels-colliders.js';
 
@@ -109,7 +109,7 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     root.position.set(p.x, opts.world?.groundHeight?.(p.x, p.z) || 0, p.z);
     // Align each landmark's local architectural frontage with the real city axis.
     if (id === 'royalPalace') root.rotation.y = Math.PI; // north-facing façade toward Parc de Bruxelles
-    if (id === 'palaisDeJustice') root.rotation.y = Math.PI; // monumental entrance faces Place Poelaert to the north
+    if (id === 'palaisDeJustice') root.rotation.y = PALAIS_DE_JUSTICE_ROTATION; // monumental entrance faces Place Poelaert (facade normal bearing ~42 deg)
     if (id === 'montDesArts') root.rotation.y = MONT_DES_ARTS_ROTATION; // local +Z points southeast; the garden descends northwest
     if (id === 'cinquantenaire') root.rotation.y = Math.PI / 2; // triumphal axis east-west; pavilions north/south
     build(root);
