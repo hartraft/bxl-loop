@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Brussels — Grand-Place full-square wide snapshot</title>
+<style>
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#b9c9d6}
+canvas{display:block;width:100%;height:100%}
+#caption{position:fixed;left:24px;bottom:20px;padding:10px 14px;background:#17212ddd;color:#fff;font:14px/1.4 system-ui,sans-serif;letter-spacing:.02em}
+</style>
+<script type="importmap">{"imports":{"three":"./vendor/three/build/three.webgpu.js","three/webgpu":"./vendor/three/build/three.webgpu.js","three/tsl":"./vendor/three/build/three.tsl.js","three/addons/":"./vendor/three/examples/jsm/"}}</script>
+</head>
+<body>
+<div id="caption">BRUSSELS · GRAND-PLACE · FULL SQUARE</div>
+<script type="module">
+import * as THREE from 'three/webgpu';
+import { buildBrusselsLandmarks } from './js/brussels-landmarks.js';
+const renderer = new THREE.WebGPURenderer({antialias:true,forceWebGL:true});
+renderer.setPixelRatio(Math.min(devicePixelRatio,1.5));
+renderer.setSize(innerWidth,innerHeight);
+renderer.toneMapping=THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure=1.05;
+document.body.appendChild(renderer.domElement);
+await renderer.init();
+const scene=new THREE.Scene();
+scene.background=new THREE.Color(0xb9c9d6);
+scene.fog=new THREE.Fog(0xb9c9d6,180,520);
+scene.add(new THREE.HemisphereLight(0xe7f1ff,0x756451,2.0));
+const sun=new THREE.DirectionalLight(0xffe0b4,3.2);
+sun.position.set(-70,110,90); scene.add(sun);
+// Surrounding street pavement so the square reads in its terrain context, not against void.
+const ground=new THREE.Mesh(new THREE.CircleGeometry(700,48).rotateX(-Math.PI/2),new THREE.MeshStandardMaterial({color:0x8f8878,roughness:1}));
+ground.position.y=-0.05; scene.add(ground);
+const landmarks=buildBrusselsLandmarks(scene);
+const target=landmarks.landmarks.grandPlace.group;
+const bounds=new THREE.Box3().setFromObject(target);
+const size=bounds.getSize(new THREE.Vector3());
+const centre=bounds.getCenter(new THREE.Vector3());
+const camera=new THREE.PerspectiveCamera(62,innerWidth/innerHeight,0.1,1500);
+// Full-square composition: wide three-quarter view from the south keeping the whole paved square,
+// all four facades with their ground contact, and the full 96 m Town Hall tower in frame.
+camera.position.set(centre.x-12,centre.y+32,centre.z+180);
+camera.lookAt(centre.x+3,centre.y+24,centre.z-6);
+camera.updateMatrixWorld(true);
+// Framing contract for tools/shot.py: plaza corners, facade bases, frontage footprint and tower top.
+const south=new THREE.Box3().setFromObject(target.getObjectByName('South frontage'));
+const southCentre=south.getCenter(new THREE.Vector3());
+const keys=[];
+for (const x of [-55,55]) for (const z of [-36,36]) keys.push(new THREE.Vector3(x,0,z));
+keys.push(new THREE.Vector3(0,0,36),new THREE.Vector3(0,0,-36),new THREE.Vector3(-55,0,0),new THREE.Vector3(55,0,0));
+for (const x of [-66,66]) for (const z of [52,-50]) keys.push(new THREE.Vector3(x,0,z));
+for (const x of [-66,66]) for (const z of [36,-36]) keys.push(new THREE.Vector3(x,24,z));
+keys.push(new THREE.Vector3(southCentre.x,0,south.max.z),new THREE.Vector3(southCentre.x,south.max.y,southCentre.z));
+let x0=Infinity,y0=Infinity,x1=-Infinity,y1=-Infinity;
+for (const p of keys){const v=p.clone().project(camera);x0=Math.min(x0,v.x);y0=Math.min(y0,v.y);x1=Math.max(x1,v.x);y1=Math.max(y1,v.y);}
+window.__snapshotFraming={x0,y0,x1,y1};
+renderer.setAnimationLoop(()=>renderer.render(scene,camera));
+window.__snapshotReady=true;
+addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight)});
+</script>
+</body></html>

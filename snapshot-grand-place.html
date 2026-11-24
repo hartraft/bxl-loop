@@ -37,6 +37,13 @@ const camera=new THREE.PerspectiveCamera(38,innerWidth/innerHeight,0.1,1500);
 // Grand-Place view from the open square, facing the Town Hall and framing its full 96 m tower.
 camera.position.set(centre.x+16,centre.y+Math.max(52,size.y*.55),centre.z+Math.max(150,size.z*2.4));
 camera.lookAt(centre.x+8,centre.y+size.y*.40,centre.z);
+camera.updateMatrixWorld(true);
+// Framing contract for tools/shot.py: raw NDC box of the target bounds.
+const corners=[];
+for (const x of [bounds.min.x,bounds.max.x]) for (const y of [bounds.min.y,bounds.max.y]) for (const z of [bounds.min.z,bounds.max.z]) corners.push(new THREE.Vector3(x,y,z));
+let x0=Infinity,y0=Infinity,x1=-Infinity,y1=-Infinity;
+for (const p of corners){const v=p.clone().project(camera);x0=Math.min(x0,v.x);y0=Math.min(y0,v.y);x1=Math.max(x1,v.x);y1=Math.max(y1,v.y);}
+window.__snapshotFraming={x0,y0,x1,y1};
 renderer.setAnimationLoop(()=>renderer.render(scene,camera));
 window.__snapshotReady=true;
 addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight)});

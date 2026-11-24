@@ -180,3 +180,49 @@ test('the snapshot camera frames the full Town Hall tower from the open square',
   assert.match(snapshot, /centre\.y\+Math\.max\(52,size\.y\*\.55\)/);
   assert.match(snapshot, /centre\.z\+Math\.max\(150,size\.z\*2\.4\)/);
 });
+
+test('a wide full-square snapshot page frames plaza, facades, ground contact and tower', () => {
+  const wide = readFileSync(new URL('../snapshot-grand-place-wide.html', import.meta.url), 'utf8');
+  assert.ok(wide.includes('<title>Brussels — Grand-Place full-square wide snapshot</title>'));
+  assert.ok(wide.includes('CircleGeometry(700,48)'), 'surrounding pavement ground plane for terrain context');
+  assert.ok(wide.includes('new THREE.PerspectiveCamera(62'));
+  assert.ok(wide.includes('camera.position.set(centre.x-12,centre.y+32,centre.z+180);'));
+  assert.ok(wide.includes('camera.lookAt(centre.x+3,centre.y+24,centre.z-6);'));
+  assert.ok(wide.includes('window.__snapshotFraming={x0,y0,x1,y1};'));
+  assert.ok(wide.includes("getObjectByName('South frontage')"), 'tower-top framing point from the real south frontage');
+  assert.ok(wide.includes('for (const x of [-55,55]) for (const z of [-36,36]) keys.push(new THREE.Vector3(x,0,z));'), 'plaza corners in the framing contract');
+  assert.ok(wide.includes('for (const x of [-66,66]) for (const z of [52,-50]) keys.push(new THREE.Vector3(x,0,z));'), 'frontage footprint ground corners in the framing contract');
+});
+
+test('every snapshot page publishes readiness and a framing contract for the capture job', () => {
+  for (const page of ['snapshot-grand-place.html', 'snapshot-grand-place-wide.html', 'snapshot-royal-palace.html']) {
+    const html = readFileSync(new URL(`../${page}`, import.meta.url), 'utf8');
+    assert.ok(html.includes('window.__snapshotReady=true'), `${page} signals readiness`);
+    assert.ok(html.includes('window.__snapshotFraming'), `${page} exposes __snapshotFraming`);
+  }
+});
+
+test('the capture job asserts a non-empty render and target framing, not just a green page', () => {
+  const shot = readFileSync(new URL('../tools/shot.py', import.meta.url), 'utf8');
+  assert.ok(shot.includes('from PIL import Image'));
+  assert.ok(shot.includes('luminance stdev'), 'asserts the PNG is not a blank or flat frame');
+  assert.ok(shot.includes('too few distinct colours'));
+  assert.ok(shot.includes('min_coverage'), 'asserts the target landmark covers enough of the frame');
+  assert.ok(shot.includes('require_full'), 'the wide snapshot asserts the whole square is in frame');
+  assert.ok(shot.includes('__snapshotReady'), 'asserts the page finished building the scene');
+  const wf = readFileSync(new URL('../.github/workflows/brussels-landmark-snapshots.yml', import.meta.url), 'utf8');
+  assert.ok(wf.includes('"snapshot-grand-place-wide.html"'), 'workflow path trigger includes the wide page');
+  assert.ok(wf.includes('pip install playwright pillow'), 'Pillow is installed for the render assertions');
+  assert.ok(wf.includes('snapshot-grand-place.html artifacts/brussels-grand-place-town-hall.png 12 0.2'));
+  assert.ok(wf.includes('snapshot-grand-place-wide.html artifacts/brussels-grand-place-wide.png 12 0.2 full'));
+  assert.ok(wf.includes('snapshot-royal-palace.html artifacts/brussels-royal-palace.png 12 0.15'));
+  assert.ok(wf.includes('artifacts/brussels-grand-place-wide.png'), 'the wide PNG is uploaded as an artifact');
+});
+
+test('the Royal Palace snapshot shows forecourt ground instead of blank sky', () => {
+  const palace = readFileSync(new URL('../snapshot-royal-palace.html', import.meta.url), 'utf8');
+  assert.ok(palace.includes('CircleGeometry(700,48)'), 'forecourt ground plane');
+  assert.match(palace, /new THREE\.PerspectiveCamera\(36/);
+  assert.match(palace, /centre\.z-Math\.max\(205,size\.z\*2\.6\)/);
+  assert.match(palace, /centre\.z\+18\)/);
+});
