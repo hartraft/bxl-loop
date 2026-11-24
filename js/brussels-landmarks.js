@@ -4242,6 +4242,14 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     for (const gx of [-124, -116]) {
       box(g, 1.4, 3.4, 0.6, gx, 1.7, -46, materials.paleStone, 'Palace park entrance gate pier');
     }
+
+    // Behind the Academy Palace stand its stables, built with the palace in 1823-28.
+    box(g, 40, 14, 20, -168, 7, 82, materials.ochre, 'Academy Palace stables block');
+    box(g, 42, 0.9, 22, -168, 14.5, 82, materials.warmStone, 'Academy Palace stables cornice');
+    mesh(g, new THREE.ConeGeometry(23, 4.5, 4), materials.roof, -168, 18, 82, 'Academy Palace stables roof');
+    for (let i = 0; i < 5; i++) {
+      box(g, 2.4, 5, 0.2, -168 - 16 + i * 8, 6, 71.9, materials.glass, 'Academy stables arched window');
+    }
   });
     addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');

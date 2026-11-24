@@ -1110,3 +1110,9 @@ testCase('bronze lamp standards with gilded globes flank the perron', () => {
   assert.match(palace, /'Perron lamp standard'/);
   assert.match(palace, /'Perron lamp gilded globe'/);
 });
+
+testCase('the Academy Palace stables block (1823-28) stands behind the palace', () => {
+  assert.match(palace, /'Academy Palace stables block'/);
+  assert.match(palace, /'Academy Palace stables roof'/);
+  assert.match(palace, /'Academy stables arched window'/);
+});
