@@ -697,3 +697,14 @@ test('Town Hall: hipped dormer pediments, balcony balusters, corner-turret lance
   assert.ok(square.includes('Spire base pinnacles'));
   assert.ok(square.includes('spireBasePins.count = 8'));
 });
+
+test('Town Hall: wing corner quoins, portal fanlight + hood mould, second-floor trefoils, ridge tiles (rounds 101-104)', () => {
+  assert.ok(square.includes('Town Hall wing corner quoins'));
+  assert.ok(square.includes('wingQuoins.count = wq'));
+  assert.ok(square.includes('Portal fanlight'));
+  assert.ok(square.includes('Portal hood mould'));
+  assert.ok(square.includes('Second-floor trefoil tympana'));
+  assert.ok(square.includes('floor2Trefoils.count = f2'));
+  assert.ok(square.includes('Town Hall roof ridge tiles'));
+  assert.ok(square.includes('ridgeTiles.count = ridgeTileCount'));
+});

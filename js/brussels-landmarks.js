@@ -880,6 +880,23 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     wingMods.count = wm;
     wingMods.name = 'Town Hall wing cornice modillions';
     root.add(wingMods);
+    // Oversized stone quoins chain the front corners of both wings, as on the real facade.
+    const wqRows = Math.floor((height - 2) / 0.9);
+    const wingQuoins = new THREE.InstancedMesh(new THREE.BoxGeometry(0.4, 0.8, 0.4), trim, wqRows * 4);
+    const wqd = new THREE.Object3D();
+    let wq = 0;
+    for (const [wx, ww] of [[eastWingX, 15], [westWingX, 32]]) {
+      for (let r = 0; r < wqRows; r++) {
+        for (const sx of [-1, 1]) {
+          wqd.position.set(wx + sx * (ww / 2 - 0.1), 1.4 + r * 0.9, 0.15);
+          wqd.updateMatrix();
+          wingQuoins.setMatrixAt(wq++, wqd.matrix);
+        }
+      }
+    }
+    wingQuoins.count = wq;
+    wingQuoins.name = 'Town Hall wing corner quoins';
+    root.add(wingQuoins);
 
     // Repeated pointed ground-floor arcade: dark recessed openings, piers and pointed heads.
     const bays = 16, bayW = width / bays;
@@ -1077,6 +1094,19 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     facadeGargoyles.name = 'Town Hall facade gargoyles';
     facadeGargoyles.castShadow = true;
     root.add(facadeGargoyles);
+    // Trefoil tympana above every second-floor window, as on the real upper storey.
+    const floor2Trefoils = new THREE.InstancedMesh(new THREE.CylinderGeometry(0.3, 0.3, 0.14, 12).rotateX(Math.PI / 2), trim, bays);
+    let f2 = 0;
+    for (let i = 0; i < bays; i++) {
+      const x = -width / 2 + bayW * (i + 0.5);
+      gd.position.set(x, 22.8, 0.3);
+      gd.rotation.set(0, 0, 0);
+      gd.updateMatrix();
+      floor2Trefoils.setMatrixAt(f2++, gd.matrix);
+    }
+    floor2Trefoils.count = f2;
+    floor2Trefoils.name = 'Second-floor trefoil tympana';
+    root.add(floor2Trefoils);
     // A continuous steep slate roof, ridge running along the long axis.
     const roofHalf = depth / 2 + 0.7, ridgeY = height + 7.8, eaveY = height + 0.6;
     const roofVertices = new Float32Array([
@@ -1114,6 +1144,17 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     crests.count = crestCount;
     crests.name = 'Town Hall gilded roof cresting';
     root.add(crests);
+    // Ridge tiles cap the slate roof ridge, overlapping like real slate ridging.
+    const ridgeTileCount = Math.floor(width / 1.5) + 1;
+    const ridgeTiles = new THREE.InstancedMesh(new THREE.BoxGeometry(0.34, 0.1, 0.55), darkStone, ridgeTileCount);
+    for (let i = 0; i < ridgeTileCount; i++) {
+      merDummy.position.set(-width / 2 + 0.7 + i * 1.5, ridgeY + 0.26, -depth / 2);
+      merDummy.updateMatrix();
+      ridgeTiles.setMatrixAt(i, merDummy.matrix);
+    }
+    ridgeTiles.count = ridgeTileCount;
+    ridgeTiles.name = 'Town Hall roof ridge tiles';
+    root.add(ridgeTiles);
 
     // Dormers and small roof turrets make the skyline read as a Gothic civic palace.
     for (let i = 0; i < 11; i++) {
@@ -1251,6 +1292,12 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     box(tower, 2.3, 3.4, 0.18, 0, 1.9, towerW / 2 + 0.2, materials.dark, 'Portal door leaves');
     box(tower, 2.3, 0.12, 0.1, 0, 3.68, towerW / 2 + 0.24, materials.gold, 'Portal door transom bar');
     box(tower, 2.3, 0.3, 0.06, 0, 0.35, towerW / 2 + 0.26, materials.gold, 'Portal door kick plate');
+    // Gilded semicircular fanlight above the portal door leaves.
+    mesh(tower, new THREE.CircleGeometry(1.05, 16, 0, Math.PI), glass, 0, 3.72, towerW / 2 + 0.22, 'Portal fanlight');
+    // Hood mould sheltering the whole ogival portal, as on the real tower base.
+    const hoodShape = new THREE.Shape();
+    hoodShape.moveTo(-3.4, 0); hoodShape.lineTo(0, 1.3); hoodShape.lineTo(3.4, 0); hoodShape.closePath();
+    mesh(tower, new THREE.ShapeGeometry(hoodShape), trim, 0, 11.3, towerW / 2 + 0.2, 'Portal hood mould');
     // Prophet figures in niches above the portal, between the shaft lancets.
     for (const side of [-1, 1]) {
       for (const dx of [1.1, 3.3]) {
