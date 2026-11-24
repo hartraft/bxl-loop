@@ -3904,6 +3904,13 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       box(g, 0.2, 2.0, 0.2, side * 34, 1.0, 14, gilded, 'Garden railing corner post');
       mesh(g, new THREE.SphereGeometry(0.16, 10, 8), gilded, side * 34, 2.1, 14, 'Garden railing corner post finial');
     }
+
+    // Corner quoins strengthen the facade corners of the palace.
+    for (const side of [-1, 1]) {
+      for (const qy of [3, 8, 13, 18]) {
+        box(g, 0.55, 1.8, 0.4, side * 70.1, qy, facadeZ + 0.25, ashlar, 'Facade corner quoin');
+      }
+    }
   });
   addLandmark('palaceSurroundings', (g) => {
     // Real-world sources: en/fr Wikipedia (Royal Palace of Brussels, Brussels Park, Place des Palais,
