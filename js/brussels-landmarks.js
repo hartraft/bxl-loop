@@ -4264,6 +4264,10 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     box(g, 4.2, 8.5, 0.3, 0, 4.25, 402.8, materials.dark, 'Palace of the Nation main door');
     box(g, 5.2, 0.3, 1.4, 0, 0.15, 401.6, materials.pavingEdge, 'Palace of the Nation entrance step');
     box(g, 4.8, 0.3, 1.1, 0, 0.45, 401.0, materials.pavingEdge, 'Palace of the Nation entrance step');
+
+    // The Academy Palace portico pediment encloses a sculpted tympanum panel with a stone frame.
+    box(g, 9.5, 1.7, 0.1, -168, 13.9, 19.58, materials.warmStone, 'Academy Palace tympanum frame');
+    box(g, 8.2, 1.3, 0.14, -168, 13.9, 19.54, materials.paleStone, 'Academy Palace tympanum panel');
   });
     addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');

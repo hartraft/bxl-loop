@@ -1128,3 +1128,8 @@ testCase('the Palace of the Nation has attic windows and a main door under the p
   assert.match(palace, /'Palace of the Nation main door'/);
   assert.match(palace, /'Palace of the Nation entrance step'/);
 });
+
+testCase('the Academy Palace portico pediment holds a framed tympanum panel', () => {
+  assert.match(palace, /'Academy Palace tympanum frame'/);
+  assert.match(palace, /'Academy Palace tympanum panel'/);
+});
