@@ -738,6 +738,21 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     strips.receiveShadow = true;
     plaza.add(strips);
 
+    // Bollards flank each street entrance — the real square is pedestrianised at its mouths.
+    const bollards = new THREE.InstancedMesh(new THREE.CylinderGeometry(0.14, 0.18, 0.9, 10), materials.dark, mouths.length * 2);
+    let bi = 0;
+    for (const [mx, mz, dx, dz] of mouths) {
+      for (const w of [-3.2, 3.2]) {
+        sd.position.set(mx + dx * 0.8 + (dz !== 0 ? w : 0), 0.45, mz + dz * 0.8 + (dx !== 0 ? w : 0));
+        sd.rotation.y = 0;
+        sd.updateMatrix();
+        bollards.setMatrixAt(bi++, sd.matrix);
+      }
+    }
+    bollards.count = bi;
+    bollards.name = 'Grand-Place entrance bollards';
+    plaza.add(bollards);
+
     // Perimeter facades frame the plaza with the real houses, by name and side.
     // North = negative Z; south = positive Z. The Town Hall holds the south-west of the
     // south side with guild houses to its east; the King's House faces it from the north.
