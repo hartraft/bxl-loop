@@ -4757,6 +4757,12 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     // A bronze finial with a gilded ball crowns the BELvue pavilion roof.
     cylinder(g, 0.05, 0.12, 1.2, 168, 30.6, 36, materials.bronze, 8).name = 'BELvue roof finial';
     mesh(g, new THREE.SphereGeometry(0.22, 10, 8), materials.gold, 168, 31.3, 36, 'BELvue roof finial ball');
+
+    // Each Hermes bust around the octagonal basin stands on a stone pedestal.
+    for (let hk = 0; hk < 8; hk++) {
+      const ha = hk * Math.PI / 4;
+      box(g, 1.0, 1.0, 1.0, Math.cos(ha) * 13.6, 0.5, 262 + Math.sin(ha) * 13.6, materials.paleStone, 'Hermes bust pedestal');
+    }
   });
     addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');
