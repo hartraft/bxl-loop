@@ -206,6 +206,15 @@ test('café awnings over the ground-floor arcades of the brasserie houses', () =
   assert.equal((square.match(/terrace: true\s*[,}]/g) || []).length, 6, 'six houses carry terraces');
 });
 
+test('the east frontage is the Maison des Ducs de Brabant: duke busts + Abundance', () => {
+  assert.equal((square.match(/dukeBusts: true/g) || []).length, 3, 'all three east houses carry duke busts');
+  assert.ok(square.includes(" Dukes of Brabant busts'"));
+  assert.ok(square.includes(" duke bust discs'"));
+  assert.ok(square.includes('bustDiscs.count = bustHeads.count = 6'));
+  assert.ok(square.includes('abundance: true }'));
+  assert.ok(square.includes(" Abundance allegory'"));
+});
+
 test('L’Arbre d’Or roof carries the gilded equestrian statue of Charles of Lorraine', () => {
   assert.ok(square.includes("L’Arbre d’Or', x: -18, width: 15, height: 22, style: 'stepped', stone: materials.ochre, terrace: true, equestrian: true }"));
   assert.ok(square.includes(" equestrian horse body'"));

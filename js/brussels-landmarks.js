@@ -506,6 +506,31 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       box(root, 0.34, 1.0, 0.24, 0, height + gableHeight + 1.85, 0.1, materials.gold, name + ' Charles of Lorraine rider');
       mesh(root, new THREE.SphereGeometry(0.16, 8, 6), materials.gold, 0, height + gableHeight + 2.45, 0.1, name + ' Charles of Lorraine rider head');
     }
+    if (spec.dukeBusts) {
+      // Maison des Ducs de Brabant (east side, nos. 13-19 behind a single facade): stone busts
+      // of the dukes of Brabant line the pilasters of the facade.
+      const bustDiscs = new THREE.InstancedMesh(new THREE.CylinderGeometry(0.3, 0.3, 0.1, 12).rotateX(Math.PI / 2), materials.warmStone, 6);
+      const bustHeads = new THREE.InstancedMesh(new THREE.SphereGeometry(0.17, 8, 6), stone, 6);
+      for (let i = 0; i < 6; i++) {
+        const bx = -width / 2 + 0.8 + i * (width - 1.6) / 5;
+        pedDummy.position.set(bx, height * 0.55, 0.18);
+        pedDummy.updateMatrix();
+        bustDiscs.setMatrixAt(i, pedDummy.matrix);
+        pedDummy.position.set(bx, height * 0.55 + 0.24, 0.24);
+        pedDummy.updateMatrix();
+        bustHeads.setMatrixAt(i, pedDummy.matrix);
+      }
+      bustDiscs.count = bustHeads.count = 6;
+      bustDiscs.name = name + ' duke bust discs';
+      bustHeads.name = name + ' Dukes of Brabant busts';
+      root.add(bustDiscs, bustHeads);
+    }
+    if (spec.abundance) {
+      // La Rose (centre of the Dukes of Brabant facade): the sculptured allegory of Abundance
+      // sits under the curved pediment of the gable.
+      box(root, 0.3, 1.0, 0.14, 0, height + 1.0, 0.18, materials.gold, name + ' Abundance allegory');
+      mesh(root, new THREE.SphereGeometry(0.18, 8, 6), materials.gold, 0, height + 1.65, 0.18, name + ' Abundance allegory head');
+    }
     return root;
   }
 
@@ -1125,9 +1150,9 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     east.position.set(55, 0, 0);
     east.rotation.y = -Math.PI / 2;
     plaza.add(east);
-    guildHouse(east, { name: 'Guild House – L’Arbre d’Or', x: -18, width: 15, height: 22, style: 'stepped', stone: materials.ochre, terrace: true, equestrian: true });
-    guildHouse(east, { name: 'Guild House – La Rose', x: 1, width: 16, height: 24, style: 'bell', stone: materials.paleStone, emblem: true });
-    guildHouse(east, { name: 'Guild House – Le Mont Thabor', x: 20, width: 15, height: 20, style: 'gable', terrace: true });
+    guildHouse(east, { name: 'Guild House – L’Arbre d’Or', x: -18, width: 15, height: 22, style: 'stepped', stone: materials.ochre, terrace: true, equestrian: true, dukeBusts: true });
+    guildHouse(east, { name: 'Guild House – La Rose', x: 1, width: 16, height: 24, style: 'bell', stone: materials.paleStone, emblem: true, dukeBusts: true, abundance: true });
+    guildHouse(east, { name: 'Guild House – Le Mont Thabor', x: 20, width: 15, height: 20, style: 'gable', terrace: true, dukeBusts: true });
 
     // The real square is entered by seven narrow streets (Rue au Beurre, Rue de la Tête
     // d'or, Rue des Chapeliers, Rue Charles Buls, Rue de la Colline, Rue d'Arenberg and
