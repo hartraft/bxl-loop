@@ -5404,6 +5404,156 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       trees.castShadow = true;
       g.add(trees);
     }
+    // Round 51: at the corner with the rue Paul Devaux stands the imposing 1949 building of
+    // shops and offices by E. De Heu, with a corner tower topped by a dome — it replaced the
+    // Grands Magasins de la Bourse destroyed by fire in 1948, reusing its balconies
+    // (en.wikipedia Place de la Bourse).
+    {
+      box(g, 26, 30, 22, -62, 15, 96, materials.plaster, '1949 De Heu building (ex Grands Magasins de la Bourse)');
+      cylinder(g, 6.5, 7.5, 36, -70, 18, 88, materials.plaster, 12);
+      box(g, 15, 2, 15, -70, 36.5, 88, materials.warmStone, '1949 corner tower cornice');
+      mesh(g, new THREE.SphereGeometry(7, 16, 10, 0, Math.PI * 2, 0, Math.PI / 2), materials.slate, -70, 37.5, 88, '1949 corner tower dome');
+      mesh(g, new THREE.ConeGeometry(1.1, 2.6, 8), materials.gold, -70, 45.5, 88, '1949 dome finial');
+      const wins = new THREE.InstancedMesh(new THREE.BoxGeometry(1.8, 2.6, 0.3), materials.glass, 40);
+      const dummy = new THREE.Object3D();
+      let n = 0;
+      for (let f = 0; f < 5; f++) for (let i = 0; i < 8; i++) {
+        dummy.position.set(-73 + i * 3, 5 + f * 5, 107.2);
+        dummy.updateMatrix();
+        wins.setMatrixAt(n++, dummy.matrix);
+      }
+      wins.count = n;
+      wins.name = '1949 De Heu building window rows';
+      wins.castShadow = true;
+      g.add(wins);
+    }
+    // Round 52: its ground-floor shopfronts (rez-de-chaussee commerciaux).
+    box(g, 24, 3.6, 0.5, -62, 1.8, 107.2, materials.glass, '1949 building shopfront glazing');
+    // Round 53: on the opposite side of the square stand two eclectic apartment buildings,
+    // built 1884-85 to ensure the homogeneity of the square (en.wikipedia Place de la Bourse).
+    for (const sx of [-1, 1]) {
+      const blk = sx * 30;
+      box(g, 50, 22, 16, blk, 11, 108, materials.ochre, '1884-85 eclectic apartment block ' + (sx < 0 ? 'west' : 'east'));
+      box(g, 51, 1.2, 17, blk, 22.6, 108, materials.warmStone, '1884-85 block cornice');
+      pedimentPrism(g, 50, 3.5, 16, blk, 23.2, 108, materials.warmStone, '1884-85 block mansard roof crown');
+      const wins = new THREE.InstancedMesh(new THREE.BoxGeometry(2, 3.2, 0.3), materials.glass, 24);
+      const dummy = new THREE.Object3D();
+      let n = 0;
+      for (let f = 0; f < 4; f++) for (let i = 0; i < 6; i++) {
+        dummy.position.set(blk - 22.5 + i * 9, 4.5 + f * 4.5, 116.2);
+        dummy.updateMatrix();
+        wins.setMatrixAt(n++, dummy.matrix);
+      }
+      wins.count = n;
+      wins.name = '1884-85 apartment block windows';
+      wins.castShadow = true;
+      g.add(wins);
+    }
+    // Round 54: no. 78 Boulevard Anspach is the Cafe de la Bourse (1874), a neo-Baroque building
+    // by Charles-Emile Janlet (en.wikipedia Boulevard Anspach).
+    {
+      box(g, 30, 24, 16, 34, 12, 130, materials.plaster, 'Cafe de la Bourse no. 78 (1874, neo-Baroque, Janlet)');
+      pedimentPrism(g, 12, 3.2, 4, 34, 24, 136.5, materials.warmStone, 'Cafe de la Bourse pediment');
+      box(g, 30, 1, 17, 34, 24.6, 130, materials.warmStone, 'Cafe de la Bourse cornice');
+      const wins = new THREE.InstancedMesh(new THREE.BoxGeometry(2.2, 4, 0.3), materials.glass, 12);
+      const dummy = new THREE.Object3D();
+      let n = 0;
+      for (let f = 0; f < 3; f++) for (let i = 0; i < 4; i++) {
+        dummy.position.set(22 + i * 7, 5 + f * 7, 138.2);
+        dummy.updateMatrix();
+        wins.setMatrixAt(n++, dummy.matrix);
+      }
+      wins.count = n;
+      wins.name = 'Cafe de la Bourse windows';
+      wins.castShadow = true;
+      g.add(wins);
+    }
+    // Round 55: the Bourse - Grand-Place premetro station (lines 4 and 10, opened 4 October 1976)
+    // has its surface accesses at the square: accesses 7 and 8 flank the rue Auguste Orts with
+    // escalators, access 6 south of the square has an elevator (fr.wikipedia).
+    {
+      const kiosks = [[-52, 103], [-40, 103], [18, 100]];
+      const names = ['premetro access 7 (rue Auguste Orts, escalator)', 'premetro access 8 (rue Auguste Orts, escalator)', 'premetro access 6 (south of the square, elevator)'];
+      for (let i = 0; i < 3; i++) {
+        const k = new THREE.Group();
+        k.name = 'Bourse premetro station ' + names[i];
+        k.position.set(kiosks[i][0], 0, kiosks[i][1]);
+        box(k, 3.2, 3, 3.2, 0, 1.5, 0, materials.glass, 'kiosk glass canopy');
+        box(k, 3.6, 0.18, 3.6, 0, 3.05, 0, materials.dark, 'kiosk roof slab');
+        for (const sx of [-1, 1]) for (const sz of [-1, 1]) cylinder(k, 0.06, 0.06, 3, sx * 1.6, 1.5, sz * 1.6, materials.dark, 6);
+        box(k, 3.4, 0.9, 0.3, 0, 0.45, 1.75, materials.dark, 'kiosk escalator/elevator front');
+        g.add(k);
+      }
+    }
+    // Round 56: the Fontaine Orts (1888) by Henri Beyaert with sculpture by Georges Houtstont and
+    // the bust of Auguste Orts by Thomas Vinootte, at the corner of the rue Auguste Orts — a
+    // high-flow drinking fountain (fr.wikipedia Fontaine Orts).
+    {
+      const f = new THREE.Group();
+      f.name = 'Fontaine Orts (1888, Beyaert + Houtstont, bust Vinootte)';
+      f.position.set(-52, 0, 78);
+      cylinder(f, 0.9, 1.2, 3.2, 0, 1.6, 0, materials.blueStone, 'Fontaine Orts column');
+      box(f, 1.6, 1.1, 1.6, 0, 3.8, 0, materials.blueStone, 'Fontaine Orts capital block');
+      mesh(f, new THREE.SphereGeometry(0.55, 10, 8), materials.bronze, 0, 4.8, 0, 'Fontaine Orts bust of Auguste Orts (Vinootte)');
+      cylinder(f, 2.2, 2.6, 0.7, 0, 0.35, 0, materials.blueStone, 12);
+      mesh(f, new THREE.CylinderGeometry(2.0, 2.0, 0.06, 16), materials.glass, 0, 0.72, 0, 'Fontaine Orts water disc (eau potable, haut debit)');
+      g.add(f);
+    }
+    // Round 57: the monument to Auguste Orts stands at no. 3 place de la Bourse (heritage
+    // inventory rue Auguste Orts: "monument appose a l'angle du no 3, place de la Bourse").
+    {
+      const m = new THREE.Group();
+      m.name = 'Monument to Auguste Orts (no. 3 place de la Bourse)';
+      m.position.set(-48, 0, 72);
+      box(m, 2.6, 2.2, 1.2, 0, 1.1, 0, materials.blueStone, 'Orts monument pedestal');
+      box(m, 3, 0.3, 1.5, 0, 2.35, 0, materials.warmStone, 'Orts monument cap');
+      box(m, 0.9, 2.6, 0.4, 0, 3.6, 0, materials.warmStone, 'Orts monument statue figure');
+      mesh(m, new THREE.SphereGeometry(0.4, 8, 6), materials.warmStone, 0, 5.1, 0, 'Orts monument statue head');
+      box(m, 1.6, 0.9, 0.1, 0, 1.2, 0.62, materials.bronze, 'Orts monument plaque');
+      g.add(m);
+    }
+    // Round 58: on the rue Auguste Orts axis facing the Bourse, the pietonnier project installed
+    // a water mirror (miroir d'eau) — a fountain children can play in (centreville.bruxelles.be).
+    {
+      const mirror = box(g, 14, 0.1, 4.5, -38, 0.06, 70, materials.glass, 'Water mirror on the rue Auguste Orts axis (miroir d\'eau, pietonnier)');
+      mirror.castShadow = false;
+      box(g, 14.6, 0.25, 5.1, -38, 0.02, 70, materials.pavingEdge, 'Water mirror stone frame');
+      const jets = new THREE.InstancedMesh(new THREE.CylinderGeometry(0.05, 0.08, 0.7, 6), materials.glass, 6);
+      const dummy = new THREE.Object3D();
+      for (let i = 0; i < 6; i++) {
+        dummy.position.set(-44 + i * 2, 0.45, 70);
+        dummy.updateMatrix();
+        jets.setMatrixAt(i, dummy.matrix);
+      }
+      jets.count = 6;
+      jets.name = 'Water mirror jets (miroir d\'eau)';
+      g.add(jets);
+    }
+    // Round 59: traditional blue enamel street-name plate on its post at the square mouth.
+    {
+      const sign = new THREE.Group();
+      sign.name = 'Enamel street sign PLACE DE LA BOURSE / BEURSPLEIN';
+      sign.position.set(58, 0, 46);
+      cylinder(sign, 0.05, 0.06, 2.6, 0, 1.3, 0, materials.dark, 6);
+      box(sign, 1.5, 0.55, 0.06, 0, 2.7, 0, materials.enamelBlue, 'enamel plate PLACE DE LA BOURSE / BEURSPLEIN');
+      g.add(sign);
+    }
+    // Round 60: bollards guard the street mouths around the square.
+    {
+      const bollards = new THREE.InstancedMesh(new THREE.CylinderGeometry(0.11, 0.13, 0.9, 8), materials.dark, 16);
+      const dummy = new THREE.Object3D();
+      const spots = [];
+      for (let i = 0; i < 4; i++) spots.push([-62 + i * 3, 43.5], [62 - i * 3, 43.5], [-62 + i * 3, 133], [62 - i * 3, 133]);
+      for (let i = 0; i < 16; i++) {
+        dummy.position.set(spots[i][0], 0.45, spots[i][1]);
+        dummy.updateMatrix();
+        bollards.setMatrixAt(i, dummy.matrix);
+      }
+      bollards.count = 16;
+      bollards.name = 'Place de la Bourse street-mouth bollards';
+      bollards.castShadow = true;
+      g.add(bollards);
+    }
     // __SURROUNDINGS_ROUNDS__
   });
 

@@ -276,4 +276,42 @@ testCase('rounds 46-50: night floodlights, downpipes, hood moulds, sill brackets
   assert.match(bourse, /'Bourse oculus stone surround'/);
 });
 
+testCase('rounds 51-52: 1949 De Heu corner building with dome-topped tower + shopfronts (ex Grands Magasins de la Bourse)', () => {
+  assert.match(surroundings, /'1949 De Heu building \(ex Grands Magasins de la Bourse\)'/);
+  assert.match(surroundings, /'1949 corner tower dome'/);
+  assert.match(surroundings, /'1949 dome finial'/);
+  assert.match(surroundings, /'1949 De Heu building window rows'/);
+  assert.match(surroundings, /wins\.count = n/);
+  assert.match(surroundings, /'1949 building shopfront glazing'/);
+});
+
+testCase('rounds 53-54: two 1884-85 eclectic apartment blocks opposite the square + Cafe de la Bourse no. 78 (1874, Janlet)', () => {
+  assert.match(surroundings, /'1884-85 eclectic apartment block ' \+ \(sx < 0 \? 'west' : 'east'\)/);
+  assert.match(surroundings, /'1884-85 block mansard roof crown'/);
+  assert.match(surroundings, /'1884-85 apartment block windows'/);
+  assert.match(surroundings, /'Cafe de la Bourse no\. 78 \(1874, neo-Baroque, Janlet\)'/);
+  assert.match(surroundings, /'Cafe de la Bourse pediment'/);
+});
+
+testCase('rounds 55-58: premetro accesses 6/7/8, Fontaine Orts 1888, Orts monument, rue Orts water mirror', () => {
+  assert.match(surroundings, /k\.name = 'Bourse premetro station ' \+ names\[i\]/);
+  assert.match(surroundings, /'premetro access 7 \(rue Auguste Orts, escalator\)'/);
+  assert.match(surroundings, /'premetro access 6 \(south of the square, elevator\)'/);
+  assert.match(surroundings, /'kiosk glass canopy'/);
+  assert.match(surroundings, /'Fontaine Orts \(1888, Beyaert \+ Houtstont, bust Vinootte\)'/);
+  assert.match(surroundings, /'Fontaine Orts bust of Auguste Orts \(Vinootte\)'/);
+  assert.match(surroundings, /'Fontaine Orts water disc \(eau potable, haut debit\)'/);
+  assert.match(surroundings, /'Monument to Auguste Orts \(no\. 3 place de la Bourse\)'/);
+  assert.match(surroundings, /'Water mirror on the rue Auguste Orts axis \(miroir d.eau, pietonnier\)'/);
+  assert.match(surroundings, /'Water mirror jets/);
+});
+
+testCase('rounds 59-60: enamel street sign PLACE DE LA BOURSE / BEURSPLEIN + street-mouth bollards', () => {
+  assert.match(surroundings, /'Enamel street sign PLACE DE LA BOURSE \/ BEURSPLEIN'/);
+  assert.match(surroundings, /'enamel plate PLACE DE LA BOURSE \/ BEURSPLEIN'/);
+  assert.match(surroundings, /materials\.enamelBlue/);
+  assert.match(surroundings, /'Place de la Bourse street-mouth bollards'/);
+  assert.match(surroundings, /bollards\.count = 16/);
+});
+
 // __MORE_BOURSE_TESTS__
