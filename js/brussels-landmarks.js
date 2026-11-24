@@ -1707,9 +1707,10 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     box(g, 160, wingH, wingD, 0, wingY, -66.5, stone, 'South range above Rue de Wynants');
     box(g, wingD, wingH, 116, 71.5, wingY, 0, stone, 'West range Rue des Minimes');
     box(g, wingD, wingH, 116, -71.5, wingY, 0, stone, 'East range Rue aux Laines');
-    for (const z of [-37.5, 37.5]) {
-      box(g, 126, 26, 10, 0, 15, z, light, 'Courthouse transverse gallery');
-      box(g, 127, 1.0, 10.8, 0, 26.5, z, zinc, 'Transverse gallery zinc roof');
+    // Gallery runs sit outside the court outer arcades (courts reach z=±35).
+    for (const z of [-39, 39]) {
+      box(g, 126, 26, 6, 0, 15, z, light, 'Courthouse transverse gallery');
+      box(g, 127, 1.0, 6.8, 0, 26.5, z, zinc, 'Transverse gallery zinc roof');
     }
     // The z=0 gallery is split around the central hall (x within ±28).
     for (const side of [-1, 1]) {

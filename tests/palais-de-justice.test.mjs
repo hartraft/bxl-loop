@@ -221,6 +221,7 @@ test('the monumental dome stack exists: square drum, circular drum, copper dome,
   assert.ok(palace.includes("box(g, 56, 42, 22, 0, 27, 0, light, 'Salle des Pas Perdus central mass (48 x 22 m hall)')"), 'hall footprint (z ±11) stays clear of the court arcades (z ±13)');
   assert.ok(palace.includes('const z = -24 + row * 48;'), 'court rows at z ±24, clear of the hall');
   assert.ok(palace.includes("'Courthouse transverse gallery wing'"), 'z=0 gallery split around the hall');
+  assert.ok(palace.includes('for (const z of [-39, 39])'), 'gallery runs at z=±39 stay clear of the court outer arcades at z=±35');
   assert.ok(palace.includes("'Square drum base a gradins lower tier'"), 'first drum on a stepped base');
   assert.ok(palace.includes("'Square drum base a gradins upper tier'"));
   assert.ok(palace.includes("'Square dome drum corner pier'"));
