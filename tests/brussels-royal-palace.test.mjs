@@ -1617,3 +1617,8 @@ testCase('attic bases ring each Academy Palace portico column', () => {
 testCase('stone lintels crown the Royal Stables hayloft windows', () => {
   assert.match(palace, /'Royal Stables hayloft lintel'/);
 });
+
+testCase('corner posts with gilded finials close the garden railing run', () => {
+  assert.match(palace, /'Garden railing corner post'/);
+  assert.match(palace, /'Garden railing corner post finial'/);
+});

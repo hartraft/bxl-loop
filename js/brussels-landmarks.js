@@ -3898,6 +3898,12 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
         box(g, 0.14, 0.25, 2.3, side * 70.12, 7.95, wz, ashlar, 'Wing end ground window lintel');
       }
     }
+
+    // Heavier corner posts with gilded finials close the garden railing run.
+    for (const side of [-1, 1]) {
+      box(g, 0.2, 2.0, 0.2, side * 34, 1.0, 14, gilded, 'Garden railing corner post');
+      mesh(g, new THREE.SphereGeometry(0.16, 10, 8), gilded, side * 34, 2.1, 14, 'Garden railing corner post finial');
+    }
   });
   addLandmark('palaceSurroundings', (g) => {
     // Real-world sources: en/fr Wikipedia (Royal Palace of Brussels, Brussels Park, Place des Palais,
