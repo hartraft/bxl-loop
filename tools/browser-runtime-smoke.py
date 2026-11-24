@@ -16,7 +16,9 @@ async def main(url: str) -> None:
             "--enable-unsafe-swiftshader",
             "--ignore-gpu-blocklist",
         ])
-        page = await browser.new_page(viewport={"width": 1280, "height": 800})
+        # A smaller surface and serial shader compilation keep SwiftShader within
+        # the memory limits of GitHub-hosted headless runners.
+        page = await browser.new_page(viewport={"width": 640, "height": 400}, device_scale_factor=1)
         errors: list[str] = []
         page.on("pageerror", lambda error: errors.append(f"uncaught page error: {error}"))
         page.on(
@@ -25,16 +27,21 @@ async def main(url: str) -> None:
             if message.type == "error" else None,
         )
 
-        # Avoid unrelated third-party font/network failures; app assets stay same-origin.
-        await page.route(
-            "**/*",
-            lambda route: route.continue_()
-            if urlsplit(route.request.url).netloc == urlsplit(origin).netloc
-            and urlsplit(route.request.url).scheme == urlsplit(origin).scheme
-            else route.abort(),
-        )
+        # Keep app assets same-origin. Fulfil external font/analytics requests with an
+        # empty response rather than aborting them (Chromium reports aborts as console
+        # errors, which are unrelated to whether the application booted).
+        async def isolate_network(route):
+            request_url = urlsplit(route.request.url)
+            if request_url.netloc == urlsplit(origin).netloc and request_url.scheme == urlsplit(origin).scheme:
+                await route.continue_()
+            else:
+                await route.fulfill(status=204, body="")
+
+        await page.route("**/*", isolate_network)
         try:
-            response = await page.goto(url, wait_until="domcontentloaded", timeout=60_000)
+            separator = "&" if "?" in url else "?"
+            smoke_url = f"{url}{separator}ci-smoke=1"
+            response = await page.goto(smoke_url, wait_until="domcontentloaded", timeout=60_000)
             if response is None or not response.ok:
                 raise AssertionError(
                     f"Page request failed: {response.status if response else 'no response'}"
@@ -49,7 +56,7 @@ async def main(url: str) -> None:
             await page.wait_for_function(
                 """() => !!window.__bxl &&
                     document.querySelector('#loading-overlay')?.classList.contains('hidden')""",
-                timeout=240_000,
+                timeout=360_000,
             )
             await page.wait_for_timeout(1500)
 

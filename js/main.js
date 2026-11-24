@@ -539,7 +539,10 @@ async function initApp() {
   //     leaves the main thread idle about half the time while nothing else animates; several calls side by side keep
   //     it busy (warm cache: 2.1 s instead of 4.0 s). (Rendering straight away compiled ~500 pipelines one after
   //     another: ~25 s with a cold shader cache.)
-  const COMPILE_POOL = 16;
+  // CI's SwiftShader adapter is much more fragile under parallel pipeline compilation.
+  // Keep the full 16-worker path for real GPUs; the browser smoke test opts into a
+  // serial compile so it exercises the same scene without exhausting the software device.
+  const COMPILE_POOL = URL_PARAMS.has('ci-smoke') ? 1 : 16;
   const nextTask = () => (globalThis.scheduler?.yield ? globalThis.scheduler.yield() : new Promise((resolve) => setTimeout(resolve, 0)));
   async function precompileShaders() {
     // An empty frame first: it sets up the post-processing chain, which configures the scene pass's render target
