@@ -5563,6 +5563,18 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
 
     // A ridge strip crowns the Academy stables hipped roof.
     box(g, 0.4, 0.25, 26, -168, 20.3, 82, materials.roof, 'Academy stables roof ridge');
+
+    // Dentil courses run under both Palace of the Nation wing cornices.
+    const pwDn = new THREE.InstancedMesh(new THREE.BoxGeometry(0.24, 0.3, 0.3), materials.warmStone, 40);
+    const pwDd = new THREE.Object3D();
+    let pwDi = 0;
+    for (const side of [-1, 1]) {
+      for (let di6 = 0; di6 < 20; di6++) {
+        pwDd.position.set(side * 70 - 19 + di6 * 2, 15.85, 406.8); pwDd.rotation.y = 0; pwDd.updateMatrix();
+        pwDn.setMatrixAt(pwDi++, pwDd.matrix);
+      }
+    }
+    pwDn.count = pwDi; pwDn.name = 'Palace of the Nation wing cornice dentil'; g.add(pwDn);
   });
     addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');
