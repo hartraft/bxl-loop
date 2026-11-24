@@ -2261,3 +2261,7 @@ testCase('balls finish the ends of the wing balcony rail caps', () => {
 testCase('stone steps lead down to the octagonal basin rim on its west side', () => {
   assert.match(palace, /'Octagonal basin west access step'/);
 });
+
+testCase('plinths base both perron cheek walls', () => {
+  assert.match(palace, /'Perron cheek wall base'/);
+});

@@ -4215,6 +4215,11 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
         mesh(g, new THREE.SphereGeometry(0.1, 10, 8), bronze, side + e * (wingW / 2 - 0.1), 8.05, facadeZ + 0.62, 'Wing balcony rail end ball');
       }
     }
+
+    // Plinths base both perron cheek walls.
+    for (const side of [-1, 1]) {
+      box(g, 1.0, 0.25, 2.4, side * 8.9, 0.12, centralFace + 1.2, ashlar, 'Perron cheek wall base');
+    }
   });
   addLandmark('palaceSurroundings', (g) => {
     // Real-world sources: en/fr Wikipedia (Royal Palace of Brussels, Brussels Park, Place des Palais,
