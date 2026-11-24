@@ -666,3 +666,9 @@ testCase('the Godecharle monument stands in Brussels Park', () => {
   assert.match(palace, /'Godecharle monument pedestal'/);
   assert.match(palace, /'Godecharle monument figure'/);
 });
+
+testCase('string courses divide the central corps storeys on the front', () => {
+  assert.match(palace, /String courses divide the central corps/);
+  assert.match(palace, /'Central first string course'/);
+  assert.match(palace, /'Central second string course'/);
+});
