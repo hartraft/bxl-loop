@@ -35,6 +35,14 @@ testCase('Royal Palace centre has a sculpted pediment, domed drum and Belgian fl
   assert.match(palace, /Belgian flag stripe/);
 });
 
+testCase("the pediment tympanum carries Vinçotte's relief: Belgium flanked by Industry and Agriculture", () => {
+  assert.match(palace, /Vin\u00e7otte's tympanum relief/);
+  assert.match(palace, /'Industry relief hammer head'/);
+  assert.match(palace, /'Industry relief gear'/);
+  assert.match(palace, /'Agriculture relief sheaf binding'/);
+  assert.match(palace, /'Agriculture relief sickle'/);
+});
+
 testCase('the colossal portico carries a full classical entablature (architrave, triglyph frieze, dentils, cornice)', () => {
   assert.match(palace, /'Portico architrave beam'/);
   assert.match(palace, /'Portico frieze triglyphs'/);
