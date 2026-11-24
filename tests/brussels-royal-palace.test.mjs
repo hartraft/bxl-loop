@@ -883,3 +883,8 @@ testCase('a grille closes the Academy Palace garden to the east toward the palac
   assert.match(palace, /'Academy garden east grille'/);
   assert.match(palace, /aeGrille\.count = aei/);
 });
+
+testCase('the rear Cour d’honneur wings are roofed in slate', () => {
+  assert.match(palace, /rear Cour d'honneur wings are roofed in slate/);
+  assert.match(palace, /'Rear wing slate roof'/);
+});
