@@ -1550,3 +1550,7 @@ testCase('newel posts finish both ends of each wing balcony rail', () => {
 testCase('a glazed fanlight crowns the Palace of the Nation main door', () => {
   assert.match(palace, /'Palace of the Nation door fanlight'/);
 });
+
+testCase('a ridge strip crowns the Academy Palace roofline', () => {
+  assert.match(palace, /'Academy Palace roof ridge'/);
+});

@@ -4848,6 +4848,9 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
 
     // A glazed fanlight crowns the Palace of the Nation main door.
     mesh(g, new THREE.CircleGeometry(2.0, 16, 0, Math.PI), materials.glass, 0, 8.6, 402.85, 'Palace of the Nation door fanlight');
+
+    // A ridge strip crowns the Academy Palace attic roofline.
+    box(g, 66, 0.35, 0.35, -168, 22.3, 36, materials.warmStone, 'Academy Palace roof ridge');
   });
     addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');
