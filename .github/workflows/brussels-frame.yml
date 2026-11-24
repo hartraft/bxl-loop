@@ -33,6 +33,9 @@ jobs:
           node --check js/city-config.js
           node --check js/brussels-landmarks.js
           node --check js/main.js
+          node --check js/scene-culling.js
+          node --check js/culling-math.mjs
+          node --check tests/scene-culling-math.test.mjs
           node --check js/lighting.js
           if [ -f tools/browser-screenshots.mjs ]; then
             node --check tools/browser-screenshots.mjs
@@ -88,7 +91,7 @@ jobs:
         run: ruby -e "require 'yaml'; YAML.load_file('.github/workflows/deploy-brussels.yml')"
       - name: Test Brussels frame and anchors
         run: |
-          node --test tests/brussels-frame.test.mjs tests/brussels-build-frame.test.mjs tests/traffic-side.test.mjs tests/boot.test.cjs tests/module-graph-audit.test.mjs tests/brussels-bus-selection.test.mjs tests/brussels-street-infrastructure.test.mjs tests/brussels-postcodes.test.mjs tests/brussels-terrain.test.mjs tests/brussels-landmark-colliders.test.mjs
+          node --test tests/brussels-frame.test.mjs tests/brussels-build-frame.test.mjs tests/traffic-side.test.mjs tests/boot.test.cjs tests/module-graph-audit.test.mjs tests/brussels-bus-selection.test.mjs tests/brussels-street-infrastructure.test.mjs tests/brussels-postcodes.test.mjs tests/brussels-terrain.test.mjs tests/brussels-landmark-colliders.test.mjs tests/scene-culling-math.test.mjs
 
   # Pull-request-only visual validation. No Pages/OIDC credentials are granted to this job.
   # Kept inside this established workflow so

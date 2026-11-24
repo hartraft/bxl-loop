@@ -652,6 +652,17 @@ async function initApp() {
 
   if (elFps) elFps.textContent = '60';
 
+  // Adaptive render resolution: keep the full-resolution image whenever the GPU has headroom,
+  // but shed pixel work in small steps when sustained frame rate falls below the 30 FPS target.
+  // This is deliberately resolution-only: simulation, draw distances, shadows and scene detail stay intact.
+  let renderScale = 1;
+  let slowFrameSeconds = 0;
+  let fastFrameSeconds = 0;
+  const applyRenderScale = () => {
+    renderer.setPixelRatio(renderScale);
+    renderer.setSize(window.innerWidth, window.innerHeight, false);
+  };
+
   const CAPTURE = URL_PARAMS.has('capture');
   const tick = (now) => {
     const rawDt = (now - lastTime) * 0.001;
@@ -721,9 +732,38 @@ async function initApp() {
     frameCount++;
     fpsTimer += Math.max(0, rawDt);
     if (fpsTimer >= 0.25) {
-      const currentFps = Math.round(frameCount / fpsTimer);
+      const sampleSeconds = fpsTimer;
+      const currentFps = Math.round(frameCount / sampleSeconds);
       frameCount = 0;
       fpsTimer = 0;
+
+      // Fixed-timestep screenshot capture intentionally runs at 30 simulation ticks per second;
+      // that is not a measure of GPU throughput, so keep capture output resolution deterministic.
+      if (!CAPTURE) {
+        if (currentFps < 32) {
+          slowFrameSeconds += sampleSeconds;
+          fastFrameSeconds = 0;
+          if (slowFrameSeconds >= 1.25 && renderScale > 0.65) {
+            renderScale = Math.max(0.65, Math.round((renderScale - 0.1) * 100) / 100);
+            slowFrameSeconds = 0;
+            applyRenderScale();
+            console.info(`[performance] render scale reduced to ${renderScale.toFixed(2)} after sustained ${currentFps} FPS`);
+          }
+        } else if (currentFps > 48) {
+          fastFrameSeconds += sampleSeconds;
+          slowFrameSeconds = 0;
+          if (fastFrameSeconds >= 8 && renderScale < 1) {
+            renderScale = Math.min(1, Math.round((renderScale + 0.05) * 100) / 100);
+            fastFrameSeconds = 0;
+            applyRenderScale();
+            console.info(`[performance] render scale restored to ${renderScale.toFixed(2)}`);
+          }
+        } else {
+          slowFrameSeconds = 0;
+          fastFrameSeconds = 0;
+        }
+  
+        }
 
       const activeEnt = controllerManager.getActiveEntity();
       const mode = controllerManager.activeMode;
