@@ -5428,6 +5428,8 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       for (let i = 0; i <= 9; i++) {
         const px = x - 24.75 + i * 5.5;
         box(g, 0.3, 19.2, 0.44, px, 10.2, facadeZ + 0.12, ashlar, 'Wing bay pilaster');
+        box(g, 0.5, 0.6, 0.6, px, 0.6, facadeZ + 0.14, moulding, 'Wing bay pilaster base');
+        box(g, 0.52, 0.5, 0.62, px, 19.6, facadeZ + 0.14, moulding, 'Wing bay pilaster capital');
       }
       box(g, wingW + 1.5, 0.75, wingD + 1.1, x, 20.75, -1.5, ashlar, 'Wing main cornice');
       box(g, wingW + 1.0, 0.7, wingD + 0.8, x, 21.55, -1.5, roof, 'Wing mansard lower slope');
@@ -6347,6 +6349,676 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
 
 
 
+
+    // Every wing window sill rests on a projecting stone apron (appui saillant).
+    for (const x of wingXs) {
+      for (let i = 0; i < 9; i++) {
+        const bx = x - 22 + i * 5.5;
+        for (const [floorY, winH] of [[9.9, 3.55], [16.0, 3.0]]) {
+          box(g, 2.5, 0.14, 0.5, bx, floorY - winH / 2 - 0.24, facadeZ + 0.26, moulding, 'Wing window apron');
+        }
+      }
+    }
+
+    // The central corps carries tall windows on its second floor above the portico.
+    for (let i = 0; i < 5; i++) {
+      const cx = -12 + i * 6;
+      box(g, 1.9, 3.2, 0.2, cx, 16.0, centralFace + 0.14, glass, 'Central second-floor window');
+      box(g, 2.2, 0.18, 0.36, cx, 14.35, centralFace + 0.22, moulding, 'Central second-floor sill');
+      box(g, 2.2, 0.18, 0.36, cx, 17.65, centralFace + 0.22, moulding, 'Central second-floor lintel');
+    }
+
+    // Each central ground-floor arch is ringed by an archivolt of voussoirs.
+    for (let i = 0; i < 5; i++) {
+      const cx = -8 + i * 4;
+      const av = mesh(g, new THREE.TorusGeometry(1.9, 0.16, 6, 18, Math.PI), ashlar, cx, 4.4, centralFace + 0.2, 'Central arcade archivolt');
+      av.rotation.x = 0;
+    }
+
+    // The wing ground-floor arches carry the same archivolt rings as the central corps.
+    for (const x of wingXs) {
+      for (let i = 0; i < 9; i++) {
+        const bx = x - 22 + i * 5.5;
+        mesh(g, new THREE.TorusGeometry(1.35, 0.14, 6, 16, Math.PI), ashlar, bx, 4.0, facadeZ + 0.2, 'Wing arcade archivolt');
+      }
+    }
+
+    // A projecting plinth cap crowns the rusticated base of each wing.
+    for (const x of wingXs) {
+      box(g, wingW + 1.1, 0.32, wingD + 0.8, x, 1.05, -1, moulding, 'Wing plinth cap');
+    }
+
+    // The whole palace complex is "entirely enclosed by balustraded walls" (Wikipedia):
+    // grounds walls run along the south, east and west sides with balustrade copings.
+    for (const [wx, wz, ww, wd] of [[0, -68, 200, 0.8], [92, -20, 0.8, 96], [-92, -20, 0.8, 96]]) {
+      box(g, ww, 2.2, wd, wx, 1.1, wz, stone, 'Palace grounds boundary wall');
+    }
+    const gwBal = new THREE.InstancedMesh(new THREE.BoxGeometry(0.26, 0.8, 0.26), ashlar, 120);
+    const gwd = new THREE.Object3D();
+    let gwi = 0;
+    for (let gx = -98; gx <= 98; gx += 4) {
+      gwd.position.set(gx, 2.6, -68); gwd.rotation.y = 0; gwd.updateMatrix();
+      gwBal.setMatrixAt(gwi++, gwd.matrix);
+    }
+    for (const side of [-1, 1]) {
+      for (let gz = -64; gz <= 28; gz += 4) {
+        gwd.position.set(side * 92, 2.6, gz); gwd.updateMatrix();
+        gwBal.setMatrixAt(gwi++, gwd.matrix);
+      }
+    }
+    gwBal.count = gwi; gwBal.name = 'Palace grounds wall balustrade'; g.add(gwBal);
+
+    // The portico column shafts are drum-stacked: horizontal joint bands mark each drum.
+    const jointGeo = new THREE.CylinderGeometry(1.34, 1.34, 0.09, 32);
+    const joints = new THREE.InstancedMesh(jointGeo, shadow, 36);
+    const jd = new THREE.Object3D();
+    let ji = 0;
+    for (let i = 0; i < 6; i++) {
+      const x = -12.5 + i * 5;
+      for (const z of [centralFace + 1.55, centralFace + 4.1]) {
+        for (const jy of [11.5, 15.2, 18.9]) {
+          jd.position.set(x, jy, z); jd.rotation.y = 0; jd.updateMatrix();
+          joints.setMatrixAt(ji++, jd.matrix);
+        }
+      }
+    }
+    joints.count = ji; joints.name = 'Portico column drum joints'; g.add(joints);
+
+    // The portico entablature is finished with a cymatium and a projecting corona band.
+    box(g, 36.2, 0.3, 23.2, 0, 23.3, -1, ashlar, 'Portico entablature cymatium');
+    box(g, 37.2, 0.55, 24.2, 0, 23.75, -1, moulding, 'Portico entablature corona');
+
+    // The pediment tympanum is an inset sculpted panel within its moulded frame.
+    const tymp = new THREE.Shape();
+    tymp.moveTo(-9.6, 0); tymp.lineTo(9.6, 0); tymp.lineTo(0, 4.6); tymp.closePath();
+    mesh(g, new THREE.ShapeGeometry(tymp), stone, 0, 23.85, centralFace + 0.24, 'Pediment tympanum panel');
+    box(g, 23.0, 0.3, 0.5, 0, 23.62, centralFace + 0.3, moulding, 'Pediment tympanum frame base');
+
+    // Real dormers (lucarne en pavillon style) pierce the front slope of each wing mansard.
+    for (const x of wingXs) {
+      for (const dx of [-14, 0, 14]) {
+        box(g, 1.3, 1.7, 0.32, x + dx, 21.9, facadeZ + 0.55, stone, 'Wing mansard dormer');
+        box(g, 0.85, 1.1, 0.36, x + dx, 21.9, facadeZ + 0.58, glass, 'Wing mansard dormer window');
+        const dm = new THREE.Shape();
+        dm.moveTo(-0.85, 0); dm.lineTo(0.85, 0); dm.lineTo(0, 0.55); dm.closePath();
+        mesh(g, new THREE.ShapeGeometry(dm), moulding, x + dx, 22.85, facadeZ + 0.56, 'Wing dormer pediment');
+      }
+    }
+
+    // Small basement windows (soupiraux) pierce the south avant-corps base on the sloping site.
+    for (let i = 0; i < 4; i++) {
+      box(g, 1.2, 1.0, 0.2, -9 + i * 6, 1.6, -63.6, glass, 'South avant-corps basement window');
+    }
+
+    // Bronze lamp standards with gilded globes flank the perron at the palace entrance.
+    for (const side of [-1, 1]) {
+      cylinder(g, 0.08, 0.12, 4.2, side * 9.6, 2.1, centralFace + 1.6, bronze, 8).name = 'Perron lamp standard';
+      mesh(g, new THREE.SphereGeometry(0.42, 12, 10), gilded, side * 9.6, 4.5, centralFace + 1.6, 'Perron lamp gilded globe');
+    }
+
+    // Dressed stone nosing strips edge each perron step of the central entrance.
+    for (let s = 0; s < 3; s++) {
+      box(g, 17, 0.05, 0.1, 0, 0.95 - s * 0.32, centralFace + 0.61 + s * 0.62, moulding, 'Perron step nosing');
+    }
+
+    // Stone surrounds frame the wing end windows, matching the front facade order.
+    for (const side of [-1, 1]) {
+      for (let i = 0; i < 3; i++) {
+        const wz = -6 - i * 5;
+        box(g, 0.14, 3.6, 2.3, side * 70.12, 12.5, wz, ashlar, 'Wing end window surround');
+        box(g, 0.14, 2.8, 2.3, side * 70.12, 6.5, wz, ashlar, 'Wing end ground window surround');
+      }
+    }
+
+    // Wrought-iron balusters and a mid rail fill the central portico balcony parapet.
+    for (let bx = -1.3; bx <= 1.31; bx += 0.26) {
+      box(g, 0.05, 0.5, 0.06, bx, 11.28, centralFace + 1.0, bronze, 'Central balcony baluster');
+    }
+    box(g, 2.9, 0.05, 0.05, 0, 11.3, centralFace + 1.0, bronze, 'Central balcony mid rail');
+
+    // Console brackets carry the central portico balcony slab from the facade.
+    for (const bx of [-1.2, 0, 1.2]) {
+      box(g, 0.18, 0.55, 0.55, bx, 11.05, centralFace + 0.55, bronze, 'Central balcony console');
+    }
+
+    // Console brackets carry each wing first-floor balcony from the facade.
+    for (const side of wingXs) {
+      for (let k = 0; k < 9; k++) {
+        const bx = side - 22 + k * 5.5;
+        box(g, 0.16, 0.5, 0.5, bx, 7.6, facadeZ + 0.55, bronze, 'Wing balcony console');
+      }
+    }
+
+    // The gilded garden railing in front of the palace stands on a stone plinth.
+    box(g, 68, 0.22, 0.5, 0, 0.11, 14, ashlar, 'Gilded garden railing plinth');
+
+    // Attic bases and capitals ring each fluted portico column shaft.
+    for (let i = 0; i < 6; i++) {
+      const x = -12.5 + i * 5;
+      for (const z of [centralFace + 1.55, centralFace + 4.1]) {
+        cylinder(g, 1.5, 1.6, 0.7, x, 8.55, z, ashlar).name = 'Portico column base';
+        cylinder(g, 1.55, 1.45, 0.7, x, 21.5, z, moulding).name = 'Portico column capital';
+      }
+    }
+
+    // Glazing muntins divide each central piano nobile French door into panes.
+    for (let i = 0; i < 5; i++) {
+      const x = -10 + i * 5;
+      for (const mx of [-0.66, 0, 0.66]) {
+        box(g, 0.06, 6.6, 0.05, x + mx, 14.6, centralFace + 0.27, bronze, 'Central French door muntin vertical');
+      }
+      for (const my of [13.5, 15.7]) {
+        box(g, 2.65, 0.06, 0.05, x, my, centralFace + 0.27, bronze, 'Central French door muntin horizontal');
+      }
+    }
+
+    // Low cheek walls in dressed stone flank both sides of the perron.
+    for (const side of [-1, 1]) {
+      box(g, 0.8, 1.2, 2.2, side * 8.9, 0.6, centralFace + 1.2, ashlar, 'Perron cheek wall');
+    }
+
+    // A straight garden walk leads from the perron to the gilded railing on the axis.
+    box(g, 3, 0.08, 3.2, 0, 0.05, 12.4, ashlar, 'Central garden walk');
+
+    // Stone planters with plantings flank the foot of the perron.
+    for (const side of [-1, 1]) {
+      box(g, 1.6, 1.0, 1.6, side * 9.8, 0.5, centralFace + 0.9, stone, 'Perron planter');
+      mesh(g, new THREE.SphereGeometry(0.55, 10, 8), flowerMat, side * 9.8, 1.25, centralFace + 0.9, 'Perron planter planting');
+    }
+
+    // Two steps climb from the garden walk up to the portico stylobate.
+    for (let s = 0; s < 2; s++) {
+      box(g, 32, 0.25, 0.8, 0, 0.125 + s * 0.25, centralFace + 8.6 - s * 0.6, ashlar, 'Portico stylobate step');
+    }
+
+    // Square abacus blocks sit atop each portico column capital under the architrave.
+    for (let i = 0; i < 6; i++) {
+      const x = -12.5 + i * 5;
+      for (const z of [centralFace + 1.55, centralFace + 4.1]) {
+        box(g, 2.6, 0.35, 2.6, x, 22.0, z, moulding, 'Portico column abacus');
+      }
+    }
+
+    // Each of the eleven great flower pots stands on a square stone pedestal.
+    for (let k = 0; k < 11; k++) {
+      const px = -30 + k * 6;
+      box(g, 1.3, 0.3, 1.3, px, 0.15, 11.0, stone, 'Flower pot pedestal');
+    }
+
+    // A bottom rail completes the gilded garden railing between its posts.
+    box(g, 68, 0.05, 0.05, 0, 0.72, 14, gilded, 'Gilded garden railing bottom rail');
+
+    // Stone edging strips border the central garden walk.
+    for (const side of [-1, 1]) {
+      box(g, 0.3, 0.12, 3.2, side * 1.65, 0.07, 12.4, moulding, 'Central garden walk edging');
+    }
+
+    // Flower boxes with plantings hang under the central portico balcony.
+    box(g, 2.9, 0.3, 0.5, 0, 10.9, centralFace + 1.1, bronze, 'Central balcony flower box');
+    for (const fx of [-1.0, 0, 1.0]) {
+      mesh(g, new THREE.SphereGeometry(0.3, 8, 6), flowerMat, fx, 11.15, centralFace + 1.1, 'Central balcony flower box planting');
+    }
+
+    // The great ground-floor door stands behind the portico colonnade.
+    box(g, 4.0, 7.5, 0.25, 0, 4.1, centralFace + 0.2, shadow, 'Portico main door');
+
+    // Capitals finish the pilasters on both wing end faces.
+    for (const side of [-1, 1]) {
+      for (let i = 0; i < 4; i++) {
+        box(g, 0.6, 0.5, 0.6, side * 70.1, 20.2, -3.5 - i * 5, ashlar, 'Wing end pilaster capital');
+      }
+    }
+
+    // A glazed fanlight crowns the portico main door.
+    mesh(g, new THREE.CircleGeometry(1.6, 16, 0, Math.PI), glass, 0, 7.9, centralFace + 0.24, 'Portico door fanlight');
+
+    // Lamp standards with gilded globes flank the gilded garden gates.
+    for (const side of [-1, 1]) {
+      cylinder(g, 0.06, 0.1, 3.2, side * 6, 1.6, 14, bronze, 8).name = 'Garden gate lamp';
+      mesh(g, new THREE.SphereGeometry(0.26, 10, 8), gilded, side * 6, 3.4, 14, 'Garden gate lamp globe');
+    }
+
+    // A moulded surround frames the portico main door.
+    for (const side of [-1, 1]) {
+      box(g, 0.3, 7.5, 0.35, side * 2.15, 4.1, centralFace + 0.22, moulding, 'Portico door jamb');
+    }
+    box(g, 4.6, 0.3, 0.4, 0, 8.0, centralFace + 0.24, moulding, 'Portico door lintel');
+
+    // Flower boxes with plantings line the wing balconies.
+    for (const side of wingXs) {
+      for (let k = 0; k < 5; k++) {
+        const bx = side - 16 + k * 8;
+        box(g, 1.8, 0.28, 0.45, bx, 7.55, facadeZ + 0.85, bronze, 'Wing balcony flower box');
+        mesh(g, new THREE.SphereGeometry(0.26, 8, 6), flowerMat, bx, 7.8, facadeZ + 0.85, 'Wing balcony flower box planting');
+      }
+    }
+
+    // A moulded cap crowns the central balcony rail.
+    box(g, 3.2, 0.08, 1.0, 0, 11.56, centralFace + 0.72, moulding, 'Central balcony top cap');
+
+    // Transverse joint bands mark the central garden walk paving.
+    for (const jz of [11.4, 12.4, 13.4]) {
+      box(g, 3, 0.05, 0.2, 0, 0.1, jz, ashlar, 'Central garden walk joint');
+    }
+
+    // Small caps crown the posts of the gilded garden railing.
+    for (let px = -33; px <= 33; px += 3) {
+      box(g, 0.16, 0.12, 0.16, px, 1.5, 14, gilded, 'Garden railing post cap');
+    }
+
+    // Bronze escutcheon plates mark each central French door.
+    for (let i = 0; i < 5; i++) {
+      box(g, 0.5, 0.7, 0.05, -10 + i * 5, 13.5, centralFace + 0.28, bronze, 'French door escutcheon');
+    }
+
+    // A landing slab tops the perron at the foot of the portico.
+    box(g, 17, 0.3, 1.0, 0, 1.0, centralFace + 1.1, ashlar, 'Perron top landing');
+
+    // A projecting plinth course bases the palace facade.
+    box(g, 141, 0.6, 0.4, 0, 0.3, facadeZ + 0.3, ashlar, 'Facade plinth course');
+
+    // The central balcony rail sits on a stone slab projecting from the facade.
+    box(g, 3.2, 0.12, 1.0, 0, 11.38, centralFace + 0.72, ashlar, 'Central balcony slab');
+
+    // A stone threshold spans the gilded garden gate.
+    box(g, 8.4, 0.18, 0.6, 0, 0.09, 14, stone, 'Garden gate threshold');
+
+    // Each wing balcony parapet rests on a stone slab projecting from the facade.
+    for (const side of wingXs) {
+      box(g, wingW, 0.12, 0.8, side, 7.8, facadeZ + 0.7, ashlar, 'Wing balcony slab');
+    }
+
+    // A cross of muntins divides the portico door fanlight into panes.
+    box(g, 0.08, 3.2, 0.05, 0, 7.9, centralFace + 0.28, bronze, 'Fanlight muntin vertical');
+    box(g, 3.2, 0.08, 0.05, 0, 7.9, centralFace + 0.28, bronze, 'Fanlight muntin horizontal');
+
+    // Stone corbels carry the central balcony slab from the facade.
+    for (const bx of [-1.2, 0, 1.2]) {
+      box(g, 0.22, 0.3, 0.8, bx, 11.2, centralFace + 0.5, ashlar, 'Central balcony corbel');
+    }
+
+    // Newel posts finish both ends of each wing balcony rail.
+    for (const side of wingXs) {
+      for (const e of [-1, 1]) {
+        box(g, 0.14, 0.75, 0.14, side + e * (wingW / 2 - 0.3), 8.3, facadeZ + 0.84, bronze, 'Wing balcony end newel');
+      }
+    }
+
+    // Flanged bases anchor the perron lamp standards on the landing.
+    for (const side of [-1, 1]) {
+      cylinder(g, 0.2, 0.26, 0.2, side * 9.6, 1.1, centralFace + 1.6, bronze, 8).name = 'Perron lamp base flange';
+    }
+
+    // Newel posts finish both ends of the central balcony rail.
+    for (const side of [-1, 1]) {
+      box(g, 0.12, 0.7, 0.12, side * 1.55, 11.75, centralFace + 1.0, bronze, 'Central balcony end newel');
+    }
+
+    // A cap strip crowns each perron side rail.
+    for (const side of [-1, 1]) {
+      box(g, 0.1, 0.08, 2.0, side * 8.4, 1.22, centralFace + 1.3, bronze, 'Perron side rail cap');
+    }
+
+    // Bronze threshold plates span each central French door.
+    for (let i = 0; i < 5; i++) {
+      box(g, 3.0, 0.1, 0.5, -10 + i * 5, 11.05, centralFace + 0.35, bronze, 'French door threshold');
+    }
+
+    // Cap slabs finish both perron cheek walls.
+    for (const side of [-1, 1]) {
+      box(g, 1.0, 0.12, 2.4, side * 8.9, 1.26, centralFace + 1.2, moulding, 'Perron cheek wall cap');
+    }
+
+    // Stone lintels crown the wing end windows on both gable ends.
+    for (const side of [-1, 1]) {
+      for (let i = 0; i < 3; i++) {
+        const wz = -6 - i * 5;
+        box(g, 0.14, 0.25, 2.3, side * 70.12, 14.35, wz, ashlar, 'Wing end window lintel');
+        box(g, 0.14, 0.25, 2.3, side * 70.12, 7.95, wz, ashlar, 'Wing end ground window lintel');
+      }
+    }
+
+    // Heavier corner posts with gilded finials close the garden railing run.
+    for (const side of [-1, 1]) {
+      box(g, 0.2, 2.0, 0.2, side * 34, 1.0, 14, gilded, 'Garden railing corner post');
+      mesh(g, new THREE.SphereGeometry(0.16, 10, 8), gilded, side * 34, 2.1, 14, 'Garden railing corner post finial');
+    }
+
+    // Corner quoins strengthen the facade corners of the palace.
+    for (const side of [-1, 1]) {
+      for (const qy of [3, 8, 13, 18]) {
+        box(g, 0.55, 1.8, 0.4, side * 70.1, qy, facadeZ + 0.25, ashlar, 'Facade corner quoin');
+      }
+    }
+
+    // Rim stones finish the two perron planters.
+    for (const side of [-1, 1]) {
+      box(g, 1.8, 0.12, 1.8, side * 9.8, 1.06, centralFace + 0.9, stone, 'Perron planter rim');
+    }
+
+    // Short arms carry the gilded globes from the perron lamp standards.
+    for (const side of [-1, 1]) {
+      box(g, 0.5, 0.06, 0.06, side * 9.6 - side * 0.2, 4.35, centralFace + 1.6, bronze, 'Perron lamp arm');
+    }
+
+    // A moulded cap finishes the front edge of the portico stylobate.
+    box(g, 31, 0.1, 0.3, 0, 0.68, centralFace + 7.75, moulding, 'Stylobate edge cap');
+
+    // Caps finish the posts of the perron side rails.
+    for (const side of [-1, 1]) {
+      for (const pz of [0.5, 2.1]) {
+        box(g, 0.14, 0.1, 0.14, side * 8.4, 1.25, centralFace + pz, bronze, 'Perron rail post cap');
+      }
+    }
+
+    // Rim rings finish the eleven great flower pots along the garden walk.
+    for (let k = 0; k < 11; k++) {
+      const px = -30 + k * 6;
+      cylinder(g, 0.62, 0.58, 0.18, px, 0.99, 11.0, potMat, 12).name = 'Flower pot rim';
+    }
+
+    // Mullions divide the wing end windows on both gable ends.
+    for (const side of [-1, 1]) {
+      for (let i = 0; i < 3; i++) {
+        const wz = -6 - i * 5;
+        box(g, 0.06, 3.2, 0.08, side * 70.12, 12.5, wz, ashlar, 'Wing end window mullion');
+        box(g, 0.06, 2.4, 0.08, side * 70.12, 6.5, wz, ashlar, 'Wing end ground window mullion');
+      }
+    }
+
+    // A transom bar crosses each central French door near its head.
+    for (let i = 0; i < 5; i++) {
+      box(g, 2.65, 0.06, 0.05, -10 + i * 5, 17.2, centralFace + 0.27, bronze, 'Central French door transom bar');
+    }
+
+    // Stone sills sit under the wing end windows on both gable ends.
+    for (const side of [-1, 1]) {
+      for (let i = 0; i < 3; i++) {
+        const wz = -6 - i * 5;
+        box(g, 0.14, 0.2, 2.3, side * 70.12, 10.85, wz, ashlar, 'Wing end window sill');
+        box(g, 0.14, 0.2, 2.3, side * 70.12, 5.25, wz, ashlar, 'Wing end ground window sill');
+      }
+    }
+
+    // Moulded edges finish the sides of each perron step.
+    for (let s = 0; s < 3; s++) {
+      for (const side of [-1, 1]) {
+        box(g, 0.15, 0.32, 0.62, side * 8.5, 0.79 - s * 0.32, centralFace + 0.3 + s * 0.62, moulding, 'Perron step edge');
+      }
+    }
+
+    // Glazed side lights flank the central door behind the portico colonnade.
+    for (const side of [-1, 1]) {
+      box(g, 1.2, 6.6, 0.18, side * 3.3, 14.6, centralFace + 0.16, glass, 'Portico door side light');
+    }
+
+    // Dark soil fills the two perron planters beneath the plantings.
+    for (const side of [-1, 1]) {
+      box(g, 1.4, 0.06, 1.4, side * 9.8, 1.03, centralFace + 0.9, shadow, 'Perron planter soil');
+    }
+
+    // Collar rings decorate the perron lamp standards.
+    for (const side of [-1, 1]) {
+      cylinder(g, 0.14, 0.17, 0.3, side * 9.6, 2.4, centralFace + 1.6, bronze, 8).name = 'Perron lamp collar';
+    }
+
+    // Stone sills sit under the portico door side lights.
+    for (const side of [-1, 1]) {
+      box(g, 1.5, 0.18, 0.4, side * 3.3, 11.2, centralFace + 0.3, moulding, 'Portico side light sill');
+    }
+
+    // Mullions divide the portico door side lights.
+    for (const side of [-1, 1]) {
+      box(g, 0.06, 6.6, 0.05, side * 3.3, 14.6, centralFace + 0.24, bronze, 'Portico side light mullion');
+    }
+
+    // Cap strips crown the wing balcony rails.
+    for (const side of wingXs) {
+      box(g, wingW, 0.06, 0.62, side, 8.0, facadeZ + 0.62, bronze, 'Wing balcony rail cap');
+    }
+
+    // Bases finish the pilasters on both wing end faces.
+    for (const side of [-1, 1]) {
+      for (let i = 0; i < 4; i++) {
+        box(g, 0.6, 0.6, 0.6, side * 70.1, 0.3, -3.5 - i * 5, ashlar, 'Wing end pilaster base');
+      }
+    }
+
+    // Flower bands border the central garden walk.
+    for (const side of [-1, 1]) {
+      box(g, 0.5, 0.08, 3.2, side * 1.9, 0.1, 12.4, flowerMat, 'Garden walk flower band');
+    }
+
+    // Return caps close the ends of the stylobate edge cap.
+    for (const side of [-1, 1]) {
+      box(g, 0.3, 0.1, 1.4, side * 15.5, 0.68, centralFace + 7.75, moulding, 'Stylobate edge cap return');
+    }
+
+    // A kerb closes the garden walk at the gilded railing.
+    box(g, 3.6, 0.14, 0.3, 0, 0.08, 14.1, ashlar, 'Garden walk end kerb');
+
+    // A leaf split bar divides the portico main door into two leaves.
+    box(g, 0.08, 7.5, 0.06, 0, 4.1, centralFace + 0.26, bronze, 'Portico door leaf split');
+
+    // A moulded edge finishes the front of each wing balcony slab.
+    for (const side of wingXs) {
+      box(g, wingW, 0.1, 0.15, side, 7.86, facadeZ + 1.08, moulding, 'Wing balcony slab edge');
+    }
+
+    // Low walls border the central garden walk.
+    for (const side of [-1, 1]) {
+      box(g, 0.25, 0.5, 3.2, side * 2.1, 0.25, 12.4, ashlar, 'Garden walk low wall');
+    }
+
+    // A base rail joins the feet of the central balcony balusters.
+    box(g, 2.9, 0.06, 0.06, 0, 11.05, centralFace + 1.0, bronze, 'Central balcony base rail');
+
+    // Hinge straps secure the portico main door leaves.
+    for (const hy of [1.5, 4.1, 6.7]) {
+      box(g, 0.4, 0.12, 0.08, -1.9, hy, centralFace + 0.28, bronze, 'Portico door hinge');
+    }
+
+    // A cap finishes the plinth of the gilded garden railing.
+    box(g, 68, 0.06, 0.56, 0, 0.25, 14, moulding, 'Garden railing plinth cap');
+
+    // Corbels carry each wing balcony slab from the facade.
+    for (const side of wingXs) {
+      for (let k = 0; k < 7; k++) {
+        box(g, 0.18, 0.4, 0.5, side - 21 + k * 7, 7.5, facadeZ + 0.5, bronze, 'Wing balcony corbel');
+      }
+    }
+
+    // A moulded edge finishes the front of the central balcony slab.
+    box(g, 3.2, 0.08, 0.14, 0, 11.44, centralFace + 1.2, moulding, 'Central balcony slab edge');
+
+    // A moulding closes the underside of the central balcony slab.
+    box(g, 3.0, 0.08, 0.9, 0, 11.28, centralFace + 0.72, moulding, 'Central balcony underside moulding');
+
+    // Shoes anchor the perron side rail posts to the ground.
+    for (const side of [-1, 1]) {
+      for (const pz of [0.5, 2.1]) {
+        box(g, 0.14, 0.1, 0.14, side * 8.4, 0.05, centralFace + pz, bronze, 'Perron rail post shoe');
+      }
+    }
+
+    // Brackets carry the wing balcony flower boxes.
+    for (const side of wingXs) {
+      for (let k = 0; k < 5; k++) {
+        const bx = side - 16 + k * 8;
+        box(g, 0.15, 0.2, 0.4, bx, 7.35, facadeZ + 0.85, bronze, 'Wing flower box bracket');
+      }
+    }
+
+    // Brackets carry the central balcony flower box.
+    for (const fx of [-1.0, 0, 1.0]) {
+      box(g, 0.15, 0.2, 0.45, fx, 10.7, centralFace + 1.1, bronze, 'Central flower box bracket');
+    }
+
+    // A bed moulding sits between the portico architrave and cornice.
+    box(g, 37, 0.1, 5.0, 0, 23.33, centralFace + 2.9, moulding, 'Portico architrave bed moulding');
+
+    // Mid rails run between the wing balcony balusters.
+    for (const side of wingXs) {
+      box(g, wingW, 0.05, 0.05, side, 7.7, facadeZ + 0.84, bronze, 'Wing balcony mid rail');
+    }
+
+    // Lintels crown the portico door side lights.
+    for (const side of [-1, 1]) {
+      box(g, 1.5, 0.2, 0.4, side * 3.3, 18.0, centralFace + 0.3, moulding, 'Portico side light lintel');
+    }
+
+    // Dark soil fills the wing balcony flower boxes.
+    for (const side of wingXs) {
+      for (let k = 0; k < 5; k++) {
+        const bx = side - 16 + k * 8;
+        box(g, 1.6, 0.06, 0.35, bx, 7.72, facadeZ + 0.85, shadow, 'Wing flower box soil');
+      }
+    }
+
+    // Dark soil fills the central balcony flower box.
+    box(g, 2.7, 0.06, 0.4, 0, 11.08, centralFace + 1.1, shadow, 'Central flower box soil');
+
+    // Bottom rails join the feet of the wing balcony balusters.
+    for (const side of wingXs) {
+      box(g, wingW, 0.05, 0.05, side, 7.45, facadeZ + 0.84, bronze, 'Wing balcony bottom rail');
+    }
+
+    // A bronze kick plate protects the foot of the portico main door.
+    box(g, 3.8, 0.5, 0.06, 0, 0.4, centralFace + 0.26, bronze, 'Portico door kick plate');
+
+    // Gilded balls crown the perron side rail posts.
+    for (const side of [-1, 1]) {
+      for (const pz of [0.5, 2.1]) {
+        mesh(g, new THREE.SphereGeometry(0.1, 10, 8), gilded, side * 8.4, 1.32, centralFace + pz, 'Perron rail post ball');
+      }
+    }
+
+    // Cap strips finish the wing balcony corbels.
+    for (const side of wingXs) {
+      for (let k = 0; k < 7; k++) {
+        box(g, 0.22, 0.1, 0.55, side - 21 + k * 7, 7.72, facadeZ + 0.5, bronze, 'Wing balcony corbel cap');
+      }
+    }
+
+    // A rim finishes the central balcony flower box.
+    box(g, 3.0, 0.08, 0.55, 0, 11.1, centralFace + 1.1, bronze, 'Central flower box rim');
+
+    // Rims finish the wing balcony flower boxes.
+    for (const side of wingXs) {
+      for (let k = 0; k < 5; k++) {
+        const bx = side - 16 + k * 8;
+        box(g, 1.8, 0.07, 0.45, bx, 7.74, facadeZ + 0.85, bronze, 'Wing flower box rim');
+      }
+    }
+
+    // A nosing strip edges the front stylobate step.
+    box(g, 32, 0.05, 0.1, 0, 0.28, centralFace + 9.0, moulding, 'Stylobate step nosing');
+
+    // A sill bar closes the foot of the portico door fanlight.
+    box(g, 3.4, 0.06, 0.15, 0, 7.85, centralFace + 0.28, moulding, 'Fanlight sill bar');
+
+    // A contrasting sett line runs down the centre of the garden walk.
+    box(g, 0.3, 0.06, 3.2, 0, 0.09, 12.4, moulding, 'Garden walk centre sett line');
+
+    // A bronze threshold plate spans the portico main door.
+    box(g, 4.4, 0.08, 0.5, 0, 0.12, centralFace + 0.35, bronze, 'Portico door threshold plate');
+
+    // Scroll ends finish both ends of the central balcony rail.
+    for (const side of [-1, 1]) {
+      mesh(g, new THREE.SphereGeometry(0.12, 10, 8), bronze, side * 1.45, 11.5, centralFace + 1.0, 'Central balcony scroll end');
+    }
+
+    // Scroll ends finish both ends of each wing balcony rail.
+    for (const side of wingXs) {
+      for (const e of [-1, 1]) {
+        mesh(g, new THREE.SphereGeometry(0.12, 10, 8), bronze, side + e * (wingW / 2 - 0.2), 8.0, facadeZ + 0.84, 'Wing balcony scroll end');
+      }
+    }
+
+    // Cap slabs finish the low walls bordering the central garden walk.
+    for (const side of [-1, 1]) {
+      box(g, 0.35, 0.08, 3.3, side * 2.1, 0.54, 12.4, moulding, 'Garden walk wall cap');
+    }
+
+    // A moulded edge finishes the front of the perron top landing.
+    box(g, 17, 0.08, 0.12, 0, 1.12, centralFace + 1.58, moulding, 'Perron landing edge');
+
+    // End blocks close both ends of the portico architrave beam.
+    for (const side of [-1, 1]) {
+      box(g, 0.5, 1.05, 4.8, side * 18.5, 22.78, centralFace + 2.9, ashlar, 'Architrave end block');
+    }
+
+    // End blocks close both ends of the portico frieze triglyph run.
+    for (const side of [-1, 1]) {
+      box(g, 0.5, 0.6, 0.2, side * 18.2, 22.95, centralFace + 4.5, moulding, 'Triglyph end block');
+    }
+
+    // Stone bases anchor the end posts of the gilded garden railing.
+    for (const side of [-1, 1]) {
+      box(g, 0.3, 0.3, 0.3, side * 34, 0.15, 14, ashlar, 'Garden railing end post base');
+    }
+
+    // Side caps close the ends of the portico stylobate edge.
+    for (const side of [-1, 1]) {
+      box(g, 0.3, 0.12, 10.3, side * 16, 0.56, centralFace + 2.6, moulding, 'Stylobate side cap');
+    }
+
+    // Cap slabs finish the central balcony corbels.
+    for (const bx of [-1.2, 0, 1.2]) {
+      box(g, 0.26, 0.08, 0.85, bx, 11.32, centralFace + 0.5, ashlar, 'Central balcony corbel cap');
+    }
+
+    // A mid post stiffens each perron side rail.
+    for (const side of [-1, 1]) {
+      box(g, 0.12, 0.9, 0.12, side * 8.4, 0.75, centralFace + 1.3, bronze, 'Perron rail mid post');
+    }
+
+    // Caps finish the perron side rail mid posts.
+    for (const side of [-1, 1]) {
+      box(g, 0.16, 0.08, 0.16, side * 8.4, 1.24, centralFace + 1.3, bronze, 'Perron mid post cap');
+    }
+
+    // Side caps close the ends of the front stylobate step.
+    for (const side of [-1, 1]) {
+      box(g, 0.3, 0.25, 0.8, side * 16, 0.125, centralFace + 8.6, moulding, 'Stylobate step side cap');
+    }
+
+    // Rings cage the gilded globes of the perron lamps.
+    for (const side of [-1, 1]) {
+      cylinder(g, 0.3, 0.3, 0.06, side * 9.6, 4.5, centralFace + 1.6, bronze, 10).name = 'Perron lamp globe ring';
+    }
+
+    // Balls finish the ends of the wing balcony rail caps.
+    for (const side of wingXs) {
+      for (const e of [-1, 1]) {
+        mesh(g, new THREE.SphereGeometry(0.1, 10, 8), bronze, side + e * (wingW / 2 - 0.1), 8.05, facadeZ + 0.62, 'Wing balcony rail end ball');
+      }
+    }
+
+    // Plinths base both perron cheek walls.
+    for (const side of [-1, 1]) {
+      box(g, 1.0, 0.25, 2.4, side * 8.9, 0.12, centralFace + 1.2, ashlar, 'Perron cheek wall base');
+    }
+
+    // Plinths anchor the perron lamp standard flanges.
+    for (const side of [-1, 1]) {
+      box(g, 0.4, 0.15, 0.4, side * 9.6, 1.02, centralFace + 1.6, ashlar, 'Perron lamp base plinth');
+    }
+
+    // Cap slabs finish the perron lamp base plinths.
+    for (const side of [-1, 1]) {
+      box(g, 0.46, 0.06, 0.46, side * 9.6, 1.13, centralFace + 1.6, moulding, 'Perron lamp plinth cap');
+    }
+
+    // Finials crown the perron lamp standards above the globes.
+    for (const side of [-1, 1]) {
+      cylinder(g, 0.03, 0.06, 0.3, side * 9.6, 4.95, centralFace + 1.6, bronze, 8).name = 'Perron lamp finial';
+    }
+
+    // Border posts mark the start of the central garden walk at the perron.
+    for (const side of [-1, 1]) {
+      box(g, 0.18, 0.6, 0.18, side * 2.1, 0.7, 10.9, ashlar, 'Garden walk border post');
+    }
   });
   addLandmark('palaceSurroundings', (g) => {
     // Real-world sources: en/fr Wikipedia (Royal Palace of Brussels, Brussels Park, Place des Palais,
@@ -6871,6 +7543,1050 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     rearTrunk.count = rti; rearTrunk.name = 'Rear garden tree trunks'; g.add(rearTrunk);
     rearCan.count = rti; rearCan.name = 'Rear garden tree canopies'; g.add(rearCan);
 
+    // Tree rows also line the three radiating avenues from the main pond.
+    const radTrunk = new THREE.InstancedMesh(new THREE.CylinderGeometry(0.2, 0.28, 3.0, 6), materials.dark, 36);
+    const radCan = new THREE.InstancedMesh(new THREE.SphereGeometry(1.7, 8, 6), materials.green, 36);
+    const rdd = new THREE.Object3D();
+    let rdi = 0;
+    for (const ra of [Math.PI * 0.72, Math.PI * 0.28, Math.PI / 2]) {
+      for (let d = 20; d <= 110; d += 18) {
+        for (const off of [-4, 4]) {
+          const px = Math.cos(ra) * d + Math.cos(ra + Math.PI / 2) * off;
+          const pz = 150 + Math.sin(ra) * d + Math.sin(ra + Math.PI / 2) * off;
+          rdd.position.set(px, 1.5, pz); rdd.rotation.y = 0; rdd.updateMatrix();
+          radTrunk.setMatrixAt(rdi, rdd.matrix);
+          rdd.position.set(px, 3.9, pz); rdd.updateMatrix();
+          radCan.setMatrixAt(rdi, rdd.matrix);
+          rdi++;
+        }
+      }
+    }
+    radTrunk.count = rdi; radTrunk.name = 'Radiating avenue tree trunks'; g.add(radTrunk);
+    radCan.count = rdi; radCan.name = 'Radiating avenue tree canopies'; g.add(radCan);
+    // Stone edging kerbs flank the central avenue walk.
+    box(g, 0.4, 0.18, 172, -6.3, 0.09, 150, materials.pavingEdge, 'Central avenue west edging kerb');
+    box(g, 0.4, 0.18, 172, 6.3, 0.09, 150, materials.pavingEdge, 'Central avenue east edging kerb');
+    // Stone access steps lead down to the main pond rim on the central axis (south side).
+    for (let s = 0; s < 3; s++) {
+      box(g, 6, 0.25, 0.9, 0, 0.9 - s * 0.25, 164.5 + s * 0.9, materials.paleStone, 'Main pond access step');
+    }
+    // The Place du Trône was enclosed in 1868-69 by a monumental fence with an entrance to
+    // the palace park, to Balat's 1867 design (heritage inventory 10001113).
+    box(g, 70, 0.5, 0.5, -120, 0.25, -46, materials.paleStone, 'Place du Trône fence base');
+    const trFence = new THREE.InstancedMesh(new THREE.BoxGeometry(0.1, 2.2, 0.1), materials.dark, 40);
+    const trd2 = new THREE.Object3D();
+    let tri3 = 0;
+    for (let fx = -155; fx <= -85; fx += 2) {
+      trd2.position.set(fx, 1.35, -46); trd2.rotation.y = 0; trd2.updateMatrix();
+      trFence.setMatrixAt(tri3++, trd2.matrix);
+    }
+    trFence.count = tri3; trFence.name = 'Place du Trône monumental fence'; g.add(trFence);
+    box(g, 70, 0.14, 0.4, -120, 2.5, -46, materials.dark, 'Place du Trône fence top rail');
+    for (const gx of [-124, -116]) {
+      box(g, 1.4, 3.4, 0.6, gx, 1.7, -46, materials.paleStone, 'Palace park entrance gate pier');
+    }
+
+    // Behind the Academy Palace stand its stables, built with the palace in 1823-28.
+    box(g, 40, 14, 20, -168, 7, 82, materials.ochre, 'Academy Palace stables block');
+    box(g, 42, 0.9, 22, -168, 14.5, 82, materials.warmStone, 'Academy Palace stables cornice');
+    mesh(g, new THREE.ConeGeometry(23, 4.5, 4), materials.roof, -168, 18, 82, 'Academy Palace stables roof');
+    for (let i = 0; i < 5; i++) {
+      box(g, 2.4, 5, 0.2, -168 - 16 + i * 8, 6, 71.9, materials.glass, 'Academy stables arched window');
+    }
+
+    // The BELvue museum entrance: a recessed door on the square facade with stone steps.
+    box(g, 3.6, 6.2, 0.3, 168, 3.1, 21.85, materials.dark, 'BELvue entrance door');
+    box(g, 4.4, 0.3, 1.2, 168, 0.15, 21.2, materials.pavingEdge, 'BELvue entrance step');
+    box(g, 4.0, 0.3, 1.0, 168, 0.45, 20.7, materials.pavingEdge, 'BELvue entrance step');
+    box(g, 4.0, 0.28, 0.5, 168, 6.5, 21.8, materials.warmStone, 'BELvue entrance lintel');
+
+    // The Palace of the Nation attic windows and the main door beneath the peristyle pediment.
+    for (let i = 0; i < 7; i++) {
+      box(g, 1.8, 2.6, 0.2, -24 + i * 8, 19.6, 402.9, materials.glass, 'Palace of the Nation attic window');
+    }
+    box(g, 4.2, 8.5, 0.3, 0, 4.25, 402.8, materials.dark, 'Palace of the Nation main door');
+    box(g, 5.2, 0.3, 1.4, 0, 0.15, 401.6, materials.pavingEdge, 'Palace of the Nation entrance step');
+    box(g, 4.8, 0.3, 1.1, 0, 0.45, 401.0, materials.pavingEdge, 'Palace of the Nation entrance step');
+
+    // The Academy Palace portico pediment encloses a sculpted tympanum panel with a stone frame.
+    box(g, 9.5, 1.7, 0.1, -168, 13.9, 19.58, materials.warmStone, 'Academy Palace tympanum frame');
+    box(g, 8.2, 1.3, 0.14, -168, 13.9, 19.54, materials.paleStone, 'Academy Palace tympanum panel');
+
+    // Stone lintels crown the BELvue piano nobile windows under the modillion cornice.
+    for (let i = 0; i < 5; i++) {
+      const wx = 168 - 13 + i * 6.5;
+      box(g, 2.4, 0.24, 0.3, wx, 17.35, 22.1, materials.warmStone, 'BELvue piano nobile lintel');
+    }
+
+    // The Palace of the Nation flies the EU and Belgian flags from cornice flagpoles.
+    for (const fx of [-10, 10]) {
+      cylinder(g, 0.06, 0.1, 9, fx, 27.7, 403.4, materials.bronze, 8).name = 'Palace of the Nation flagpole';
+      mesh(g, new THREE.SphereGeometry(0.16, 8, 6), materials.gold, fx, 32.3, 403.4, 'Palace of the Nation flag finial');
+    }
+    box(g, 3.2, 2.0, 0.06, -8.4, 31.2, 403.4, materials.enamelBlue, 'Palace of the Nation EU flag');
+    box(g, 3.2, 2.0, 0.06, 11.6, 31.2, 403.4, materials.canvas, 'Palace of the Nation Belgian flag');
+
+    // The Royal Stables front is closed by a projecting gatehouse with a pedimented gate.
+    box(g, 12, 15, 4, -70, 7.5, -71, materials.paleStone, 'Royal Stables gatehouse');
+    box(g, 13, 0.8, 5, -70, 15.4, -71, materials.warmStone, 'Royal Stables gatehouse cornice');
+    const rsPed = new THREE.Shape();
+    rsPed.moveTo(-5, 0); rsPed.lineTo(5, 0); rsPed.lineTo(0, 2.6); rsPed.closePath();
+    mesh(g, new THREE.ShapeGeometry(rsPed), materials.warmStone, -70, 15.8, -68.95, 'Royal Stables gatehouse pediment');
+    box(g, 3.8, 0.25, 0.5, -70, 6.7, -68.9, materials.warmStone, 'Royal Stables gate lintel');
+    box(g, 3.2, 6.5, 0.3, -70, 3.25, -68.8, materials.dark, 'Royal Stables gate door');
+
+    // Contrasting sett rows mark the palace axis across the paved Place des Palais.
+    for (const az of [24, 36, 48]) {
+      box(g, 260, 0.12, 1.2, 0, 0.06, az, materials.pavingB, 'Place des Palais sett accent row');
+    }
+
+    // A ring of coping stones caps the rim of the park main pond above the water line.
+    const pondCop = new THREE.InstancedMesh(new THREE.BoxGeometry(1.3, 0.18, 0.55), materials.paleStone, 36);
+    const pcd = new THREE.Object3D();
+    let pci = 0;
+    for (let ca = 0; ca < 36; ca++) {
+      const a = ca * Math.PI / 18;
+      pcd.position.set(Math.cos(a) * 16.35, 1.06, 150 + Math.sin(a) * 16.35);
+      pcd.rotation.y = -a;
+      pcd.updateMatrix();
+      pondCop.setMatrixAt(pci++, pcd.matrix);
+    }
+    pondCop.count = pci; pondCop.name = 'Main pond rim coping'; g.add(pondCop);
+
+    // Cast-iron street lamps with glass globes line the palace-square axis at night.
+    for (const lz of [18, 30, 42, 54]) {
+      for (const lx of [-7.5, 7.5]) {
+        cylinder(g, 0.07, 0.11, 3.6, lx, 1.8, lz, materials.bronze, 8).name = 'Square axis street lamp';
+        mesh(g, new THREE.SphereGeometry(0.28, 10, 8), materials.glass, lx, 3.75, lz, 'Square axis street lamp globe');
+      }
+    }
+
+    // The Academy Palace attic is crowned by a balustrade parapet.
+    const apBal = new THREE.InstancedMesh(new THREE.BoxGeometry(0.12, 0.7, 0.12), materials.warmStone, 40);
+    const abd = new THREE.Object3D();
+    let abi = 0;
+    for (let bi = 0; bi < 40; bi++) {
+      abd.position.set(-200 + bi * (66 / 39), 21.75, 36); abd.rotation.y = 0; abd.updateMatrix();
+      apBal.setMatrixAt(abi++, abd.matrix);
+    }
+    apBal.count = abi; apBal.name = 'Academy Palace attic baluster'; g.add(apBal);
+    box(g, 66, 0.1, 0.4, -168, 22.15, 36, materials.warmStone, 'Academy Palace attic balustrade rail');
+
+    // The BELvue ground floor is bossaged, with rusticated blocks flanking the entrance.
+    const bossMesh = new THREE.InstancedMesh(new THREE.BoxGeometry(1.7, 1.6, 0.14), materials.warmStone, 40);
+    const bossDum = new THREE.Object3D();
+    let bossIdx = 0;
+    for (const by of [2.0, 4.4]) {
+      for (let bx = 150.5; bx <= 185.5; bx += 3) {
+        if (Math.abs(bx - 168) < 3.2) continue;
+        bossDum.position.set(bx, by, 21.95); bossDum.rotation.y = 0; bossDum.updateMatrix();
+        bossMesh.setMatrixAt(bossIdx++, bossDum.matrix);
+      }
+    }
+    bossMesh.count = bossIdx; bossMesh.name = 'BELvue ground floor bossage'; g.add(bossMesh);
+
+    // Both wings of the Palace of the Nation carry rows of tall facade windows.
+    for (const side of [-1, 1]) {
+      for (let i = 0; i < 4; i++) {
+        box(g, 2.4, 7, 0.2, side * 70 - 15 + i * 10, 8, 406.9, materials.glass, 'Palace of the Nation wing window');
+      }
+    }
+
+    // Corner quoins strengthen the square-facing corners of the BELvue pavilion.
+    for (const cx of [150.1, 185.9]) {
+      for (const qy of [2.5, 7.5, 12.5, 17.5]) {
+        box(g, 0.5, 1.6, 0.4, cx, qy, 21.9, materials.warmStone, 'BELvue corner quoin');
+      }
+    }
+
+    // Projecting end pavilions close both ends of the Academy Palace facade.
+    for (const px of [-201, -135]) {
+      box(g, 8, 20, 32, px, 10, 36, materials.paleStone, 'Academy Palace end pavilion');
+      box(g, 9, 0.8, 33, px, 20.4, 36, materials.warmStone, 'Academy Palace end pavilion cornice');
+    }
+
+    // Modillions line the underside of the Palace of the Nation cornice.
+    const pnMod = new THREE.InstancedMesh(new THREE.BoxGeometry(0.4, 0.55, 0.42), materials.warmStone, 30);
+    const pmd = new THREE.Object3D();
+    let pmi = 0;
+    for (let mi = 0; mi < 30; mi++) {
+      pmd.position.set(-29 + mi * 2, 21.75, 402.7); pmd.rotation.y = 0; pmd.updateMatrix();
+      pnMod.setMatrixAt(pmi++, pmd.matrix);
+    }
+    pnMod.count = pmi; pnMod.name = 'Palace of the Nation cornice modillion'; g.add(pnMod);
+
+    // Lanterns crown the piers of the park south gate on the palace axis.
+    for (const gx of [-6, 6]) {
+      box(g, 0.5, 0.7, 0.5, gx, 3.75, 62, materials.bronze, 'Park south gate lantern');
+      mesh(g, new THREE.SphereGeometry(0.22, 10, 8), materials.glass, gx, 3.75, 62, 'Park south gate lantern glass');
+    }
+
+    // Small hayloft windows pierce the Royal Stables range just under the eaves.
+    for (let i = 0; i < 5; i++) {
+      box(g, 1.2, 1.2, 0.2, -70 - 16 + i * 8, 10, -72.9, materials.glass, 'Royal Stables hayloft window');
+    }
+
+    // A low stone wall encloses the Academy Palace garden toward the square.
+    box(g, 56, 0.8, 0.4, -168, 0.4, 56, materials.paleStone, 'Academy garden front wall');
+
+    // Broad stone steps lead up to the Palace of the Nation peristyle.
+    box(g, 50, 0.3, 1.2, 0, 0.15, 400.6, materials.pavingEdge, 'Palace of the Nation peristyle step');
+    box(g, 46, 0.3, 1.0, 0, 0.45, 400.0, materials.pavingEdge, 'Palace of the Nation peristyle step');
+
+    // A low wall encloses the Royal Stables courtyard on its south side.
+    box(g, 48, 1.0, 0.4, -70, 0.5, -98, materials.ochre, 'Royal Stables courtyard wall');
+
+    // Stone edging kerbs flank the north radiating avenue from the main pond.
+    box(g, 0.4, 0.18, 92, -4.3, 0.09, 215, materials.pavingEdge, 'Radiating avenue edging kerb');
+    box(g, 0.4, 0.18, 92, 4.3, 0.09, 215, materials.pavingEdge, 'Radiating avenue edging kerb');
+
+    // Small triangular pediments cap the center of each Palace of the Nation wing.
+    for (const side of [-1, 1]) {
+      const wp = new THREE.Shape();
+      wp.moveTo(-4, 0); wp.lineTo(4, 0); wp.lineTo(0, 2.4); wp.closePath();
+      mesh(g, new THREE.ShapeGeometry(wp), materials.warmStone, side * 70, 16, 406.85, 'Palace of the Nation wing pediment');
+    }
+
+    // Low walls close the east and west sides of the Academy Palace garden.
+    box(g, 0.4, 0.8, 16, -197, 0.4, 64, materials.paleStone, 'Academy garden side wall');
+    box(g, 0.4, 0.8, 16, -139, 0.4, 64, materials.paleStone, 'Academy garden side wall');
+
+    // Lanterns also crown the piers of the park north gate by the Palace of the Nation.
+    for (const gx of [-6, 6]) {
+      box(g, 0.5, 0.7, 0.5, gx, 3.75, 402, materials.bronze, 'Park north gate lantern');
+      mesh(g, new THREE.SphereGeometry(0.22, 10, 8), materials.glass, gx, 3.75, 402, 'Park north gate lantern glass');
+    }
+
+    // A top rail closes the BELvue roof terrace balustrade ring.
+    box(g, 0.3, 0.12, 9.4, 168 - 4.5, 30.05, 36, materials.warmStone, 'BELvue roof terrace rail');
+    box(g, 0.3, 0.12, 9.4, 168 + 4.5, 30.05, 36, materials.warmStone, 'BELvue roof terrace rail');
+    box(g, 9.4, 0.12, 0.3, 168, 30.05, 36 - 4.5, materials.warmStone, 'BELvue roof terrace rail');
+    box(g, 9.4, 0.12, 0.3, 168, 30.05, 36 + 4.5, materials.warmStone, 'BELvue roof terrace rail');
+
+    // A circular sett-paved ring surrounds the equestrian statue on the Place du Trone.
+    const trRing = new THREE.InstancedMesh(new THREE.BoxGeometry(1.1, 0.1, 0.5), materials.pavingB, 24);
+    const trd3 = new THREE.Object3D();
+    let tri4 = 0;
+    for (let ca = 0; ca < 24; ca++) {
+      const a = ca * Math.PI / 12;
+      trd3.position.set(-120 + Math.cos(a) * 8, 0.05, -60 + Math.sin(a) * 8);
+      trd3.rotation.y = -a;
+      trd3.updateMatrix();
+      trRing.setMatrixAt(tri4++, trd3.matrix);
+    }
+    trRing.count = tri4; trRing.name = 'Place du Trone statue sett ring'; g.add(trRing);
+
+    // A dentil course runs under the projecting BELvue cornice.
+    const bvDen = new THREE.InstancedMesh(new THREE.BoxGeometry(0.24, 0.3, 0.3), materials.warmStone, 20);
+    const bdd2 = new THREE.Object3D();
+    let bdi2 = 0;
+    for (let di2 = 0; di2 < 20; di2++) {
+      bdd2.position.set(151 + di2 * 1.8, 22.2, 21.85); bdd2.rotation.y = 0; bdd2.updateMatrix();
+      bvDen.setMatrixAt(bdi2++, bdd2.matrix);
+    }
+    bvDen.count = bdi2; bvDen.name = 'BELvue cornice dentil'; g.add(bvDen);
+
+    // The Academy Palace portico shelters a central door with a step and lintel.
+    box(g, 3.4, 7, 0.3, -168, 3.5, 20.85, materials.dark, 'Academy Palace portico door');
+    box(g, 3.8, 0.25, 0.4, -168, 7.2, 20.8, materials.warmStone, 'Academy Palace portico door lintel');
+    box(g, 4.2, 0.3, 1.2, -168, 0.15, 19.9, materials.pavingEdge, 'Academy Palace portico step');
+
+    // A low railing rings the Cluysenaar bandstand in the park.
+    const bsRail = new THREE.InstancedMesh(new THREE.BoxGeometry(0.08, 0.6, 0.08), materials.dark, 16);
+    const bsd = new THREE.Object3D();
+    let bsi = 0;
+    for (let ba = 0; ba < 16; ba++) {
+      const a = ba * Math.PI / 8;
+      bsd.position.set(-46 + Math.cos(a) * 6.2, 0.85, 150 + Math.sin(a) * 6.2);
+      bsd.rotation.y = -a; bsd.updateMatrix();
+      bsRail.setMatrixAt(bsi++, bsd.matrix);
+    }
+    bsRail.count = bsi; bsRail.name = 'Park bandstand railing'; g.add(bsRail);
+
+    // An architrave beam spans the Palace of the Nation peristyle columns under the pediment.
+    box(g, 52, 1.0, 3.0, 0, 15.5, 401.8, materials.warmStone, 'Palace of the Nation architrave');
+
+    // Coping stones cap the rim of the octagonal basin (1780) north of the main pond.
+    const obCop = new THREE.InstancedMesh(new THREE.BoxGeometry(3.4, 0.15, 0.5), materials.paleStone, 8);
+    const obd = new THREE.Object3D();
+    let obi = 0;
+    for (let k = 0; k < 8; k++) {
+      const a = k * Math.PI / 4;
+      obd.position.set(Math.cos(a) * 13.3, 0.95, 262 + Math.sin(a) * 13.3);
+      obd.rotation.y = -a + Math.PI / 4;
+      obd.updateMatrix();
+      obCop.setMatrixAt(obi++, obd.matrix);
+    }
+    obCop.count = obi; obCop.name = 'Octagonal basin rim coping'; g.add(obCop);
+
+    // Bases and capitals finish the Academy Palace Ionic pilaster order.
+    for (let i = 0; i < 8; i++) {
+      const px = -168 - 28 + i * 8;
+      box(g, 0.9, 0.5, 0.7, px, 0.4, 21.1, materials.warmStone, 'Academy Palace pilaster base');
+      box(g, 0.9, 0.5, 0.7, px, 18.2, 21.1, materials.warmStone, 'Academy Palace pilaster capital');
+    }
+
+    // Corner quoins strengthen the facade corners of the Palace of the Nation central block.
+    for (const cx of [-29.8, 29.8]) {
+      for (const qy of [4, 9, 14, 19]) {
+        box(g, 0.6, 1.8, 0.4, cx, qy, 402.9, materials.warmStone, 'Palace of the Nation corner quoin');
+      }
+    }
+
+    // A bronze name plaque hangs on each statue pedestal in the Academy garden.
+    for (let i = 0; i < agStat.length; i++) {
+      const gx = -196 + i * 10;
+      box(g, 0.9, 0.5, 0.06, gx, 0.9, 63.55, materials.bronze, 'Academy statue plaque');
+    }
+
+    // A low octagonal railing rings the Vauxhall bandstand in the park.
+    const vhRail = new THREE.InstancedMesh(new THREE.BoxGeometry(0.08, 0.6, 0.08), materials.dark, 8);
+    const vhd = new THREE.Object3D();
+    let vhi = 0;
+    for (let va = 0; va < 8; va++) {
+      const a = va * Math.PI / 4;
+      vhd.position.set(46 + Math.cos(a) * 5.4, 0.85, 210 + Math.sin(a) * 5.4);
+      vhd.rotation.y = -a; vhd.updateMatrix();
+      vhRail.setMatrixAt(vhi++, vhd.matrix);
+    }
+    vhRail.count = vhi; vhRail.name = 'Vauxhall bandstand railing'; g.add(vhRail);
+
+    // Stone surrounds frame the BELvue piano nobile windows.
+    for (let i = 0; i < 5; i++) {
+      const wx = 168 - 13 + i * 6.5;
+      box(g, 2.4, 4.6, 0.16, wx, 15, 22.05, materials.warmStone, 'BELvue piano nobile surround');
+    }
+
+    // A small dovecote crowns the Royal Stables hipped roof.
+    cylinder(g, 1.2, 1.5, 2.5, -70, 20.2, -85, materials.paleStone, 10).name = 'Royal Stables dovecote';
+    mesh(g, new THREE.ConeGeometry(1.6, 1.2, 10), materials.roof, -70, 21.9, -85, 'Royal Stables dovecote roof');
+
+    // A stone plinth carries the park perimeter railing on all four sides.
+    box(g, 344, 0.3, 0.5, 0, 0.15, 62, materials.paleStone, 'Park south railing plinth');
+    box(g, 344, 0.3, 0.5, 0, 0.15, 402, materials.paleStone, 'Park north railing plinth');
+    box(g, 0.5, 0.3, 340, -172, 0.15, 232, materials.paleStone, 'Park west railing plinth');
+    box(g, 0.5, 0.3, 340, 172, 0.15, 232, materials.paleStone, 'Park east railing plinth');
+
+    // An inset tympanum panel fills the Palace of the Nation pediment behind the Justice relief.
+    box(g, 10, 2.2, 0.1, 0, 16.6, 401.7, materials.paleStone, 'Palace of the Nation tympanum panel');
+
+    // Stone sills sit under each BELvue ground-floor window.
+    for (let i = 0; i < 5; i++) {
+      const wx = 168 - 13 + i * 6.5;
+      box(g, 2.4, 0.18, 0.3, wx, 5.85, 22.15, materials.warmStone, 'BELvue ground window sill');
+    }
+
+    // The Academy Palace ground floor is bossaged with rusticated blocks.
+    const apBoss = new THREE.InstancedMesh(new THREE.BoxGeometry(1.8, 1.4, 0.14), materials.warmStone, 40);
+    const apBd = new THREE.Object3D();
+    let apBi = 0;
+    for (let bx = -194; bx <= -142; bx += 3) {
+      if (Math.abs(bx + 168) < 3) continue;
+      apBd.position.set(bx, 1.2, 20.85); apBd.rotation.y = 0; apBd.updateMatrix();
+      apBoss.setMatrixAt(apBi++, apBd.matrix);
+    }
+    apBoss.count = apBi; apBoss.name = 'Academy Palace ground bossage'; g.add(apBoss);
+
+    // Stone sills sit under each Palace of the Nation facade window.
+    for (let i = 0; i < 7; i++) {
+      box(g, 2.8, 0.2, 0.35, -22.5 + i * 9, 7.9, 403.0, materials.warmStone, 'Palace of the Nation window sill');
+    }
+
+    // Stone lintels crown the arched windows of the Royal Stables range.
+    for (let i = 0; i < 5; i++) {
+      box(g, 2.8, 0.22, 0.3, -70 - 16 + i * 8, 8.6, -73.0, materials.warmStone, 'Royal Stables window lintel');
+    }
+
+    // A continuous sill band runs under the Academy Palace ground-floor windows.
+    box(g, 62, 0.25, 0.3, -168, 2.6, 20.95, materials.warmStone, 'Academy Palace sill band');
+
+    // Stone sills sit under each BELvue attic window.
+    for (let i = 0; i < 5; i++) {
+      const wx = 168 - 13 + i * 6.5;
+      box(g, 2.4, 0.18, 0.3, wx, 18.15, 22.15, materials.warmStone, 'BELvue attic window sill');
+    }
+
+    // Stone lintels crown the wing windows of the Palace of the Nation.
+    for (const side of [-1, 1]) {
+      for (let i = 0; i < 4; i++) {
+        box(g, 2.8, 0.22, 0.3, side * 70 - 15 + i * 10, 11.7, 406.8, materials.warmStone, 'Palace of the Nation wing window lintel');
+      }
+    }
+
+    // A lower step completes the Academy Palace portico entrance flight.
+    box(g, 5.0, 0.25, 0.8, -168, 0.12, 19.3, materials.pavingEdge, 'Academy Palace portico lower step');
+
+    // Urns stand along the Palace of the Nation attic balustrade.
+    const pnUr = new THREE.InstancedMesh(new THREE.SphereGeometry(0.35, 10, 8), materials.warmStone, 15);
+    const pnud = new THREE.Object3D();
+    let pnui = 0;
+    for (let ui = 0; ui < 15; ui++) {
+      pnud.position.set(-28 + ui * 4, 24.45, 403.2); pnud.rotation.y = 0; pnud.updateMatrix();
+      pnUr.setMatrixAt(pnui++, pnud.matrix);
+    }
+    pnUr.count = pnui; pnUr.name = 'Palace of the Nation balustrade urn'; g.add(pnUr);
+
+    // A dentil course runs under the Academy Palace cornice.
+    const apDn = new THREE.InstancedMesh(new THREE.BoxGeometry(0.24, 0.3, 0.3), materials.warmStone, 39);
+    const apDd = new THREE.Object3D();
+    let apDi = 0;
+    for (let di3 = 0; di3 < 39; di3++) {
+      apDd.position.set(-200.5 + di3 * 1.7, 17.85, 20.7); apDd.rotation.y = 0; apDd.updateMatrix();
+      apDn.setMatrixAt(apDi++, apDd.matrix);
+    }
+    apDn.count = apDi; apDn.name = 'Academy Palace cornice dentil'; g.add(apDn);
+
+    // A bronze finial with a gilded ball crowns the BELvue pavilion roof.
+    cylinder(g, 0.05, 0.12, 1.2, 168, 30.6, 36, materials.bronze, 8).name = 'BELvue roof finial';
+    mesh(g, new THREE.SphereGeometry(0.22, 10, 8), materials.gold, 168, 31.3, 36, 'BELvue roof finial ball');
+
+    // Each Hermes bust around the octagonal basin stands on a stone pedestal.
+    for (let hk = 0; hk < 8; hk++) {
+      const ha = hk * Math.PI / 4;
+      box(g, 1.0, 1.0, 1.0, Math.cos(ha) * 13.6, 0.5, 262 + Math.sin(ha) * 13.6, materials.paleStone, 'Hermes bust pedestal');
+    }
+
+    // Attic bases ring each Palace of the Nation peristyle column.
+    for (let i = 0; i < 8; i++) {
+      cylinder(g, 1.1, 1.25, 1.0, -24 + i * 6.85, 0.5, 401.5, materials.plaster, 12).name = 'Palace of the Nation column base';
+    }
+
+    // A tall window pierces the Royal Stables gatehouse above the gate.
+    box(g, 2.0, 4.0, 0.2, -70, 10, -68.85, materials.glass, 'Royal Stables gatehouse window');
+    box(g, 2.4, 0.22, 0.3, -70, 12.2, -68.9, materials.warmStone, 'Royal Stables gatehouse window lintel');
+
+    // Capitals crown each Palace of the Nation peristyle column under the architrave.
+    for (let i = 0; i < 8; i++) {
+      cylinder(g, 1.2, 1.0, 0.6, -24 + i * 6.85, 15.0, 401.5, materials.plaster, 12).name = 'Palace of the Nation column capital';
+    }
+
+    // An architrave beam spans the Academy Palace portico columns under the pediment.
+    box(g, 18, 0.8, 1.2, -168, 12.4, 19.7, materials.warmStone, 'Academy Palace portico architrave');
+
+    // Bollards mark the four corners of the paved Place des Palais.
+    for (const cx of [-168, 168]) {
+      for (const cz of [16, 56]) {
+        cylinder(g, 0.09, 0.12, 0.9, cx, 0.45, cz, materials.dark, 8).name = 'Square corner bollard';
+      }
+    }
+
+    // Keystones crown the arched ground-floor windows of the Academy Palace.
+    for (let i = 0; i < 7; i++) {
+      box(g, 0.5, 0.8, 0.3, -168 - 24 + i * 8, 7.9, 20.95, materials.warmStone, 'Academy Palace window keystone');
+    }
+
+    // Acroteria stand at the apex and both feet of the Palace of the Nation pediment.
+    for (const ax of [-11, 0, 11]) {
+      mesh(g, new THREE.SphereGeometry(0.45, 10, 8), materials.warmStone, ax, ax === 0 ? 21.6 : 15.6, 401.7, 'Palace of the Nation pediment acroterion');
+    }
+
+    // Gate piers with caps flank the Royal Stables gatehouse door.
+    for (const side of [-1, 1]) {
+      box(g, 0.9, 7.2, 0.7, -70 + side * 2.6, 3.6, -68.75, materials.paleStone, 'Royal Stables gate pier');
+      box(g, 1.1, 0.3, 0.9, -70 + side * 2.6, 7.35, -68.75, materials.warmStone, 'Royal Stables gate pier cap');
+    }
+
+    // Benches face the park main pond from its south rim.
+    for (const bx of [-10, 10]) {
+      box(g, 3.0, 0.12, 0.8, bx, 1.35, 165.5, materials.dark, 'Park pond bench seat');
+      box(g, 3.0, 0.6, 0.12, bx, 1.6, 165.9, materials.dark, 'Park pond bench back');
+      for (const side of [-1, 1]) {
+        box(g, 0.12, 1.3, 0.7, bx + side * 1.4, 0.65, 165.5, materials.dark, 'Park pond bench leg');
+      }
+    }
+
+    // Stone lintels crown the BELvue ground-floor windows.
+    for (let i = 0; i < 5; i++) {
+      const wx = 168 - 13 + i * 6.5;
+      box(g, 2.4, 0.22, 0.3, wx, 9.25, 22.15, materials.warmStone, 'BELvue ground window lintel');
+    }
+
+    // A glazed fanlight crowns the Palace of the Nation main door.
+    mesh(g, new THREE.CircleGeometry(2.0, 16, 0, Math.PI), materials.glass, 0, 8.6, 402.85, 'Palace of the Nation door fanlight');
+
+    // A ridge strip crowns the Academy Palace attic roofline.
+    box(g, 66, 0.35, 0.35, -168, 22.3, 36, materials.warmStone, 'Academy Palace roof ridge');
+
+    // Stone sills sit under each BELvue piano nobile window.
+    for (let i = 0; i < 5; i++) {
+      const wx = 168 - 13 + i * 6.5;
+      box(g, 2.4, 0.18, 0.3, wx, 12.75, 22.15, materials.warmStone, 'BELvue piano nobile sill');
+    }
+
+    // Keystones crown the facade windows of the Palace of the Nation.
+    for (let i = 0; i < 7; i++) {
+      box(g, 0.5, 0.7, 0.3, -22.5 + i * 9, 16.2, 403.0, materials.warmStone, 'Palace of the Nation window keystone');
+    }
+
+    // The Academy Palace stables block has a great door on its court facade.
+    box(g, 3.0, 5.5, 0.3, -168, 2.75, 71.85, materials.dark, 'Academy stables door');
+    box(g, 3.4, 0.22, 0.4, -168, 5.7, 71.8, materials.warmStone, 'Academy stables door lintel');
+
+    // Stone sills sit under each Palace of the Nation wing window.
+    for (const side of [-1, 1]) {
+      for (let i = 0; i < 4; i++) {
+        box(g, 2.8, 0.2, 0.35, side * 70 - 15 + i * 10, 4.35, 407.0, materials.warmStone, 'Palace of the Nation wing window sill');
+      }
+    }
+
+    // Windows pierce the Academy Palace attic storey.
+    for (let i = 0; i < 9; i++) {
+      box(g, 1.8, 2.0, 0.2, -168 - 24 + i * 6, 21.5, 20.95, materials.glass, 'Academy Palace attic window');
+    }
+
+    // Modillions line the underside of the BELvue cornice.
+    const bvMd = new THREE.InstancedMesh(new THREE.BoxGeometry(0.34, 0.45, 0.4), materials.warmStone, 20);
+    const bvMdd = new THREE.Object3D();
+    let bvMi = 0;
+    for (let mi2 = 0; mi2 < 20; mi2++) {
+      bvMdd.position.set(151 + mi2 * 1.8, 21.85, 21.8); bvMdd.rotation.y = 0; bvMdd.updateMatrix();
+      bvMd.setMatrixAt(bvMi++, bvMdd.matrix);
+    }
+    bvMd.count = bvMi; bvMd.name = 'BELvue cornice modillion'; g.add(bvMd);
+
+    // Corner quoins strengthen the facade corners of both Palace of the Nation wings.
+    for (const side of [-1, 1]) {
+      for (const cx of [side * 50.2, side * 89.8]) {
+        for (const qy of [4, 9, 14]) {
+          box(g, 0.5, 1.8, 0.4, cx, qy, 406.9, materials.warmStone, 'Palace of the Nation wing quoin');
+        }
+      }
+    }
+
+    // Attic bases ring each Academy Palace portico column.
+    for (let i = 0; i < 4; i++) {
+      cylinder(g, 0.95, 1.05, 0.7, -174 + i * 4, 0.35, 19.5, materials.paleStone, 12).name = 'Academy portico column base';
+    }
+
+    // Stone lintels crown the Royal Stables hayloft windows.
+    for (let i = 0; i < 5; i++) {
+      box(g, 1.5, 0.18, 0.3, -70 - 16 + i * 8, 10.7, -73.0, materials.warmStone, 'Royal Stables hayloft lintel');
+    }
+
+    // Capitals crown each Academy Palace portico column under the architrave.
+    for (let i = 0; i < 4; i++) {
+      cylinder(g, 1.0, 0.85, 0.5, -174 + i * 4, 12.25, 19.5, materials.paleStone, 12).name = 'Academy portico column capital';
+    }
+
+    // Urns stand at the four corners of the BELvue roof terrace.
+    for (const ux of [-4.5, 4.5]) {
+      for (const uz of [-4.5, 4.5]) {
+        mesh(g, new THREE.SphereGeometry(0.3, 10, 8), materials.warmStone, 168 + ux, 30.2, 36 + uz, 'BELvue roof terrace urn');
+      }
+    }
+
+    // Lanterns flank the main door of the Palace of the Nation.
+    for (const side of [-1, 1]) {
+      box(g, 0.4, 1.0, 0.4, side * 3.5, 9.5, 402.4, materials.bronze, 'Palace of the Nation entrance lantern');
+      mesh(g, new THREE.SphereGeometry(0.24, 10, 8), materials.glass, side * 3.5, 9.6, 402.4, 'Palace of the Nation entrance lantern glass');
+    }
+
+    // Keystones crown the BELvue piano nobile windows.
+    for (let i = 0; i < 5; i++) {
+      const wx = 168 - 13 + i * 6.5;
+      box(g, 0.45, 0.6, 0.3, wx, 17.6, 22.15, materials.warmStone, 'BELvue window keystone');
+    }
+
+    // A sett-paved yard lies behind the Academy Palace stables block.
+    box(g, 44, 0.12, 24, -168, 0.06, 104, materials.pavingA, 'Academy stables yard paving');
+
+    // Collar rings anchor the emperor bust pedestals around the main pond.
+    for (let ba = 0; ba < 16; ba++) {
+      const a = ba * Math.PI / 8;
+      cylinder(g, 1.1, 1.2, 0.3, Math.cos(a) * 17.6, 0.15, 150 + Math.sin(a) * 17.6, materials.paleStone, 10).name = 'Pond emperor bust collar';
+    }
+
+    // Collars anchor the statue pedestals in the Academy Palace garden.
+    for (let i = 0; i < agStat.length; i++) {
+      const gx = -196 + i * 10;
+      box(g, 1.9, 0.25, 1.9, gx, 0.12, 64, materials.warmStone, 'Academy statue base collar');
+    }
+
+    // A centre mullion divides each Palace of the Nation facade window.
+    for (let i = 0; i < 7; i++) {
+      box(g, 0.08, 8, 0.06, -22.5 + i * 9, 12, 403.0, materials.warmStone, 'Palace of the Nation window mullion');
+    }
+
+    // Stone lintels crown the BELvue attic windows.
+    for (let i = 0; i < 5; i++) {
+      const wx = 168 - 13 + i * 6.5;
+      box(g, 2.4, 0.2, 0.3, wx, 21.95, 22.15, materials.warmStone, 'BELvue attic window lintel');
+    }
+
+    // Centre mullions divide the Palace of the Nation wing windows.
+    for (const side of [-1, 1]) {
+      for (let i = 0; i < 4; i++) {
+        box(g, 0.08, 7, 0.06, side * 70 - 15 + i * 10, 8, 407.0, materials.warmStone, 'Palace of the Nation wing window mullion');
+      }
+    }
+
+    // Mullions divide the Academy Palace first-floor windows.
+    for (let i = 0; i < 7; i++) {
+      box(g, 0.08, 6.5, 0.06, -168 - 24 + i * 8, 11, 21.0, materials.warmStone, 'Academy Palace first-floor mullion');
+    }
+
+    // Mullions divide the BELvue ground-floor windows.
+    for (let i = 0; i < 5; i++) {
+      const wx = 168 - 13 + i * 6.5;
+      box(g, 0.08, 3.2, 0.06, wx, 7.5, 22.2, materials.warmStone, 'BELvue ground window mullion');
+    }
+
+    // Keystones crown the arched windows of the Royal Stables range.
+    for (let i = 0; i < 5; i++) {
+      box(g, 0.45, 0.6, 0.3, -70 - 16 + i * 8, 8.7, -73.0, materials.warmStone, 'Royal Stables window keystone');
+    }
+
+    // A moulded surround frames the Palace of the Nation main door.
+    for (const side of [-1, 1]) {
+      box(g, 0.35, 8.5, 0.4, side * 2.45, 4.25, 402.75, materials.warmStone, 'Palace of the Nation door jamb');
+    }
+    box(g, 5.0, 0.3, 0.45, 0, 8.75, 402.75, materials.warmStone, 'Palace of the Nation door lintel');
+
+    // Jambs frame the BELvue entrance door on the square facade.
+    for (const side of [-1, 1]) {
+      box(g, 0.3, 6.2, 0.35, 168 + side * 2.05, 3.1, 21.8, materials.warmStone, 'BELvue door jamb');
+    }
+
+    // Mullions divide the BELvue piano nobile windows.
+    for (let i = 0; i < 5; i++) {
+      const wx = 168 - 13 + i * 6.5;
+      box(g, 0.08, 4.2, 0.06, wx, 15, 22.2, materials.warmStone, 'BELvue piano nobile mullion');
+    }
+
+    // Mullions divide the Academy Palace ground-floor arched windows.
+    for (let i = 0; i < 7; i++) {
+      box(g, 0.08, 4.5, 0.06, -168 - 24 + i * 8, 5, 21.0, materials.warmStone, 'Academy Palace ground mullion');
+    }
+
+    // A frieze band runs above the Palace of the Nation peristyle architrave.
+    box(g, 52, 0.7, 2.6, 0, 16.35, 401.2, materials.warmStone, 'Palace of the Nation frieze band');
+
+    // Raking cornices follow both slopes of the Academy Palace portico pediment.
+    const rkL = box(g, 8.8, 0.18, 0.2, -172, 13.9, 19.62, materials.warmStone, 'Academy pediment raking cornice');
+    rkL.rotation.z = Math.atan2(3.4, 8);
+    const rkR = box(g, 8.8, 0.18, 0.2, -164, 13.9, 19.62, materials.warmStone, 'Academy pediment raking cornice');
+    rkR.rotation.z = -Math.atan2(3.4, 8);
+
+    // Cheek stones flank the Palace of the Nation entrance steps.
+    for (const side of [-1, 1]) {
+      box(g, 0.3, 0.6, 1.4, side * 2.9, 0.3, 401.6, materials.paleStone, 'Palace of the Nation step cheek');
+    }
+
+    // Cheek stones flank the BELvue entrance steps.
+    for (const side of [-1, 1]) {
+      box(g, 0.3, 0.6, 1.0, 168 + side * 2.5, 0.3, 21.2, materials.paleStone, 'BELvue step cheek');
+    }
+
+    // Mullions divide the arched windows of the Royal Stables range.
+    for (let i = 0; i < 5; i++) {
+      box(g, 0.08, 5, 0.06, -70 - 16 + i * 8, 6, -73.0, materials.warmStone, 'Royal Stables window mullion');
+    }
+
+    // A bed moulding crowns the Palace of the Nation cornice.
+    box(g, 62, 0.2, 0.5, 0, 23.3, 403.1, materials.warmStone, 'Palace of the Nation cornice bed moulding');
+
+    // A gravel path crosses the Academy Palace garden between the statues.
+    box(g, 3, 0.08, 12, -168, 0.06, 64, materials.pavingB, 'Academy garden path');
+
+    // Cornices crown both wings of the Palace of the Nation.
+    for (const side of [-1, 1]) {
+      box(g, 42, 0.8, 28, side * 70, 16.4, 420, materials.warmStone, 'Palace of the Nation wing cornice');
+    }
+
+    // A dentil course runs under the Academy stables cornice.
+    const asDn = new THREE.InstancedMesh(new THREE.BoxGeometry(0.24, 0.3, 0.3), materials.warmStone, 28);
+    const asDd = new THREE.Object3D();
+    let asDi = 0;
+    for (let di4 = 0; di4 < 28; di4++) {
+      asDd.position.set(-191 + di4 * 1.7, 13.9, 71.8); asDd.rotation.y = 0; asDd.updateMatrix();
+      asDn.setMatrixAt(asDi++, asDd.matrix);
+    }
+    asDn.count = asDi; asDn.name = 'Academy stables cornice dentil'; g.add(asDn);
+
+    // A balustrade crowns the BELvue attic storey.
+    const bvAb = new THREE.InstancedMesh(new THREE.BoxGeometry(0.12, 0.6, 0.12), materials.warmStone, 20);
+    const bvAd = new THREE.Object3D();
+    let bvAi = 0;
+    for (let ai = 0; ai < 20; ai++) {
+      bvAd.position.set(150.5 + ai * 1.9, 22.75, 36); bvAd.rotation.y = 0; bvAd.updateMatrix();
+      bvAb.setMatrixAt(bvAi++, bvAd.matrix);
+    }
+    bvAb.count = bvAi; bvAb.name = 'BELvue attic baluster'; g.add(bvAb);
+    box(g, 38, 0.1, 0.35, 168, 23.1, 36, materials.warmStone, 'BELvue attic balustrade rail');
+
+    // A door pierces the west wing facade of the Palace of the Nation.
+    box(g, 3.0, 6.0, 0.3, -70, 3.0, 406.85, materials.dark, 'Palace of the Nation wing door');
+    box(g, 3.4, 0.22, 0.4, -70, 6.2, 406.8, materials.warmStone, 'Palace of the Nation wing door lintel');
+
+    // A gate with piers and lintel opens into the Academy Palace garden.
+    for (const gx of [-172, -164]) {
+      box(g, 0.8, 1.8, 0.5, gx, 0.9, 56, materials.paleStone, 'Academy garden gate pier');
+    }
+    box(g, 9, 0.4, 0.5, -168, 1.9, 56, materials.warmStone, 'Academy garden gate lintel');
+
+    // A circular sett medallion marks the centre of the Place des Palais on the palace axis.
+    cylinder(g, 4, 4, 0.1, 0, 0.05, 36, materials.pavingB, 24).name = 'Square axis medallion';
+
+    // A glazed fanlight crowns the BELvue entrance door.
+    mesh(g, new THREE.CircleGeometry(1.7, 16, 0, Math.PI), materials.glass, 168, 6.6, 21.9, 'BELvue door fanlight');
+
+    // Volutes finish the capitals of the Academy Palace pilasters.
+    for (let i = 0; i < 8; i++) {
+      const px = -168 - 28 + i * 8;
+      mesh(g, new THREE.SphereGeometry(0.28, 10, 8), materials.warmStone, px, 18.6, 21.15, 'Academy pilaster volute');
+    }
+
+    // A projecting plinth bases the Palace of the Nation facade.
+    box(g, 62, 0.5, 0.6, 0, 0.25, 403.1, materials.paleStone, 'Palace of the Nation base plinth');
+
+    // Side gates with piers and lintels open in the east and west park railings.
+    for (const rx of [-172, 172]) {
+      for (const side of [-1, 1]) {
+        box(g, 0.5, 3.0, 1.2, rx, 1.5, 232 + side * 3, materials.paleStone, 'Park side gate pier');
+      }
+      box(g, 0.5, 0.5, 14, rx, 3.2, 232, materials.dark, 'Park side gate lintel');
+    }
+
+    // Stone surrounds frame the arched windows of the Royal Stables range.
+    for (let i = 0; i < 5; i++) {
+      box(g, 2.8, 5.4, 0.16, -70 - 16 + i * 8, 6, -72.95, materials.warmStone, 'Royal Stables window surround');
+    }
+
+    // Pilasters strengthen the square-facing corners of the BELvue pavilion.
+    for (const cx of [150.1, 185.9]) {
+      box(g, 0.5, 22, 0.4, cx, 11, 22.05, materials.paleStone, 'BELvue corner pilaster');
+    }
+
+    // Stone surrounds frame the Academy Palace ground-floor arched windows.
+    for (let i = 0; i < 7; i++) {
+      box(g, 2.6, 4.9, 0.16, -168 - 24 + i * 8, 5, 20.95, materials.warmStone, 'Academy ground window surround');
+    }
+
+    // Jambs frame the Palace of the Nation west wing door.
+    for (const side of [-1, 1]) {
+      box(g, 0.3, 6.0, 0.35, -70 + side * 1.8, 3.0, 406.8, materials.warmStone, 'Palace of the Nation wing door jamb');
+    }
+
+    // A stone rim rings the fountain jet at the centre of the park main pond.
+    cylinder(g, 1.2, 1.4, 0.5, 0, 0.75, 150, materials.paleStone, 12).name = 'Park fountain rim';
+
+    // A projecting cornice tops the Palace of the Nation peristyle entablature.
+    box(g, 54, 0.35, 3.0, 0, 16.9, 401.3, materials.warmStone, 'Palace of the Nation peristyle cornice');
+
+    // A stylobate platform carries the Academy Palace portico columns.
+    box(g, 20, 0.4, 3.5, -168, 0.2, 19.8, materials.paleStone, 'Academy portico stylobate');
+
+    // A recessed panel surrounds the BELvue entrance door on the square facade.
+    box(g, 5.2, 7.0, 0.2, 168, 3.5, 21.95, materials.paleStone, 'BELvue entrance recess panel');
+
+    // A door with lintel pierces the east wing facade of the Palace of the Nation.
+    box(g, 3.0, 6.0, 0.3, 70, 3.0, 406.85, materials.dark, 'Palace of the Nation east wing door');
+    box(g, 3.4, 0.22, 0.4, 70, 6.2, 406.8, materials.warmStone, 'Palace of the Nation east wing door lintel');
+
+    // Stone sills sit under the Academy Palace first-floor windows.
+    for (let i = 0; i < 7; i++) {
+      box(g, 2.6, 0.18, 0.3, -168 - 24 + i * 8, 7.65, 21.0, materials.warmStone, 'Academy first-floor window sill');
+    }
+
+    // A bed moulding crowns the front edge of the BELvue cornice.
+    box(g, 38, 0.18, 0.4, 168, 23.1, 21.85, materials.warmStone, 'BELvue cornice bed moulding');
+
+    // Jambs frame the Palace of the Nation east wing door.
+    for (const side of [-1, 1]) {
+      box(g, 0.3, 6.0, 0.35, 70 + side * 1.8, 3.0, 406.8, materials.warmStone, 'Palace of the Nation east wing door jamb');
+    }
+
+    // Stone sills sit under the Royal Stables arched windows.
+    for (let i = 0; i < 5; i++) {
+      box(g, 2.8, 0.18, 0.3, -70 - 16 + i * 8, 3.4, -73.0, materials.warmStone, 'Royal Stables window sill');
+    }
+
+    // Keystones crown the BELvue ground-floor windows above their lintels.
+    for (let i = 0; i < 5; i++) {
+      const wx = 168 - 13 + i * 6.5;
+      box(g, 0.4, 0.55, 0.3, wx, 9.6, 22.15, materials.warmStone, 'BELvue ground window keystone');
+    }
+
+    // Stone lintels crown the Academy Palace ground-floor arched windows.
+    for (let i = 0; i < 7; i++) {
+      box(g, 2.6, 0.22, 0.3, -168 - 24 + i * 8, 7.4, 21.0, materials.warmStone, 'Academy ground window lintel');
+    }
+
+    // Keystones crown the Palace of the Nation wing windows.
+    for (const side of [-1, 1]) {
+      for (let i = 0; i < 4; i++) {
+        box(g, 0.45, 0.6, 0.3, side * 70 - 15 + i * 10, 12.0, 407.0, materials.warmStone, 'Palace of the Nation wing window keystone');
+      }
+    }
+
+    // Mullions divide the BELvue attic windows.
+    for (let i = 0; i < 5; i++) {
+      const wx = 168 - 13 + i * 6.5;
+      box(g, 0.08, 3.6, 0.06, wx, 20, 22.2, materials.warmStone, 'BELvue attic window mullion');
+    }
+
+    // Jambs frame the Academy Palace portico door.
+    for (const side of [-1, 1]) {
+      box(g, 0.3, 7, 0.35, -168 + side * 2.0, 3.5, 20.8, materials.warmStone, 'Academy portico door jamb');
+    }
+
+    // A tympanum panel fills the Royal Stables gatehouse pediment.
+    box(g, 7, 1.4, 0.1, -70, 16.5, -68.98, materials.paleStone, 'Royal Stables pediment tympanum');
+
+    // Windows pierce the Academy Palace end pavilions on the square facade.
+    for (const px of [-201, -135]) {
+      box(g, 1.8, 4.0, 0.2, px, 8, 19.9, materials.glass, 'Academy end pavilion window');
+    }
+
+    // Hayloft windows pierce the Academy stables block just under the eaves.
+    for (let i = 0; i < 5; i++) {
+      box(g, 1.2, 1.2, 0.2, -168 - 15 + i * 7.5, 12, 71.9, materials.glass, 'Academy stables hayloft window');
+    }
+
+    // A projecting eave band rings the BELvue pavilion roof base.
+    box(g, 40, 0.25, 32, 168, 24.2, 36, materials.roof, 'BELvue pavilion eave');
+
+    // A stone rim rings the fountain jet of the octagonal basin.
+    cylinder(g, 0.9, 1.1, 0.4, 0, 0.7, 262, materials.paleStone, 10).name = 'Octagonal basin fountain rim';
+
+    // Tympanum panels fill the pediments of both Palace of the Nation wings.
+    for (const side of [-1, 1]) {
+      box(g, 6, 1.4, 0.1, side * 70, 16.7, 406.9, materials.paleStone, 'Palace of the Nation wing tympanum');
+    }
+
+    // Jambs frame the great door of the Academy stables block.
+    for (const side of [-1, 1]) {
+      box(g, 0.3, 5.5, 0.35, -168 + side * 1.8, 2.75, 71.8, materials.warmStone, 'Academy stables door jamb');
+    }
+
+    // A projecting plinth bases the BELvue pavilion block.
+    box(g, 38, 0.7, 30.6, 168, 0.35, 36, materials.warmStone, 'BELvue base plinth');
+
+    // Small pediments cap the Academy Palace end pavilions.
+    for (const px of [-201, -135]) {
+      const ep = new THREE.Shape();
+      ep.moveTo(-4.5, 0); ep.lineTo(4.5, 0); ep.lineTo(0, 2.2); ep.closePath();
+      mesh(g, new THREE.ShapeGeometry(ep), materials.warmStone, px, 20.8, 19.75, 'Academy end pavilion pediment');
+    }
+
+    // Kerbs edge both sides of the BELvue entrance steps.
+    for (const cz of [21.2, 20.7]) {
+      for (const side of [-1, 1]) {
+        box(g, 0.25, 0.35, 1.1, 168 + side * 2.5, 0.18, cz, materials.pavingEdge, 'BELvue step kerb');
+      }
+    }
+
+    // A dentil course runs under the Royal Stables gatehouse cornice.
+    const rsDn = new THREE.InstancedMesh(new THREE.BoxGeometry(0.22, 0.28, 0.28), materials.warmStone, 10);
+    const rsDd = new THREE.Object3D();
+    let rsDi = 0;
+    for (let di5 = 0; di5 < 10; di5++) {
+      rsDd.position.set(-76 + di5 * 1.2, 14.85, -68.9); rsDd.rotation.y = 0; rsDd.updateMatrix();
+      rsDn.setMatrixAt(rsDi++, rsDd.matrix);
+    }
+    rsDn.count = rsDi; rsDn.name = 'Royal Stables gatehouse dentil'; g.add(rsDn);
+
+    // Kerbs edge both sides of the Academy Palace portico steps.
+    for (const cz of [19.9, 19.3]) {
+      for (const side of [-1, 1]) {
+        box(g, 0.25, 0.35, 1.2, -168 + side * 2.8, 0.18, cz, materials.pavingEdge, 'Academy portico step kerb');
+      }
+    }
+
+    // Raking cornices follow both slopes of the Palace of the Nation pediment.
+    const pnRkL = box(g, 12.0, 0.18, 0.2, -5.75, 16.95, 401.65, materials.warmStone, 'Palace of the Nation raking cornice');
+    pnRkL.rotation.z = Math.atan2(3.5, 11.5);
+    const pnRkR = box(g, 12.0, 0.18, 0.2, 5.75, 16.95, 401.65, materials.warmStone, 'Palace of the Nation raking cornice');
+    pnRkR.rotation.z = -Math.atan2(3.5, 11.5);
+
+    // Stone edging kerbs flank the west radiating avenue from the main pond.
+    const raW = Math.PI * 0.72;
+    const midWx = Math.cos(raW) * 65, midWz = 150 + Math.sin(raW) * 65;
+    const perpWx = -Math.sin(raW), perpWz = Math.cos(raW);
+    for (const off of [-4.3, 4.3]) {
+      const kerb = box(g, 0.4, 0.18, 92, midWx + perpWx * off, 0.09, midWz + perpWz * off, materials.pavingEdge, 'Radiating avenue west kerb');
+      kerb.rotation.y = Math.PI / 2 - raW;
+    }
+
+    // Stone edging kerbs flank the east radiating avenue from the main pond.
+    const raE = Math.PI * 0.28;
+    const midEx = Math.cos(raE) * 65, midEz = 150 + Math.sin(raE) * 65;
+    const perpEx = -Math.sin(raE), perpEz = Math.cos(raE);
+    for (const off of [-4.3, 4.3]) {
+      const kerb = box(g, 0.4, 0.18, 92, midEx + perpEx * off, 0.09, midEz + perpEz * off, materials.pavingEdge, 'Radiating avenue east kerb');
+      kerb.rotation.y = Math.PI / 2 - raE;
+    }
+
+    // A gate with piers and lintel opens in the Royal Stables courtyard wall.
+    for (const gx of [-73, -67]) {
+      box(g, 0.8, 1.8, 0.5, gx, 0.9, -98, materials.ochre, 'Royal Stables yard gate pier');
+    }
+    box(g, 7, 0.4, 0.5, -70, 1.9, -98, materials.warmStone, 'Royal Stables yard gate lintel');
+
+    // Keystones crown the BELvue attic windows above their lintels.
+    for (let i = 0; i < 5; i++) {
+      const wx = 168 - 13 + i * 6.5;
+      box(g, 0.4, 0.5, 0.3, wx, 22.25, 22.15, materials.warmStone, 'BELvue attic window keystone');
+    }
+
+    // Kerbs edge both sides of the Palace of the Nation peristyle steps.
+    for (const cz of [400.6, 400.0]) {
+      const cw = cz > 400 ? 25 : 23;
+      for (const side of [-1, 1]) {
+        box(g, 0.3, 0.5, 1.2, side * cw, 0.25, cz, materials.pavingEdge, 'Palace of the Nation step kerb');
+      }
+    }
+
+    // A ridge strip crowns the Academy stables hipped roof.
+    box(g, 0.4, 0.25, 26, -168, 20.3, 82, materials.roof, 'Academy stables roof ridge');
+
+    // Dentil courses run under both Palace of the Nation wing cornices.
+    const pwDn = new THREE.InstancedMesh(new THREE.BoxGeometry(0.24, 0.3, 0.3), materials.warmStone, 40);
+    const pwDd = new THREE.Object3D();
+    let pwDi = 0;
+    for (const side of [-1, 1]) {
+      for (let di6 = 0; di6 < 20; di6++) {
+        pwDd.position.set(side * 70 - 19 + di6 * 2, 15.85, 406.8); pwDd.rotation.y = 0; pwDd.updateMatrix();
+        pwDn.setMatrixAt(pwDi++, pwDd.matrix);
+      }
+    }
+    pwDn.count = pwDi; pwDn.name = 'Palace of the Nation wing cornice dentil'; g.add(pwDn);
+
+    // A dentil course runs under the Academy Palace portico architrave.
+    const apPd = new THREE.InstancedMesh(new THREE.BoxGeometry(0.22, 0.28, 0.28), materials.warmStone, 10);
+    const apPdd = new THREE.Object3D();
+    let apPi = 0;
+    for (let di7 = 0; di7 < 10; di7++) {
+      apPdd.position.set(-176.4 + di7 * 1.6, 11.9, 19.75); apPdd.rotation.y = 0; apPdd.updateMatrix();
+      apPd.setMatrixAt(apPi++, apPdd.matrix);
+    }
+    apPd.count = apPi; apPd.name = 'Academy portico dentil'; g.add(apPd);
+
+    // A bronze kick plate protects the foot of the BELvue entrance door.
+    box(g, 3.4, 0.45, 0.06, 168, 0.35, 21.82, materials.bronze, 'BELvue door kick plate');
+
+    // A bronze kick plate protects the foot of the Palace of the Nation main door.
+    box(g, 3.8, 0.5, 0.06, 0, 0.4, 402.82, materials.bronze, 'Palace of the Nation door kick plate');
+
+    // Dentil courses run under both Academy Palace end pavilion cornices.
+    const aepD = new THREE.InstancedMesh(new THREE.BoxGeometry(0.22, 0.28, 0.28), materials.warmStone, 10);
+    const aepDd = new THREE.Object3D();
+    let aepDi = 0;
+    for (const px of [-201, -135]) {
+      for (let di8 = 0; di8 < 5; di8++) {
+        aepDd.position.set(px - 3.5 + di8 * 1.75, 19.85, 19.9); aepDd.rotation.y = 0; aepDd.updateMatrix();
+        aepD.setMatrixAt(aepDi++, aepDd.matrix);
+      }
+    }
+    aepD.count = aepDi; aepD.name = 'Academy end pavilion dentil'; g.add(aepD);
+
+    // A lintel spans the palace-park gate in the Place du Trone fence.
+    box(g, 10, 0.4, 0.5, -120, 3.6, -46, materials.dark, 'Place du Trone gate lintel');
+
+    // Stone access steps lead down to the main pond rim on the north side of the axis.
+    for (let s = 0; s < 3; s++) {
+      box(g, 6, 0.25, 0.9, 0, 0.9 - s * 0.25, 134.0 + s * 0.9, materials.paleStone, 'Main pond north access step');
+    }
+
+    // A low wall closes the south side of the Academy stables yard.
+    box(g, 44, 1.0, 0.4, -168, 0.5, 116, materials.ochre, 'Academy stables yard wall');
+
+    // Stone access steps lead down to the octagonal basin rim on its south side.
+    for (let s = 0; s < 3; s++) {
+      box(g, 5, 0.25, 0.9, 0, 0.9 - s * 0.25, 276.0 + s * 0.9, materials.paleStone, 'Octagonal basin access step');
+    }
+
+    // Acroteria crown the apex of each Palace of the Nation wing pediment.
+    for (const side of [-1, 1]) {
+      mesh(g, new THREE.SphereGeometry(0.4, 10, 8), materials.warmStone, side * 70, 18.6, 406.85, 'Palace of the Nation wing acroterion');
+    }
+
+    // A cap course finishes the Academy Palace garden front wall.
+    box(g, 56, 0.12, 0.6, -168, 0.86, 56, materials.warmStone, 'Academy garden wall cap');
+
+    // A paved floor covers the Academy Palace portico stylobate.
+    box(g, 22, 0.06, 4, -168, 0.43, 19.9, materials.pavingA, 'Academy portico floor');
+
+    // A paved floor covers the Palace of the Nation peristyle.
+    box(g, 52, 0.12, 4.5, 0, 0.06, 401.6, materials.pavingA, 'Palace of the Nation peristyle floor');
+
+    // A kerb borders the front edge of the Palace of the Nation peristyle floor.
+    box(g, 52, 0.15, 0.3, 0, 0.14, 403.9, materials.pavingEdge, 'Peristyle floor border kerb');
+
+    // Cap courses finish the east and west Academy garden side walls.
+    for (const cx of [-197, -139]) {
+      box(g, 0.6, 0.12, 16, cx, 0.86, 64, materials.warmStone, 'Academy garden side wall cap');
+    }
+
+    // A sett field paves the north strip of the Place des Palais by the park gate.
+    box(g, 300, 0.1, 8, 0, 0.02, 54, materials.pavingA, 'Place des Palais north sett field');
+
+    // A step leads up to the Academy stables great door.
+    box(g, 4.0, 0.25, 1.0, -168, 0.12, 70.9, materials.pavingEdge, 'Academy stables door step');
+
+    // A cap course finishes the Royal Stables courtyard wall.
+    box(g, 48, 0.12, 0.6, -70, 1.06, -98, materials.warmStone, 'Royal Stables courtyard wall cap');
+
+    // A cap course finishes the Academy stables yard wall.
+    box(g, 44, 0.12, 0.6, -168, 1.06, 116, materials.warmStone, 'Academy stables yard wall cap');
+
+    // Side kerbs border the Palace of the Nation peristyle floor.
+    for (const side of [-1, 1]) {
+      box(g, 0.3, 0.15, 4.5, side * 26, 0.14, 401.6, materials.pavingEdge, 'Peristyle floor side kerb');
+    }
+
+    // A kerb borders the rear edge of the Palace of the Nation peristyle floor.
+    box(g, 52, 0.15, 0.3, 0, 0.14, 399.4, materials.pavingEdge, 'Peristyle floor rear kerb');
+
+    // A sett field paves the east side of the Place du Trone.
+    box(g, 60, 0.1, 20, -90, 0.02, -60, materials.pavingA, 'Place du Trone east sett field');
+
+    // Stone access steps lead down to the octagonal basin rim on its east side.
+    for (let s = 0; s < 3; s++) {
+      box(g, 0.9, 0.25, 5, 14.0 + s * 0.9, 0.9 - s * 0.25, 262, materials.paleStone, 'Octagonal basin east access step');
+    }
+
+    // Stone access steps lead down to the octagonal basin rim on its west side.
+    for (let s = 0; s < 3; s++) {
+      box(g, 0.9, 0.25, 5, -14.0 - s * 0.9, 0.9 - s * 0.25, 262, materials.paleStone, 'Octagonal basin west access step');
+    }
+
+    // Steps lead up to the Cluysenaar bandstand platform in the park.
+    for (let s = 0; s < 2; s++) {
+      box(g, 4, 0.25, 0.8, -46, 0.125 + s * 0.25, 157.2 - s * 0.7, materials.paleStone, 'Bandstand access step');
+    }
+
+    // Steps lead up to the Vauxhall bandstand platform in the park.
+    for (let s = 0; s < 2; s++) {
+      box(g, 4, 0.25, 0.8, 46, 0.125 + s * 0.25, 216.6 - s * 0.7, materials.paleStone, 'Vauxhall bandstand step');
+    }
+
+    // Stone access steps lead down to the main pond rim on its east side.
+    for (let s = 0; s < 3; s++) {
+      box(g, 0.9, 0.25, 6, 16.8 + s * 0.9, 0.9 - s * 0.25, 150, materials.paleStone, 'Main pond east access step');
+    }
+
+    // Kerbs edge both sides of the bandstand access steps.
+    for (let s = 0; s < 2; s++) {
+      for (const side of [-1, 1]) {
+        box(g, 0.25, 0.25, 0.8, -46 + side * 2.2, 0.125 + s * 0.25, 157.2 - s * 0.7, materials.pavingEdge, 'Bandstand step kerb');
+      }
+    }
+
+    // Kerbs edge both sides of the Vauxhall bandstand steps.
+    for (let s = 0; s < 2; s++) {
+      for (const side of [-1, 1]) {
+        box(g, 0.25, 0.25, 0.8, 46 + side * 2.2, 0.125 + s * 0.25, 216.6 - s * 0.7, materials.pavingEdge, 'Vauxhall step kerb');
+      }
+    }
+
+    // Stone access steps lead down to the main pond rim on its west side.
+    for (let s = 0; s < 3; s++) {
+      box(g, 0.9, 0.25, 6, -16.8 - s * 0.9, 0.9 - s * 0.25, 150, materials.paleStone, 'Main pond west access step');
+    }
+
+    // A sett ring borders the axis medallion at the centre of the Place des Palais.
+    cylinder(g, 4.6, 4.6, 0.12, 0, 0.06, 36, materials.pavingEdge, 24).name = 'Square axis medallion ring';
   });
     addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');

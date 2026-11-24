@@ -1017,3 +1017,1295 @@ testCase('the rear English-style garden lives in the surroundings landmark, not 
   const lawnIdx = palace.indexOf("'Rear English-style garden lawn'");
   assert.ok(surStart !== -1 && lawnIdx > surStart, 'rear garden must be inside the palaceSurroundings slice');
 });
+
+testCase('wing bay pilasters carry bases and capitals', () => {
+  assert.match(palace, /'Wing bay pilaster base'/);
+  assert.match(palace, /'Wing bay pilaster capital'/);
+  assert.match(palace, /for \(let i = 0; i <= 9; i\+\+\)/);
+});
+
+testCase('every wing window sill rests on a projecting stone apron', () => {
+  assert.match(palace, /projecting stone apron/);
+  assert.match(palace, /'Wing window apron'/);
+});
+
+testCase('the central corps carries tall second-floor windows above the portico', () => {
+  assert.match(palace, /tall windows on its second floor/);
+  assert.match(palace, /'Central second-floor window'/);
+  assert.match(palace, /'Central second-floor lintel'/);
+});
+
+testCase('each central ground-floor arch is ringed by an archivolt', () => {
+  assert.match(palace, /archivolt of voussoirs/);
+  assert.match(palace, /'Central arcade archivolt'/);
+});
+
+testCase('the wing ground-floor arches carry archivolt rings too', () => {
+  assert.match(palace, /same archivolt rings/);
+  assert.match(palace, /'Wing arcade archivolt'/);
+});
+
+testCase('a projecting plinth cap crowns the rusticated base of each wing', () => {
+  assert.match(palace, /plinth cap crowns the rusticated base/);
+  assert.match(palace, /'Wing plinth cap'/);
+});
+
+testCase('the palace grounds are enclosed by balustraded walls (south, east, west)', () => {
+  assert.match(palace, /entirely enclosed by balustraded walls/);
+  assert.match(palace, /'Palace grounds boundary wall'/);
+  assert.match(palace, /'Palace grounds wall balustrade'/);
+  assert.match(palace, /gwBal\.count = gwi/);
+});
+
+testCase('portico column shafts show drum joint bands', () => {
+  assert.match(palace, /horizontal joint bands/);
+  assert.match(palace, /'Portico column drum joints'/);
+  assert.match(palace, /joints\.count = ji/);
+});
+
+testCase('the portico entablature has a cymatium and projecting corona', () => {
+  assert.match(palace, /cymatium and a projecting corona/);
+  assert.match(palace, /'Portico entablature cymatium'/);
+  assert.match(palace, /'Portico entablature corona'/);
+});
+
+testCase('the pediment tympanum is an inset panel within its moulded frame', () => {
+  assert.match(palace, /inset sculpted panel/);
+  assert.match(palace, /'Pediment tympanum panel'/);
+  assert.match(palace, /'Pediment tympanum frame base'/);
+});
+
+testCase('dormers pierce the front slope of each wing mansard', () => {
+  assert.match(palace, /pierce the front slope/);
+  assert.match(palace, /'Wing mansard dormer'/);
+  assert.match(palace, /'Wing dormer pediment'/);
+});
+
+testCase('basement windows (soupiraux) pierce the south avant-corps base', () => {
+  assert.match(palace, /'South avant-corps basement window'/);
+});
+
+testCase('tree rows line the three radiating avenues from the main pond', () => {
+  assert.match(palace, /'Radiating avenue tree trunks'/);
+  assert.match(palace, /'Radiating avenue tree canopies'/);
+  assert.match(palace, /radTrunk\.count = rdi/);
+});
+
+testCase('stone edging kerbs flank the park central avenue', () => {
+  assert.match(palace, /'Central avenue west edging kerb'/);
+  assert.match(palace, /'Central avenue east edging kerb'/);
+});
+
+testCase('stone access steps lead down to the main pond rim on the axis', () => {
+  assert.match(palace, /'Main pond access step'/);
+});
+
+testCase('the 1868-69 monumental fence encloses Place du Trône with a palace-park gate', () => {
+  assert.match(palace, /'Place du Trône monumental fence'/);
+  assert.match(palace, /'Palace park entrance gate pier'/);
+  assert.match(palace, /trFence\.count = tri3/);
+});
+
+testCase('bronze lamp standards with gilded globes flank the perron', () => {
+  assert.match(palace, /'Perron lamp standard'/);
+  assert.match(palace, /'Perron lamp gilded globe'/);
+});
+
+testCase('the Academy Palace stables block (1823-28) stands behind the palace', () => {
+  assert.match(palace, /'Academy Palace stables block'/);
+  assert.match(palace, /'Academy Palace stables roof'/);
+  assert.match(palace, /'Academy stables arched window'/);
+});
+
+testCase('the BELvue museum has an entrance door with stone steps on the square facade', () => {
+  assert.match(palace, /'BELvue entrance door'/);
+  assert.match(palace, /'BELvue entrance lintel'/);
+  assert.match(palace, /'BELvue entrance step'/);
+});
+
+testCase('the Palace of the Nation has attic windows and a main door under the pediment', () => {
+  assert.match(palace, /'Palace of the Nation attic window'/);
+  assert.match(palace, /'Palace of the Nation main door'/);
+  assert.match(palace, /'Palace of the Nation entrance step'/);
+});
+
+testCase('the Academy Palace portico pediment holds a framed tympanum panel', () => {
+  assert.match(palace, /'Academy Palace tympanum frame'/);
+  assert.match(palace, /'Academy Palace tympanum panel'/);
+});
+
+testCase('stone lintels crown the BELvue piano nobile windows', () => {
+  assert.match(palace, /'BELvue piano nobile lintel'/);
+});
+
+testCase('the Palace of the Nation flies EU and Belgian flags from cornice flagpoles', () => {
+  assert.match(palace, /'Palace of the Nation flagpole'/);
+  assert.match(palace, /'Palace of the Nation EU flag'/);
+  assert.match(palace, /'Palace of the Nation Belgian flag'/);
+});
+
+testCase('the Royal Stables have a projecting gatehouse with pediment and gate door', () => {
+  assert.match(palace, /'Royal Stables gatehouse'/);
+  assert.match(palace, /'Royal Stables gatehouse pediment'/);
+  assert.match(palace, /'Royal Stables gate door'/);
+});
+
+testCase('contrasting sett accent rows cross the Place des Palais on the palace axis', () => {
+  assert.match(palace, /'Place des Palais sett accent row'/);
+});
+
+testCase('each perron step carries a dressed stone nosing strip', () => {
+  assert.match(palace, /'Perron step nosing'/);
+});
+
+testCase('coping stones cap the rim of the park main pond', () => {
+  assert.match(palace, /'Main pond rim coping'/);
+  assert.match(palace, /pondCop\.count = pci/);
+});
+
+testCase('stone surrounds frame the wing end windows on both gable ends', () => {
+  assert.match(palace, /'Wing end window surround'/);
+  assert.match(palace, /'Wing end ground window surround'/);
+});
+
+testCase('the central portico balcony parapet is filled with iron balusters and a mid rail', () => {
+  assert.match(palace, /'Central balcony baluster'/);
+  assert.match(palace, /'Central balcony mid rail'/);
+});
+
+testCase('cast-iron street lamps with globes line the palace-square axis', () => {
+  assert.match(palace, /'Square axis street lamp'/);
+  assert.match(palace, /'Square axis street lamp globe'/);
+});
+
+testCase('a balustrade parapet crowns the Academy Palace attic', () => {
+  assert.match(palace, /'Academy Palace attic baluster'/);
+  assert.match(palace, /'Academy Palace attic balustrade rail'/);
+});
+
+testCase('console brackets carry the central portico balcony from the facade', () => {
+  assert.match(palace, /'Central balcony console'/);
+});
+
+testCase('console brackets carry the wing first-floor balconies', () => {
+  assert.match(palace, /'Wing balcony console'/);
+});
+
+testCase('the BELvue ground floor is bossaged with rusticated blocks', () => {
+  assert.match(palace, /'BELvue ground floor bossage'/);
+  assert.match(palace, /bossMesh.count = bossIdx/);
+});
+
+testCase('both Palace of the Nation wings carry rows of facade windows', () => {
+  assert.match(palace, /'Palace of the Nation wing window'/);
+});
+
+testCase('corner quoins strengthen the BELvue square-facing corners', () => {
+  assert.match(palace, /'BELvue corner quoin'/);
+});
+
+testCase('the gilded garden railing stands on a stone plinth', () => {
+  assert.match(palace, /'Gilded garden railing plinth'/);
+});
+
+testCase('projecting end pavilions close both ends of the Academy Palace facade', () => {
+  assert.match(palace, /'Academy Palace end pavilion'/);
+  assert.match(palace, /'Academy Palace end pavilion cornice'/);
+});
+
+testCase('modillions line the underside of the Palace of the Nation cornice', () => {
+  assert.match(palace, /'Palace of the Nation cornice modillion'/);
+  assert.match(palace, /pnMod\.count = pmi/);
+});
+
+testCase('lanterns crown the piers of the park south gate on the palace axis', () => {
+  assert.match(palace, /'Park south gate lantern'/);
+  assert.match(palace, /'Park south gate lantern glass'/);
+});
+
+testCase('attic bases and capitals ring all twelve portico column shafts', () => {
+  assert.match(palace, /'Portico column base'/);
+  assert.match(palace, /'Portico column capital'/);
+});
+
+testCase('glazing muntins divide the central piano nobile French doors into panes', () => {
+  assert.match(palace, /'Central French door muntin vertical'/);
+  assert.match(palace, /'Central French door muntin horizontal'/);
+});
+
+testCase('dressed stone cheek walls flank both sides of the perron', () => {
+  assert.match(palace, /'Perron cheek wall'/);
+});
+
+testCase('hayloft windows pierce the Royal Stables range under the eaves', () => {
+  assert.match(palace, /'Royal Stables hayloft window'/);
+});
+
+testCase('a low stone wall encloses the Academy Palace garden toward the square', () => {
+  assert.match(palace, /'Academy garden front wall'/);
+});
+
+testCase('a straight garden walk leads from the perron to the gilded railing', () => {
+  assert.match(palace, /'Central garden walk'/);
+});
+
+testCase('broad stone steps lead up to the Palace of the Nation peristyle', () => {
+  assert.match(palace, /'Palace of the Nation peristyle step'/);
+});
+
+testCase('stone planters with plantings flank the foot of the perron', () => {
+  assert.match(palace, /'Perron planter'/);
+  assert.match(palace, /'Perron planter planting'/);
+});
+
+testCase('a low wall encloses the Royal Stables courtyard', () => {
+  assert.match(palace, /'Royal Stables courtyard wall'/);
+});
+
+testCase('stone edging kerbs flank the north radiating avenue from the pond', () => {
+  assert.match(palace, /'Radiating avenue edging kerb'/);
+});
+
+testCase('triangular pediments cap the center of each Palace of the Nation wing', () => {
+  assert.match(palace, /'Palace of the Nation wing pediment'/);
+});
+
+testCase('steps climb from the garden walk up to the portico stylobate', () => {
+  assert.match(palace, /'Portico stylobate step'/);
+});
+
+testCase('low walls close the east and west sides of the Academy garden', () => {
+  assert.match(palace, /'Academy garden side wall'/);
+});
+
+testCase('abacus blocks sit atop each portico column capital', () => {
+  assert.match(palace, /'Portico column abacus'/);
+});
+
+testCase('lanterns crown the piers of the park north gate', () => {
+  assert.match(palace, /'Park north gate lantern'/);
+  assert.match(palace, /'Park north gate lantern glass'/);
+});
+
+testCase('a top rail closes the BELvue roof terrace balustrade', () => {
+  assert.match(palace, /'BELvue roof terrace rail'/);
+});
+
+testCase('each of the eleven great flower pots stands on a stone pedestal', () => {
+  assert.match(palace, /'Flower pot pedestal'/);
+});
+
+testCase('a circular sett ring surrounds the equestrian statue on the Place du Trone', () => {
+  assert.match(palace, /'Place du Trone statue sett ring'/);
+  assert.match(palace, /trRing\.count = tri4/);
+});
+
+testCase('a dentil course runs under the BELvue cornice', () => {
+  assert.match(palace, /'BELvue cornice dentil'/);
+  assert.match(palace, /bvDen\.count = bdi2/);
+});
+
+testCase('the Academy Palace portico shelters a central door with step and lintel', () => {
+  assert.match(palace, /'Academy Palace portico door'/);
+  assert.match(palace, /'Academy Palace portico door lintel'/);
+  assert.match(palace, /'Academy Palace portico step'/);
+});
+
+testCase('a bottom rail completes the gilded garden railing', () => {
+  assert.match(palace, /'Gilded garden railing bottom rail'/);
+});
+
+testCase('a low railing rings the park bandstand', () => {
+  assert.match(palace, /'Park bandstand railing'/);
+  assert.match(palace, /bsRail\.count = bsi/);
+});
+
+testCase('an architrave beam spans the Palace of the Nation peristyle', () => {
+  assert.match(palace, /'Palace of the Nation architrave'/);
+});
+
+testCase('stone edging strips border the central garden walk', () => {
+  assert.match(palace, /'Central garden walk edging'/);
+});
+
+testCase('coping stones cap the rim of the octagonal basin', () => {
+  assert.match(palace, /'Octagonal basin rim coping'/);
+  assert.match(palace, /obCop\.count = obi/);
+});
+
+testCase('bases and capitals finish the Academy Palace pilaster order', () => {
+  assert.match(palace, /'Academy Palace pilaster base'/);
+  assert.match(palace, /'Academy Palace pilaster capital'/);
+});
+
+testCase('flower boxes with plantings hang under the central balcony', () => {
+  assert.match(palace, /'Central balcony flower box'/);
+  assert.match(palace, /'Central balcony flower box planting'/);
+});
+
+testCase('corner quoins strengthen the Palace of the Nation facade corners', () => {
+  assert.match(palace, /'Palace of the Nation corner quoin'/);
+});
+
+testCase('the great ground-floor door stands behind the portico colonnade', () => {
+  assert.match(palace, /'Portico main door'/);
+});
+
+testCase('each Academy garden statue pedestal carries a bronze name plaque', () => {
+  assert.match(palace, /'Academy statue plaque'/);
+});
+
+testCase('a low railing rings the Vauxhall bandstand', () => {
+  assert.match(palace, /'Vauxhall bandstand railing'/);
+  assert.match(palace, /vhRail\.count = vhi/);
+});
+
+testCase('capitals finish the pilasters on both wing end faces', () => {
+  assert.match(palace, /'Wing end pilaster capital'/);
+});
+
+testCase('stone surrounds frame the BELvue piano nobile windows', () => {
+  assert.match(palace, /'BELvue piano nobile surround'/);
+});
+
+testCase('a glazed fanlight crowns the portico main door', () => {
+  assert.match(palace, /'Portico door fanlight'/);
+});
+
+testCase('a dovecote crowns the Royal Stables hipped roof', () => {
+  assert.match(palace, /'Royal Stables dovecote'/);
+  assert.match(palace, /'Royal Stables dovecote roof'/);
+});
+
+testCase('a stone plinth carries the park perimeter railing on all four sides', () => {
+  assert.match(palace, /'Park south railing plinth'/);
+  assert.match(palace, /'Park north railing plinth'/);
+  assert.match(palace, /'Park west railing plinth'/);
+  assert.match(palace, /'Park east railing plinth'/);
+});
+
+testCase('lamp standards with gilded globes flank the garden gates', () => {
+  assert.match(palace, /'Garden gate lamp'/);
+  assert.match(palace, /'Garden gate lamp globe'/);
+});
+
+testCase('an inset tympanum panel fills the Palace of the Nation pediment', () => {
+  assert.match(palace, /'Palace of the Nation tympanum panel'/);
+});
+
+testCase('a moulded surround frames the portico main door', () => {
+  assert.match(palace, /'Portico door jamb'/);
+  assert.match(palace, /'Portico door lintel'/);
+});
+
+testCase('stone sills sit under each BELvue ground-floor window', () => {
+  assert.match(palace, /'BELvue ground window sill'/);
+});
+
+testCase('the Academy Palace ground floor is bossaged', () => {
+  assert.match(palace, /'Academy Palace ground bossage'/);
+  assert.match(palace, /apBoss\.count = apBi/);
+});
+
+testCase('flower boxes with plantings line the wing balconies', () => {
+  assert.match(palace, /'Wing balcony flower box'/);
+  assert.match(palace, /'Wing balcony flower box planting'/);
+});
+
+testCase('stone sills sit under each Palace of the Nation facade window', () => {
+  assert.match(palace, /'Palace of the Nation window sill'/);
+});
+
+testCase('a moulded cap crowns the central balcony rail', () => {
+  assert.match(palace, /'Central balcony top cap'/);
+});
+
+testCase('stone lintels crown the Royal Stables arched windows', () => {
+  assert.match(palace, /'Royal Stables window lintel'/);
+});
+
+testCase('a sill band runs under the Academy Palace ground-floor windows', () => {
+  assert.match(palace, /'Academy Palace sill band'/);
+});
+
+testCase('transverse joint bands mark the central garden walk paving', () => {
+  assert.match(palace, /'Central garden walk joint'/);
+});
+
+testCase('stone sills sit under each BELvue attic window', () => {
+  assert.match(palace, /'BELvue attic window sill'/);
+});
+
+testCase('small caps crown the posts of the gilded garden railing', () => {
+  assert.match(palace, /'Garden railing post cap'/);
+});
+
+testCase('stone lintels crown the Palace of the Nation wing windows', () => {
+  assert.match(palace, /'Palace of the Nation wing window lintel'/);
+});
+
+testCase('a lower step completes the Academy Palace portico entrance flight', () => {
+  assert.match(palace, /'Academy Palace portico lower step'/);
+});
+
+testCase('bronze escutcheon plates mark each central French door', () => {
+  assert.match(palace, /'French door escutcheon'/);
+});
+
+testCase('urns stand along the Palace of the Nation attic balustrade', () => {
+  assert.match(palace, /'Palace of the Nation balustrade urn'/);
+  assert.match(palace, /pnUr\.count = pnui/);
+});
+
+testCase('a landing slab tops the perron at the foot of the portico', () => {
+  assert.match(palace, /'Perron top landing'/);
+});
+
+testCase('a dentil course runs under the Academy Palace cornice', () => {
+  assert.match(palace, /'Academy Palace cornice dentil'/);
+  assert.match(palace, /apDn\.count = apDi/);
+});
+
+testCase('a bronze finial with gilded ball crowns the BELvue pavilion roof', () => {
+  assert.match(palace, /'BELvue roof finial'/);
+  assert.match(palace, /'BELvue roof finial ball'/);
+});
+
+testCase('a projecting plinth course bases the palace facade', () => {
+  assert.match(palace, /'Facade plinth course'/);
+});
+
+testCase('each Hermes bust around the octagonal basin stands on a pedestal', () => {
+  assert.match(palace, /'Hermes bust pedestal'/);
+});
+
+testCase('the central balcony rail sits on a projecting stone slab', () => {
+  assert.match(palace, /'Central balcony slab'/);
+});
+
+testCase('attic bases ring each Palace of the Nation peristyle column', () => {
+  assert.match(palace, /'Palace of the Nation column base'/);
+});
+
+testCase('a tall window pierces the Royal Stables gatehouse above the gate', () => {
+  assert.match(palace, /'Royal Stables gatehouse window'/);
+  assert.match(palace, /'Royal Stables gatehouse window lintel'/);
+});
+
+testCase('a stone threshold spans the gilded garden gate', () => {
+  assert.match(palace, /'Garden gate threshold'/);
+});
+
+testCase('capitals crown each Palace of the Nation peristyle column', () => {
+  assert.match(palace, /'Palace of the Nation column capital'/);
+});
+
+testCase('each wing balcony rests on a projecting stone slab', () => {
+  assert.match(palace, /'Wing balcony slab'/);
+});
+
+testCase('an architrave spans the Academy Palace portico under the pediment', () => {
+  assert.match(palace, /'Academy Palace portico architrave'/);
+});
+
+testCase('bollards mark the four corners of the Place des Palais', () => {
+  assert.match(palace, /'Square corner bollard'/);
+});
+
+testCase('a muntin cross divides the portico door fanlight into panes', () => {
+  assert.match(palace, /'Fanlight muntin vertical'/);
+  assert.match(palace, /'Fanlight muntin horizontal'/);
+});
+
+testCase('keystones crown the Academy Palace ground-floor arched windows', () => {
+  assert.match(palace, /'Academy Palace window keystone'/);
+});
+
+testCase('acroteria stand on the Palace of the Nation pediment', () => {
+  assert.match(palace, /'Palace of the Nation pediment acroterion'/);
+});
+
+testCase('gate piers with caps flank the Royal Stables gate door', () => {
+  assert.match(palace, /'Royal Stables gate pier'/);
+  assert.match(palace, /'Royal Stables gate pier cap'/);
+});
+
+testCase('stone corbels carry the central balcony slab', () => {
+  assert.match(palace, /'Central balcony corbel'/);
+});
+
+testCase('benches face the main pond from its south rim', () => {
+  assert.match(palace, /'Park pond bench seat'/);
+  assert.match(palace, /'Park pond bench back'/);
+});
+
+testCase('stone lintels crown the BELvue ground-floor windows', () => {
+  assert.match(palace, /'BELvue ground window lintel'/);
+});
+
+testCase('newel posts finish both ends of each wing balcony rail', () => {
+  assert.match(palace, /'Wing balcony end newel'/);
+});
+
+testCase('a glazed fanlight crowns the Palace of the Nation main door', () => {
+  assert.match(palace, /'Palace of the Nation door fanlight'/);
+});
+
+testCase('a ridge strip crowns the Academy Palace roofline', () => {
+  assert.match(palace, /'Academy Palace roof ridge'/);
+});
+
+testCase('flanged bases anchor the perron lamp standards', () => {
+  assert.match(palace, /'Perron lamp base flange'/);
+});
+
+testCase('stone sills sit under each BELvue piano nobile window', () => {
+  assert.match(palace, /'BELvue piano nobile sill'/);
+});
+
+testCase('newel posts finish both ends of the central balcony rail', () => {
+  assert.match(palace, /'Central balcony end newel'/);
+});
+
+testCase('keystones crown the Palace of the Nation facade windows', () => {
+  assert.match(palace, /'Palace of the Nation window keystone'/);
+});
+
+testCase('the Academy stables block has a great door with lintel', () => {
+  assert.match(palace, /'Academy stables door'/);
+  assert.match(palace, /'Academy stables door lintel'/);
+});
+
+testCase('a cap strip crowns each perron side rail', () => {
+  assert.match(palace, /'Perron side rail cap'/);
+});
+
+testCase('stone sills sit under each Palace of the Nation wing window', () => {
+  assert.match(palace, /'Palace of the Nation wing window sill'/);
+});
+
+testCase('bronze threshold plates span each central French door', () => {
+  assert.match(palace, /'French door threshold'/);
+});
+
+testCase('windows pierce the Academy Palace attic storey', () => {
+  assert.match(palace, /'Academy Palace attic window'/);
+});
+
+testCase('modillions line the underside of the BELvue cornice', () => {
+  assert.match(palace, /'BELvue cornice modillion'/);
+  assert.match(palace, /bvMd\.count = bvMi/);
+});
+
+testCase('cap slabs finish both perron cheek walls', () => {
+  assert.match(palace, /'Perron cheek wall cap'/);
+});
+
+testCase('quoins strengthen the facade corners of both Palace of the Nation wings', () => {
+  assert.match(palace, /'Palace of the Nation wing quoin'/);
+});
+
+testCase('stone lintels crown the wing end windows on both gable ends', () => {
+  assert.match(palace, /'Wing end window lintel'/);
+  assert.match(palace, /'Wing end ground window lintel'/);
+});
+
+testCase('attic bases ring each Academy Palace portico column', () => {
+  assert.match(palace, /'Academy portico column base'/);
+});
+
+testCase('stone lintels crown the Royal Stables hayloft windows', () => {
+  assert.match(palace, /'Royal Stables hayloft lintel'/);
+});
+
+testCase('corner posts with gilded finials close the garden railing run', () => {
+  assert.match(palace, /'Garden railing corner post'/);
+  assert.match(palace, /'Garden railing corner post finial'/);
+});
+
+testCase('capitals crown each Academy Palace portico column', () => {
+  assert.match(palace, /'Academy portico column capital'/);
+});
+
+testCase('corner quoins strengthen the palace facade corners', () => {
+  assert.match(palace, /'Facade corner quoin'/);
+});
+
+testCase('urns stand at the four corners of the BELvue roof terrace', () => {
+  assert.match(palace, /'BELvue roof terrace urn'/);
+});
+
+testCase('lanterns flank the main door of the Palace of the Nation', () => {
+  assert.match(palace, /'Palace of the Nation entrance lantern'/);
+  assert.match(palace, /'Palace of the Nation entrance lantern glass'/);
+});
+
+testCase('rim stones finish the two perron planters', () => {
+  assert.match(palace, /'Perron planter rim'/);
+});
+
+testCase('keystones crown the BELvue piano nobile windows', () => {
+  assert.match(palace, /'BELvue window keystone'/);
+});
+
+testCase('arms carry the gilded globes from the perron lamp standards', () => {
+  assert.match(palace, /'Perron lamp arm'/);
+});
+
+testCase('a sett-paved yard lies behind the Academy stables block', () => {
+  assert.match(palace, /'Academy stables yard paving'/);
+});
+
+testCase('collar rings anchor the emperor bust pedestals around the pond', () => {
+  assert.match(palace, /'Pond emperor bust collar'/);
+});
+
+testCase('a moulded cap finishes the front edge of the portico stylobate', () => {
+  assert.match(palace, /'Stylobate edge cap'/);
+});
+
+testCase('collars anchor the statue pedestals in the Academy garden', () => {
+  assert.match(palace, /'Academy statue base collar'/);
+});
+
+testCase('caps finish the posts of the perron side rails', () => {
+  assert.match(palace, /'Perron rail post cap'/);
+});
+
+testCase('a centre mullion divides each Palace of the Nation facade window', () => {
+  assert.match(palace, /'Palace of the Nation window mullion'/);
+});
+
+testCase('stone lintels crown the BELvue attic windows', () => {
+  assert.match(palace, /'BELvue attic window lintel'/);
+});
+
+testCase('rim rings finish the eleven great flower pots', () => {
+  assert.match(palace, /'Flower pot rim'/);
+});
+
+testCase('centre mullions divide the Palace of the Nation wing windows', () => {
+  assert.match(palace, /'Palace of the Nation wing window mullion'/);
+});
+
+testCase('mullions divide the wing end windows on both gable ends', () => {
+  assert.match(palace, /'Wing end window mullion'/);
+  assert.match(palace, /'Wing end ground window mullion'/);
+});
+
+testCase('mullions divide the Academy Palace first-floor windows', () => {
+  assert.match(palace, /'Academy Palace first-floor mullion'/);
+});
+
+testCase('mullions divide the BELvue ground-floor windows', () => {
+  assert.match(palace, /'BELvue ground window mullion'/);
+});
+
+testCase('a transom bar crosses each central French door near its head', () => {
+  assert.match(palace, /'Central French door transom bar'/);
+});
+
+testCase('keystones crown the Royal Stables arched windows', () => {
+  assert.match(palace, /'Royal Stables window keystone'/);
+});
+
+testCase('stone sills sit under the wing end windows on both gable ends', () => {
+  assert.match(palace, /'Wing end window sill'/);
+  assert.match(palace, /'Wing end ground window sill'/);
+});
+
+testCase('a moulded surround frames the Palace of the Nation main door', () => {
+  assert.match(palace, /'Palace of the Nation door jamb'/);
+  assert.match(palace, /'Palace of the Nation door lintel'/);
+});
+
+testCase('jambs frame the BELvue entrance door', () => {
+  assert.match(palace, /'BELvue door jamb'/);
+});
+
+testCase('moulded edges finish the sides of each perron step', () => {
+  assert.match(palace, /'Perron step edge'/);
+});
+
+testCase('mullions divide the BELvue piano nobile windows', () => {
+  assert.match(palace, /'BELvue piano nobile mullion'/);
+});
+
+testCase('glazed side lights flank the central portico door', () => {
+  assert.match(palace, /'Portico door side light'/);
+});
+
+testCase('mullions divide the Academy Palace ground-floor arched windows', () => {
+  assert.match(palace, /'Academy Palace ground mullion'/);
+});
+
+testCase('a frieze band runs above the Palace of the Nation architrave', () => {
+  assert.match(palace, /'Palace of the Nation frieze band'/);
+});
+
+testCase('dark soil fills the two perron planters', () => {
+  assert.match(palace, /'Perron planter soil'/);
+});
+
+testCase('raking cornices follow both slopes of the Academy pediment', () => {
+  assert.match(palace, /'Academy pediment raking cornice'/);
+});
+
+testCase('collar rings decorate the perron lamp standards', () => {
+  assert.match(palace, /'Perron lamp collar'/);
+});
+
+testCase('cheek stones flank the Palace of the Nation entrance steps', () => {
+  assert.match(palace, /'Palace of the Nation step cheek'/);
+});
+
+testCase('cheek stones flank the BELvue entrance steps', () => {
+  assert.match(palace, /'BELvue step cheek'/);
+});
+
+testCase('stone sills sit under the portico door side lights', () => {
+  assert.match(palace, /'Portico side light sill'/);
+});
+
+testCase('mullions divide the Royal Stables arched windows', () => {
+  assert.match(palace, /'Royal Stables window mullion'/);
+});
+
+testCase('mullions divide the portico door side lights', () => {
+  assert.match(palace, /'Portico side light mullion'/);
+});
+
+testCase('a bed moulding crowns the Palace of the Nation cornice', () => {
+  assert.match(palace, /'Palace of the Nation cornice bed moulding'/);
+});
+
+testCase('a gravel path crosses the Academy Palace garden', () => {
+  assert.match(palace, /'Academy garden path'/);
+});
+
+testCase('cap strips crown the wing balcony rails', () => {
+  assert.match(palace, /'Wing balcony rail cap'/);
+});
+
+testCase('cornices crown both Palace of the Nation wings', () => {
+  assert.match(palace, /'Palace of the Nation wing cornice'/);
+});
+
+testCase('bases finish the pilasters on both wing end faces', () => {
+  assert.match(palace, /'Wing end pilaster base'/);
+});
+
+testCase('a dentil course runs under the Academy stables cornice', () => {
+  assert.match(palace, /'Academy stables cornice dentil'/);
+  assert.match(palace, /asDn\.count = asDi/);
+});
+
+testCase('a balustrade crowns the BELvue attic storey', () => {
+  assert.match(palace, /'BELvue attic baluster'/);
+  assert.match(palace, /'BELvue attic balustrade rail'/);
+});
+
+testCase('flower bands border the central garden walk', () => {
+  assert.match(palace, /'Garden walk flower band'/);
+});
+
+testCase('a door with lintel pierces the west wing of the Palace of the Nation', () => {
+  assert.match(palace, /'Palace of the Nation wing door'/);
+  assert.match(palace, /'Palace of the Nation wing door lintel'/);
+});
+
+testCase('return caps close the ends of the stylobate edge cap', () => {
+  assert.match(palace, /'Stylobate edge cap return'/);
+});
+
+testCase('a gate with piers and lintel opens into the Academy garden', () => {
+  assert.match(palace, /'Academy garden gate pier'/);
+  assert.match(palace, /'Academy garden gate lintel'/);
+});
+
+testCase('a sett medallion marks the centre of the Place des Palais', () => {
+  assert.match(palace, /'Square axis medallion'/);
+});
+
+testCase('a kerb closes the garden walk at the gilded railing', () => {
+  assert.match(palace, /'Garden walk end kerb'/);
+});
+
+testCase('a glazed fanlight crowns the BELvue entrance door', () => {
+  assert.match(palace, /'BELvue door fanlight'/);
+});
+
+testCase('a leaf split divides the portico main door into two leaves', () => {
+  assert.match(palace, /'Portico door leaf split'/);
+});
+
+testCase('volutes finish the Academy Palace pilaster capitals', () => {
+  assert.match(palace, /'Academy pilaster volute'/);
+});
+
+testCase('a projecting plinth bases the Palace of the Nation facade', () => {
+  assert.match(palace, /'Palace of the Nation base plinth'/);
+});
+
+testCase('a moulded edge finishes the front of each wing balcony slab', () => {
+  assert.match(palace, /'Wing balcony slab edge'/);
+});
+
+testCase('side gates open in the east and west park railings', () => {
+  assert.match(palace, /'Park side gate pier'/);
+  assert.match(palace, /'Park side gate lintel'/);
+});
+
+testCase('low walls border the central garden walk', () => {
+  assert.match(palace, /'Garden walk low wall'/);
+});
+
+testCase('stone surrounds frame the Royal Stables arched windows', () => {
+  assert.match(palace, /'Royal Stables window surround'/);
+});
+
+testCase('pilasters strengthen the BELvue square-facing corners', () => {
+  assert.match(palace, /'BELvue corner pilaster'/);
+});
+
+testCase('a base rail joins the feet of the central balcony balusters', () => {
+  assert.match(palace, /'Central balcony base rail'/);
+});
+
+testCase('stone surrounds frame the Academy ground-floor arched windows', () => {
+  assert.match(palace, /'Academy ground window surround'/);
+});
+
+testCase('hinge straps secure the portico main door leaves', () => {
+  assert.match(palace, /'Portico door hinge'/);
+});
+
+testCase('jambs frame the Palace of the Nation wing door', () => {
+  assert.match(palace, /'Palace of the Nation wing door jamb'/);
+});
+
+testCase('a stone rim rings the fountain jet of the main pond', () => {
+  assert.match(palace, /'Park fountain rim'/);
+});
+
+testCase('a cap finishes the plinth of the gilded garden railing', () => {
+  assert.match(palace, /'Garden railing plinth cap'/);
+});
+
+testCase('a projecting cornice tops the Palace of the Nation peristyle entablature', () => {
+  assert.match(palace, /'Palace of the Nation peristyle cornice'/);
+});
+
+testCase('corbels carry each wing balcony slab from the facade', () => {
+  assert.match(palace, /'Wing balcony corbel'/);
+});
+
+testCase('a stylobate platform carries the Academy portico columns', () => {
+  assert.match(palace, /'Academy portico stylobate'/);
+});
+
+testCase('a recessed panel surrounds the BELvue entrance door', () => {
+  assert.match(palace, /'BELvue entrance recess panel'/);
+});
+
+testCase('a moulded edge finishes the front of the central balcony slab', () => {
+  assert.match(palace, /'Central balcony slab edge'/);
+});
+
+testCase('a door with lintel pierces the east wing of the Palace of the Nation', () => {
+  assert.match(palace, /'Palace of the Nation east wing door'/);
+  assert.match(palace, /'Palace of the Nation east wing door lintel'/);
+});
+
+testCase('a moulding closes the underside of the central balcony slab', () => {
+  assert.match(palace, /'Central balcony underside moulding'/);
+});
+
+testCase('stone sills sit under the Academy first-floor windows', () => {
+  assert.match(palace, /'Academy first-floor window sill'/);
+});
+
+testCase('a bed moulding crowns the front edge of the BELvue cornice', () => {
+  assert.match(palace, /'BELvue cornice bed moulding'/);
+});
+
+testCase('shoes anchor the perron side rail posts', () => {
+  assert.match(palace, /'Perron rail post shoe'/);
+});
+
+testCase('jambs frame the Palace of the Nation east wing door', () => {
+  assert.match(palace, /'Palace of the Nation east wing door jamb'/);
+});
+
+testCase('brackets carry the wing balcony flower boxes', () => {
+  assert.match(palace, /'Wing flower box bracket'/);
+});
+
+testCase('stone sills sit under the Royal Stables arched windows', () => {
+  assert.match(palace, /'Royal Stables window sill'/);
+});
+
+testCase('keystones crown the BELvue ground-floor windows', () => {
+  assert.match(palace, /'BELvue ground window keystone'/);
+});
+
+testCase('brackets carry the central balcony flower box', () => {
+  assert.match(palace, /'Central flower box bracket'/);
+});
+
+testCase('stone lintels crown the Academy ground-floor arched windows', () => {
+  assert.match(palace, /'Academy ground window lintel'/);
+});
+
+testCase('a bed moulding sits between the portico architrave and cornice', () => {
+  assert.match(palace, /'Portico architrave bed moulding'/);
+});
+
+testCase('keystones crown the Palace of the Nation wing windows', () => {
+  assert.match(palace, /'Palace of the Nation wing window keystone'/);
+});
+
+testCase('mullions divide the BELvue attic windows', () => {
+  assert.match(palace, /'BELvue attic window mullion'/);
+});
+
+testCase('mid rails run between the wing balcony balusters', () => {
+  assert.match(palace, /'Wing balcony mid rail'/);
+});
+
+testCase('jambs frame the Academy Palace portico door', () => {
+  assert.match(palace, /'Academy portico door jamb'/);
+});
+
+testCase('lintels crown the portico door side lights', () => {
+  assert.match(palace, /'Portico side light lintel'/);
+});
+
+testCase('a tympanum panel fills the Royal Stables gatehouse pediment', () => {
+  assert.match(palace, /'Royal Stables pediment tympanum'/);
+});
+
+testCase('windows pierce the Academy Palace end pavilions', () => {
+  assert.match(palace, /'Academy end pavilion window'/);
+});
+
+testCase('dark soil fills the wing balcony flower boxes', () => {
+  assert.match(palace, /'Wing flower box soil'/);
+});
+
+testCase('hayloft windows pierce the Academy stables block under the eaves', () => {
+  assert.match(palace, /'Academy stables hayloft window'/);
+});
+
+testCase('dark soil fills the central balcony flower box', () => {
+  assert.match(palace, /'Central flower box soil'/);
+});
+
+testCase('a projecting eave band rings the BELvue pavilion roof base', () => {
+  assert.match(palace, /'BELvue pavilion eave'/);
+});
+
+testCase('a stone rim rings the fountain jet of the octagonal basin', () => {
+  assert.match(palace, /'Octagonal basin fountain rim'/);
+});
+
+testCase('bottom rails join the feet of the wing balcony balusters', () => {
+  assert.match(palace, /'Wing balcony bottom rail'/);
+});
+
+testCase('tympanum panels fill the Palace of the Nation wing pediments', () => {
+  assert.match(palace, /'Palace of the Nation wing tympanum'/);
+});
+
+testCase('a bronze kick plate protects the foot of the portico main door', () => {
+  assert.match(palace, /'Portico door kick plate'/);
+});
+
+testCase('jambs frame the great door of the Academy stables block', () => {
+  assert.match(palace, /'Academy stables door jamb'/);
+});
+
+testCase('a projecting plinth bases the BELvue pavilion block', () => {
+  assert.match(palace, /'BELvue base plinth'/);
+});
+
+testCase('gilded balls crown the perron side rail posts', () => {
+  assert.match(palace, /'Perron rail post ball'/);
+});
+
+testCase('small pediments cap the Academy Palace end pavilions', () => {
+  assert.match(palace, /'Academy end pavilion pediment'/);
+});
+
+testCase('cap strips finish the wing balcony corbels', () => {
+  assert.match(palace, /'Wing balcony corbel cap'/);
+});
+
+testCase('kerbs edge both sides of the BELvue entrance steps', () => {
+  assert.match(palace, /'BELvue step kerb'/);
+});
+
+testCase('a dentil course runs under the Royal Stables gatehouse cornice', () => {
+  assert.match(palace, /'Royal Stables gatehouse dentil'/);
+  assert.match(palace, /rsDn\.count = rsDi/);
+});
+
+testCase('a rim finishes the central balcony flower box', () => {
+  assert.match(palace, /'Central flower box rim'/);
+});
+
+testCase('kerbs edge both sides of the Academy portico steps', () => {
+  assert.match(palace, /'Academy portico step kerb'/);
+});
+
+testCase('rims finish the wing balcony flower boxes', () => {
+  assert.match(palace, /'Wing flower box rim'/);
+});
+
+testCase('raking cornices follow both slopes of the Palace of the Nation pediment', () => {
+  assert.match(palace, /'Palace of the Nation raking cornice'/);
+});
+
+testCase('kerbs flank the west radiating avenue from the main pond', () => {
+  assert.match(palace, /'Radiating avenue west kerb'/);
+});
+
+testCase('a nosing strip edges the front stylobate step', () => {
+  assert.match(palace, /'Stylobate step nosing'/);
+});
+
+testCase('kerbs flank the east radiating avenue from the main pond', () => {
+  assert.match(palace, /'Radiating avenue east kerb'/);
+});
+
+testCase('a sill bar closes the foot of the portico door fanlight', () => {
+  assert.match(palace, /'Fanlight sill bar'/);
+});
+
+testCase('a gate opens in the Royal Stables courtyard wall', () => {
+  assert.match(palace, /'Royal Stables yard gate pier'/);
+  assert.match(palace, /'Royal Stables yard gate lintel'/);
+});
+
+testCase('keystones crown the BELvue attic windows', () => {
+  assert.match(palace, /'BELvue attic window keystone'/);
+});
+
+testCase('a contrasting sett line runs down the centre of the garden walk', () => {
+  assert.match(palace, /'Garden walk centre sett line'/);
+});
+
+testCase('kerbs edge both sides of the Palace of the Nation peristyle steps', () => {
+  assert.match(palace, /'Palace of the Nation step kerb'/);
+});
+
+testCase('a bronze threshold plate spans the portico main door', () => {
+  assert.match(palace, /'Portico door threshold plate'/);
+});
+
+testCase('a ridge strip crowns the Academy stables hipped roof', () => {
+  assert.match(palace, /'Academy stables roof ridge'/);
+});
+
+testCase('dentil courses run under both Palace of the Nation wing cornices', () => {
+  assert.match(palace, /'Palace of the Nation wing cornice dentil'/);
+  assert.match(palace, /pwDn\.count = pwDi/);
+});
+
+testCase('scroll ends finish both ends of the central balcony rail', () => {
+  assert.match(palace, /'Central balcony scroll end'/);
+});
+
+testCase('a dentil course runs under the Academy portico architrave', () => {
+  assert.match(palace, /'Academy portico dentil'/);
+  assert.match(palace, /apPd\.count = apPi/);
+});
+
+testCase('scroll ends finish both ends of each wing balcony rail', () => {
+  assert.match(palace, /'Wing balcony scroll end'/);
+});
+
+testCase('a bronze kick plate protects the foot of the BELvue door', () => {
+  assert.match(palace, /'BELvue door kick plate'/);
+});
+
+testCase('a bronze kick plate protects the foot of the Palace of the Nation door', () => {
+  assert.match(palace, /'Palace of the Nation door kick plate'/);
+});
+
+testCase('cap slabs finish the garden walk low walls', () => {
+  assert.match(palace, /'Garden walk wall cap'/);
+});
+
+testCase('dentil courses run under both Academy end pavilion cornices', () => {
+  assert.match(palace, /'Academy end pavilion dentil'/);
+  assert.match(palace, /aepD\.count = aepDi/);
+});
+
+testCase('a moulded edge finishes the front of the perron top landing', () => {
+  assert.match(palace, /'Perron landing edge'/);
+});
+
+testCase('a lintel spans the palace-park gate in the Place du Trone fence', () => {
+  assert.match(palace, /'Place du Trone gate lintel'/);
+});
+
+testCase('stone steps lead down to the main pond rim on the north side', () => {
+  assert.match(palace, /'Main pond north access step'/);
+});
+
+testCase('end blocks close both ends of the portico architrave', () => {
+  assert.match(palace, /'Architrave end block'/);
+});
+
+testCase('a low wall closes the south side of the Academy stables yard', () => {
+  assert.match(palace, /'Academy stables yard wall'/);
+});
+
+testCase('end blocks close both ends of the portico frieze triglyph run', () => {
+  assert.match(palace, /'Triglyph end block'/);
+});
+
+testCase('stone steps lead down to the octagonal basin rim on its south side', () => {
+  assert.match(palace, /'Octagonal basin access step'/);
+});
+
+testCase('acroteria crown the wing pediments of the Palace of the Nation', () => {
+  assert.match(palace, /'Palace of the Nation wing acroterion'/);
+});
+
+testCase('stone bases anchor the end posts of the garden railing', () => {
+  assert.match(palace, /'Garden railing end post base'/);
+});
+
+testCase('a cap course finishes the Academy garden front wall', () => {
+  assert.match(palace, /'Academy garden wall cap'/);
+});
+
+testCase('side caps close the ends of the stylobate edge', () => {
+  assert.match(palace, /'Stylobate side cap'/);
+});
+
+testCase('a paved floor covers the Academy portico stylobate', () => {
+  assert.match(palace, /'Academy portico floor'/);
+});
+
+testCase('a paved floor covers the Palace of the Nation peristyle', () => {
+  assert.match(palace, /'Palace of the Nation peristyle floor'/);
+});
+
+testCase('cap slabs finish the central balcony corbels', () => {
+  assert.match(palace, /'Central balcony corbel cap'/);
+});
+
+testCase('a kerb borders the front edge of the peristyle floor', () => {
+  assert.match(palace, /'Peristyle floor border kerb'/);
+});
+
+testCase('a mid post stiffens each perron side rail', () => {
+  assert.match(palace, /'Perron rail mid post'/);
+});
+
+testCase('cap courses finish the Academy garden side walls', () => {
+  assert.match(palace, /'Academy garden side wall cap'/);
+});
+
+testCase('a sett field paves the north strip of the Place des Palais', () => {
+  assert.match(palace, /'Place des Palais north sett field'/);
+});
+
+testCase('a step leads up to the Academy stables great door', () => {
+  assert.match(palace, /'Academy stables door step'/);
+});
+
+testCase('a cap course finishes the Royal Stables courtyard wall', () => {
+  assert.match(palace, /'Royal Stables courtyard wall cap'/);
+});
+
+testCase('caps finish the perron side rail mid posts', () => {
+  assert.match(palace, /'Perron mid post cap'/);
+});
+
+testCase('a cap course finishes the Academy stables yard wall', () => {
+  assert.match(palace, /'Academy stables yard wall cap'/);
+});
+
+testCase('side kerbs border the Palace of the Nation peristyle floor', () => {
+  assert.match(palace, /'Peristyle floor side kerb'/);
+});
+
+testCase('side caps close the ends of the front stylobate step', () => {
+  assert.match(palace, /'Stylobate step side cap'/);
+});
+
+testCase('a kerb borders the rear edge of the peristyle floor', () => {
+  assert.match(palace, /'Peristyle floor rear kerb'/);
+});
+
+testCase('rings cage the gilded globes of the perron lamps', () => {
+  assert.match(palace, /'Perron lamp globe ring'/);
+});
+
+testCase('a sett field paves the east side of the Place du Trone', () => {
+  assert.match(palace, /'Place du Trone east sett field'/);
+});
+
+testCase('stone steps lead down to the octagonal basin rim on its east side', () => {
+  assert.match(palace, /'Octagonal basin east access step'/);
+});
+
+testCase('balls finish the ends of the wing balcony rail caps', () => {
+  assert.match(palace, /'Wing balcony rail end ball'/);
+});
+
+testCase('stone steps lead down to the octagonal basin rim on its west side', () => {
+  assert.match(palace, /'Octagonal basin west access step'/);
+});
+
+testCase('plinths base both perron cheek walls', () => {
+  assert.match(palace, /'Perron cheek wall base'/);
+});
+
+testCase('steps lead up to the park bandstand platform', () => {
+  assert.match(palace, /'Bandstand access step'/);
+});
+
+testCase('steps lead up to the Vauxhall bandstand platform', () => {
+  assert.match(palace, /'Vauxhall bandstand step'/);
+});
+
+testCase('plinths anchor the perron lamp standard flanges', () => {
+  assert.match(palace, /'Perron lamp base plinth'/);
+});
+
+testCase('stone steps lead down to the main pond rim on its east side', () => {
+  assert.match(palace, /'Main pond east access step'/);
+});
+
+testCase('cap slabs finish the perron lamp base plinths', () => {
+  assert.match(palace, /'Perron lamp plinth cap'/);
+});
+
+testCase('kerbs edge both sides of the bandstand access steps', () => {
+  assert.match(palace, /'Bandstand step kerb'/);
+});
+
+testCase('kerbs edge both sides of the Vauxhall bandstand steps', () => {
+  assert.match(palace, /'Vauxhall step kerb'/);
+});
+
+testCase('finials crown the perron lamp standards above the globes', () => {
+  assert.match(palace, /'Perron lamp finial'/);
+});
+
+testCase('stone steps lead down to the main pond rim on its west side', () => {
+  assert.match(palace, /'Main pond west access step'/);
+});
+
+testCase('border posts mark the start of the central garden walk', () => {
+  assert.match(palace, /'Garden walk border post'/);
+});
+
+testCase('a sett ring borders the axis medallion of the Place des Palais', () => {
+  assert.match(palace, /'Square axis medallion ring'/);
+});
