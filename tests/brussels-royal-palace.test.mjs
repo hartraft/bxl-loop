@@ -1570,3 +1570,8 @@ testCase('newel posts finish both ends of the central balcony rail', () => {
 testCase('keystones crown the Palace of the Nation facade windows', () => {
   assert.match(palace, /'Palace of the Nation window keystone'/);
 });
+
+testCase('the Academy stables block has a great door with lintel', () => {
+  assert.match(palace, /'Academy stables door'/);
+  assert.match(palace, /'Academy stables door lintel'/);
+});
