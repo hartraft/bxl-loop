@@ -1692,7 +1692,10 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     box(g, 178, 2.2, 169, 0, 2.2, 0, light, 'Courthouse podium coping');
     // Dark bluestone soubassement band wrapping the terrace edge and the range plinths.
     box(g, 186.6, 2.4, 177.6, 0, 2.0, 0, bluestone, 'Palais de Justice bluestone soubassement band');
-    for (const z of [66.5, -66.5]) box(g, 160, 4.5, 17.8, 0, 5.2, z, bluestone, 'Range bluestone plinth');
+    box(g, 160, 4.5, 17.8, 0, 5.2, -66.5, bluestone, 'Range bluestone plinth');
+    // The north plinth is split around the porch opening so the doorway and inner colonnade
+    // are not buried.
+    for (const side of [-1, 1]) box(g, 46, 4.5, 17.8, side * 57, 5.2, 66.5, bluestone, 'North range bluestone plinth wing');
     for (const x of [71.5, -71.5]) box(g, 17.8, 4.5, 116, x, 5.2, 0, bluestone, 'Range bluestone plinth');
     // Eight internal courts are left open. Four long ranges and cross-ranges create
     // a legible courtyard plan instead of a single opaque rectangular mass.

@@ -142,7 +142,8 @@ test('facades mix pale sandstone with ochre/sable avant-corps, not a uniform whi
 test('the soubassement is the real dark Belgian bluestone (pierre bleue)', () => {
   assert.ok(palace.includes('const bluestone = new THREE.MeshStandardMaterial({ color: 0x3d444c, roughness: 0.92 })'));
   assert.ok(palace.includes("'Palais de Justice bluestone soubassement band'"));
-  assert.ok((palace.match(/'Range bluestone plinth'/g) || []).length === 2);
+  assert.ok(palace.includes("'Range bluestone plinth'"));
+  assert.ok((palace.match(/'North range bluestone plinth wing'/g) || []).length === 1, 'north plinth split around the porch');
 });
 
 test('the massing matches the real hors tout 186 x 177 m podium on the 160 x 150 m plan', () => {
