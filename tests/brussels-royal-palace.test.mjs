@@ -775,3 +775,9 @@ testCase('a moulded base cornice runs at the foot of each wing mansard', () => {
   assert.match(palace, /mansard's base cornice/);
   assert.match(palace, /'Wing mansard base cornice'/);
 });
+
+testCase('the terminal pavilion cornices carry modillions', () => {
+  assert.match(palace, /pavilion cornices carry modillions/);
+  assert.match(palace, /'Terminal pavilion modillion'/);
+  assert.match(palace, /for \(let mi2 = 0; mi2 < 7; mi2\+\+\)/);
+});

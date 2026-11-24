@@ -2366,6 +2366,13 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     for (const x of wingXs) {
       box(g, wingW + 1.2, 0.5, 0.7, x, 20.6, facadeZ + 0.4, moulding, 'Wing mansard base cornice');
     }
+
+    // The terminal pavilion cornices carry modillions (corbels), like the main cornice.
+    for (const x of [-76, 76]) {
+      for (let mi2 = 0; mi2 < 7; mi2++) {
+        box(g, 0.4, 0.5, 0.5, x - 4.2 + mi2 * 1.4, 23.0, facadeZ + 0.4, moulding, 'Terminal pavilion modillion');
+      }
+    }
   });
   addLandmark('palaceSurroundings', (g) => {
     // Brussels Park (Parc de Bruxelles): the rectangular 13.1 ha neoclassical park north of the
