@@ -1675,3 +1675,7 @@ testCase('caps finish the posts of the perron side rails', () => {
 testCase('a centre mullion divides each Palace of the Nation facade window', () => {
   assert.match(palace, /'Palace of the Nation window mullion'/);
 });
+
+testCase('stone lintels crown the BELvue attic windows', () => {
+  assert.match(palace, /'BELvue attic window lintel'/);
+});
