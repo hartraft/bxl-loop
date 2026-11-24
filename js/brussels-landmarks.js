@@ -1685,6 +1685,17 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       box(g, 3.6, 1.15, 0.18, x, 26.35, centralFace + 0.14, ashlar, 'Sculpted attic panel');
     }
 
+    // The real central attic carries an oval garlanded medallion struck with Leopold
+    // II's monogram, flanked by garland swags (heritage inventory).
+    const medallion = mesh(g, new THREE.TorusGeometry(1.15, 0.16, 10, 28), moulding, 0, 26.35, centralFace + 0.26, 'Leopold II monogram medallion');
+    medallion.scale.set(1.3, 1, 1);
+    mesh(g, new THREE.CircleGeometry(1.0, 28), ashlar, 0, 26.35, centralFace + 0.3, 'Leopold II monogram disc');
+    box(g, 0.3, 0.95, 0.06, -0.16, 26.38, centralFace + 0.34, moulding, 'Leopold II monogram L stem');
+    box(g, 0.55, 0.28, 0.06, 0.05, 26.02, centralFace + 0.34, moulding, 'Leopold II monogram L foot');
+    for (const side of [-1, 1]) {
+      mesh(g, new THREE.TorusGeometry(2.1, 0.09, 8, 24, Math.PI * 0.85), moulding, side * 3.6, 26.35, centralFace + 0.28, 'Attic garland swag');
+    }
+
     // Monumental triangular pediment, with an inset tympanum and a simple relief group.
     const pediment = new THREE.Shape();
     pediment.moveTo(-11.5, 0);
