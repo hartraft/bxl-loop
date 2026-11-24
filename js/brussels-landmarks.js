@@ -4256,6 +4256,14 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     box(g, 4.4, 0.3, 1.2, 168, 0.15, 21.2, materials.pavingEdge, 'BELvue entrance step');
     box(g, 4.0, 0.3, 1.0, 168, 0.45, 20.7, materials.pavingEdge, 'BELvue entrance step');
     box(g, 4.0, 0.28, 0.5, 168, 6.5, 21.8, materials.warmStone, 'BELvue entrance lintel');
+
+    // The Palace of the Nation attic windows and the main door beneath the peristyle pediment.
+    for (let i = 0; i < 7; i++) {
+      box(g, 1.8, 2.6, 0.2, -24 + i * 8, 19.6, 402.9, materials.glass, 'Palace of the Nation attic window');
+    }
+    box(g, 4.2, 8.5, 0.3, 0, 4.25, 402.8, materials.dark, 'Palace of the Nation main door');
+    box(g, 5.2, 0.3, 1.4, 0, 0.15, 401.6, materials.pavingEdge, 'Palace of the Nation entrance step');
+    box(g, 4.8, 0.3, 1.1, 0, 0.45, 401.0, materials.pavingEdge, 'Palace of the Nation entrance step');
   });
     addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');

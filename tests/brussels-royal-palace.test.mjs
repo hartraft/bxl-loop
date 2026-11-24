@@ -1122,3 +1122,9 @@ testCase('the BELvue museum has an entrance door with stone steps on the square 
   assert.match(palace, /'BELvue entrance lintel'/);
   assert.match(palace, /'BELvue entrance step'/);
 });
+
+testCase('the Palace of the Nation has attic windows and a main door under the pediment', () => {
+  assert.match(palace, /'Palace of the Nation attic window'/);
+  assert.match(palace, /'Palace of the Nation main door'/);
+  assert.match(palace, /'Palace of the Nation entrance step'/);
+});
