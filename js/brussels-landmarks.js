@@ -1656,9 +1656,15 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     for (let i = 0; i < 5; i++) box(g, 2.2, 5, 0.8, -8 + i * 4, 6, -22.5, materials.glass);
   });
   addLandmark('palaisDeJustice', (g) => {
-    // Palais de Justice (Joseph Poelaert, 1866–1883): monumental 150–160 m
-    // footprint, raised podium, eight courts, axial porticoes and the skyline dome.
-    // Local +Z is the principal north entrance toward Place Poelaert.
+    // Palais de Justice (Joseph Poelaert, 1866–1883): plan 160 x 150 m with eight inner
+    // courts, hors tout 186 x 177 x 116 m, copper dome gilded to 105 m (116 m hors tout),
+    // double Doric peristyle on a full-width emmarchement facing Place Poelaert.
+    // Local +Z is the principal north entrance toward Place Poelaert (local +X is west,
+    // toward rue des Minimes; local -X is east, toward rue aux Laines; local -Z is south,
+    // toward rue de Wynants).
+    // Sources: UNESCO tentative list 5357; Brussels heritage inventory building 30442;
+    // Regie des Batiments history/dimensions; fr.wikipedia Palais de justice de Bruxelles
+    // and Place Poelaert.
     const stone = new THREE.MeshStandardMaterial({ color: 0xc9bda8, roughness: 0.9 });
     const light = new THREE.MeshStandardMaterial({ color: 0xd8cbb6, roughness: 0.88 });
     const weathered = new THREE.MeshStandardMaterial({ color: 0xa99b86, roughness: 0.94 });
