@@ -1327,3 +1327,8 @@ testCase('an architrave beam spans the Palace of the Nation peristyle', () => {
 testCase('stone edging strips border the central garden walk', () => {
   assert.match(palace, /'Central garden walk edging'/);
 });
+
+testCase('coping stones cap the rim of the octagonal basin', () => {
+  assert.match(palace, /'Octagonal basin rim coping'/);
+  assert.match(palace, /obCop\.count = obi/);
+});

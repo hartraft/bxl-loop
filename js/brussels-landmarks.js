@@ -4559,6 +4559,19 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
 
     // An architrave beam spans the Palace of the Nation peristyle columns under the pediment.
     box(g, 52, 1.0, 3.0, 0, 15.5, 401.8, materials.warmStone, 'Palace of the Nation architrave');
+
+    // Coping stones cap the rim of the octagonal basin (1780) north of the main pond.
+    const obCop = new THREE.InstancedMesh(new THREE.BoxGeometry(3.4, 0.15, 0.5), materials.paleStone, 8);
+    const obd = new THREE.Object3D();
+    let obi = 0;
+    for (let k = 0; k < 8; k++) {
+      const a = k * Math.PI / 4;
+      obd.position.set(Math.cos(a) * 13.3, 0.95, 262 + Math.sin(a) * 13.3);
+      obd.rotation.y = -a + Math.PI / 4;
+      obd.updateMatrix();
+      obCop.setMatrixAt(obi++, obd.matrix);
+    }
+    obCop.count = obi; obCop.name = 'Octagonal basin rim coping'; g.add(obCop);
   });
     addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');
