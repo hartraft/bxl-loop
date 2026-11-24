@@ -1321,3 +1321,26 @@ test('rounds 393-402: keystone gold caps, manhole key holes, dormer glazing bars
   assert.ok(square.includes('Grand-Place Town Hall forecourt sett star'));
   assert.ok(square.includes('thStar.count = 8'));
 });
+
+test('rounds 403-412: base-buttress gold caps, Broodhuis pier capital balls, parapet rail end caps, Broodhuis forecourt sett star, side lancet hood balls, gallery corbel balls, quoin gold strips, blind-niche top trim, cross diagonal joints, shaft side hood balls', () => {
+  assert.ok(square.includes('Tower base buttress gold caps'));
+  assert.ok(square.includes('buttressTopBalls.count = 4'));
+  assert.ok(square.includes('King’s House pier capital gold balls'));
+  assert.ok(square.includes('khCapBalls.count = kcb'));
+  assert.ok(square.includes('parapet rail end caps'));
+  assert.ok(square.includes('parapetCaps.count = 2'));
+  assert.ok(square.includes('Grand-Place Broodhuis forecourt sett star'));
+  assert.ok(square.includes('khStar.count = 8'));
+  assert.ok(square.includes('Tower side lancet hood gold balls'));
+  assert.ok(square.includes('sideHoodBalls.count = shb'));
+  assert.ok(square.includes('King’s House gallery corbel gold balls'));
+  assert.ok(square.includes('corbelBalls.count = bays'));
+  assert.ok(square.includes('corner quoin gold strips'));
+  assert.ok(square.includes('quoinStrips.count = 2'));
+  assert.ok(square.includes('Blind niche gold top trim'));
+  assert.ok(square.includes('blindTrim.count = bt'));
+  assert.ok(square.includes('diagonal paving joints (cross set)'));
+  assert.ok(square.includes('diagJoints2.count = 12'));
+  assert.ok(square.includes('King’s House shaft side lancet hood balls'));
+  assert.ok(square.includes('shaftSideBalls.count = 4'));
+});

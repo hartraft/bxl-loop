@@ -191,6 +191,17 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     quoinCaps.count = 2;
     quoinCaps.name = name + ' corner quoin gold caps';
     root.add(quoinCaps);
+    // Full-height gilded strips dress the outermost corner quoins of every house, as on the
+    // real facades.
+    const quoinStrips = new THREE.InstancedMesh(new THREE.BoxGeometry(0.1, height - 2.0, 0.08), materials.gold, 2);
+    for (let i = 0; i < 2; i++) {
+      modDummy.position.set((i === 0 ? -1 : 1) * (width / 2 - 0.17), 1.2 + (height - 2.0) / 2, 0.14);
+      modDummy.updateMatrix();
+      quoinStrips.setMatrixAt(i, modDummy.matrix);
+    }
+    quoinStrips.count = 2;
+    quoinStrips.name = name + ' corner quoin gold strips';
+    root.add(quoinStrips);
     // Lead rainwater downpipes at the front corners, as on the real houses.
     const downpipes = new THREE.InstancedMesh(new THREE.CylinderGeometry(0.05, 0.05, height - 0.8, 6), materials.dark, 2);
     const dpd = new THREE.Object3D();
@@ -968,6 +979,16 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     parapetGaps.count = modillionCount - 1;
     parapetGaps.name = name + ' openwork parapet gaps';
     root.add(parapetGaps);
+    // Gilded caps finish both ends of every house parapet rail, as on the real parapets.
+    const parapetCaps = new THREE.InstancedMesh(new THREE.SphereGeometry(0.12, 8, 6), materials.gold, 2);
+    for (let i = 0; i < 2; i++) {
+      modDummy.position.set((i === 0 ? -1 : 1) * (width / 2 + 0.35), height + 1.0, 0.14);
+      modDummy.updateMatrix();
+      parapetCaps.setMatrixAt(i, modDummy.matrix);
+    }
+    parapetCaps.count = 2;
+    parapetCaps.name = name + ' parapet rail end caps';
+    root.add(parapetCaps);
     // Gilded finial balls terminate the parapet rail at both ends of every house.
     const parapetFinials = new THREE.InstancedMesh(new THREE.SphereGeometry(0.14, 8, 6), materials.gold, 2);
     for (let i = 0; i < 2; i++) {
@@ -2233,6 +2254,20 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     blindFigs.count = bf;
     blindFigs.name = 'Blind niche gilded figures';
     root.add(blindFigs);
+    // Gilded trim tops every upper blind niche, as on the real facade niches.
+    const blindTrim = new THREE.InstancedMesh(new THREE.BoxGeometry(0.78, 0.1, 0.2), materials.gold, 16);
+    let bt = 0;
+    for (let floor = 0; floor < 2; floor++) {
+      const y = floor === 0 ? 12.5 : 20.0;
+      for (let i = 0; i <= bays && bt < 16; i += 2) {
+        facadeDummy.position.set(-width / 2 + i * bayW, y + 1.32, 0.16);
+        facadeDummy.updateMatrix();
+        blindTrim.setMatrixAt(bt++, facadeDummy.matrix);
+      }
+    }
+    blindTrim.count = bt;
+    blindTrim.name = 'Blind niche gold top trim';
+    root.add(blindTrim);
     // Documented ground-floor figures beside the tower base: prophets, David and Solomon and
     // an Annunciation group flank the portal on the real elevation.
     const baseFigures = new THREE.InstancedMesh(new THREE.BoxGeometry(0.26, 1.2, 0.14), materials.gold, 4);
@@ -2581,6 +2616,17 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     scBalls.count = scb;
     scBalls.name = 'Tower string course corner balls';
     tower.add(scBalls);
+    // Gilded balls cap the tops of the four tower base buttresses, as on the real tower foot.
+    const buttressTopBalls = new THREE.InstancedMesh(new THREE.SphereGeometry(0.22, 8, 6), materials.gold, 4);
+    for (let k = 0; k < 4; k++) {
+      const sx = k % 2 ? 1 : -1, sz = k < 2 ? 1 : -1;
+      stdd.position.set(sx * (towerW / 2 + 1.6), 0.75, sz * (towerW / 2 + 1.6));
+      stdd.updateMatrix();
+      buttressTopBalls.setMatrixAt(k, stdd.matrix);
+    }
+    buttressTopBalls.count = 4;
+    buttressTopBalls.name = 'Tower base buttress gold caps';
+    tower.add(buttressTopBalls);
     // The square shaft is chained with oversized stone quoins at its four corners.
     const tqRows = Math.floor(54 / 4.5);
     const towerQuoins = new THREE.InstancedMesh(new THREE.BoxGeometry(0.42, 0.9, 0.42), trim, tqRows * 4);
@@ -2776,6 +2822,19 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     sideDrips.count = sd3;
     sideDrips.name = 'Tower side lancet sill dripstones';
     tower.add(sideDrips);
+    // Gilded balls cap each tower side lancet hood mould, as on the real shaft.
+    const sideHoodBalls = new THREE.InstancedMesh(new THREE.SphereGeometry(0.09, 8, 6), materials.gold, 12);
+    let shb = 0;
+    for (const y of [6.5, 15, 23.5, 32, 40.5, 48.5]) {
+      for (const side of [-1, 1]) {
+        trd.position.set(towerW / 2 + 0.12, y + 2.3, side * 2.3);
+        trd.updateMatrix();
+        sideHoodBalls.setMatrixAt(shb++, trd.matrix);
+      }
+    }
+    sideHoodBalls.count = shb;
+    sideHoodBalls.name = 'Tower side lancet hood gold balls';
+    tower.add(sideHoodBalls);
     // Gallery above the roofline, with projecting pinnacles at its corners and mid-sides.
     cylinder(tower, 5.6, 6.2, 1.8, 0, 56.9, 0, trim, 8).name = 'Tower gallery above the roofline';
     // A drip mould ring under the gallery sheds water off the tower shaft.
@@ -3435,6 +3494,16 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     khGalCorbels.count = bays;
     khGalCorbels.name = 'King’s House first-gallery corbels';
     root.add(khGalCorbels);
+    // Gilded balls cap each first-gallery corbel, as on the real Broodhuis gallery.
+    const corbelBalls = new THREE.InstancedMesh(new THREE.SphereGeometry(0.09, 8, 6), materials.gold, bays);
+    for (let i = 0; i < bays; i++) {
+      khSd.position.set(-width / 2 + bayW * (i + 0.5), 8.62, 0.52);
+      khSd.updateMatrix();
+      corbelBalls.setMatrixAt(i, khSd.matrix);
+    }
+    corbelBalls.count = bays;
+    corbelBalls.name = 'King’s House gallery corbel gold balls';
+    root.add(corbelBalls);
     // Keystones at every gallery arch apex and quatrefoil oculi above the first-floor gallery
     // arches — the neo-Gothic galleries of the real Broodhuis are tracery-dressed.
     const khKeystones = new THREE.InstancedMesh(new THREE.BoxGeometry(0.2, 0.4, 0.34), darkStone, bays * 2);
@@ -3514,6 +3583,20 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     khPierBases.count = kpb;
     khPierBases.name = 'King’s House gallery pier plinth blocks';
     root.add(khPierBases);
+    // Gilded caps top each Broodhuis gallery pier capital, as on the real arcade.
+    const khCapBalls = new THREE.InstancedMesh(new THREE.SphereGeometry(0.1, 8, 6), materials.gold, bays * 2);
+    let kcb = 0;
+    for (let i = 0; i < bays; i++) {
+      const x = -width / 2 + bayW * (i + 0.5);
+      for (const side of [-1, 1]) {
+        khd.position.set(x + side * (bayW / 2 - 0.1), 7.02, 0.26);
+        khd.updateMatrix();
+        khCapBalls.setMatrixAt(kcb++, khd.matrix);
+      }
+    }
+    khCapBalls.count = kcb;
+    khCapBalls.name = 'King’s House pier capital gold balls';
+    root.add(khCapBalls);
     // Upper storey: windows plus gilded statues in niches at the alternating bay joints.
     const khNiches = new THREE.InstancedMesh(new THREE.BoxGeometry(0.66, 2.2, 0.2), darkStone, bays);
     const khStatues = new THREE.InstancedMesh(new THREE.BoxGeometry(0.24, 1.1, 0.12), materials.gold, bays);
@@ -3850,6 +3933,17 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     ringBalls.count = 3;
     ringBalls.name = 'King’s House string ring gilded balls';
     root.add(ringBalls);
+    // Gilded balls cap the Broodhuis tower's side lancet hoods, as on the real shaft.
+    const shaftSideBalls = new THREE.InstancedMesh(new THREE.SphereGeometry(0.08, 8, 6), materials.gold, 4);
+    for (let i = 0; i < 4; i++) {
+      const sx = i < 2 ? -1 : 1, y = i % 2 ? 25 : 15;
+      khQd.position.set(sx * 1.5, y + 1.75, towerZ);
+      khQd.updateMatrix();
+      shaftSideBalls.setMatrixAt(i, khQd.matrix);
+    }
+    shaftSideBalls.count = 4;
+    shaftSideBalls.name = 'King’s House shaft side lancet hood balls';
+    root.add(shaftSideBalls);
     cylinder(root, 1.35, 1.5, 2.6, 0, 34.3, towerZ, trim, 8).name = 'King’s House central tower octagonal top';
     // Louvered belfry openings around the octagonal top of the real Broodhuis tower.
     const khLouvers = new THREE.InstancedMesh(new THREE.BoxGeometry(0.9, 0.1, 0.2), darkStone, 8);
@@ -4147,6 +4241,23 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     repairs.name = 'Grand-Place paving repair patches';
     repairs.receiveShadow = true;
     plaza.add(repairs);
+    // A second set of diagonal joints crosses the field the other way, completing the
+    // calepinage's diagonal lattice.
+    const diagJoints2 = new THREE.InstancedMesh(new THREE.BoxGeometry(0.07, 0.02, 30), materials.pavingEdge, 12);
+    for (let i = 0; i < 6; i++) {
+      dummy.position.set(-36 + i * 14, 0.007, 0);
+      dummy.rotation.y = -Math.PI / 4 + Math.PI / 2;
+      dummy.updateMatrix();
+      diagJoints2.setMatrixAt(i, dummy.matrix);
+      dummy.position.set(-36 + i * 14, 0.007, 0);
+      dummy.rotation.y = Math.PI / 4 + Math.PI / 2;
+      dummy.updateMatrix();
+      diagJoints2.setMatrixAt(6 + i, dummy.matrix);
+      dummy.rotation.y = 0;
+    }
+    diagJoints2.count = 12;
+    diagJoints2.name = 'Grand-Place diagonal paving joints (cross set)';
+    plaza.add(diagJoints2);
     // Scattered accent cobbles of a third tone break up the field, as in the real worn
     // calepinage.
     const accents = new THREE.InstancedMesh(cobbleGeo, materials.pavingEdge, 40);
@@ -4257,6 +4368,19 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     thStar.count = 8;
     thStar.name = 'Grand-Place Town Hall forecourt sett star';
     plaza.add(thStar);
+    // Matching sett star on the Broodhuis (north) forecourt.
+    const khStar = new THREE.InstancedMesh(new THREE.BoxGeometry(0.5, 0.06, 0.5), materials.warmStone, 8);
+    for (let i = 0; i < 8; i++) {
+      const a = i * Math.PI / 4;
+      dummy.position.set(Math.cos(a) * 2.6, 0.02, -25.4 + Math.sin(a) * 1.8);
+      dummy.rotation.y = a;
+      dummy.updateMatrix();
+      khStar.setMatrixAt(i, dummy.matrix);
+      dummy.rotation.y = 0;
+    }
+    khStar.count = 8;
+    khStar.name = 'Grand-Place Broodhuis forecourt sett star';
+    plaza.add(khStar);
     // Wheel-rut wear grooves score the main east-west desire line across the square, as on
     // the real worn paving.
     const ruts = new THREE.InstancedMesh(new THREE.BoxGeometry(108, 0.02, 0.16), materials.pavingEdge, 4);
