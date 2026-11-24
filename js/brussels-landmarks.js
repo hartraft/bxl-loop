@@ -3992,6 +3992,11 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     for (const side of [-1, 1]) {
       box(g, 0.06, 6.6, 0.05, side * 3.3, 14.6, centralFace + 0.24, bronze, 'Portico side light mullion');
     }
+
+    // Cap strips crown the wing balcony rails.
+    for (const side of wingXs) {
+      box(g, wingW, 0.06, 0.62, side, 8.0, facadeZ + 0.62, bronze, 'Wing balcony rail cap');
+    }
   });
   addLandmark('palaceSurroundings', (g) => {
     // Real-world sources: en/fr Wikipedia (Royal Palace of Brussels, Brussels Park, Place des Palais,
