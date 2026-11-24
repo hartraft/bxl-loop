@@ -1028,3 +1028,9 @@ testCase('every wing window sill rests on a projecting stone apron', () => {
   assert.match(palace, /projecting stone apron/);
   assert.match(palace, /'Wing window apron'/);
 });
+
+testCase('the central corps carries tall second-floor windows above the portico', () => {
+  assert.match(palace, /tall windows on its second floor/);
+  assert.match(palace, /'Central second-floor window'/);
+  assert.match(palace, /'Central second-floor lintel'/);
+});

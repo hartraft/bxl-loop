@@ -3580,6 +3580,14 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
         }
       }
     }
+
+    // The central corps carries tall windows on its second floor above the portico.
+    for (let i = 0; i < 5; i++) {
+      const cx = -12 + i * 6;
+      box(g, 1.9, 3.2, 0.2, cx, 16.0, centralFace + 0.14, glass, 'Central second-floor window');
+      box(g, 2.2, 0.18, 0.36, cx, 14.35, centralFace + 0.22, moulding, 'Central second-floor sill');
+      box(g, 2.2, 0.18, 0.36, cx, 17.65, centralFace + 0.22, moulding, 'Central second-floor lintel');
+    }
   });
   addLandmark('palaceSurroundings', (g) => {
     // Real-world sources: en/fr Wikipedia (Royal Palace of Brussels, Brussels Park, Place des Palais,
