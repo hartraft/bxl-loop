@@ -4585,6 +4585,13 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       box(g, 0.9, 0.5, 0.7, px, 0.4, 21.1, materials.warmStone, 'Academy Palace pilaster base');
       box(g, 0.9, 0.5, 0.7, px, 18.2, 21.1, materials.warmStone, 'Academy Palace pilaster capital');
     }
+
+    // Corner quoins strengthen the facade corners of the Palace of the Nation central block.
+    for (const cx of [-29.8, 29.8]) {
+      for (const qy of [4, 9, 14, 19]) {
+        box(g, 0.6, 1.8, 0.4, cx, qy, 402.9, materials.warmStone, 'Palace of the Nation corner quoin');
+      }
+    }
   });
     addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');
