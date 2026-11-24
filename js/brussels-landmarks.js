@@ -4098,6 +4098,11 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
 
     // Dark soil fills the central balcony flower box.
     box(g, 2.7, 0.06, 0.4, 0, 11.08, centralFace + 1.1, shadow, 'Central flower box soil');
+
+    // Bottom rails join the feet of the wing balcony balusters.
+    for (const side of wingXs) {
+      box(g, wingW, 0.05, 0.05, side, 7.45, facadeZ + 0.84, bronze, 'Wing balcony bottom rail');
+    }
   });
   addLandmark('palaceSurroundings', (g) => {
     // Real-world sources: en/fr Wikipedia (Royal Palace of Brussels, Brussels Park, Place des Palais,

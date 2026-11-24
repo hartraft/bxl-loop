@@ -2008,3 +2008,7 @@ testCase('a projecting eave band rings the BELvue pavilion roof base', () => {
 testCase('a stone rim rings the fountain jet of the octagonal basin', () => {
   assert.match(palace, /'Octagonal basin fountain rim'/);
 });
+
+testCase('bottom rails join the feet of the wing balcony balusters', () => {
+  assert.match(palace, /'Wing balcony bottom rail'/);
+});
