@@ -963,6 +963,29 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     cobblesB.name = 'Grand-Place cobblestone courses B';
     cobblesA.receiveShadow = cobblesB.receiveShadow = true;
     plaza.add(cobblesA, cobblesB);
+    // Darker blue-stone sett border framing the paved square along all four facade lines, as in
+    // the real 1883/1899 calepinage. Instanced around the perimeter.
+    const border = new THREE.InstancedMesh(new THREE.BoxGeometry(0.9, 0.08, 0.9), materials.pavingEdge, 420);
+    let bd = 0;
+    dummy.rotation.y = 0;
+    for (let x = -54.6; x <= 54.61; x += 0.98) {
+      for (const z of [-34.9, 34.9]) {
+        dummy.position.set(x, -0.04, z);
+        dummy.updateMatrix();
+        border.setMatrixAt(bd++, dummy.matrix);
+      }
+    }
+    for (let z = -33.9; z <= 33.91; z += 0.98) {
+      for (const x of [-54.6, 54.6]) {
+        dummy.position.set(x, -0.04, z);
+        dummy.updateMatrix();
+        border.setMatrixAt(bd++, dummy.matrix);
+      }
+    }
+    border.count = bd;
+    border.name = 'Grand-Place blue-stone sett border';
+    border.receiveShadow = true;
+    plaza.add(border);
 
     // Flat sett walkways (passerelles en pavés platines) run from each of the seven
     // street entrances into the square, as in the real 1883/1899 calepinage.
