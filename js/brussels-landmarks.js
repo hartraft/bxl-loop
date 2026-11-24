@@ -5432,6 +5432,11 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
 
     // A stone rim rings the fountain jet of the octagonal basin.
     cylinder(g, 0.9, 1.1, 0.4, 0, 0.7, 262, materials.paleStone, 10).name = 'Octagonal basin fountain rim';
+
+    // Tympanum panels fill the pediments of both Palace of the Nation wings.
+    for (const side of [-1, 1]) {
+      box(g, 6, 1.4, 0.1, side * 70, 16.7, 406.9, materials.paleStone, 'Palace of the Nation wing tympanum');
+    }
   });
     addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');

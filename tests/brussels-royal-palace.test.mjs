@@ -2012,3 +2012,7 @@ testCase('a stone rim rings the fountain jet of the octagonal basin', () => {
 testCase('bottom rails join the feet of the wing balcony balusters', () => {
   assert.match(palace, /'Wing balcony bottom rail'/);
 });
+
+testCase('tympanum panels fill the Palace of the Nation wing pediments', () => {
+  assert.match(palace, /'Palace of the Nation wing tympanum'/);
+});
