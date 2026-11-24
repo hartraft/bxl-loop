@@ -1726,3 +1726,7 @@ testCase('jambs frame the BELvue entrance door', () => {
 testCase('moulded edges finish the sides of each perron step', () => {
   assert.match(palace, /'Perron step edge'/);
 });
+
+testCase('mullions divide the BELvue piano nobile windows', () => {
+  assert.match(palace, /'BELvue piano nobile mullion'/);
+});
