@@ -174,6 +174,12 @@ test('guild houses have the real arcaded ground floors and gilded gable emblems'
   assert.ok(square.includes(' window pediments'));
 });
 
+test('Le Paon wears the characteristic 18th-century neck gable (halsgevel)', () => {
+  assert.ok(square.includes("style === 'neck'"));
+  assert.ok(square.includes('shape.quadraticCurveTo(-w2, 3.2, -w2 + 1.8, 3.2)'));
+  assert.ok(square.includes("Le Paon', x: -38, width: 12, height: 22, floors: 3, style: 'neck', stone: materials.paleStone }"));
+});
+
 test('guild-house rooflines stay varied and instanced', () => {
   assert.ok(source.includes("style === 'stepped'"));
   assert.ok(source.includes("style === 'bell'"));

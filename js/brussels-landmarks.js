@@ -305,7 +305,7 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     box(root, width + 0.7, 0.16, 0.24, 0, height + 0.9, 0.14, stone, name + ' parapet rail');
 
     // Each house gets a distinct roofline instead of the repeated identical cones of the old model.
-    const gableHeight = style === 'stepped' ? 4.8 : style === 'bell' ? 3.6 : style === 'scroll' ? 4.6 : 4.2;
+    const gableHeight = style === 'stepped' ? 4.8 : style === 'bell' ? 3.6 : 4.6;
     const shape = new THREE.Shape();
     if (style === 'stepped') {
       shape.moveTo(-width / 2, 0); shape.lineTo(-width / 2, 1.2);
@@ -326,6 +326,16 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       shape.quadraticCurveTo(-width / 2 + 2.4, 1.2, 0, gableHeight);
       shape.quadraticCurveTo(width / 2 - 2.4, 1.2, width / 2 - 2.4, 2.0);
       shape.bezierCurveTo(width / 2 - 2.4, 3.2, width / 2, 3.2, width / 2, 0);
+    } else if (style === 'neck') {
+      // Neck gable (halsgevel): a raised neck with volute shoulders and a small pediment — the
+      // characteristic gable of the 18th-century Grand-Place houses, e.g. Le Paon.
+      const w2 = width / 2;
+      shape.moveTo(-w2, 0); shape.lineTo(-w2, 1.4);
+      shape.quadraticCurveTo(-w2, 3.2, -w2 + 1.8, 3.2);
+      shape.lineTo(-1.4, 3.2); shape.lineTo(-1.4, gableHeight - 0.8);
+      shape.lineTo(0, gableHeight); shape.lineTo(1.4, gableHeight - 0.8);
+      shape.lineTo(1.4, 3.2); shape.lineTo(w2 - 1.8, 3.2);
+      shape.quadraticCurveTo(w2, 3.2, w2, 1.4); shape.lineTo(w2, 0);
     } else {
       shape.moveTo(-width / 2, 0); shape.lineTo(0, gableHeight); shape.lineTo(width / 2, 0);
     }
@@ -1090,7 +1100,7 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     plaza.add(north);
     kingsHouse(north);
     guildHouse(north, { name: 'Guild House – Le Heaume', x: -27, width: 11, height: 20, style: 'gable', stone: materials.warmStone });
-    guildHouse(north, { name: 'Guild House – Le Paon', x: -38, width: 12, height: 22, floors: 3, style: 'bell', stone: materials.paleStone });
+    guildHouse(north, { name: 'Guild House – Le Paon', x: -38, width: 12, height: 22, floors: 3, style: 'neck', stone: materials.paleStone });
     guildHouse(north, { name: 'Guild House – Sainte-Barbe', x: -48.5, width: 10, height: 19, style: 'stepped' });
     guildHouse(north, { name: 'Guild House – Le Cerf', x: 23.5, width: 11, height: 21, style: 'stepped', stone: materials.warmStone });
     guildHouse(north, { name: 'Guild House – L’Ange', x: 34, width: 11, height: 23, floors: 4, style: 'scroll', stone: materials.plaster });
