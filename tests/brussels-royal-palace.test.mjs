@@ -1080,3 +1080,7 @@ testCase('dormers pierce the front slope of each wing mansard', () => {
   assert.match(palace, /'Wing mansard dormer'/);
   assert.match(palace, /'Wing dormer pediment'/);
 });
+
+testCase('basement windows (soupiraux) pierce the south avant-corps base', () => {
+  assert.match(palace, /'South avant-corps basement window'/);
+});

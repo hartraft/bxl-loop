@@ -3665,6 +3665,11 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
         mesh(g, new THREE.ShapeGeometry(dm), moulding, x + dx, 22.85, facadeZ + 0.56, 'Wing dormer pediment');
       }
     }
+
+    // Small basement windows (soupiraux) pierce the south avant-corps base on the sloping site.
+    for (let i = 0; i < 4; i++) {
+      box(g, 1.2, 1.0, 0.2, -9 + i * 6, 1.6, -63.6, glass, 'South avant-corps basement window');
+    }
   });
   addLandmark('palaceSurroundings', (g) => {
     // Real-world sources: en/fr Wikipedia (Royal Palace of Brussels, Brussels Park, Place des Palais,
