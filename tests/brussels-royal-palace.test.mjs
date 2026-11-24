@@ -1964,3 +1964,7 @@ testCase('a bed moulding sits between the portico architrave and cornice', () =>
 testCase('keystones crown the Palace of the Nation wing windows', () => {
   assert.match(palace, /'Palace of the Nation wing window keystone'/);
 });
+
+testCase('mullions divide the BELvue attic windows', () => {
+  assert.match(palace, /'BELvue attic window mullion'/);
+});
