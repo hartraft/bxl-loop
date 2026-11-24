@@ -5400,6 +5400,11 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
 
     // A tympanum panel fills the Royal Stables gatehouse pediment.
     box(g, 7, 1.4, 0.1, -70, 16.5, -68.98, materials.paleStone, 'Royal Stables pediment tympanum');
+
+    // Windows pierce the Academy Palace end pavilions on the square facade.
+    for (const px of [-201, -135]) {
+      box(g, 1.8, 4.0, 0.2, px, 8, 19.9, materials.glass, 'Academy end pavilion window');
+    }
   });
     addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');
