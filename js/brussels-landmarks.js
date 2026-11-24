@@ -816,6 +816,21 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     for (const y of [9, 19, 29, 39, 49]) {
       box(tower, towerW + 0.8, 0.5, towerW + 0.8, 0, y, 0, trim, 'Tower projecting string course');
     }
+    // The square shaft is chained with oversized stone quoins at its four corners.
+    const tqRows = Math.floor(54 / 4.5);
+    const towerQuoins = new THREE.InstancedMesh(new THREE.BoxGeometry(0.42, 0.9, 0.42), trim, tqRows * 4);
+    const tqd = new THREE.Object3D();
+    let tq = 0;
+    for (let r = 0; r < tqRows; r++) {
+      for (const sx of [-1, 1]) for (const sz of [-1, 1]) {
+        tqd.position.set(sx * (towerW / 2 - 0.1), 2 + r * 4.5, sz * (towerW / 2 - 0.1));
+        tqd.updateMatrix();
+        towerQuoins.setMatrixAt(tq++, tqd.matrix);
+      }
+    }
+    towerQuoins.count = tq;
+    towerQuoins.name = 'Town Hall tower corner quoins';
+    tower.add(towerQuoins);
     // Main portal at the base of the tower, with a balcony above it.
     box(tower, 4.6, 9.5, 0.5, 0, 4.75, towerW / 2 + 0.15, glass, 'Town Hall main portal recess');
     const portalL = box(tower, 2.6, 0.3, 0.6, -1.35, 9.9, towerW / 2 + 0.15, trim, 'Portal pointed arch rib');

@@ -110,6 +110,12 @@ test('the spire apex carries a gilded orb and St Michael his raised sword', () =
   assert.ok(square.includes("'Saint Michael dragon'"));
 });
 
+test('the Town Hall tower shaft is chained with corner quoins', () => {
+  assert.ok(square.includes("'Town Hall tower corner quoins'"));
+  assert.ok(square.includes('towerQuoins.count = tq'));
+  assert.ok(square.includes('new THREE.BoxGeometry(0.42, 0.9, 0.42), trim, tqRows * 4)'));
+});
+
 test('the Town Hall buttresses are pinnacled with spires and gilded finials', () => {
   assert.ok(square.includes("'Facade pinnacle spire'"));
   assert.ok(square.includes("'Facade pinnacle gilded finial'"));
