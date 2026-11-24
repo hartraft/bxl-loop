@@ -23,12 +23,22 @@ test('the square is the real entirely paved, completely open Grand-Place', () =>
 test('the Town Hall tower rises from the ground-level portal to the real 96 m', () => {
   assert.ok(square.includes('Brussels Town Hall (Hôtel de Ville)'));
   assert.ok(square.includes('Town Hall 96 m asymmetrical Gothic tower'));
-  assert.ok(square.includes('tower.position.set(-8.5, 0, -depth / 2 + 4.5)'));
+  assert.ok(square.includes('tower.position.set(towerX, 0, -depth / 2 + 4.5)'));
   assert.ok(square.includes('Town Hall 96 m tower square shaft'));
   assert.ok(square.includes('Town Hall main portal recess'));
-  assert.ok(square.includes('Town Hall openwork pyramidal spire'));
-  assert.ok(square.includes('Gilded openwork spire rib'));
+  assert.ok(square.includes('Openwork spire stone rib'), 'the spire is openwork ribs, not a solid cone');
+  assert.ok(!square.includes('ConeGeometry(3.8, 15.2, 8)'), 'no solid spire cone');
+  assert.ok(square.includes('Spire gilded ring armature'));
   assert.ok(square.includes('Gilded Saint Michael figure'));
+  assert.ok(square.includes('Saint Michael dragon'));
+});
+
+test('the Town Hall is two genuinely asymmetrical wings with prophets above the portal', () => {
+  assert.ok(square.includes('Town Hall east wing (1401-1421)'));
+  assert.ok(square.includes('Town Hall west wing (1444+)'));
+  assert.ok(square.includes('const towerX = -8.5'));
+  assert.ok(square.includes('Portal prophet niche'));
+  assert.ok(square.includes('Portal prophet gilded figure'));
 });
 
 test('the tower lantern is openwork, with corner turrets and flying buttresses', () => {
@@ -47,12 +57,16 @@ test('the Town Hall facade carries the real statue niches and wing-terminating c
   assert.ok(square.includes('Gothic facade buttress'));
 });
 
-test("the King's House has Jamaer's two arcaded galleries and central tower", () => {
+test("the King's House matches Jamaer's measured Broodhuis: 30.78 m facade, 20.21 m high, 38.49 m tower", () => {
   assert.ok(square.includes('King’s House (Maison du Roi / Broodhuis)'));
+  assert.ok(square.includes('const width = 31, height = 20.5, depth = 13'));
   assert.ok(square.includes('King’s House ground gallery arch'));
   assert.ok(square.includes('First gallery balustrade'));
-  assert.ok(square.includes('King’s House central tower'));
   assert.ok(square.includes('King’s House central stepped gable'));
+  assert.ok(square.includes('King’s House central tower square shaft'));
+  assert.ok(square.includes('King’s House central tower octagonal top'));
+  assert.ok(square.includes('King’s House tower domed slate spire'));
+  assert.ok(square.includes('King’s House standard-bearer statue'));
 });
 
 test('guild houses carry the real names on the real sides, with Baroque detailing', () => {
@@ -78,6 +92,9 @@ test('guild houses have the real arcaded ground floors and gilded gable emblems'
   // window storeys start above the arcade
   assert.ok(square.includes('for (let floor = 1; floor <= floors; floor++)'));
   assert.ok(square.includes('const wy = 4.4 + (floor - 1)'));
+  // gable oculus and window pediments
+  assert.ok(square.includes(' gable oculus'));
+  assert.ok(square.includes(' window pediments'));
 });
 
 test('guild-house rooflines stay varied and instanced', () => {

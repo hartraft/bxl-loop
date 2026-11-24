@@ -246,6 +246,28 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       const wing = box(root, 1.0, 0.14, 0.1, 0, height + gableHeight + 1.95, 0.12, materials.gold, name + ' gilded gable emblem wing');
       wing.rotation.z = 0.35;
     }
+    // Round oculus set into the gable, and a small triangular pediment over every window.
+    const oculus = cylinder(root, 0.42, 0.42, 0.1, 0, height + 1.6, 0.12, materials.glass, 16);
+    oculus.name = name + ' gable oculus';
+    oculus.rotation.x = Math.PI / 2;
+    const pedShape = new THREE.Shape();
+    pedShape.moveTo(-0.42, 0); pedShape.lineTo(0, 0.4); pedShape.lineTo(0.42, 0); pedShape.closePath();
+    const pediments = new THREE.InstancedMesh(new THREE.ShapeGeometry(pedShape), stone, bays * floors);
+    const pedDummy = new THREE.Object3D();
+    let pd = 0;
+    for (let floor = 1; floor <= floors; floor++) {
+      const wy = 4.4 + (floor - 1) * ((height - 6.6) / Math.max(1, floors - 1));
+      for (let bay = 0; bay < bays; bay++) {
+        const wx = (bay - (bays - 1) / 2) * (width - 2.8) / Math.max(1, bays - 1);
+        pedDummy.position.set(wx, wy + 1.15, 0.16);
+        pedDummy.updateMatrix();
+        pediments.setMatrixAt(pd++, pedDummy.matrix);
+      }
+    }
+    pediments.count = pd;
+    pediments.name = name + ' window pediments';
+    pediments.castShadow = true;
+    root.add(pediments);
     return root;
   }
 
@@ -265,9 +287,18 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     const roofMat = materials.slate;
     const glass = materials.glass;
 
-    box(root, width, height, depth, 0, height / 2, -depth / 2, stone, 'Town Hall Gothic main block');
-    box(root, width + 1.8, 1.0, depth + 1.0, 0, 1.0, -depth / 2, darkStone, 'Town Hall stepped stone plinth');
-    box(root, width + 1.0, 0.8, depth + 0.8, 0, height - 0.35, -depth / 2, trim, 'Town Hall upper cornice');
+    // Two genuinely asymmetrical wings, built in two campaigns: the shorter east wing
+    // (1401-1421, local -X = world east when facing the facade) and the longer west wing
+    // (1444+, local +X), with the tower rising in the gap between their inner faces.
+    const towerX = -8.5;
+    const eastWingX = towerX - 4.5 - 7.5;   // east wing spans -28 .. -13
+    const westWingX = towerX + 4.5 + 16;     // west wing spans  -4 .. +28
+    box(root, 15, height, depth, eastWingX, height / 2, -depth / 2, stone, 'Town Hall east wing (1401-1421)');
+    box(root, 32, height, depth, westWingX, height / 2, -depth / 2, stone, 'Town Hall west wing (1444+)');
+    box(root, 16.8, 1.0, depth + 1.0, eastWingX, 0.5, -depth / 2, darkStone, 'East wing stepped stone plinth');
+    box(root, 33.8, 1.0, depth + 1.0, westWingX, 0.5, -depth / 2, darkStone, 'West wing stepped stone plinth');
+    box(root, 16.0, 0.8, depth + 0.8, eastWingX, height - 0.35, -depth / 2, trim, 'East wing upper cornice');
+    box(root, 33.0, 0.8, depth + 0.8, westWingX, height - 0.35, -depth / 2, trim, 'West wing upper cornice');
 
     // Repeated pointed ground-floor arcade: dark recessed openings, piers and pointed heads.
     const bays = 16, bayW = width / bays;
@@ -287,8 +318,8 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     // Upper storeys: paired lancets with stone mouldings, balconies, a buttress rhythm at
     // alternating bay joints, and a gilded statue in a niche at the remaining joints — the
     // real facade is densely packed with niches holding dukes, saints and allegorical figures.
-    const facadeNiches = new THREE.InstancedMesh(new THREE.BoxGeometry(0.72, 2.5, 0.22), darkStone, bays);
-    const facadeStatues = new THREE.InstancedMesh(new THREE.BoxGeometry(0.26, 1.15, 0.14), materials.gold, bays);
+    const facadeNiches = new THREE.InstancedMesh(new THREE.BoxGeometry(0.72, 2.5, 0.22), darkStone, bays * 2);
+    const facadeStatues = new THREE.InstancedMesh(new THREE.BoxGeometry(0.26, 1.15, 0.14), materials.gold, bays * 2);
     const facadeDummy = new THREE.Object3D();
     let nicheIndex = 0;
     for (let i = 0; i <= bays; i++) {
@@ -321,6 +352,18 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
         facadeStatues.setMatrixAt(nicheIndex, facadeDummy.matrix);
         nicheIndex++;
       }
+    }
+    // Statues in niches above the ground-floor arcade arch heads as well — the real
+    // facade carries nearly three hundred figures on every level.
+    for (let i = 0; i < bays; i++) {
+      const x = -width / 2 + bayW * (i + 0.5);
+      facadeDummy.position.set(x, 9.0, 0.15);
+      facadeDummy.updateMatrix();
+      facadeNiches.setMatrixAt(nicheIndex, facadeDummy.matrix);
+      facadeDummy.position.set(x, 9.0, 0.3);
+      facadeDummy.updateMatrix();
+      facadeStatues.setMatrixAt(nicheIndex, facadeDummy.matrix);
+      nicheIndex++;
     }
     facadeNiches.count = facadeStatues.count = nicheIndex;
     facadeNiches.name = 'Town Hall facade statue niches';
@@ -368,7 +411,7 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     // turrets and flying buttresses, then the gilded openwork spire and Saint Michael.
     const tower = new THREE.Group();
     tower.name = 'Town Hall 96 m asymmetrical Gothic tower';
-    tower.position.set(-8.5, 0, -depth / 2 + 4.5);
+    tower.position.set(towerX, 0, -depth / 2 + 4.5);
     root.add(tower);
     const towerW = 9;
     box(tower, towerW, 56, towerW, 0, 28, 0, stone, 'Town Hall 96 m tower square shaft');
@@ -382,6 +425,13 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     const portalR = box(tower, 2.6, 0.3, 0.6, 1.35, 9.9, towerW / 2 + 0.15, trim, 'Portal pointed arch rib');
     portalR.rotation.z = 0.62;
     box(tower, 6.2, 0.3, 1.1, 0, 10.6, towerW / 2 + 0.5, trim, 'Portal balcony');
+    // Prophet figures in niches above the portal, between the shaft lancets.
+    for (const side of [-1, 1]) {
+      for (const dx of [1.1, 3.3]) {
+        box(tower, 0.66, 2.2, 0.2, side * dx, 10.75, towerW / 2 + 0.08, darkStone, 'Portal prophet niche');
+        box(tower, 0.24, 1.05, 0.12, side * dx, 10.75, towerW / 2 + 0.2, materials.gold, 'Portal prophet gilded figure');
+      }
+    }
     // Narrow lancet recesses on the front and side faces of the shaft.
     for (const y of [6.5, 15, 23.5, 32, 40.5, 48.5]) {
       for (const side of [-1, 1]) {
@@ -430,13 +480,13 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       cylinder(tower, 0.28, 0.42, 11, x, 63.5, z, trim, 8).name = 'Lantern side pinnacle';
       mesh(tower, new THREE.ConeGeometry(0.48, 2.1, 8), roofMat, x, 69.5, z, 'Lantern side pinnacle spire');
     }
-    // Slender openwork pyramidal spire to 96 m, its stone ribs enhanced with gilding.
-    mesh(tower, new THREE.ConeGeometry(3.8, 15.2, 8), roofMat, 0, 88.5, 0, 'Town Hall openwork pyramidal spire');
+    // Slender openwork pyramidal spire to 96 m: eight bare stone ribs, no solid cone,
+    // exactly like the real openwork spire, tied by gilded ring armatures.
     for (let i = 0; i < 8; i++) {
       const a = i * Math.PI / 4;
       const sx = Math.cos(a) * 3.7, sz = Math.sin(a) * 3.7;
       const d = new THREE.Vector3(-sx, 96 - 80.9, -sz);
-      const rib = mesh(tower, new THREE.BoxGeometry(0.13, d.length(), 0.13), materials.gold, sx / 2, (80.9 + 96) / 2, sz / 2, 'Gilded openwork spire rib');
+      const rib = mesh(tower, new THREE.BoxGeometry(0.26, d.length(), 0.26), trim, sx / 2, (80.9 + 96) / 2, sz / 2, 'Openwork spire stone rib');
       rib.quaternion.setFromUnitVectors(up, d.normalize());
     }
     cylinder(tower, 2.75, 2.75, 0.16, 0, 85.2, 0, materials.gold, 8).name = 'Spire gilded ring armature';
@@ -445,18 +495,21 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     cylinder(tower, 0.1, 0.18, 2.4, 0, 97.1, 0, materials.gold, 8).name = 'Saint Michael mast';
     box(tower, 0.55, 1.7, 0.3, 0, 98.75, 0, materials.gold, 'Gilded Saint Michael figure');
     mesh(tower, new THREE.SphereGeometry(0.27, 8, 6), materials.gold, 0, 99.75, 0, 'Gilded Saint Michael head');
+    mesh(tower, new THREE.SphereGeometry(0.42, 8, 6), darkStone, 0.55, 96.2, 0.35, 'Saint Michael dragon');
   }
 
   function kingsHouse(parent) {
     // King's House (Maison du Roi / Broodhuis) on the north side, opposite the Town Hall:
-    // Victor Jamaer's 1874-1896 neo-Gothic rebuild with two arcaded galleries, statues and
-    // a central tower. Local +Z faces the square.
+    // Victor Jamaer's 1874-1896 neo-Gothic rebuild. Real measured proportions: main facade
+    // 30.78 m wide, 20.21 m high over three storeys, central tower 38.49 m with a square
+    // shaft, octagonal top and domed slate spire; two arcaded galleries and a vast dormer-
+    // pierced slate roof dotted with standard-bearer statues. Local +Z faces the square.
     const root = new THREE.Group();
     root.name = 'King’s House (Maison du Roi / Broodhuis)';
     root.position.set(0, 0, 0);
     parent.add(root);
 
-    const width = 34, height = 27, depth = 13;
+    const width = 31, height = 20.5, depth = 13;
     const stone = materials.paleStone;
     const trim = materials.limestone;
     const darkStone = materials.warmStone;
@@ -471,21 +524,21 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     const bays = 9, bayW = width / bays;
     for (let i = 0; i < bays; i++) {
       const x = -width / 2 + bayW * (i + 0.5);
-      box(root, bayW - 0.9, 6.2, 0.26, x, 3.9, 0.15, glass, 'King’s House ground gallery arch');
-      box(root, 0.3, 7.2, 0.5, x - bayW / 2 + 0.1, 4.0, 0.2, trim, 'Ground gallery pier');
-      box(root, 0.3, 7.2, 0.5, x + bayW / 2 - 0.1, 4.0, 0.2, trim, 'Ground gallery pier');
-      const archL = box(root, 1.9, 0.26, 0.46, x - 0.48, 7.25, 0.2, trim, 'Ground gallery pointed arch');
+      box(root, bayW - 0.9, 5.6, 0.26, x, 3.3, 0.15, glass, 'King’s House ground gallery arch');
+      box(root, 0.3, 6.4, 0.5, x - bayW / 2 + 0.1, 3.5, 0.2, trim, 'Ground gallery pier');
+      box(root, 0.3, 6.4, 0.5, x + bayW / 2 - 0.1, 3.5, 0.2, trim, 'Ground gallery pier');
+      const archL = box(root, 1.9, 0.26, 0.46, x - 0.48, 6.35, 0.2, trim, 'Ground gallery pointed arch');
       archL.rotation.z = -0.55;
-      const archR = box(root, 1.9, 0.26, 0.46, x + 0.48, 7.25, 0.2, trim, 'Ground gallery pointed arch');
+      const archR = box(root, 1.9, 0.26, 0.46, x + 0.48, 6.35, 0.2, trim, 'Ground gallery pointed arch');
       archR.rotation.z = 0.55;
     }
-    box(root, width - 1.2, 0.24, 0.5, 0, 7.6, 0.2, darkStone, 'Ground gallery string course');
+    box(root, width - 1.2, 0.24, 0.5, 0, 6.7, 0.2, darkStone, 'Ground gallery string course');
     // First-floor gallery: arched windows above a continuous balustrade.
-    box(root, width - 1.5, 0.85, 0.55, 0, 10.9, 0.4, trim, 'First gallery balustrade');
+    box(root, width - 1.5, 0.85, 0.55, 0, 7.6, 0.4, trim, 'First gallery balustrade');
     for (let i = 0; i < bays; i++) {
       const x = -width / 2 + bayW * (i + 0.5);
-      box(root, 1.5, 4.8, 0.2, x, 14.2, 0.22, glass, 'King’s House first-floor gallery arch');
-      box(root, 1.7, 0.24, 0.3, x, 16.75, 0.22, trim, 'First gallery window hood');
+      box(root, 1.5, 4.2, 0.2, x, 10.6, 0.22, glass, 'King’s House first-floor gallery arch');
+      box(root, 1.7, 0.24, 0.3, x, 13.1, 0.22, trim, 'First gallery window hood');
     }
     // Upper storey: windows plus gilded statues in niches at the alternating bay joints.
     const khNiches = new THREE.InstancedMesh(new THREE.BoxGeometry(0.66, 2.2, 0.2), darkStone, bays);
@@ -494,15 +547,15 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     let khN = 0;
     for (let i = 0; i < bays; i++) {
       const x = -width / 2 + bayW * (i + 0.5);
-      box(root, 1.4, 3.8, 0.18, x, 21.5, 0.22, glass, 'King’s House upper window');
-      box(root, 1.6, 0.22, 0.3, x, 23.6, 0.22, trim, 'Upper window hood');
+      box(root, 1.4, 3.4, 0.18, x, 16.8, 0.22, glass, 'King’s House upper window');
+      box(root, 1.6, 0.22, 0.3, x, 18.6, 0.22, trim, 'Upper window hood');
     }
     for (let i = 1; i <= bays; i += 2) {
       const x = -width / 2 + i * bayW;
-      khDummy.position.set(x, 14.2, 0.3);
+      khDummy.position.set(x, 10.6, 0.3);
       khDummy.updateMatrix();
       khNiches.setMatrixAt(khN, khDummy.matrix);
-      khDummy.position.set(x, 14.2, 0.42);
+      khDummy.position.set(x, 10.6, 0.42);
       khDummy.updateMatrix();
       khStatues.setMatrixAt(khN, khDummy.matrix);
       khN++;
@@ -513,8 +566,14 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     khNiches.castShadow = khStatues.castShadow = true;
     root.add(khNiches, khStatues);
 
-    // Steep slate roof behind the central pavilion, ridge running along the long axis.
-    const ridgeY = height + 7.5, eaveY = height + 0.5;
+    // Standard-bearer statues dotting the parapet, as on the real roofline.
+    for (let i = 0; i < 6; i++) {
+      const x = -width / 2 + 3.5 + i * 5.2;
+      box(root, 0.24, 1.0, 0.12, x, height + 0.55, 0.18, materials.gold, 'King’s House standard-bearer statue');
+    }
+
+    // Vast slate roof behind the central pavilion, ridge running along the long axis.
+    const ridgeY = height + 6.5, eaveY = height + 0.5;
     const roofVertices = new Float32Array([
       -width/2-0.8,eaveY,0.5, width/2+0.8,eaveY,0.5, width/2+0.8,ridgeY,-depth/2,
       -width/2-0.8,eaveY,0.5, width/2+0.8,ridgeY,-depth/2, -width/2-0.8,ridgeY,-depth/2,
@@ -525,24 +584,29 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     roofGeo.setAttribute('position', new THREE.BufferAttribute(roofVertices, 3));
     roofGeo.computeVertexNormals();
     mesh(root, roofGeo, roofMat, 0, 0, 0, 'King’s House steep slate roof');
-    for (let i = 0; i < 5; i++) {
-      const x = -width / 2 + 4 + i * 6.5;
+    for (let i = 0; i < 7; i++) {
+      const x = -width / 2 + 3 + i * 4.3;
       const z = -depth / 2 + (i % 2 ? -2.6 : 2.6);
-      box(root, 1.3, 2.0, 0.6, x, height + 2.2, z, trim, 'King’s House roof dormer');
+      box(root, 1.3, 2.0, 0.6, x, height + 2.0, z, trim, 'King’s House roof dormer');
     }
 
-    // Central pavilion with a stepped gable and Jamaer's central tower.
-    box(root, 12, height + 3, depth + 1.4, 0, (height + 3) / 2, -depth / 2 - 0.5, stone, 'King’s House central pavilion');
-    const gw = 12, gh = 5;
+    // Central pavilion with a stepped gable and Jamaer's central tower: square shaft,
+    // octagonal top, domed slate spire — 38.49 m in reality.
+    box(root, 11, height + 2.5, depth + 1.4, 0, (height + 2.5) / 2, -depth / 2 - 0.5, stone, 'King’s House central pavilion');
+    const gw = 11, gh = 4.5;
     const gable = new THREE.Shape();
-    gable.moveTo(-gw / 2, 0); gable.lineTo(-gw / 2, 1.2); gable.lineTo(-gw / 2 + 1.3, 1.2);
-    gable.lineTo(-gw / 2 + 1.3, 2.4); gable.lineTo(-gw / 2 + 2.6, 2.4); gable.lineTo(-gw / 2 + 2.6, 3.6);
-    gable.lineTo(0, gh); gable.lineTo(gw / 2 - 2.6, 3.6); gable.lineTo(gw / 2 - 2.6, 2.4);
-    gable.lineTo(gw / 2 - 1.3, 2.4); gable.lineTo(gw / 2 - 1.3, 1.2); gable.lineTo(gw / 2, 1.2);
+    gable.moveTo(-gw / 2, 0); gable.lineTo(-gw / 2, 1.1); gable.lineTo(-gw / 2 + 1.2, 1.1);
+    gable.lineTo(-gw / 2 + 1.2, 2.2); gable.lineTo(-gw / 2 + 2.4, 2.2); gable.lineTo(-gw / 2 + 2.4, 3.3);
+    gable.lineTo(0, gh); gable.lineTo(gw / 2 - 2.4, 3.3); gable.lineTo(gw / 2 - 2.4, 2.2);
+    gable.lineTo(gw / 2 - 1.2, 2.2); gable.lineTo(gw / 2 - 1.2, 1.1); gable.lineTo(gw / 2, 1.1);
     gable.lineTo(gw / 2, 0); gable.closePath();
-    mesh(root, new THREE.ShapeGeometry(gable), stone, 0, height + 3, 0.3, 'King’s House central stepped gable');
-    cylinder(root, 1.3, 1.6, height + 9, 0, (height + 9) / 2, -depth / 2 - 0.7, trim, 8).name = 'King’s House central tower';
-    mesh(root, new THREE.ConeGeometry(1.65, 5.5, 8), roofMat, 0, height + 11.75, -depth / 2 - 0.7, 'King’s House central tower spire');
+    mesh(root, new THREE.ShapeGeometry(gable), stone, 0, height + 2.5, 0.3, 'King’s House central stepped gable');
+    const towerZ = -depth / 2 - 0.7;
+    box(root, 2.8, 33, 2.8, 0, 16.5, towerZ, trim, 'King’s House central tower square shaft');
+    cylinder(root, 1.35, 1.5, 2.6, 0, 34.3, towerZ, trim, 8).name = 'King’s House central tower octagonal top';
+    const dome = mesh(root, new THREE.SphereGeometry(1.7, 12, 8), roofMat, 0, 36.3, towerZ, 'King’s House tower domed slate spire');
+    dome.scale.set(1, 0.75, 1);
+    cylinder(root, 0.08, 0.14, 1.2, 0, 38.2, towerZ, materials.gold, 6).name = 'King’s House tower finial';
   }
 
   function grandPlace(g) {
