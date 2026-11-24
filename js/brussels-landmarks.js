@@ -2332,6 +2332,18 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
         }
       }
     }
+
+    // The central entrance carries a gilded fanlight (imposte) above the door, set in the
+    // arch head of the middle portico bay.
+    const fanShape = new THREE.Shape();
+    fanShape.moveTo(-2.2, 0); fanShape.lineTo(2.2, 0);
+    fanShape.absarc(0, 0, 2.2, 0, Math.PI, false); fanShape.closePath();
+    mesh(g, new THREE.ShapeGeometry(fanShape), glass, 0, 6.4, centralFace + 0.3, 'Central entrance gilded fanlight');
+    for (let fk = 0; fk < 4; fk++) {
+      const fa = (fk - 1.5) * 0.55;
+      const fr = box(g, 0.06, 4.0, 0.05, Math.sin(fa) * 1.1, 6.4 + Math.cos(fa) * 1.1, centralFace + 0.32, gilded, 'Central fanlight radial bar');
+      fr.rotation.z = fa;
+    }
   });
   addLandmark('palaceSurroundings', (g) => {
     // Brussels Park (Parc de Bruxelles): the rectangular 13.1 ha neoclassical park north of the

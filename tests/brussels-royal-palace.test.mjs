@@ -713,3 +713,9 @@ testCase('ground-floor wing openings carry wrought-iron grilles', () => {
   assert.match(palace, /'Wing ground-floor window grille'/);
   assert.match(palace, /'Wing grille bar'/);
 });
+
+testCase('the central entrance carries a gilded radial fanlight in the arch head', () => {
+  assert.match(palace, /gilded fanlight/);
+  assert.match(palace, /'Central entrance gilded fanlight'/);
+  assert.match(palace, /'Central fanlight radial bar'/);
+});
