@@ -3732,6 +3732,11 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
         box(g, 2.65, 0.06, 0.05, x, my, centralFace + 0.27, bronze, 'Central French door muntin horizontal');
       }
     }
+
+    // Low cheek walls in dressed stone flank both sides of the perron.
+    for (const side of [-1, 1]) {
+      box(g, 0.8, 1.2, 2.2, side * 8.9, 0.6, centralFace + 1.2, ashlar, 'Perron cheek wall');
+    }
   });
   addLandmark('palaceSurroundings', (g) => {
     // Real-world sources: en/fr Wikipedia (Royal Palace of Brussels, Brussels Park, Place des Palais,

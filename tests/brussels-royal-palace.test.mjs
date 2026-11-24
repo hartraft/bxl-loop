@@ -1232,3 +1232,7 @@ testCase('glazing muntins divide the central piano nobile French doors into pane
   assert.match(palace, /'Central French door muntin vertical'/);
   assert.match(palace, /'Central French door muntin horizontal'/);
 });
+
+testCase('dressed stone cheek walls flank both sides of the perron', () => {
+  assert.match(palace, /'Perron cheek wall'/);
+});
