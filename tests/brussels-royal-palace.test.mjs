@@ -1924,3 +1924,7 @@ testCase('a moulding closes the underside of the central balcony slab', () => {
 testCase('stone sills sit under the Academy first-floor windows', () => {
   assert.match(palace, /'Academy first-floor window sill'/);
 });
+
+testCase('a bed moulding crowns the front edge of the BELvue cornice', () => {
+  assert.match(palace, /'BELvue cornice bed moulding'/);
+});

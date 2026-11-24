@@ -5322,6 +5322,9 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     for (let i = 0; i < 7; i++) {
       box(g, 2.6, 0.18, 0.3, -168 - 24 + i * 8, 7.65, 21.0, materials.warmStone, 'Academy first-floor window sill');
     }
+
+    // A bed moulding crowns the front edge of the BELvue cornice.
+    box(g, 38, 0.18, 0.4, 168, 23.1, 21.85, materials.warmStone, 'BELvue cornice bed moulding');
   });
     addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');
