@@ -1920,3 +1920,7 @@ testCase('a door with lintel pierces the east wing of the Palace of the Nation',
 testCase('a moulding closes the underside of the central balcony slab', () => {
   assert.match(palace, /'Central balcony underside moulding'/);
 });
+
+testCase('stone sills sit under the Academy first-floor windows', () => {
+  assert.match(palace, /'Academy first-floor window sill'/);
+});

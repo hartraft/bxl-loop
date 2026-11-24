@@ -5317,6 +5317,11 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     // A door with lintel pierces the east wing facade of the Palace of the Nation.
     box(g, 3.0, 6.0, 0.3, 70, 3.0, 406.85, materials.dark, 'Palace of the Nation east wing door');
     box(g, 3.4, 0.22, 0.4, 70, 6.2, 406.8, materials.warmStone, 'Palace of the Nation east wing door lintel');
+
+    // Stone sills sit under the Academy Palace first-floor windows.
+    for (let i = 0; i < 7; i++) {
+      box(g, 2.6, 0.18, 0.3, -168 - 24 + i * 8, 7.65, 21.0, materials.warmStone, 'Academy first-floor window sill');
+    }
   });
     addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');
