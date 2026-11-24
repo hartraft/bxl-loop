@@ -5476,6 +5476,16 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
         box(g, 0.25, 0.35, 1.1, 168 + side * 2.5, 0.18, cz, materials.pavingEdge, 'BELvue step kerb');
       }
     }
+
+    // A dentil course runs under the Royal Stables gatehouse cornice.
+    const rsDn = new THREE.InstancedMesh(new THREE.BoxGeometry(0.22, 0.28, 0.28), materials.warmStone, 10);
+    const rsDd = new THREE.Object3D();
+    let rsDi = 0;
+    for (let di5 = 0; di5 < 10; di5++) {
+      rsDd.position.set(-76 + di5 * 1.2, 14.85, -68.9); rsDd.rotation.y = 0; rsDd.updateMatrix();
+      rsDn.setMatrixAt(rsDi++, rsDd.matrix);
+    }
+    rsDn.count = rsDi; rsDn.name = 'Royal Stables gatehouse dentil'; g.add(rsDn);
   });
     addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');

@@ -2044,3 +2044,8 @@ testCase('cap strips finish the wing balcony corbels', () => {
 testCase('kerbs edge both sides of the BELvue entrance steps', () => {
   assert.match(palace, /'BELvue step kerb'/);
 });
+
+testCase('a dentil course runs under the Royal Stables gatehouse cornice', () => {
+  assert.match(palace, /'Royal Stables gatehouse dentil'/);
+  assert.match(palace, /rsDn\.count = rsDi/);
+});
