@@ -1752,6 +1752,21 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     galleryMerlons.count = 8;
     galleryMerlons.name = 'Tower gallery parapet merlons';
     tower.add(galleryMerlons);
+    // Pointed arch hoods bridge the gallery between its pinnacles, over the balustrade.
+    const galleryArchShape = new THREE.Shape();
+    galleryArchShape.moveTo(-0.7, 0); galleryArchShape.lineTo(0, 0.55); galleryArchShape.lineTo(0.7, 0); galleryArchShape.closePath();
+    const galleryArches = new THREE.InstancedMesh(new THREE.ShapeGeometry(galleryArchShape), trim, 8);
+    for (let i = 0; i < 8; i++) {
+      const a = i * Math.PI / 4;
+      gbd.position.set(Math.cos(a) * 5.7, 58.3, Math.sin(a) * 5.7);
+      gbd.rotation.y = -a;
+      gbd.updateMatrix();
+      galleryArches.setMatrixAt(i, gbd.matrix);
+      gbd.rotation.y = 0;
+    }
+    galleryArches.count = 8;
+    galleryArches.name = 'Gallery arch hoods over balustrade';
+    tower.add(galleryArches);
     // Three-tier openwork octagonal lantern: slender piers, pointed arch ribs, parapets.
     cylinder(tower, 4.9, 5.3, 2.0, 0, 59.6, 0, darkStone, 8).name = 'Openwork octagonal lantern base';
     for (let level = 0; level < 3; level++) {
@@ -1798,6 +1813,41 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     louvers.count = lo;
     louvers.name = 'Belfry louver slats';
     tower.add(louvers);
+    // Capitals crown each openwork lantern pier, and hood moulds arch over every belfry
+    // opening — the real lantern is pier-by-pier arcaded.
+    const pierCapitalsL = new THREE.InstancedMesh(new THREE.BoxGeometry(0.62, 0.22, 0.62), darkStone, 24);
+    const belfryHoods = new THREE.InstancedMesh(new THREE.BoxGeometry(2.7, 0.2, 0.3), trim, 24);
+    let pcap = 0;
+    for (let level = 0; level < 3; level++) {
+      const y0 = 60.6 + level * 6.6;
+      for (let i = 0; i < 8; i++) {
+        const a = i * Math.PI / 4;
+        ld.position.set(Math.cos(a) * 4.35, y0 + 6.05, Math.sin(a) * 4.35);
+        ld.rotation.y = -a;
+        ld.updateMatrix();
+        pierCapitalsL.setMatrixAt(pcap, ld.matrix);
+        ld.position.set(Math.cos(a + Math.PI / 8) * 3.7, y0 + 6.2, Math.sin(a + Math.PI / 8) * 3.7);
+        ld.updateMatrix();
+        belfryHoods.setMatrixAt(pcap++, ld.matrix);
+      }
+    }
+    pierCapitalsL.count = belfryHoods.count = 24;
+    pierCapitalsL.name = 'Lantern pier capitals';
+    belfryHoods.name = 'Belfry opening hood moulds';
+    tower.add(pierCapitalsL, belfryHoods);
+    // Timber bell frame and clapper inside the middle belfry tier, around the great bell.
+    const bellFrame = new THREE.InstancedMesh(new THREE.BoxGeometry(0.12, 2.2, 0.12), materials.dark, 4);
+    for (let i = 0; i < 4; i++) {
+      ld.position.set((i % 2 ? 0.6 : -0.6), 68.2, (i < 2 ? 0.6 : -0.6));
+      ld.rotation.y = 0;
+      ld.updateMatrix();
+      bellFrame.setMatrixAt(i, ld.matrix);
+    }
+    bellFrame.count = 4;
+    bellFrame.name = 'Belfry bell-frame timbers';
+    box(tower, 1.4, 0.14, 1.4, 0, 69.2, 0, materials.dark, 'Belfry bell-frame beam');
+    box(tower, 0.08, 0.5, 0.08, 0, 66.9, 0, materials.dark, 'Bell clapper');
+    tower.add(bellFrame);
     // Four buttressed octagonal corner turrets and four slender side pinnacles, tied to
     // the shaft by flying buttresses.
     const up = new THREE.Vector3(0, 1, 0);
@@ -1876,6 +1926,9 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     crochets.name = 'Spire rib gilded crochets';
     tower.add(crochets);
     cylinder(tower, 1.5, 1.5, 0.14, 0, 90.6, 0, materials.gold, 8).name = 'Spire gilded ring armature';
+    // Two more gilded ring armatures tie the openwork spire ribs higher up.
+    cylinder(tower, 0.85, 0.85, 0.12, 0, 93.4, 0, materials.gold, 8).name = 'Spire gilded ring armature';
+    cylinder(tower, 0.4, 0.4, 0.1, 0, 95.4, 0, materials.gold, 8).name = 'Spire gilded ring armature';
     // The openwork spire's apex carries a gilded orb, and the statue of Saint Michael at the
     // 96 m summit holds his sword raised against the dragon.
     mesh(tower, new THREE.SphereGeometry(0.5, 12, 10), materials.gold, 0, 96.15, 0, 'Spire gilded orb finial');
@@ -1897,6 +1950,15 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     dragonWings.count = 2;
     dragonWings.name = 'Saint Michael dragon wings';
     tower.add(dragonWings);
+    // Gilded halo behind Saint Michael's head, a curled dragon tail, and a cross-guard on
+    // his raised sword — finishing details of the real 2.7 m gilt statue.
+    const halo = mesh(tower, new THREE.TorusGeometry(0.42, 0.05, 8, 20), materials.gold, 0, 99.85, -0.22, 'Saint Michael gilded halo');
+    halo.rotation.y = 0;
+    const tail = box(tower, 0.08, 0.7, 0.08, 0.85, 95.85, 0.35, darkStone, 'Saint Michael dragon tail');
+    tail.rotation.z = -0.7;
+    const guard = box(tower, 0.3, 0.06, 0.06, 0.34, 99.85, 0.1, materials.gold, 'Saint Michael sword cross-guard');
+    // Moulded base ring under the gilded orb at the spire apex.
+    cylinder(tower, 0.62, 0.7, 0.18, 0, 95.72, 0, trim, 12).name = 'Spire orb base moulding';
   }
 
   function kingsHouse(parent) {

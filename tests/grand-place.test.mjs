@@ -836,3 +836,18 @@ test('rounds 149-156: buttress plinths/weatherings/gargoyles, wing cornice drips
   assert.ok(square.includes('Tower base corner buttresses'));
   assert.ok(square.includes('baseButtresses.count = 4'));
 });
+
+test('rounds 157-164: lantern pier capitals + belfry hoods, bell frame/clapper, gallery arch hoods, extra spire rings, St Michael halo/tail/guard, orb moulding', () => {
+  assert.ok(square.includes('Lantern pier capitals'));
+  assert.ok(square.includes('pierCapitalsL.count = belfryHoods.count = 24'));
+  assert.ok(square.includes('Belfry opening hood moulds'));
+  assert.ok(square.includes('Belfry bell-frame timbers'));
+  assert.ok(square.includes('Bell clapper'));
+  assert.ok(square.includes('Gallery arch hoods over balustrade'));
+  assert.ok(square.includes('galleryArches.count = 8'));
+  assert.ok(square.includes("cylinder(tower, 0.85, 0.85, 0.12, 0, 93.4, 0, materials.gold, 8)"));
+  assert.ok(square.includes('Saint Michael gilded halo'));
+  assert.ok(square.includes('Saint Michael dragon tail'));
+  assert.ok(square.includes('Saint Michael sword cross-guard'));
+  assert.ok(square.includes('Spire orb base moulding'));
+});
