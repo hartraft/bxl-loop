@@ -1936,6 +1936,13 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
   });
 
   scene?.add(group);
+  group.updateMatrixWorld(true);
+  const zones = (GEO.landmarkZones || []).map((z) => ({ id: z.id, pts: z.pts }));
+  for (const id in landmarks) {
+    const bb = new THREE.Box3().setFromObject(landmarks[id].group).expandByScalar(3);
+    if (bb.isEmpty()) continue;
+    zones.push({ id, pts: [bb.min.x, bb.min.z, bb.max.x, bb.min.z, bb.max.x, bb.max.z, bb.min.x, bb.max.z] });
+  }
   function setNight(t) {
     const level = Math.max(0, Math.min(1, Number(t) || 0));
     for (const m of nightGlowMats) {
@@ -1948,7 +1955,7 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     }
   }
   return {
-    group, colliders, zones: GEO.landmarkZones || [], landmarks,
+    group, colliders, zones, landmarks,
     update(dt, night) { if (typeof night === 'number') setNight(night); },
     towerBridge: null,
     setNight

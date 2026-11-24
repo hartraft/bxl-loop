@@ -445,6 +445,16 @@ test('the Royal Palace snapshot shows forecourt ground instead of blank sky', ()
   assert.match(palace, /centre\.z\+18\)/);
 });
 
+test('the returned landmark zones also cover each drawn landmark footprint, so generic buildings inside them are skipped', () => {
+  assert.ok(source.includes('group.updateMatrixWorld(true)'));
+  assert.ok(source.includes('const zones = (GEO.landmarkZones || []).map((z) => ({ id: z.id, pts: z.pts }));'));
+  assert.ok(source.includes('const bb = new THREE.Box3().setFromObject(landmarks[id].group).expandByScalar(3);'));
+  assert.ok(source.includes('zones.push({ id, pts: [bb.min.x, bb.min.z, bb.max.x, bb.min.z, bb.max.x, bb.max.z, bb.min.x, bb.max.z] });'));
+  assert.ok(source.includes('group, colliders, zones, landmarks,'), 'zones (baked + footprint bboxes) are returned for the city builder to skip buildings inside');
+  const main = readFileSync(new URL('../js/main.js', import.meta.url), 'utf8');
+  assert.ok(main.includes('landmarkZones: landmarks.zones'));
+});
+
 test('the Pages deploy waits for the github-pages artifact before deploying', () => {
   const wf = readFileSync(new URL('../.github/workflows/deploy-brussels.yml', import.meta.url), 'utf8');
   const wait = wf.indexOf('Wait for the github-pages artifact');
