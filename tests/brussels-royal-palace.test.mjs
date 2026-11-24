@@ -1095,3 +1095,7 @@ testCase('stone edging kerbs flank the park central avenue', () => {
   assert.match(palace, /'Central avenue west edging kerb'/);
   assert.match(palace, /'Central avenue east edging kerb'/);
 });
+
+testCase('stone access steps lead down to the main pond rim on the axis', () => {
+  assert.match(palace, /'Main pond access step'/);
+});

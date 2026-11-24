@@ -4217,6 +4217,10 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     // Stone edging kerbs flank the central avenue walk.
     box(g, 0.4, 0.18, 172, -6.3, 0.09, 150, materials.pavingEdge, 'Central avenue west edging kerb');
     box(g, 0.4, 0.18, 172, 6.3, 0.09, 150, materials.pavingEdge, 'Central avenue east edging kerb');
+    // Stone access steps lead down to the main pond rim on the central axis (south side).
+    for (let s = 0; s < 3; s++) {
+      box(g, 6, 0.25, 0.9, 0, 0.9 - s * 0.25, 164.5 + s * 0.9, materials.paleStone, 'Main pond access step');
+    }
   });
     addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');
