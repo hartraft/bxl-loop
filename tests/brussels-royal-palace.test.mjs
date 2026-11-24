@@ -1786,3 +1786,7 @@ testCase('a gravel path crosses the Academy Palace garden', () => {
 testCase('cap strips crown the wing balcony rails', () => {
   assert.match(palace, /'Wing balcony rail cap'/);
 });
+
+testCase('cornices crown both Palace of the Nation wings', () => {
+  assert.match(palace, /'Palace of the Nation wing cornice'/);
+});

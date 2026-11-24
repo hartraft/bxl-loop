@@ -5165,6 +5165,11 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
 
     // A gravel path crosses the Academy Palace garden between the statues.
     box(g, 3, 0.08, 12, -168, 0.06, 64, materials.pavingB, 'Academy garden path');
+
+    // Cornices crown both wings of the Palace of the Nation.
+    for (const side of [-1, 1]) {
+      box(g, 42, 0.8, 28, side * 70, 16.4, 420, materials.warmStone, 'Palace of the Nation wing cornice');
+    }
   });
     addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');
