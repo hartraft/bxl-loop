@@ -453,6 +453,70 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
         // Le Cornet: the ship-stern gable is manned by a gilded horse.
         box(root, 0.9, 0.5, 0.25, 0, height + gableHeight + 1.2, 0.1, materials.gold, name + ' gilded horse body');
         mesh(root, new THREE.SphereGeometry(0.22, 8, 6), materials.gold, 0.5, height + gableHeight + 1.55, 0.1, name + ' gilded horse head');
+      } else if (kind === 'helmet') {
+        // Le Heaume: gilded helmet.
+        mesh(root, new THREE.SphereGeometry(0.4, 10, 8), materials.gold, 0, height + gableHeight + 1.5, 0.1, name + ' gilded helmet emblem');
+        box(root, 0.72, 0.12, 0.12, 0, height + gableHeight + 1.12, 0.1, materials.gold, name + ' helmet brim');
+      } else if (kind === 'peacock') {
+        // Le Paon: gilded peacock with a fanned tail.
+        mesh(root, new THREE.SphereGeometry(0.22, 8, 6), materials.gold, 0, height + gableHeight + 1.4, 0.1, name + ' gilded peacock body');
+        const fan = new THREE.InstancedMesh(new THREE.BoxGeometry(0.06, 0.85, 0.06), materials.gold, 5);
+        for (let i = 0; i < 5; i++) {
+          modDummy.position.set(0, height + gableHeight + 1.75, 0.1);
+          modDummy.rotation.z = (i - 2) * 0.4;
+          modDummy.updateMatrix();
+          fan.setMatrixAt(i, modDummy.matrix);
+        }
+        modDummy.rotation.set(0, 0, 0);
+        fan.count = 5;
+        fan.name = name + ' peacock tail fan';
+        root.add(fan);
+      } else if (kind === 'stag') {
+        // Le Cerf: gilded stag head with antlers.
+        mesh(root, new THREE.SphereGeometry(0.2, 8, 6), materials.gold, 0, height + gableHeight + 1.5, 0.1, name + ' gilded stag head');
+        for (const side of [-1, 1]) {
+          const antler = box(root, 0.07, 0.7, 0.07, side * 0.22, height + gableHeight + 1.95, 0.1, materials.gold, name + ' stag antler');
+          antler.rotation.z = side * 0.5;
+        }
+      } else if (kind === 'angel') {
+        // L'Ange: gilded angel figure.
+        box(root, 0.3, 1.0, 0.14, 0, height + gableHeight + 1.5, 0.1, materials.gold, name + ' gilded angel body');
+        mesh(root, new THREE.SphereGeometry(0.16, 8, 6), materials.gold, 0, height + gableHeight + 2.15, 0.1, name + ' angel head');
+        for (const side of [-1, 1]) {
+          const wing = box(root, 0.5, 0.3, 0.06, side * 0.4, height + gableHeight + 1.8, 0.12, materials.gold, name + ' angel wing');
+          wing.rotation.z = side * 0.6;
+        }
+      } else if (kind === 'boat') {
+        // La Chaloupe d'Or: gilded chaloupe (skiff).
+        box(root, 0.9, 0.3, 0.3, 0, height + gableHeight + 1.4, 0.1, materials.gold, name + ' gilded chaloupe hull');
+        const mast = box(root, 0.06, 0.8, 0.06, 0, height + gableHeight + 1.9, 0.1, materials.gold, name + ' chaloupe mast');
+      } else if (kind === 'star') {
+        // L'Étoile: gilded star (the house demolished 1852 for the tramway kept its name).
+        mesh(root, new THREE.ConeGeometry(0.42, 0.9, 5), materials.gold, 0, height + gableHeight + 1.6, 0.1, name + ' gilded star emblem');
+      } else if (kind === 'rose') {
+        // La Rose: gilded rose.
+        mesh(root, new THREE.SphereGeometry(0.3, 10, 8), materials.gold, 0, height + gableHeight + 1.6, 0.1, name + ' gilded rose emblem');
+        mesh(root, new THREE.TorusGeometry(0.34, 0.07, 6, 12), materials.gold, 0, height + gableHeight + 1.6, 0.16, name + ' rose petal ring');
+      } else if (kind === 'flags') {
+        // Le Mont Thabor (Maison aux Trois Couleurs): cartouche with gilded flags.
+        box(root, 0.6, 0.45, 0.12, 0, height + gableHeight + 1.3, 0.14, materials.dark, name + ' flags cartouche');
+        for (let i = 0; i < 3; i++) {
+          const flag = box(root, 0.14, 0.2, 0.04, -0.2 + i * 0.2, height + gableHeight + 1.55, 0.2, materials.gold, name + ' gilded flag');
+          flag.rotation.z = (i - 1) * 0.25;
+        }
+      } else if (kind === 'barley') {
+        // L'Arbre d'Or (brewers): gilded barley sheaf.
+        const sheaf = new THREE.InstancedMesh(new THREE.ConeGeometry(0.1, 0.9, 6), materials.gold, 5);
+        for (let i = 0; i < 5; i++) {
+          modDummy.position.set((i - 2) * 0.12, height + gableHeight + 1.7, 0.1);
+          modDummy.rotation.z = (i - 2) * 0.22;
+          modDummy.updateMatrix();
+          sheaf.setMatrixAt(i, modDummy.matrix);
+        }
+        modDummy.rotation.set(0, 0, 0);
+        sheaf.count = 5;
+        sheaf.name = name + ' gilded barley sheaf';
+        root.add(sheaf);
       } else {
         // Gilded guild emblem crowning the gable — La Louve's golden phoenix and the like.
         const em = mesh(root, new THREE.SphereGeometry(0.34, 10, 8), materials.gold, 0, height + gableHeight + 1.7, 0.1, name + ' gilded gable emblem');

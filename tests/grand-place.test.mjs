@@ -380,6 +380,21 @@ test('Le Roy d’Espagne carries Roman emperor medallions and the St Aubert bust
   assert.ok(square.includes('medallions.count = 4'));
 });
 
+test('gable emblem kinds exist for the named houses: helmet, peacock, stag, angel, boat, star, rose, flags, barley', () => {
+  for (const kind of ['helmet', 'peacock', 'stag', 'angel', 'boat', 'star', 'rose', 'flags', 'barley']) {
+    assert.ok(square.includes(`kind === '${kind}'`), `missing emblem kind ${kind}`);
+  }
+  assert.ok(square.includes(" gilded helmet emblem'"));
+  assert.ok(square.includes(" peacock tail fan'"));
+  assert.ok(square.includes(" stag antler'"));
+  assert.ok(square.includes(" angel wing'"));
+  assert.ok(square.includes(" gilded chaloupe hull'"));
+  assert.ok(square.includes(" gilded star emblem'"));
+  assert.ok(square.includes(" gilded rose emblem'"));
+  assert.ok(square.includes(" gilded flag'"));
+  assert.ok(square.includes(" gilded barley sheaf'"));
+});
+
 test('signature house emblems: Le Cornet horse, Le Roy d’Espagne cupola-vane and six statues', () => {
   assert.ok(square.includes("emblem: 'horse'"));
   assert.ok(square.includes("emblem: 'vane'"));
