@@ -161,6 +161,27 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     quoins.name = name + ' corner quoins';
     quoins.castShadow = true;
     root.add(quoins);
+    // Dentil teeth under the gilded cornice and rustication grooves in the plinth — standard
+    // dressing of the real Baroque facades.
+    const dentilCount = Math.floor(width / 0.5);
+    const dentils = new THREE.InstancedMesh(new THREE.BoxGeometry(0.18, 0.22, 0.2), materials.warmStone, dentilCount);
+    for (let i = 0; i < dentilCount; i++) {
+      modDummy.position.set(-width / 2 + 0.3 + i * 0.5, height - 0.78, 0.18);
+      modDummy.updateMatrix();
+      dentils.setMatrixAt(i, modDummy.matrix);
+    }
+    dentils.count = dentilCount;
+    dentils.name = name + ' cornice dentils';
+    root.add(dentils);
+    const rustication = new THREE.InstancedMesh(new THREE.BoxGeometry(width + 0.3, 0.05, 0.06), materials.dark, 2);
+    for (let i = 0; i < 2; i++) {
+      modDummy.position.set(0, 0.8 + i * 0.55, 0.31);
+      modDummy.updateMatrix();
+      rustication.setMatrixAt(i, modDummy.matrix);
+    }
+    rustication.count = 2;
+    rustication.name = name + ' plinth rustication grooves';
+    root.add(rustication);
     box(root, width + 0.45, 0.45, 0.35, 0, 1.15, 0.12, materials.warmStone, name + ' plinth');
     // Horizontal string-course bands between the window storeys, as on the real facades.
     const stringCourses = new THREE.InstancedMesh(new THREE.BoxGeometry(width - 0.4, 0.14, 0.12), materials.warmStone, floors);

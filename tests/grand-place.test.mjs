@@ -197,6 +197,13 @@ test('guild-house cornices stand on a row of stone corbels (modillions)', () => 
   assert.ok(square.includes("box(root, width + 0.8, 0.65, depth + 0.4, 0, height - 0.35, -depth / 2, materials.gold, name + ' cornice')"));
 });
 
+test('guild-house cornices have dentils and plinths have rustication grooves', () => {
+  assert.ok(square.includes(" cornice dentils'"));
+  assert.ok(square.includes('dentils.count = dentilCount'));
+  assert.ok(square.includes(" plinth rustication grooves'"));
+  assert.ok(square.includes('rustication.count = 2'));
+});
+
 test('guild-house corners are chained with rusticated quoins', () => {
   assert.ok(square.includes(" corner quoins'"));
   assert.ok(square.includes('const quoinRows = Math.max(3, Math.floor((height - 2.2) / 0.85))'));
