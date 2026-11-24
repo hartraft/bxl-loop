@@ -33,6 +33,9 @@ jobs:
           node --check js/city-config.js
           node --check js/brussels-landmarks.js
           node --check js/main.js
+          node --check js/scene-culling.js
+          node --check js/culling-math.mjs
+          node --check tests/scene-culling-math.test.mjs
           node --check js/lighting.js
           if [ -f tools/browser-screenshots.mjs ]; then
             node --check tools/browser-screenshots.mjs
@@ -62,7 +65,7 @@ jobs:
           node --check js/geo-frame.js
           node --check js/brussels-terrain.js
           node --check js/brussels-colliders.js
-          node --check tests/brussels-landmark-colliders.test.mjs
+          node --check tests/brussels-landmark-colliders.test.mjs tests/scene-culling-math.test.mjs
           node --check tests/brussels-terrain.test.mjs
           python -m py_compile tools/prepare-brussels-terrain.py tools/download-brussels-dtm.py tools/validate-brussels-dtm.py tests/brussels-terrain-importer.test.py tests/brussels-dtm-download.test.py tools/browser-runtime-smoke.py
       - name: Install terrain importer test dependencies
