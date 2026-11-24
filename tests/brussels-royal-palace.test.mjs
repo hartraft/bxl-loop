@@ -2301,3 +2301,7 @@ testCase('finials crown the perron lamp standards above the globes', () => {
 testCase('stone steps lead down to the main pond rim on its west side', () => {
   assert.match(palace, /'Main pond west access step'/);
 });
+
+testCase('border posts mark the start of the central garden walk', () => {
+  assert.match(palace, /'Garden walk border post'/);
+});

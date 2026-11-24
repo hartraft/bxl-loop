@@ -4235,6 +4235,11 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     for (const side of [-1, 1]) {
       cylinder(g, 0.03, 0.06, 0.3, side * 9.6, 4.95, centralFace + 1.6, bronze, 8).name = 'Perron lamp finial';
     }
+
+    // Border posts mark the start of the central garden walk at the perron.
+    for (const side of [-1, 1]) {
+      box(g, 0.18, 0.6, 0.18, side * 2.1, 0.7, 10.9, ashlar, 'Garden walk border post');
+    }
   });
   addLandmark('palaceSurroundings', (g) => {
     // Real-world sources: en/fr Wikipedia (Royal Palace of Brussels, Brussels Park, Place des Palais,
