@@ -1575,3 +1575,7 @@ testCase('the Academy stables block has a great door with lintel', () => {
   assert.match(palace, /'Academy stables door'/);
   assert.match(palace, /'Academy stables door lintel'/);
 });
+
+testCase('a cap strip crowns each perron side rail', () => {
+  assert.match(palace, /'Perron side rail cap'/);
+});
