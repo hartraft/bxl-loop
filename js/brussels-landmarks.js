@@ -3709,6 +3709,9 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
         box(g, 0.16, 0.5, 0.5, bx, 7.6, facadeZ + 0.55, bronze, 'Wing balcony console');
       }
     }
+
+    // The gilded garden railing in front of the palace stands on a stone plinth.
+    box(g, 68, 0.22, 0.5, 0, 0.11, 14, ashlar, 'Gilded garden railing plinth');
   });
   addLandmark('palaceSurroundings', (g) => {
     // Real-world sources: en/fr Wikipedia (Royal Palace of Brussels, Brussels Park, Place des Palais,

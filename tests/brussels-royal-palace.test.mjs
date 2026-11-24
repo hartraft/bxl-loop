@@ -1203,3 +1203,7 @@ testCase('both Palace of the Nation wings carry rows of facade windows', () => {
 testCase('corner quoins strengthen the BELvue square-facing corners', () => {
   assert.match(palace, /'BELvue corner quoin'/);
 });
+
+testCase('the gilded garden railing stands on a stone plinth', () => {
+  assert.match(palace, /'Gilded garden railing plinth'/);
+});
