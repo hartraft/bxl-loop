@@ -1486,3 +1486,8 @@ testCase('the central balcony rail sits on a projecting stone slab', () => {
 testCase('attic bases ring each Palace of the Nation peristyle column', () => {
   assert.match(palace, /'Palace of the Nation column base'/);
 });
+
+testCase('a tall window pierces the Royal Stables gatehouse above the gate', () => {
+  assert.match(palace, /'Royal Stables gatehouse window'/);
+  assert.match(palace, /'Royal Stables gatehouse window lintel'/);
+});
