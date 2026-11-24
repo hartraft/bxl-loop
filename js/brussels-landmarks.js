@@ -5105,6 +5105,11 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       const wx = 168 - 13 + i * 6.5;
       box(g, 0.08, 4.2, 0.06, wx, 15, 22.2, materials.warmStone, 'BELvue piano nobile mullion');
     }
+
+    // Mullions divide the Academy Palace ground-floor arched windows.
+    for (let i = 0; i < 7; i++) {
+      box(g, 0.08, 4.5, 0.06, -168 - 24 + i * 8, 5, 21.0, materials.warmStone, 'Academy Palace ground mullion');
+    }
   });
     addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');

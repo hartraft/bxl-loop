@@ -1734,3 +1734,7 @@ testCase('mullions divide the BELvue piano nobile windows', () => {
 testCase('glazed side lights flank the central portico door', () => {
   assert.match(palace, /'Portico door side light'/);
 });
+
+testCase('mullions divide the Academy Palace ground-floor arched windows', () => {
+  assert.match(palace, /'Academy Palace ground mullion'/);
+});
