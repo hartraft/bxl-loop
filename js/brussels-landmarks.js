@@ -240,6 +240,17 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     frieze.count = friezeCount;
     frieze.name = name + ' blind-arcade cornice frieze';
     root.add(frieze);
+    // A gilded egg-and-dart row runs under the cornice above the frieze, as on the real
+    // Baroque cornices.
+    const eggDart = new THREE.InstancedMesh(new THREE.SphereGeometry(0.07, 6, 5), materials.gold, modillionCount);
+    for (let i = 0; i < modillionCount; i++) {
+      modDummy.position.set(-width / 2 + 0.5 + i * (width - 1.0) / (modillionCount - 1), height - 0.62, 0.18);
+      modDummy.updateMatrix();
+      eggDart.setMatrixAt(i, modDummy.matrix);
+    }
+    eggDart.count = modillionCount;
+    eggDart.name = name + ' cornice gilded egg-and-dart row';
+    root.add(eggDart);
     const rustication = new THREE.InstancedMesh(new THREE.BoxGeometry(width + 0.3, 0.05, 0.06), materials.dark, 2);
     for (let i = 0; i < 2; i++) {
       modDummy.position.set(0, 0.8 + i * 0.55, 0.31);
@@ -938,6 +949,10 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     ridgeCrests.count = 3;
     ridgeCrests.name = name + ' roof ridge crest finials';
     root.add(ridgeCrests);
+    // Stone caps close the roof ridge at both gable ends, as on the real roofs.
+    for (let i = 0; i < 2; i++) {
+      box(root, 0.5, 0.3, 0.5, (i === 0 ? -1 : 1) * (width / 2 + 0.2), height + 0.5, -depth / 2, materials.warmStone, name + ' roof ridge end cap');
+    }
     // Gilded volute scrolls at the gable shoulders — the baroque gables end in scrolls.
     const volutes = new THREE.InstancedMesh(new THREE.SphereGeometry(0.18, 8, 6), materials.gold, 2);
     for (let i = 0; i < 2; i++) {
@@ -1602,6 +1617,18 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     vaultRibs.count = arcBays;
     vaultRibs.name = 'Arcade cross-vault ribs';
     root.add(vaultRibs);
+    // A keystone caps each pointed arcade arch, as on the real arches.
+    const arcKeystones = new THREE.InstancedMesh(new THREE.BoxGeometry(0.24, 0.42, 0.5), darkStone, arcBays);
+    let ak = 0;
+    for (const [x] of arcBaysList) {
+      vd.position.set(x, 7.78, 0.26);
+      vd.rotation.z = 0;
+      vd.updateMatrix();
+      arcKeystones.setMatrixAt(ak++, vd.matrix);
+    }
+    arcKeystones.count = ak;
+    arcKeystones.name = 'Arcade arch keystones';
+    root.add(arcKeystones);
     // Dark vault infill panels close each arcade bay between the ribs, as on the real vaulted
     // ground floor.
     const vaultInfills = new THREE.InstancedMesh(new THREE.BoxGeometry(2.6, 0.08, 0.4), materials.dark, arcBays);
@@ -2531,6 +2558,19 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     galleryMods.count = 8;
     galleryMods.name = 'Tower gallery modillion corbels';
     tower.add(galleryMods);
+    // Gargoyle spouts project from each gallery pinnacle, as on the real gallery.
+    const galleryGargoyles = new THREE.InstancedMesh(new THREE.BoxGeometry(0.24, 0.4, 0.55), darkStone, 8);
+    for (let i = 0; i < 8; i++) {
+      const a = i * Math.PI / 4 + Math.PI / 8;
+      gbd.position.set(Math.cos(a) * 5.1, 63.9, Math.sin(a) * 5.1);
+      gbd.rotation.y = -a;
+      gbd.updateMatrix();
+      galleryGargoyles.setMatrixAt(i, gbd.matrix);
+      gbd.rotation.y = 0;
+    }
+    galleryGargoyles.count = 8;
+    galleryGargoyles.name = 'Gallery pinnacle gargoyles';
+    tower.add(galleryGargoyles);
     // Three-tier openwork octagonal lantern: slender piers, pointed arch ribs, parapets.
     cylinder(tower, 4.9, 5.3, 2.0, 0, 59.6, 0, darkStone, 8).name = 'Openwork octagonal lantern base';
     for (let level = 0; level < 3; level++) {
@@ -3063,6 +3103,16 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     khGalSpandrels.count = bays;
     khGalSpandrels.name = 'King’s House first-gallery spandrel panels';
     root.add(khGalSpandrels);
+    // Corbels carry the first-floor gallery along its length, as on the real Broodhuis.
+    const khGalCorbels = new THREE.InstancedMesh(new THREE.BoxGeometry(0.28, 0.4, 0.44), darkStone, bays);
+    for (let i = 0; i < bays; i++) {
+      khSd.position.set(-width / 2 + bayW * (i + 0.5), 8.4, 0.5);
+      khSd.updateMatrix();
+      khGalCorbels.setMatrixAt(i, khSd.matrix);
+    }
+    khGalCorbels.count = bays;
+    khGalCorbels.name = 'King’s House first-gallery corbels';
+    root.add(khGalCorbels);
     // Keystones at every gallery arch apex and quatrefoil oculi above the first-floor gallery
     // arches — the neo-Gothic galleries of the real Broodhuis are tracery-dressed.
     const khKeystones = new THREE.InstancedMesh(new THREE.BoxGeometry(0.2, 0.4, 0.34), darkStone, bays * 2);
@@ -3192,6 +3242,25 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     khSideMoulds.count = ksm;
     khSideMoulds.name = 'King’s House upper window side mouldings';
     root.add(khSideMoulds);
+    // Gilded statue niches flank every upper-storey window pair, as on the real Broodhuis.
+    const khUpperNiches = new THREE.InstancedMesh(new THREE.BoxGeometry(0.5, 2.2, 0.16), darkStone, bays * 2);
+    const khUpperStatues = new THREE.InstancedMesh(new THREE.BoxGeometry(0.2, 1.0, 0.1), materials.gold, bays * 2);
+    let kun = 0;
+    for (let i = 0; i < bays; i++) {
+      const x = -width / 2 + bayW * (i + 0.5);
+      for (const side of [-1, 1]) {
+        khMd.position.set(x + side * 1.05, 16.8, 0.26);
+        khMd.updateMatrix();
+        khUpperNiches.setMatrixAt(kun, khMd.matrix);
+        khMd.position.set(x + side * 1.05, 16.8, 0.36);
+        khMd.updateMatrix();
+        khUpperStatues.setMatrixAt(kun++, khMd.matrix);
+      }
+    }
+    khUpperNiches.count = khUpperStatues.count = kun;
+    khUpperNiches.name = 'King’s House upper statue niches';
+    khUpperStatues.name = 'King’s House upper gilded statues';
+    root.add(khUpperNiches, khUpperStatues);
     for (let i = 1; i <= bays; i += 2) {
       const x = -width / 2 + i * bayW;
       khDummy.position.set(x, 10.6, 0.3);
@@ -3321,6 +3390,16 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     khDormCheeks.count = kdc;
     khDormCheeks.name = 'King’s House dormer side cheeks';
     root.add(khDormCheeks);
+    // Stone sills project under each roof dormer, as on the real slate roof.
+    const khDormSills = new THREE.InstancedMesh(new THREE.BoxGeometry(1.5, 0.14, 0.7), darkStone, 7);
+    for (let i = 0; i < 7; i++) {
+      khPd2.position.set(-width / 2 + 3 + i * 4.3, height + 1.0, -depth / 2 + (i % 2 ? -2.6 : 2.6));
+      khPd2.updateMatrix();
+      khDormSills.setMatrixAt(i, khPd2.matrix);
+    }
+    khDormSills.count = 7;
+    khDormSills.name = 'King’s House dormer sill stones';
+    root.add(khDormSills);
 
     // Central pavilion with a stepped gable and Jamaer's central tower: square shaft,
     // octagonal top, domed slate spire — 38.49 m in reality.
@@ -3746,6 +3825,27 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     portalRing.count = 8;
     portalRing.name = 'Grand-Place Town Hall portal sett ring';
     plaza.add(portalRing);
+    // A sett-paved forecourt field lies before the Town Hall portal, as on the real square.
+    const thForecourt = new THREE.InstancedMesh(new THREE.BoxGeometry(1.4, 0.08, 1.4), materials.pavingB, 12);
+    for (let i = 0; i < 12; i++) {
+      dummy.position.set(2 + (i % 4) * 2.2, 0.0, 26 + Math.floor(i / 4) * 2.2);
+      dummy.rotation.y = (i % 3) * 0.04;
+      dummy.updateMatrix();
+      thForecourt.setMatrixAt(i, dummy.matrix);
+    }
+    thForecourt.count = 12;
+    thForecourt.name = 'Grand-Place Town Hall forecourt setts';
+    plaza.add(thForecourt);
+    // Matching sett field before the Broodhuis (north frontage) portal.
+    const khForecourt = new THREE.InstancedMesh(new THREE.BoxGeometry(1.4, 0.08, 1.4), materials.pavingB, 10);
+    for (let i = 0; i < 10; i++) {
+      dummy.position.set(-2.2 + (i % 5) * 2.2, 0.0, -26 - Math.floor(i / 5) * 2.2);
+      dummy.updateMatrix();
+      khForecourt.setMatrixAt(i, dummy.matrix);
+    }
+    khForecourt.count = 10;
+    khForecourt.name = 'Grand-Place Broodhuis forecourt setts';
+    plaza.add(khForecourt);
     // Granite kerb stones along all four facade lines where the paving meets the buildings.
     for (const [w, d, x, z, n] of [[110, 0.5, 0, 35.6, 'south'], [110, 0.5, 0, -35.6, 'north'], [0.5, 71, -54.6, 0, 'west'], [0.5, 71, 54.6, 0, 'east']]) {
       box(plaza, w, 0.18, d, x, 0.02, z, materials.pavingEdge, `Grand-Place ${n} facade kerb`);
@@ -4275,6 +4375,8 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     // A scallop shell crowns the rocaille niche, as on the real 1770 surround.
     mesh(g, new THREE.SphereGeometry(0.4, 12, 8, 0, Math.PI * 2, 0, Math.PI / 2), materials.blueStone, 0, 4.4, -0.22, 'Manneken Pis niche shell crown');
     box(g, 0.5, 0.04, 0.08, 0.8, 0.44, 0, materials.dark, 'Manneken Pis basin overflow grate');
+    // A small brass tap is set into the basin rim, feeding the jet, as on the real fountain.
+    cylinder(g, 0.04, 0.04, 0.18, 0.9, 0.5, 0.1, materials.bronze, 8).name = 'Manneken Pis brass tap';
     for (let i = 0; i < 4; i++) {
       const a = i * Math.PI / 2 + Math.PI / 4;
       box(g, 0.06, 0.8, 0.06, Math.cos(a) * 1.55, 0.4, Math.sin(a) * 1.55, materials.dark, 'Manneken Pis railing post');

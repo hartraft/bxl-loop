@@ -1182,3 +1182,24 @@ test('rounds 323-332: openwork parapet gaps (TH/Broodhuis/houses), tower base pl
   assert.ok(square.includes('portalRing.count = 8'));
   assert.ok(square.includes('attic window sill'));
 });
+
+test('rounds 333-342: gallery corbels, dormer sills, ridge end caps, forecourt sett fields, arcade keystones, egg-and-dart rows, gallery gargoyles, Broodhuis upper niches, Manneken brass tap', () => {
+  assert.ok(square.includes('King’s House first-gallery corbels'));
+  assert.ok(square.includes('khGalCorbels.count = bays'));
+  assert.ok(square.includes('King’s House dormer sill stones'));
+  assert.ok(square.includes('khDormSills.count = 7'));
+  assert.ok(square.includes('roof ridge end cap'));
+  assert.ok(square.includes('Grand-Place Town Hall forecourt setts'));
+  assert.ok(square.includes('thForecourt.count = 12'));
+  assert.ok(square.includes('Grand-Place Broodhuis forecourt setts'));
+  assert.ok(square.includes('khForecourt.count = 10'));
+  assert.ok(square.includes('Arcade arch keystones'));
+  assert.ok(square.includes('arcKeystones.count = ak'));
+  assert.ok(square.includes('cornice gilded egg-and-dart row'));
+  assert.ok(square.includes('eggDart.count = modillionCount'));
+  assert.ok(square.includes('Gallery pinnacle gargoyles'));
+  assert.ok(square.includes('galleryGargoyles.count = 8'));
+  assert.ok(square.includes('King’s House upper gilded statues'));
+  assert.ok(square.includes('khUpperNiches.count = khUpperStatues.count = kun'));
+  assert.ok(source.includes('Manneken Pis brass tap'));
+});
