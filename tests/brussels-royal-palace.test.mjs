@@ -1630,3 +1630,7 @@ testCase('capitals crown each Academy Palace portico column', () => {
 testCase('corner quoins strengthen the palace facade corners', () => {
   assert.match(palace, /'Facade corner quoin'/);
 });
+
+testCase('urns stand at the four corners of the BELvue roof terrace', () => {
+  assert.match(palace, /'BELvue roof terrace urn'/);
+});

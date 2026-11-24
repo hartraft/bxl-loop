@@ -4959,6 +4959,13 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     for (let i = 0; i < 4; i++) {
       cylinder(g, 1.0, 0.85, 0.5, -174 + i * 4, 12.25, 19.5, materials.paleStone, 12).name = 'Academy portico column capital';
     }
+
+    // Urns stand at the four corners of the BELvue roof terrace.
+    for (const ux of [-4.5, 4.5]) {
+      for (const uz of [-4.5, 4.5]) {
+        mesh(g, new THREE.SphereGeometry(0.3, 10, 8), materials.warmStone, 168 + ux, 30.2, 36 + uz, 'BELvue roof terrace urn');
+      }
+    }
   });
     addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');
