@@ -4931,6 +4931,11 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
         }
       }
     }
+
+    // Attic bases ring each Academy Palace portico column.
+    for (let i = 0; i < 4; i++) {
+      cylinder(g, 0.95, 1.05, 0.7, -174 + i * 4, 0.35, 19.5, materials.paleStone, 12).name = 'Academy portico column base';
+    }
   });
     addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');

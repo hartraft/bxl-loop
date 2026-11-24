@@ -1609,3 +1609,7 @@ testCase('stone lintels crown the wing end windows on both gable ends', () => {
   assert.match(palace, /'Wing end window lintel'/);
   assert.match(palace, /'Wing end ground window lintel'/);
 });
+
+testCase('attic bases ring each Academy Palace portico column', () => {
+  assert.match(palace, /'Academy portico column base'/);
+});
