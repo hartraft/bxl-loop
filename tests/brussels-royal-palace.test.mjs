@@ -2209,3 +2209,7 @@ testCase('a mid post stiffens each perron side rail', () => {
 testCase('cap courses finish the Academy garden side walls', () => {
   assert.match(palace, /'Academy garden side wall cap'/);
 });
+
+testCase('a sett field paves the north strip of the Place des Palais', () => {
+  assert.match(palace, /'Place des Palais north sett field'/);
+});
