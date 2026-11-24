@@ -3701,6 +3701,14 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     for (const bx of [-1.2, 0, 1.2]) {
       box(g, 0.18, 0.55, 0.55, bx, 11.05, centralFace + 0.55, bronze, 'Central balcony console');
     }
+
+    // Console brackets carry each wing first-floor balcony from the facade.
+    for (const side of wingXs) {
+      for (let k = 0; k < 9; k++) {
+        const bx = side - 22 + k * 5.5;
+        box(g, 0.16, 0.5, 0.5, bx, 7.6, facadeZ + 0.55, bronze, 'Wing balcony console');
+      }
+    }
   });
   addLandmark('palaceSurroundings', (g) => {
     // Real-world sources: en/fr Wikipedia (Royal Palace of Brussels, Brussels Park, Place des Palais,
