@@ -1397,3 +1397,7 @@ testCase('a moulded surround frames the portico main door', () => {
   assert.match(palace, /'Portico door jamb'/);
   assert.match(palace, /'Portico door lintel'/);
 });
+
+testCase('stone sills sit under each BELvue ground-floor window', () => {
+  assert.match(palace, /'BELvue ground window sill'/);
+});

@@ -4654,6 +4654,12 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
 
     // An inset tympanum panel fills the Palace of the Nation pediment behind the Justice relief.
     box(g, 10, 2.2, 0.1, 0, 16.6, 401.7, materials.paleStone, 'Palace of the Nation tympanum panel');
+
+    // Stone sills sit under each BELvue ground-floor window.
+    for (let i = 0; i < 5; i++) {
+      const wx = 168 - 13 + i * 6.5;
+      box(g, 2.4, 0.18, 0.3, wx, 5.85, 22.15, materials.warmStone, 'BELvue ground window sill');
+    }
   });
     addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');
