@@ -2439,6 +2439,15 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
 
     // A moulded base course runs under the central attic, at the top of the corps wall.
     box(g, 34.8, 0.4, 0.4, 0, 23.2, centralFace + 0.16, moulding, 'Central attic base course');
+
+    // The two lateral garden gates (in front of the lateral parterres) get small pediments
+    // and gilded urns too, like the central gate.
+    for (const gx of [-38, 38]) {
+      const lgPed = new THREE.Shape();
+      lgPed.moveTo(-2.6, 0); lgPed.lineTo(2.6, 0); lgPed.lineTo(0, 1.1); lgPed.closePath();
+      mesh(g, new THREE.ShapeGeometry(lgPed), ashlar, gx, 3.0, 14, 'Garden lateral gate pediment');
+      mesh(g, new THREE.SphereGeometry(0.26, 10, 8), gilded, gx, 4.3, 14, 'Garden lateral gate gilded urn');
+    }
   });
   addLandmark('palaceSurroundings', (g) => {
     // Brussels Park (Parc de Bruxelles): the rectangular 13.1 ha neoclassical park north of the

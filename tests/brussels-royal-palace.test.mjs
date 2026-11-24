@@ -964,3 +964,10 @@ testCase('surroundings fidelity lock: park, square, end buildings and Parliament
   ];
   for (const marker of markers) assert.match(palace, marker);
 });
+
+testCase('the lateral garden gates carry pediments and gilded urns like the central gate', () => {
+  assert.match(palace, /like the central gate/);
+  assert.match(palace, /'Garden lateral gate pediment'/);
+  assert.match(palace, /'Garden lateral gate gilded urn'/);
+  assert.match(palace, /for \(const gx of \[-38, 38\]\)/);
+});
