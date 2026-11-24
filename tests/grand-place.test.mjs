@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { readFileSync } from 'node:fs';
+import { readFileSync, readdirSync } from 'node:fs';
 
 const source = readFileSync(new URL('../js/brussels-landmarks.js', import.meta.url), 'utf8');
 const start = source.indexOf('function guildHouse');
@@ -225,4 +225,14 @@ test('the Royal Palace snapshot shows forecourt ground instead of blank sky', ()
   assert.match(palace, /new THREE\.PerspectiveCamera\(36/);
   assert.match(palace, /centre\.z-Math\.max\(205,size\.z\*2\.6\)/);
   assert.match(palace, /centre\.z\+18\)/);
+});
+
+test('every workflow that runs tools/shot.py installs Pillow for its render assertions', () => {
+  const workflows = readdirSync(new URL('../.github/workflows', import.meta.url)).filter(f => f.endsWith('.yml'));
+  const runners = workflows.filter(f => readFileSync(new URL(`../.github/workflows/${f}`, import.meta.url), 'utf8').includes('tools/shot.py http'));
+  assert.ok(runners.length >= 2, `expected the deploy and snapshots workflows to run shot.py, got ${runners}`);
+  for (const f of runners) {
+    const yml = readFileSync(new URL(`../.github/workflows/${f}`, import.meta.url), 'utf8');
+    assert.match(yml, /pip install[^\n]*pillow/, `${f} runs tools/shot.py but does not install pillow`);
+  }
 });
