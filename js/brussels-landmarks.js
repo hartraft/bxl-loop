@@ -5715,6 +5715,174 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       plate.rotation.x = Math.PI / 2;
       g.add(sign);
     }
+    // Round 71: each street mouth opens with a fan of radial setts (pavage en eventail) in the
+    // square's paving, as on the Grand-Place.
+    {
+      const fans = new THREE.InstancedMesh(new THREE.BoxGeometry(0.5, 0.07, 1.4), materials.pavingB, 60);
+      const dummy = new THREE.Object3D();
+      let n = 0;
+      for (const [cx, cz, ang] of [[-58, 44, Math.PI / 2], [58, 44, Math.PI / 2], [-58, 132, -Math.PI / 2], [58, 132, -Math.PI / 2], [-62, 90, 0], [62, 75, Math.PI]]) {
+        for (let i = 0; i < 10; i++) {
+          const a = ang + (i - 4.5) * 0.16;
+          dummy.position.set(cx + Math.cos(a) * 2.2, 0.04, cz + Math.sin(a) * 2.2);
+          dummy.rotation.set(0, -a, 0);
+          dummy.updateMatrix();
+          fans.setMatrixAt(n++, dummy.matrix);
+        }
+      }
+      fans.count = n;
+      fans.name = 'Place de la Bourse street-mouth sett fans (pavage en eventail)';
+      fans.receiveShadow = true;
+      g.add(fans);
+    }
+    // Round 72: kerb end stones close each kerb line at the street mouths.
+    {
+      const ends = new THREE.InstancedMesh(new THREE.BoxGeometry(1.1, 0.3, 1.1), materials.pavingEdge, 12);
+      const dummy = new THREE.Object3D();
+      const spots = [[-65, 44], [-58, 44], [58, 44], [65, 44], [-65, 134], [-58, 134], [58, 134], [65, 134], [-65.5, 70], [-65.5, 100], [65.5, 50], [65.5, 85]];
+      for (let i = 0; i < 12; i++) {
+        dummy.position.set(spots[i][0], 0.1, spots[i][1]);
+        dummy.updateMatrix();
+        ends.setMatrixAt(i, dummy.matrix);
+      }
+      ends.count = 12;
+      ends.name = 'Square kerb end stones (pierres de bout)';
+      ends.castShadow = true;
+      g.add(ends);
+    }
+    // Round 73: tactile paving strips (bandes podotactiles, rows of bumps) lead to each zebra crossing.
+    {
+      const bumps = new THREE.InstancedMesh(new THREE.SphereGeometry(0.09, 6, 5), materials.pavingEdge, 4 * 2 * 6);
+      const dummy = new THREE.Object3D();
+      let n = 0;
+      for (const [bx, bz] of [[-8, 106], [8, 106], [-8, 136], [8, 136]]) {
+        for (let r = 0; r < 2; r++) for (let i = 0; i < 6; i++) {
+          dummy.position.set(bx - 2.5 + i * 1, 0.09, bz + (r - 0.5) * 0.5);
+          dummy.updateMatrix();
+          bumps.setMatrixAt(n++, dummy.matrix);
+        }
+      }
+      bumps.count = n;
+      bumps.name = 'Tactile paving bumps at the crossings (bandes podotactiles)';
+      g.add(bumps);
+    }
+    // Round 74: drainage gully slots along the square kerb line.
+    {
+      const gullies = new THREE.InstancedMesh(new THREE.BoxGeometry(0.35, 0.04, 1.2), materials.dark, 24);
+      const dummy = new THREE.Object3D();
+      for (let i = 0; i < 24; i++) {
+        dummy.position.set(-60 + i * 5.2, 0.06, i % 2 ? 42 : 135);
+        dummy.updateMatrix();
+        gullies.setMatrixAt(i, dummy.matrix);
+      }
+      gullies.count = 24;
+      gullies.name = 'Square kerb drainage gullies';
+      g.add(gullies);
+    }
+    // Round 75: manhole covers set in the square's paving.
+    {
+      const covers = new THREE.InstancedMesh(new THREE.CylinderGeometry(0.45, 0.45, 0.05, 12), materials.dark, 8);
+      const dummy = new THREE.Object3D();
+      for (let i = 0; i < 8; i++) {
+        dummy.position.set(-52 + (i % 4) * 36, 0.05, 60 + Math.floor(i / 4) * 40);
+        dummy.updateMatrix();
+        covers.setMatrixAt(i, dummy.matrix);
+      }
+      covers.count = 8;
+      covers.name = 'Square manhole covers (plaques d\'egout)';
+      g.add(covers);
+    }
+    // Round 76: ventilation grilles of the 1976 North-South premetro tunnel, which took the place
+    // of the covered Senne under the boulevard (en.wikipedia Boulevard Anspach / Covering of the Senne).
+    {
+      const grilles = new THREE.InstancedMesh(new THREE.BoxGeometry(4, 0.06, 1.6), materials.dark, 6);
+      const dummy = new THREE.Object3D();
+      for (let i = 0; i < 6; i++) {
+        dummy.position.set(-50 + i * 20, 0.05, 117);
+        dummy.updateMatrix();
+        grilles.setMatrixAt(i, dummy.matrix);
+      }
+      grilles.count = 6;
+      grilles.name = 'Premetro tunnel ventilation grilles on the boulevard (tunnel 1976, ancien lit de la Senne)';
+      g.add(grilles);
+    }
+    // Round 77: a commemorative plaque for the former Butter Market (Marche au Beurre) and the
+    // 13th-century Recollets Franciscan convent whose ruins lie under the square (Bruxella 1238).
+    {
+      const plaque = new THREE.Group();
+      plaque.name = 'Plaque Marche au Beurre / Recollets convent / Bruxella 1238';
+      plaque.position.set(-20, 0, 44.2);
+      box(plaque, 1.8, 1.1, 0.08, 0, 1.5, 0, materials.bronze, 'bronze commemorative plaque');
+      cylinder(plaque, 0.05, 0.06, 3, 0, 1.5, -0.15, materials.dark, 6);
+      g.add(plaque);
+    }
+    // Round 78: a brasserie terrace with parasols and tables on the square, beside the corner
+    // buildings — the square is ringed with cafes and restaurants.
+    {
+      const parasols = new THREE.InstancedMesh(new THREE.ConeGeometry(1.4, 0.7, 8), materials.canvas, 4);
+      const poles2 = new THREE.InstancedMesh(new THREE.CylinderGeometry(0.05, 0.05, 2.2, 6), materials.dark, 4);
+      const tables = new THREE.InstancedMesh(new THREE.CylinderGeometry(0.5, 0.5, 0.05, 10), materials.warmStone, 4);
+      const dummy = new THREE.Object3D();
+      const spots = [[-40, 55], [-34, 58], [40, 55], [34, 58]];
+      for (let i = 0; i < 4; i++) {
+        dummy.position.set(spots[i][0], 2.2, spots[i][1]);
+        dummy.updateMatrix();
+        parasols.setMatrixAt(i, dummy.matrix);
+        dummy.position.set(spots[i][0], 1.1, spots[i][1]);
+        dummy.updateMatrix();
+        poles2.setMatrixAt(i, dummy.matrix);
+        dummy.position.set(spots[i][0], 0.75, spots[i][1]);
+        dummy.updateMatrix();
+        tables.setMatrixAt(i, dummy.matrix);
+      }
+      parasols.count = 4; parasols.name = 'Brasserie terrace parasols on the square';
+      parasols.castShadow = true; g.add(parasols);
+      poles2.count = 4; poles2.name = 'Parasol poles';
+      g.add(poles2);
+      tables.count = 4; tables.name = 'Terrace tables';
+      tables.castShadow = true; g.add(tables);
+    }
+    // Round 79: the "Bourse - Beurs" stop sign with its shelter on the boulevard — surface
+    // connections with buses 46, 48, 86 and 95 (fr.wikipedia premetro station).
+    {
+      const stop = new THREE.Group();
+      stop.name = 'Stop sign Bourse - Beurs (bus 46/48/86/95) + shelter';
+      stop.position.set(-6, 0, 126);
+      cylinder(stop, 0.06, 0.07, 3.4, 0, 1.7, 0, materials.dark, 6);
+      const disc = mesh(stop, new THREE.CylinderGeometry(0.5, 0.5, 0.06, 18), materials.enamelBlue, 0, 3.1, 0, 'stop sign disc Bourse - Beurs');
+      disc.rotation.x = Math.PI / 2;
+      box(stop, 3, 0.06, 1.4, 2.2, 2.6, 0, materials.glass, 'shelter glass panel');
+      box(stop, 3.4, 0.1, 1.8, 2.2, 2.7, 0, materials.dark, 'shelter roof');
+      g.add(stop);
+    }
+    // Round 80: along the rue Auguste Orts, monumental eclectic facades largely built around
+    // 1885 line the street that was pierced (1890) to frame the view of the Bourse
+    // (monument.heritage.brussels rue Auguste Orts; reflexcity).
+    {
+      const facades = new THREE.InstancedMesh(new THREE.BoxGeometry(10, 20, 0.8), materials.ochre, 5);
+      const wins = new THREE.InstancedMesh(new THREE.BoxGeometry(1.8, 3, 0.2), materials.glass, 20);
+      const dummy = new THREE.Object3D();
+      let n = 0;
+      for (let i = 0; i < 5; i++) {
+        dummy.position.set(-58 - i * 11, 10, 62 - i * 9);
+        dummy.rotation.set(0, 0.5, 0);
+        dummy.updateMatrix();
+        facades.setMatrixAt(i, dummy.matrix);
+        for (let f = 0; f < 4; f++) {
+          dummy.position.set(-58 - i * 11 - 3 + f * 2, 5 + f * 4, 62 - i * 9 + 0.5);
+          dummy.rotation.set(0, 0.5, 0);
+          dummy.updateMatrix();
+          wins.setMatrixAt(n++, dummy.matrix);
+        }
+      }
+      facades.count = 5;
+      facades.name = 'Rue Auguste Orts monumental eclectic facades (vers 1885)';
+      facades.castShadow = true;
+      g.add(facades);
+      wins.count = n;
+      wins.name = 'Rue Orts facade windows';
+      g.add(wins);
+    }
     // __SURROUNDINGS_ROUNDS__
   });
 

@@ -344,4 +344,28 @@ testCase('rounds 65-70: benches, bins, bike arches, lighting columns, fountains,
   assert.match(surroundings, /'pedestrian zone sign disc \(disque bleu zone pietonne\)'/);
 });
 
+testCase('rounds 71-75: sett fans, kerb end stones, tactile bumps, drainage gullies, manhole covers', () => {
+  assert.match(surroundings, /'Place de la Bourse street-mouth sett fans \(pavage en eventail\)'/);
+  assert.match(surroundings, /fans\.count = n/);
+  assert.match(surroundings, /'Square kerb end stones \(pierres de bout\)'/);
+  assert.match(surroundings, /ends\.count = 12/);
+  assert.match(surroundings, /'Tactile paving bumps at the crossings \(bandes podotactiles\)'/);
+  assert.match(surroundings, /bumps\.count = n/);
+  assert.match(surroundings, /'Square kerb drainage gullies'/);
+  assert.match(surroundings, /gullies\.count = 24/);
+  assert.match(surroundings, /'Square manhole covers/);
+  assert.match(surroundings, /covers\.count = 8/);
+});
+
+testCase('rounds 76-80: premetro ventilation grilles, Bruxella 1238 plaque, terrace, stop sign, rue Orts facades', () => {
+  assert.match(surroundings, /'Premetro tunnel ventilation grilles on the boulevard \(tunnel 1976, ancien lit de la Senne\)'/);
+  assert.match(surroundings, /grilles\.count = 6/);
+  assert.match(surroundings, /'Plaque Marche au Beurre \/ Recollets convent \/ Bruxella 1238'/);
+  assert.match(surroundings, /'Brasserie terrace parasols on the square'/);
+  assert.match(surroundings, /parasols\.count = 4/);
+  assert.match(surroundings, /'Stop sign Bourse - Beurs \(bus 46\/48\/86\/95\) \+ shelter'/);
+  assert.match(surroundings, /'Rue Auguste Orts monumental eclectic facades \(vers 1885\)'/);
+  assert.match(surroundings, /facades\.count = 5/);
+});
+
 // __MORE_BOURSE_TESTS__
