@@ -68,6 +68,13 @@ testCase('the front garden holds the real three sunken parterres (central on the
   assert.match(palace, /\{ x: 38, w: 34, z: 12\.4, d: 2\.6 \}/);
 });
 
+testCase('every piano nobile wing opening has its iron balconette inside the continuous balcony', () => {
+  assert.ok(!palace.includes('i % 2 === 0'), 'no more scattered every-other-bay balconettes');
+  assert.match(palace, /'Wing balcony rail'/);
+  assert.match(palace, /'Wing balcony baluster'/);
+  assert.match(palace, /continuous first-floor balcony parapet/);
+});
+
 testCase('rusticated corner quoins chain the central corps and terminal pavilions', () => {
   assert.match(palace, /corner quoins/);
   assert.match(palace, /'Palace corner quoins'/);
