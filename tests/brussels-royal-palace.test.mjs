@@ -2004,3 +2004,7 @@ testCase('dark soil fills the central balcony flower box', () => {
 testCase('a projecting eave band rings the BELvue pavilion roof base', () => {
   assert.match(palace, /'BELvue pavilion eave'/);
 });
+
+testCase('a stone rim rings the fountain jet of the octagonal basin', () => {
+  assert.match(palace, /'Octagonal basin fountain rim'/);
+});

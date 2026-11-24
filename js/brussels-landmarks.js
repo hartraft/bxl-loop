@@ -5424,6 +5424,9 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
 
     // A projecting eave band rings the BELvue pavilion roof base.
     box(g, 40, 0.25, 32, 168, 24.2, 36, materials.roof, 'BELvue pavilion eave');
+
+    // A stone rim rings the fountain jet of the octagonal basin.
+    cylinder(g, 0.9, 1.1, 0.4, 0, 0.7, 262, materials.paleStone, 10).name = 'Octagonal basin fountain rim';
   });
     addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');
