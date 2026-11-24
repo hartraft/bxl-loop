@@ -4727,6 +4727,16 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
 
     // A lower step completes the Academy Palace portico entrance flight.
     box(g, 5.0, 0.25, 0.8, -168, 0.12, 19.3, materials.pavingEdge, 'Academy Palace portico lower step');
+
+    // Urns stand along the Palace of the Nation attic balustrade.
+    const pnUr = new THREE.InstancedMesh(new THREE.SphereGeometry(0.35, 10, 8), materials.warmStone, 15);
+    const pnud = new THREE.Object3D();
+    let pnui = 0;
+    for (let ui = 0; ui < 15; ui++) {
+      pnud.position.set(-28 + ui * 4, 24.45, 403.2); pnud.rotation.y = 0; pnud.updateMatrix();
+      pnUr.setMatrixAt(pnui++, pnud.matrix);
+    }
+    pnUr.count = pnui; pnUr.name = 'Palace of the Nation balustrade urn'; g.add(pnUr);
   });
     addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');

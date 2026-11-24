@@ -1451,3 +1451,8 @@ testCase('a lower step completes the Academy Palace portico entrance flight', ()
 testCase('bronze escutcheon plates mark each central French door', () => {
   assert.match(palace, /'French door escutcheon'/);
 });
+
+testCase('urns stand along the Palace of the Nation attic balustrade', () => {
+  assert.match(palace, /'Palace of the Nation balustrade urn'/);
+  assert.match(palace, /pnUr\.count = pnui/);
+});
