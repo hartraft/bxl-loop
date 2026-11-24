@@ -218,6 +218,13 @@ test('café awnings over the ground-floor arcades of the brasserie houses', () =
   assert.equal((square.match(/terrace: true\s*[,}]/g) || []).length, 6, 'six houses carry terraces');
 });
 
+test('Le Cygne carries the sculptured swan above the doorway', () => {
+  assert.ok(square.includes("emblem: true, terrace: true, swan: true }"));
+  assert.ok(square.includes(" sculptured swan body'"));
+  assert.ok(square.includes(" swan neck'"));
+  assert.ok(square.includes(" swan head'"));
+});
+
 test('the east frontage is the Maison des Ducs de Brabant: duke busts + Abundance', () => {
   assert.equal((square.match(/dukeBusts: true/g) || []).length, 3, 'all three east houses carry duke busts');
   assert.ok(square.includes(" Dukes of Brabant busts'"));

@@ -531,6 +531,15 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       box(root, 0.3, 1.0, 0.14, 0, height + 1.0, 0.18, materials.gold, name + ' Abundance allegory');
       mesh(root, new THREE.SphereGeometry(0.18, 8, 6), materials.gold, 0, height + 1.65, 0.18, name + ' Abundance allegory head');
     }
+    if (spec.swan) {
+      // Le Cygne (butchers' house, no. 9): the sculptured swan above the doorway gives the house
+      // its name.
+      mesh(root, new THREE.SphereGeometry(0.3, 10, 8), materials.gold, 0, 4.1, 0.5, name + ' sculptured swan body');
+      const neck = cylinder(root, 0.07, 0.09, 0.8, 0, 4.55, 0.5, materials.gold, 6);
+      neck.name = name + ' swan neck';
+      neck.rotation.z = -0.5;
+      mesh(root, new THREE.SphereGeometry(0.12, 8, 6), materials.gold, 0.22, 4.9, 0.5, name + ' swan head');
+    }
     return root;
   }
 
@@ -1144,7 +1153,7 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     plaza.add(south);
     townHall(south);
     guildHouse(south, { name: 'Guild House – L’Étoile', x: -30, width: 13, height: 21, floors: 3, style: 'stepped', stone: materials.warmStone });
-    guildHouse(south, { name: 'Guild House – Le Cygne', x: -44, width: 12, height: 23, floors: 4, style: 'bell', stone: materials.plaster, emblem: true, terrace: true });
+    guildHouse(south, { name: 'Guild House – Le Cygne', x: -44, width: 12, height: 23, floors: 4, style: 'bell', stone: materials.plaster, emblem: true, terrace: true, swan: true });
 
     const north = new THREE.Group();
     north.name = 'North frontage';
