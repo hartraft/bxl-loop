@@ -4719,6 +4719,9 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
         box(g, 2.8, 0.22, 0.3, side * 70 - 15 + i * 10, 11.7, 406.8, materials.warmStone, 'Palace of the Nation wing window lintel');
       }
     }
+
+    // A lower step completes the Academy Palace portico entrance flight.
+    box(g, 5.0, 0.25, 0.8, -168, 0.12, 19.3, materials.pavingEdge, 'Academy Palace portico lower step');
   });
     addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');
