@@ -5046,6 +5046,11 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
         box(g, 0.08, 7, 0.06, side * 70 - 15 + i * 10, 8, 407.0, materials.warmStone, 'Palace of the Nation wing window mullion');
       }
     }
+
+    // Mullions divide the Academy Palace first-floor windows.
+    for (let i = 0; i < 7; i++) {
+      box(g, 0.08, 6.5, 0.06, -168 - 24 + i * 8, 11, 21.0, materials.warmStone, 'Academy Palace first-floor mullion');
+    }
   });
     addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');
