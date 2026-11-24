@@ -5697,6 +5697,9 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
 
     // A step leads up to the Academy stables great door.
     box(g, 4.0, 0.25, 1.0, -168, 0.12, 70.9, materials.pavingEdge, 'Academy stables door step');
+
+    // A cap course finishes the Royal Stables courtyard wall.
+    box(g, 48, 0.12, 0.6, -70, 1.06, -98, materials.warmStone, 'Royal Stables courtyard wall cap');
   });
     addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');
