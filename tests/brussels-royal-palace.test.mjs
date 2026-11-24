@@ -2049,3 +2049,7 @@ testCase('a dentil course runs under the Royal Stables gatehouse cornice', () =>
   assert.match(palace, /'Royal Stables gatehouse dentil'/);
   assert.match(palace, /rsDn\.count = rsDi/);
 });
+
+testCase('a rim finishes the central balcony flower box', () => {
+  assert.match(palace, /'Central flower box rim'/);
+});
