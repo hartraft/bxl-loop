@@ -417,3 +417,10 @@ testCase('monumental railings (erected 1849 to Suys designs) enclose the park wi
   assert.match(palace, /'Park main gate pier'/);
   assert.match(palace, /parkRail\.count = pri/);
 });
+
+testCase('around sixty Greco-Roman statues on pedestals stand in Brussels Park', () => {
+  assert.match(palace, /Greco-Roman mythology/);
+  assert.match(palace, /'Park statue pedestals'/);
+  assert.match(palace, /'Park statue figures'/);
+  assert.match(palace, /for \(let i = 0; i < 60; i\+\+\)/);
+});

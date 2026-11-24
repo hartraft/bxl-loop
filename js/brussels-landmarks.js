@@ -2277,6 +2277,24 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       }
       box(g, 14, 0.5, 0.5, 0, 3.4, gz, materials.dark, 'Park axis gate lintel');
     }
+    // Around sixty sculptures, mostly Greco-Roman mythology moved from the Tervuren park, stand in the park.
+    const statGeo = new THREE.CylinderGeometry(0.55, 0.75, 1.6, 8);
+    const figGeo = new THREE.SphereGeometry(0.55, 10, 8);
+    const statues = new THREE.InstancedMesh(statGeo, materials.paleStone, 60);
+    const figs = new THREE.InstancedMesh(figGeo, materials.paleStone, 60);
+    const std = new THREE.Object3D();
+    let sti = 0;
+    for (let i = 0; i < 60; i++) {
+      const sx = -150 + (i % 10) * 33.3;
+      const sz = 84 + Math.floor(i / 10) * 31;
+      std.position.set(sx, 0.8, sz); std.rotation.y = 0; std.updateMatrix();
+      statues.setMatrixAt(sti, std.matrix);
+      std.position.set(sx, 2.05, sz); std.updateMatrix();
+      figs.setMatrixAt(sti, std.matrix);
+      sti++;
+    }
+    statues.count = sti; statues.name = 'Park statue pedestals'; g.add(statues);
+    figs.count = sti; figs.name = 'Park statue figures'; g.add(figs);
   });
     addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');
