@@ -648,3 +648,9 @@ testCase('the Chamber and Senate hemicycles stand behind the Palace of the Natio
   assert.match(palace, /'Senate hemicycle'/);
   assert.match(palace, /'Senate hemicycle cornice'/);
 });
+
+testCase('16 rue de la Loi beside the Palace of the Nation is the Prime Minister seat', () => {
+  assert.match(palace, /Law Street 16/);
+  assert.match(palace, /'16 rue de la Loi Prime Minister seat'/);
+  assert.match(palace, /'Law Street 16 window'/);
+});
