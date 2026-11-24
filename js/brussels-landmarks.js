@@ -1709,13 +1709,17 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       box(g, 56 + step * 0.7, 0.46, 1.45, 0, 0.55 + step * 0.44, 95 - step * 1.35, light, 'Monumental entrance stair (full-width emmarchement)');
     }
     box(g, 58, 3.0, 20, 0, 5.0, 78, stone, 'Main entrance terrace');
-    box(g, 48, 2.0, 14, 0, 22.0, 76, light, 'Principal portico entablature');
+    // Double colonnade of Doric columns on the entrance terrace: base, shaft, echinus, abacus,
+    // then architrave and entablature carrying the pediment.
+    box(g, 50, 1.8, 15, 0, 23.5, 76, weathered, 'Principal portico entablature');
+    box(g, 50, 1.0, 15, 0, 22.1, 76, light, 'Portico architrave');
     for (const z of [70, 78]) {
       for (let i = 0; i < 12; i++) {
         const x = -27.5 + i * 5;
-        cylinder(g, 1.05, 1.2, 15.5, x, 12.5, z, light, 20);
-        cylinder(g, 1.45, 1.45, 0.65, x, 4.8, z, weathered, 20);
-        cylinder(g, 1.45, 1.45, 0.65, x, 20.2, z, weathered, 20);
+        cylinder(g, 1.4, 1.4, 0.6, x, 6.8, z, weathered, 20);   // Doric base
+        cylinder(g, 1.0, 1.15, 13.5, x, 13.85, z, light, 20);     // shaft
+        cylinder(g, 1.25, 1.0, 0.5, x, 20.85, z, light, 20);       // echinus
+        box(g, 2.3, 0.5, 2.3, x, 21.35, z, light, 'Doric abacus'); // square abacus
       }
     }
     // Main front pediment and attic balustrade.

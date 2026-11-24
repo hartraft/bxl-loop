@@ -75,6 +75,8 @@ test('the Place Poelaert front carries the monumental stair and the double-colon
   assert.ok(palace.includes("'Monumental entrance stair (full-width emmarchement)'"));
   assert.ok(palace.includes('for (let step = 0; step < 14; step++)'), 'the emmarchement runs the full width of the portico');
   assert.ok(palace.includes("'Principal portico entablature'"));
+  assert.ok(palace.includes("'Portico architrave'"));
+  assert.ok(palace.includes("'Doric abacus'"), 'Doric order: echinus + square abacus');
   assert.ok(palace.includes('for (const z of [70, 78])'), 'double colonnade of Doric columns');
   assert.ok(palace.includes("'Triangular principal pediment'"));
 });
