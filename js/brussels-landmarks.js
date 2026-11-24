@@ -1789,6 +1789,12 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       box(g, 0.5, 1.2, 0.5, x, 5.1, 91, weathered, 'Forecourt terrace baluster');
     }
     box(g, 178, 1.8, 3, 0, 1.6, 90, weathered, 'Place Poelaert retaining wall');
+    // The real terrace rests on a massive retaining massif, plainly visible from
+    // rue de Wynants (south) and rue des Minimes (west) where the plateau drops to the Marolles.
+    box(g, 190, 3.5, 4, 0, -2.6, -90.5, weathered, 'South massif retaining tier (rue de Wynants)');
+    box(g, 194, 3.5, 4, 0, -5.9, -92.5, weathered, 'South massif lower tier (rue de Wynants)');
+    box(g, 4, 3.5, 181, 95, -2.6, 0, weathered, 'West massif retaining tier (rue des Minimes)');
+    box(g, 4, 3.5, 185, 97.5, -5.9, 0, weathered, 'West massif lower tier (rue des Minimes)');
   });
   addLandmark('cinquantenaire', (g) => {
     // Parc du Cinquantenaire: a full architectural ensemble on the great east-west axis.

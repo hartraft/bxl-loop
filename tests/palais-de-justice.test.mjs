@@ -41,6 +41,13 @@ test('the plan keeps the real eight inner courtyards open between the ranges', (
   assert.ok(palace.includes("'Court inner arcade'"));
 });
 
+test('the terrace rests on the visible retaining massif toward Wynants and Minimes', () => {
+  assert.ok(palace.includes("'South massif retaining tier (rue de Wynants)'"));
+  assert.ok(palace.includes("'South massif lower tier (rue de Wynants)'"));
+  assert.ok(palace.includes("'West massif retaining tier (rue des Minimes)'"));
+  assert.ok(palace.includes("'West massif lower tier (rue des Minimes)'"));
+});
+
 test('the soubassement is the real dark Belgian bluestone (pierre bleue)', () => {
   assert.ok(palace.includes('const bluestone = new THREE.MeshStandardMaterial({ color: 0x3d444c, roughness: 0.92 })'));
   assert.ok(palace.includes("'Palais de Justice bluestone soubassement band'"));
