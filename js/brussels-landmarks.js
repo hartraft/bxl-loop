@@ -2640,6 +2640,13 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     // The Rue Ducale runs south from the park's east side down to the Place du Trône,
     // past the Royal Stables and the Academy Palace (one of the four park thoroughfares).
     box(g, 14, 0.06, 150, 181, 0.03, -13, materials.pavingA, 'Rue Ducale south extension to Place du Trône');
+    // Behind the Palace of the Nation stand the two hemicycles: the Chamber's (rebuilt
+    // 1821-22 after the 1820 fire) and the Senate's (built 1847-49 by Suys, enlarged
+    // 1902-03 by Bordiau).
+    mesh(g, new THREE.CylinderGeometry(14, 14, 18, 20, 1, false, 0, Math.PI), materials.plaster, -70, 9, 437, 'Chamber of Representatives hemicycle');
+    mesh(g, new THREE.CylinderGeometry(16, 16, 20, 20, 1, false, 0, Math.PI), materials.plaster, 70, 10, 437, 'Senate hemicycle');
+    mesh(g, new THREE.CylinderGeometry(14.6, 14.6, 0.8, 20, 1, false, 0, Math.PI), materials.warmStone, -70, 18.4, 437, 'Chamber hemicycle cornice');
+    mesh(g, new THREE.CylinderGeometry(16.6, 16.6, 0.8, 20, 1, false, 0, Math.PI), materials.warmStone, 70, 20.4, 437, 'Senate hemicycle cornice');
   });
     addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');

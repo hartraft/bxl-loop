@@ -641,3 +641,10 @@ testCase('a carriage gate arch pierces the south avant-corps on the palace axis'
   assert.match(palace, /Cour d’honneur south carriage gate/);
   assert.match(palace, /'South carriage gate impost'/);
 });
+
+testCase('the Chamber and Senate hemicycles stand behind the Palace of the Nation', () => {
+  assert.match(palace, /two hemicycles/);
+  assert.match(palace, /'Chamber of Representatives hemicycle'/);
+  assert.match(palace, /'Senate hemicycle'/);
+  assert.match(palace, /'Senate hemicycle cornice'/);
+});
