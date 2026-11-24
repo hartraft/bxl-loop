@@ -443,3 +443,12 @@ testCase('the two shallows (bas-fonds) on the palace side of the park remain', (
   assert.match(palace, /'Park west shallow \(bas-fond\)'/);
   assert.match(palace, /'Park east shallow \(bas-fond\)'/);
 });
+
+testCase('the Academy Palace closes the east end of the Place des Palais (1823-28, Prince of Orange)', () => {
+  assert.match(palace, /Prince of Orange by Vander Straeten and Suys/);
+  assert.match(palace, /'Academy Palace main block'/);
+  assert.match(palace, /'Academy Palace portico column'/);
+  assert.match(palace, /'Academy Palace portico pediment'/);
+  assert.match(palace, /'Academy Palace Ionic pilaster'/);
+  assert.match(palace, /'Academy Palace attic'/);
+});

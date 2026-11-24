@@ -2324,6 +2324,27 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     // lowlands that were never fully levelled when the square was widened in 1904.
     box(g, 60, 0.1, 26, -70, -0.06, 76, materials.pavingA, 'Park west shallow (bas-fond)');
     box(g, 60, 0.1, 26, 70, -0.06, 76, materials.pavingA, 'Park east shallow (bas-fond)');
+    // The Academy Palace (Palais des Academies) closes the EAST end of the Place des Palais,
+    // built 1823-28 for the Prince of Orange by Vander Straeten and Suys: 15 bays, bossaged
+    // ground floor, Ionic pilasters, modillion cornice, attic and a columned portico.
+    box(g, 64, 18, 30, -168, 9, 36, materials.paleStone, 'Academy Palace main block');
+    box(g, 66, 1.0, 32, -168, 18.5, 36, materials.warmStone, 'Academy Palace cornice');
+    box(g, 66, 3.0, 32.4, -168, 20.5, 36, materials.paleStone, 'Academy Palace attic');
+    for (let i = 0; i < 4; i++) {
+      cylinder(g, 0.7, 0.85, 12, -174 + i * 4, 6, 19.5, materials.paleStone, 12).name = 'Academy Palace portico column';
+    }
+    const apPed = new THREE.Shape();
+    apPed.moveTo(-8, 0); apPed.lineTo(8, 0); apPed.lineTo(0, 3.4); apPed.closePath();
+    mesh(g, new THREE.ShapeGeometry(apPed), materials.warmStone, -168, 12.2, 19.6, 'Academy Palace portico pediment');
+    for (let i = 0; i < 7; i++) {
+      const wx = -168 - 24 + i * 8;
+      box(g, 2.2, 6.5, 0.2, wx, 11, 20.9, materials.glass, 'Academy Palace first-floor window');
+      box(g, 2.2, 4.5, 0.2, wx, 5, 20.9, materials.glass, 'Academy Palace ground arched window');
+      box(g, 2.6, 0.24, 0.3, wx, 14.3, 20.9, materials.warmStone, 'Academy Palace window lintel');
+    }
+    for (let i = 0; i < 8; i++) {
+      box(g, 0.5, 18, 0.4, -168 - 28 + i * 8, 9, 21.1, materials.warmStone, 'Academy Palace Ionic pilaster');
+    }
   });
     addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');
