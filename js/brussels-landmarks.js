@@ -2838,6 +2838,22 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     for (const [w, d, x, z, n] of [[110, 0.5, 0, 35.6, 'south'], [110, 0.5, 0, -35.6, 'north'], [0.5, 71, -54.6, 0, 'west'], [0.5, 71, 54.6, 0, 'east']]) {
       box(plaza, w, 0.18, d, x, 0.02, z, materials.pavingEdge, `Grand-Place ${n} facade kerb`);
     }
+    // Drainage gully slots set into the kerb line at regular intervals, and end stones at
+    // each street mouth — drainage and edge details of the real calepinage.
+    const gullies = new THREE.InstancedMesh(new THREE.BoxGeometry(0.34, 0.05, 0.3), materials.dark, 28);
+    let gu = 0;
+    for (let i = 0; i < 14; i++) {
+      dummy.position.set(-53 + i * 8.2, 0.05, 35.35);
+      dummy.rotation.y = 0;
+      dummy.updateMatrix();
+      gullies.setMatrixAt(gu++, dummy.matrix);
+      dummy.position.set(-53 + i * 8.2, 0.05, -35.35);
+      dummy.updateMatrix();
+      gullies.setMatrixAt(gu++, dummy.matrix);
+    }
+    gullies.count = gu;
+    gullies.name = 'Grand-Place kerb drainage gullies';
+    plaza.add(gullies);
     // Darker blue-stone sett border framing the paved square along all four facade lines, as in
     // the real 1883/1899 calepinage. Instanced around the perimeter.
     const border = new THREE.InstancedMesh(new THREE.BoxGeometry(0.9, 0.08, 0.9), materials.pavingEdge, 420);
@@ -2961,6 +2977,19 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     bollards.count = bi;
     bollards.name = 'Grand-Place entrance bollards';
     plaza.add(bollards);
+    // Rounded caps crown each entrance bollard, as on the real square's bollards.
+    const bollardCaps = new THREE.InstancedMesh(new THREE.SphereGeometry(0.15, 10, 8), materials.dark, mouths.length * 2);
+    for (let i = 0; i < bi; i++) {
+      const [mx, mz, dx, dz] = mouths[Math.floor(i / 2)];
+      const w = i % 2 ? 3.2 : -3.2;
+      sd.position.set(mx + dx * 0.8 + (dz !== 0 ? w : 0), 0.92, mz + dz * 0.8 + (dx !== 0 ? w : 0));
+      sd.rotation.y = 0;
+      sd.updateMatrix();
+      bollardCaps.setMatrixAt(i, sd.matrix);
+    }
+    bollardCaps.count = bi;
+    bollardCaps.name = 'Grand-Place bollard caps';
+    plaza.add(bollardCaps);
     // Facade-mounted floodlight projectors at the base of each frontage — the real square is
     // floodlit from projectors fixed to the facades, not from lamp posts. They use the night
     // glow glass, so they light up after dark.
@@ -3055,8 +3084,12 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     ];
     for (const [front, x, street] of plaques) {
       box(front, 0.55, 0.75, 0.08, x, 1.2, 0.12, materials.bronze, `UNESCO entrance plaque – ${street}`);
-      // A small bronze hood shelters each 2018 UNESCO plaque from the rain.
+      // A small bronze hood shelters each 2018 UNESCO plaque from the rain, fixed with four
+      // visible bolts at its corners.
       box(front, 0.7, 0.12, 0.18, x, 1.68, 0.12, materials.bronze, `UNESCO plaque hood – ${street}`);
+      for (const [bx, bz] of [[-0.3, 0.2], [0.3, 0.2], [-0.3, 0.04], [0.3, 0.04]]) {
+        box(front, 0.05, 0.05, 0.05, x + bx, 1.68, bz + 0.12, materials.dark, `UNESCO plaque hood bolt – ${street}`);
+      }
     }
     // Manhole covers and cellar areaway grates set into the paving along the facade lines.
     const manholes = new THREE.InstancedMesh(new THREE.CylinderGeometry(0.42, 0.42, 0.06, 14).rotateX(Math.PI / 2), materials.dark, 24);
@@ -3081,6 +3114,28 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     manholes.name = 'Grand-Place manhole covers';
     grates.name = 'Grand-Place cellar areaway grates';
     plaza.add(manholes, grates);
+    // Bolted flange rings around each manhole cover and hinge knuckles on each areaway
+    // grate — the real ironwork is bolted and hinged.
+    const mhRings = new THREE.InstancedMesh(new THREE.CylinderGeometry(0.5, 0.5, 0.04, 14).rotateX(Math.PI / 2), materials.warmStone, 24);
+    const grateHinges = new THREE.InstancedMesh(new THREE.BoxGeometry(1.6, 0.06, 0.1), materials.warmStone, 28);
+    for (let i = 0; i < 24; i++) {
+      const x = -50 + (i % 8) * 14.3, z = (Math.floor(i / 8) % 2 ? 33.4 : -33.4);
+      md.position.set(x, -0.03, z);
+      md.updateMatrix();
+      mhRings.setMatrixAt(i, md.matrix);
+    }
+    for (const z of [33.2, -33.2]) {
+      for (let i = 0; i < 14; i++) {
+        md.position.set(-49 + i * 7.2, -0.02, z + (z > 0 ? -1.6 : 1.6));
+        md.updateMatrix();
+        grateHinges.setMatrixAt((z > 0 ? 0 : 14) + i, md.matrix);
+      }
+    }
+    mhRings.count = mh;
+    grateHinges.count = gr;
+    mhRings.name = 'Grand-Place manhole flange rings';
+    grateHinges.name = 'Grand-Place areaway grate hinges';
+    plaza.add(mhRings, grateHinges);
 
     // Traditional Brussels enamel street signs — blue board with a white rim on a dark post —
     // stand at each of the seven street mouths, naming the street that opens onto the square.
@@ -3112,6 +3167,37 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     signBoards.name = 'Brussels enamel street signs';
     signPosts.name = 'Street sign posts';
     plaza.add(signRims, signBoards, signPosts);
+    // Base collars and finial balls dress each enamel sign post; a small sett ring paves
+    // around its foot — as on the real Brussels street signs.
+    const signCollars = new THREE.InstancedMesh(new THREE.CylinderGeometry(0.09, 0.11, 0.12, 8), materials.dark, plaques.length);
+    const signFinials = new THREE.InstancedMesh(new THREE.SphereGeometry(0.08, 8, 6), materials.gold, plaques.length);
+    const signRings = new THREE.InstancedMesh(new THREE.BoxGeometry(0.5, 0.05, 0.5), materials.pavingEdge, plaques.length * 4);
+    let sc2 = 0;
+    for (let i = 0; i < plaques.length; i++) {
+      const [front, x] = plaques[i];
+      front.updateWorldMatrix(true, false);
+      sv.set(x, 0.12, 1.68).applyMatrix4(front.matrixWorld);
+      sgd.position.copy(sv);
+      sgd.updateMatrix();
+      signCollars.setMatrixAt(i, sgd.matrix);
+      sv.set(x, 2.62, 1.68).applyMatrix4(front.matrixWorld);
+      sgd.position.copy(sv);
+      sgd.updateMatrix();
+      signFinials.setMatrixAt(i, sgd.matrix);
+      for (let k = 0; k < 4; k++) {
+        const a = k * Math.PI / 2 + Math.PI / 4;
+        sv.set(x + Math.cos(a) * 0.55, -0.03, 1.68 + Math.sin(a) * 0.55).applyMatrix4(front.matrixWorld);
+        sgd.position.copy(sv);
+        sgd.updateMatrix();
+        signRings.setMatrixAt(sc2++, sgd.matrix);
+      }
+    }
+    signCollars.count = signFinials.count = plaques.length;
+    signRings.count = sc2;
+    signCollars.name = 'Street sign post base collars';
+    signFinials.name = 'Street sign post finial balls';
+    signRings.name = 'Street sign sett rings';
+    plaza.add(signCollars, signFinials, signRings);
   }
 
   addLandmark('grandPlace', grandPlace);

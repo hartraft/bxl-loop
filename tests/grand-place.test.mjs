@@ -938,3 +938,19 @@ test('rounds 197-204: chimney caps, gable finial ball, parapet rail brackets, ga
   assert.ok(square.includes('door keyhole escutcheon'));
   assert.ok(square.includes('door knocker'));
 });
+
+test('rounds 205-212: bollard caps, manhole flange rings + grate hinges, sign post collars/finials/sett rings, plaque hood bolts, kerb drainage gullies', () => {
+  assert.ok(square.includes('Grand-Place bollard caps'));
+  assert.ok(square.includes('bollardCaps.count = bi'));
+  assert.ok(square.includes('Grand-Place manhole flange rings'));
+  assert.ok(square.includes('mhRings.count = mh'));
+  assert.ok(square.includes('Grand-Place areaway grate hinges'));
+  assert.ok(square.includes('grateHinges.count = gr'));
+  assert.ok(square.includes('Street sign post base collars'));
+  assert.ok(square.includes('Street sign post finial balls'));
+  assert.ok(square.includes('Street sign sett rings'));
+  assert.ok(square.includes('signRings.count = sc2'));
+  assert.ok(square.includes('UNESCO plaque hood bolt'));
+  assert.ok(square.includes('Grand-Place kerb drainage gullies'));
+  assert.ok(square.includes('gullies.count = gu'));
+});
