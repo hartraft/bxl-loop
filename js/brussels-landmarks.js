@@ -4193,6 +4193,11 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     for (const side of [-1, 1]) {
       box(g, 0.12, 0.9, 0.12, side * 8.4, 0.75, centralFace + 1.3, bronze, 'Perron rail mid post');
     }
+
+    // Caps finish the perron side rail mid posts.
+    for (const side of [-1, 1]) {
+      box(g, 0.16, 0.08, 0.16, side * 8.4, 1.24, centralFace + 1.3, bronze, 'Perron mid post cap');
+    }
   });
   addLandmark('palaceSurroundings', (g) => {
     // Real-world sources: en/fr Wikipedia (Royal Palace of Brussels, Brussels Park, Place des Palais,

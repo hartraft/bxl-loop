@@ -2221,3 +2221,7 @@ testCase('a step leads up to the Academy stables great door', () => {
 testCase('a cap course finishes the Royal Stables courtyard wall', () => {
   assert.match(palace, /'Royal Stables courtyard wall cap'/);
 });
+
+testCase('caps finish the perron side rail mid posts', () => {
+  assert.match(palace, /'Perron mid post cap'/);
+});
