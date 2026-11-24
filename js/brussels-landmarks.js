@@ -4802,6 +4802,11 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
         cylinder(g, 0.09, 0.12, 0.9, cx, 0.45, cz, materials.dark, 8).name = 'Square corner bollard';
       }
     }
+
+    // Keystones crown the arched ground-floor windows of the Academy Palace.
+    for (let i = 0; i < 7; i++) {
+      box(g, 0.5, 0.8, 0.3, -168 - 24 + i * 8, 7.9, 20.95, materials.warmStone, 'Academy Palace window keystone');
+    }
   });
     addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');

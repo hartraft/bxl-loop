@@ -1516,3 +1516,7 @@ testCase('a muntin cross divides the portico door fanlight into panes', () => {
   assert.match(palace, /'Fanlight muntin vertical'/);
   assert.match(palace, /'Fanlight muntin horizontal'/);
 });
+
+testCase('keystones crown the Academy Palace ground-floor arched windows', () => {
+  assert.match(palace, /'Academy Palace window keystone'/);
+});
