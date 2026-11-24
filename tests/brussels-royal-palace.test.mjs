@@ -719,3 +719,9 @@ testCase('the central entrance carries a gilded radial fanlight in the arch head
   assert.match(palace, /'Central entrance gilded fanlight'/);
   assert.match(palace, /'Central fanlight radial bar'/);
 });
+
+testCase('the rear range and south avant-corps are roofed in slate', () => {
+  assert.match(palace, /roofed with slate/);
+  assert.match(palace, /'Rear range slate roof'/);
+  assert.match(palace, /'South avant-corps slate roof'/);
+});

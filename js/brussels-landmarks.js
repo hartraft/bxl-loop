@@ -2344,6 +2344,10 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       const fr = box(g, 0.06, 4.0, 0.05, Math.sin(fa) * 1.1, 6.4 + Math.cos(fa) * 1.1, centralFace + 0.32, gilded, 'Central fanlight radial bar');
       fr.rotation.z = fa;
     }
+
+    // The rear range and the south avant-corps are roofed with slate, like the rest of the palace.
+    box(g, 103, 1.4, 13, 0, 19.2, -54, roof, 'Rear range slate roof');
+    box(g, 27.5, 1.2, 8, 0, 21.2, -60, roof, 'South avant-corps slate roof');
   });
   addLandmark('palaceSurroundings', (g) => {
     // Brussels Park (Parc de Bruxelles): the rectangular 13.1 ha neoclassical park north of the
