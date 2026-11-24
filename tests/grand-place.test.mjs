@@ -227,6 +227,18 @@ test('Sainte-Barbe has her niche statue; every house roof has chimneys with pots
   assert.ok(square.includes('chimneyPots.count = ch * 2'));
 });
 
+test('paving has banded rows + facade kerbs; houses have downpipes and awning side flaps', () => {
+  assert.ok(source.includes("'Grand-Place cobblestone courses C (banded rows)'"));
+  assert.ok(source.includes('cobblesC.count = c'));
+  assert.ok(source.includes('if (row % 5 === 4) cobblesC.setMatrixAt(c++, dummy.matrix);'));
+  assert.ok(source.includes('`Grand-Place ${n} facade kerb`'), 'kerb template in the four-side loop');
+  assert.equal((source.match(/\[(110, 0\.5, 0, 35\.6|110, 0\.5, 0, -35\.6|0\.5, 71, -54\.6|0\.5, 71, 54\.6)/g) || []).length, 4, 'kerb on all four sides');
+  assert.ok(square.includes(" rainwater downpipes'"));
+  assert.ok(square.includes('downpipes.count = 2'));
+  assert.ok(square.includes(" awning side flaps'"));
+  assert.ok(square.includes('sideFlaps.count = 2'));
+});
+
 test('guild houses carry the real names on the real sides, with Baroque detailing', () => {
   for (const name of ['Le Roy d’Espagne', 'La Brouette', 'Le Sac', 'La Louve', 'Le Cornet', 'Le Renard',
     'Le Heaume', 'Le Paon', 'Sainte-Barbe', 'Le Cerf', 'L’Ange', 'La Chaloupe d’Or',

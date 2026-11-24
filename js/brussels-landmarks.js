@@ -161,6 +161,18 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     quoins.name = name + ' corner quoins';
     quoins.castShadow = true;
     root.add(quoins);
+    // Lead rainwater downpipes at the front corners, as on the real houses.
+    const downpipes = new THREE.InstancedMesh(new THREE.CylinderGeometry(0.05, 0.05, height - 0.8, 6), materials.dark, 2);
+    const dpd = new THREE.Object3D();
+    for (let i = 0; i < 2; i++) {
+      dpd.position.set((i === 0 ? -1 : 1) * (width / 2 - 0.25), (height - 0.8) / 2 + 0.4, 0.28);
+      dpd.updateMatrix();
+      downpipes.setMatrixAt(i, dpd.matrix);
+    }
+    downpipes.count = 2;
+    downpipes.name = name + ' rainwater downpipes';
+    root.add(downpipes);
+
     // Dentil teeth under the gilded cornice and rustication grooves in the plinth — standard
     // dressing of the real Baroque facades.
     const dentilCount = Math.floor(width / 0.5);
@@ -316,6 +328,16 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       valances.count = bays;
       valances.name = name + ' awning valance';
       root.add(valances);
+      // Canvas side flaps close the awning ends.
+      const sideFlaps = new THREE.InstancedMesh(new THREE.BoxGeometry(0.05, 0.55, 1.05), materials.canvas, 2);
+      for (let i = 0; i < 2; i++) {
+        arcDummy.position.set((i === 0 ? -1 : 1) * (width - 2.8) / 2, 3.0, 0.95);
+        arcDummy.updateMatrix();
+        sideFlaps.setMatrixAt(i, arcDummy.matrix);
+      }
+      sideFlaps.count = 2;
+      sideFlaps.name = name + ' awning side flaps';
+      root.add(sideFlaps);
       // Terrace furniture set out on the square in front of the awnings — the real brasseries
       // (Le Roy d'Espagne's parasols in the house colours, etc.) line the plaza with tables,
       // chairs and parasols. All instanced per house.
@@ -1346,8 +1368,9 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     const cobbleGeo = new THREE.BoxGeometry(6.8, 0.12, 4.1);
     const cobblesA = new THREE.InstancedMesh(cobbleGeo, materials.pavingA, 240);
     const cobblesB = new THREE.InstancedMesh(cobbleGeo, materials.pavingB, 240);
+    const cobblesC = new THREE.InstancedMesh(cobbleGeo, materials.pavingEdge, 48);
     const dummy = new THREE.Object3D();
-    let a = 0, b = 0;
+    let a = 0, b = 0, c = 0;
     for (let row = 0; row < 15; row++) {
       for (let col = 0; col < 16; col++) {
         const x = -51.7 + col * 6.9 + (row % 2) * 0.45;
@@ -1355,15 +1378,21 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
         dummy.position.set(x, -0.06, z);
         dummy.rotation.y = ((row + col) % 3) * 0.025;
         dummy.updateMatrix();
-        if ((row + col) % 2) cobblesA.setMatrixAt(a++, dummy.matrix);
+        if (row % 5 === 4) cobblesC.setMatrixAt(c++, dummy.matrix);
+        else if ((row + col) % 2) cobblesA.setMatrixAt(a++, dummy.matrix);
         else cobblesB.setMatrixAt(b++, dummy.matrix);
       }
     }
-    cobblesA.count = a; cobblesB.count = b;
+    cobblesA.count = a; cobblesB.count = b; cobblesC.count = c;
     cobblesA.name = 'Grand-Place cobblestone courses A';
     cobblesB.name = 'Grand-Place cobblestone courses B';
-    cobblesA.receiveShadow = cobblesB.receiveShadow = true;
-    plaza.add(cobblesA, cobblesB);
+    cobblesC.name = 'Grand-Place cobblestone courses C (banded rows)';
+    cobblesA.receiveShadow = cobblesB.receiveShadow = cobblesC.receiveShadow = true;
+    plaza.add(cobblesA, cobblesB, cobblesC);
+    // Granite kerb stones along all four facade lines where the paving meets the buildings.
+    for (const [w, d, x, z, n] of [[110, 0.5, 0, 35.6, 'south'], [110, 0.5, 0, -35.6, 'north'], [0.5, 71, -54.6, 0, 'west'], [0.5, 71, 54.6, 0, 'east']]) {
+      box(plaza, w, 0.18, d, x, 0.02, z, materials.pavingEdge, `Grand-Place ${n} facade kerb`);
+    }
     // Darker blue-stone sett border framing the paved square along all four facade lines, as in
     // the real 1883/1899 calepinage. Instanced around the perimeter.
     const border = new THREE.InstancedMesh(new THREE.BoxGeometry(0.9, 0.08, 0.9), materials.pavingEdge, 420);
