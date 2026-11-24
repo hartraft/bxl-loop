@@ -1532,6 +1532,31 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     box(g, 35.5, 1.35, 22.8, 0, 0.95, -1, ashlar, 'Central rusticated base');
     box(g, 35.5, 0.42, 0.65, 0, 7.45, centralFace + 0.12, moulding, 'Central arcade impost course');
 
+    // Stone cross-mullions (croisillons de pierre) divide every French window of the
+    // wings into panes, as on the real palace windows. Instanced: one draw call each.
+    const mullV = new THREE.InstancedMesh(new THREE.BoxGeometry(0.09, 3.4, 0.06), ashlar, 40);
+    const mullH = new THREE.InstancedMesh(new THREE.BoxGeometry(1.85, 0.09, 0.06), ashlar, 40);
+    const mgd = new THREE.Object3D();
+    let mi = 0;
+    for (const x of wingXs) {
+      for (let i = 0; i < 9; i++) {
+        const bx = x - 22 + i * 5.5;
+        for (const [floorY] of [[9.9], [16.0]]) {
+          mgd.position.set(bx, floorY, facadeZ + 0.26);
+          mgd.rotation.y = 0;
+          mgd.updateMatrix();
+          mullV.setMatrixAt(mi, mgd.matrix);
+          mullH.setMatrixAt(mi, mgd.matrix);
+          mi++;
+        }
+      }
+    }
+    mullV.count = mullH.count = mi;
+    mullV.name = 'Palace window cross-mullions vertical';
+    mullH.name = 'Palace window cross-mullions horizontal';
+    mullV.castShadow = mullH.castShadow = true;
+    g.add(mullV, mullH);
+
     // The real ground storey is a rusticated soubassement a bossages: alternating
     // projecting stone blocks dress every arcade pier across the wings and the
     // central corps. One instanced mesh keeps it to a single draw call.
