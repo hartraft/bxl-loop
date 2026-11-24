@@ -870,6 +870,10 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       box(tower, 0.66, 2.4, 0.25, side * 2.6, 5.5, towerW / 2 + 0.08, darkStone, 'Portal jamb knight niche');
       box(tower, 0.24, 1.1, 0.12, side * 2.6, 5.5, towerW / 2 + 0.22, materials.gold, 'Portal jamb knight statue');
     }
+    // Stone entrance steps descend from the ogival portal onto the square.
+    for (let i = 0; i < 3; i++) {
+      box(tower, 5.4 - i * 0.8, 0.22, 0.7, 0, 0.11 + i * 0.22, towerW / 2 + 0.55 + i * 0.55, darkStone, 'Portal entrance step');
+    }
     // Prophet figures in niches above the portal, between the shaft lancets.
     for (const side of [-1, 1]) {
       for (const dx of [1.1, 3.3]) {
