@@ -158,6 +158,15 @@ test('the four frontages still face the plaza', () => {
   assert.ok(source.includes('east.rotation.y = -Math.PI / 2'));
 });
 
+test('windows and arcades glow warm at night (floodlit square)', () => {
+  assert.ok(source.includes('nightGlowMats'));
+  assert.ok(source.includes('glowGlass'));
+  assert.ok(source.includes('m.emissiveIntensity = level * 0.85'));
+  assert.ok(source.includes('update(dt, night) { if (typeof night === \'number\') setNight(night); }'));
+  const main = readFileSync(new URL('../js/main.js', import.meta.url), 'utf8');
+  assert.ok(main.includes('landmarks.update(dt, VEHICLE_UNIFORMS.night.value)'));
+});
+
 test('the snapshot camera frames the full Town Hall tower from the open square', () => {
   const snapshot = readFileSync(new URL('../snapshot-grand-place.html', import.meta.url), 'utf8');
   assert.match(snapshot, /centre\.y\+Math\.max\(52,size\.y\*\.55\)/);

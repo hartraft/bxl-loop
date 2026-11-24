@@ -27,6 +27,12 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
   };
   const landmarks = {};
   const colliders = [];
+  // Window materials registered for night glow (the real square's windows and arcades
+  // glow warm after dark while the facades are floodlit).
+  const nightGlowMats = [];
+  const glowGlass = materials.glass.clone();
+  glowGlass.emissive = new THREE.Color(0x000000);
+  nightGlowMats.push(glowGlass);
 
   function mesh(parent, geometry, material, x = 0, y = 0, z = 0, name = '') {
     const object = new THREE.Mesh(geometry, material);
@@ -119,7 +125,7 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     const bays = Math.max(3, Math.round(width / 2.8));
     const windowGeo = new THREE.BoxGeometry(1.05, 1.45, 0.16);
     const frameGeo = new THREE.BoxGeometry(1.28, 1.7, 0.12);
-    const windows = new THREE.InstancedMesh(windowGeo, materials.glass, bays * floors);
+    const windows = new THREE.InstancedMesh(windowGeo, spec.windowMat || glowGlass, bays * floors);
     const frames = new THREE.InstancedMesh(frameGeo, materials.gold, bays * floors);
     const dummy = new THREE.Object3D();
     let index = 0;
@@ -146,7 +152,7 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     // Ground floor: a recessed arcade opening per bay — on the real square the cafés and
     // shops sit under these arcades, so the ground floor is taller and darker than the
     // window storeys above. Instanced like the rest of the repeated detail.
-    const arcade = new THREE.InstancedMesh(new THREE.BoxGeometry(1.55, 2.7, 0.2), materials.glass, bays);
+    const arcade = new THREE.InstancedMesh(new THREE.BoxGeometry(1.55, 2.7, 0.2), spec.windowMat || glowGlass, bays);
     const lintels = new THREE.InstancedMesh(new THREE.BoxGeometry(1.9, 0.22, 0.3), materials.warmStone, bays);
     const arcDummy = new THREE.Object3D();
     let ac = 0;
@@ -307,7 +313,7 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     const trim = materials.limestone;
     const darkStone = materials.warmStone;
     const roofMat = materials.slate;
-    const glass = materials.glass;
+    const glass = glowGlass;
 
     // Two genuinely asymmetrical wings, built in two campaigns: the shorter east wing
     // (1401-1421, local -X = world east when facing the facade) and the longer west wing
@@ -571,7 +577,7 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     const trim = materials.limestone;
     const darkStone = materials.warmStone;
     const roofMat = materials.slate;
-    const glass = materials.glass;
+    const glass = glowGlass;
 
     box(root, width, height, depth, 0, height / 2, -depth / 2, stone, 'King’s House neo-Gothic main block');
     box(root, width + 1.6, 1.0, depth + 0.9, 0, 0.5, -depth / 2, darkStone, 'King’s House plinth');
@@ -1424,10 +1430,17 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
   });
 
   scene?.add(group);
+  function setNight(t) {
+    const level = Math.max(0, Math.min(1, Number(t) || 0));
+    for (const m of nightGlowMats) {
+      m.emissive.setHex(0xffb45a);
+      m.emissiveIntensity = level * 0.85;
+    }
+  }
   return {
     group, colliders, zones: GEO.landmarkZones || [], landmarks,
-    update() {},
+    update(dt, night) { if (typeof night === 'number') setNight(night); },
     towerBridge: null,
-    setNight() {}
+    setNight
   };
 }

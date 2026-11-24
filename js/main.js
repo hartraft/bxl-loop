@@ -688,7 +688,7 @@ async function initApp() {
     life.update(dt, { camera: cameraSystem.camera, entity: controllerManager.getActiveEntity(), mode: controllerManager.activeMode, peds: trafficSystem.peds, night: VEHICLE_UNIFORMS.night.value });
     audio.update(dt, cameraSystem.camera);
     city.update(dt, cameraSystem.camera);
-    landmarks.update(dt);
+    landmarks.update(dt, VEHICLE_UNIFORMS.night.value);
     edgeBarriers.update(elapsed, VEHICLE_UNIFORMS.night.value);
     lightingSystem.update(cameraSystem.currentPos);
     mapSystem.update();
