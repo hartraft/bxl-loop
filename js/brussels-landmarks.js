@@ -1638,6 +1638,25 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       arm.rotation.z = x < 0 ? -0.45 : 0.45;
     }
 
+    // Thomas Vinçotte's tympanum relief: the allegorical figure of Belgium is flanked
+    // by groups representing Industry (hammer and gear, left) and Agriculture
+    // (wheat sheaf and sickle, right), as on the real 1904–09 pediment.
+    for (const side of [-1, 1]) {
+      const rx = side * 7.6, ry = 24.6, rz = centralFace + 0.78;
+      if (side < 0) {
+        box(g, 0.14, 1.6, 0.12, rx - 0.3, ry - 0.1, rz, moulding, 'Industry relief hammer handle');
+        box(g, 0.66, 0.3, 0.12, rx - 0.3, ry + 0.72, rz, moulding, 'Industry relief hammer head');
+        mesh(g, new THREE.TorusGeometry(0.36, 0.1, 8, 20), moulding, rx + 0.45, ry - 0.05, rz, 'Industry relief gear');
+      } else {
+        for (let s = 0; s < 5; s++) {
+          const stalk = cylinder(g, 0.045, 0.06, 1.5, rx - 0.4 + s * 0.2, ry + 0.1, rz, moulding, 6);
+          stalk.rotation.z = (s - 2) * 0.12;
+        }
+        box(g, 0.9, 0.16, 0.1, rx, ry - 0.28, rz, moulding, 'Agriculture relief sheaf binding');
+        mesh(g, new THREE.TorusGeometry(0.4, 0.07, 8, 20, Math.PI * 1.2), moulding, rx + 0.5, ry + 0.55, rz, 'Agriculture relief sickle');
+      }
+    }
+
     // The real central roof is a high, square drum and a broad flattened dome,
     // with two rows of oculi on each face and a rooftop balustrade.
     box(g, 17.5, 4.6, 17.5, 0, 27.2, -1, stone, 'Central dome drum');
