@@ -4225,6 +4225,11 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     for (const side of [-1, 1]) {
       box(g, 0.4, 0.15, 0.4, side * 9.6, 1.02, centralFace + 1.6, ashlar, 'Perron lamp base plinth');
     }
+
+    // Cap slabs finish the perron lamp base plinths.
+    for (const side of [-1, 1]) {
+      box(g, 0.46, 0.06, 0.46, side * 9.6, 1.13, centralFace + 1.6, moulding, 'Perron lamp plinth cap');
+    }
   });
   addLandmark('palaceSurroundings', (g) => {
     // Real-world sources: en/fr Wikipedia (Royal Palace of Brussels, Brussels Park, Place des Palais,

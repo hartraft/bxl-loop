@@ -2281,3 +2281,7 @@ testCase('plinths anchor the perron lamp standard flanges', () => {
 testCase('stone steps lead down to the main pond rim on its east side', () => {
   assert.match(palace, /'Main pond east access step'/);
 });
+
+testCase('cap slabs finish the perron lamp base plinths', () => {
+  assert.match(palace, /'Perron lamp plinth cap'/);
+});
