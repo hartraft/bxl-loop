@@ -6371,6 +6371,171 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       wins.name = 'Rue Orts facade windows';
       g.add(wins);
     }
+    // Round 121: the 1949 corner tower's dome is ribbed (huit nervures) and its shaft glazed.
+    {
+      const ribs = new THREE.InstancedMesh(new THREE.BoxGeometry(0.25, 6.5, 0.25), materials.roof, 8);
+      const twins = new THREE.InstancedMesh(new THREE.BoxGeometry(1.6, 2.4, 0.3), materials.glass, 3 * 6);
+      const dummy = new THREE.Object3D();
+      for (let i = 0; i < 8; i++) {
+        const a = i * Math.PI / 4;
+        dummy.position.set(-70 + Math.sin(a) * 6.2, 40.5, 88 + Math.cos(a) * 6.2);
+        dummy.rotation.set(Math.cos(a) * 0.7, 0, -Math.sin(a) * 0.7);
+        dummy.updateMatrix();
+        ribs.setMatrixAt(i, dummy.matrix);
+      }
+      ribs.count = 8;
+      ribs.name = '1949 tower dome meridian ribs (nervures de la coupole)';
+      ribs.castShadow = true;
+      g.add(ribs);
+      let n = 0;
+      for (let f = 0; f < 3; f++) for (let i = 0; i < 6; i++) {
+        dummy.position.set(-76.5 + i * 3, 8 + f * 9, 88.2);
+        dummy.updateMatrix();
+        twins.setMatrixAt(n++, dummy.matrix);
+      }
+      twins.count = n;
+      twins.name = '1949 tower shaft windows';
+      twins.castShadow = true;
+      g.add(twins);
+    }
+    // Round 122: the 1949 building reused balconies recovered from the burned Grands Magasins
+    // de la Bourse (en.wikipedia Place de la Bourse).
+    {
+      const balconies = new THREE.InstancedMesh(new THREE.BoxGeometry(4.4, 0.18, 1.4), materials.paleStone, 8);
+      const rails = new THREE.InstancedMesh(new THREE.BoxGeometry(4.4, 0.9, 0.1), materials.dark, 8);
+      const dummy = new THREE.Object3D();
+      for (let i = 0; i < 8; i++) {
+        dummy.position.set(-73 + (i % 4) * 6, 7 + Math.floor(i / 4) * 9, 107.3);
+        dummy.updateMatrix();
+        balconies.setMatrixAt(i, dummy.matrix);
+        dummy.position.set(-73 + (i % 4) * 6, 7.6 + Math.floor(i / 4) * 9, 107.9);
+        dummy.updateMatrix();
+        rails.setMatrixAt(i, dummy.matrix);
+      }
+      balconies.count = 8;
+      balconies.name = '1949 building reused balconies (balcons recuperes des Grands Magasins)';
+      balconies.castShadow = true;
+      g.add(balconies);
+      rails.count = 8;
+      rails.name = '1949 balcony iron rails';
+      g.add(rails);
+    }
+    // Round 123: the 1884-85 blocks have stone window surrounds and etage balcony balustrades.
+    {
+      const surr = new THREE.InstancedMesh(new THREE.BoxGeometry(2.7, 3.9, 0.25), materials.warmStone, 48);
+      const rails = new THREE.InstancedMesh(new THREE.BoxGeometry(2.4, 0.85, 0.12), materials.dark, 24);
+      const dummy = new THREE.Object3D();
+      let n = 0, r = 0;
+      for (const sx of [-1, 1]) {
+        const blk = sx * 30;
+        for (let f = 0; f < 4; f++) for (let i = 0; i < 6; i++) {
+          dummy.position.set(blk - 22.5 + i * 9, 4.5 + f * 4.5, 116.25);
+          dummy.updateMatrix();
+          surr.setMatrixAt(n++, dummy.matrix);
+          if (f === 1) {
+            dummy.position.set(blk - 22.5 + i * 9, 7.4, 116.5);
+            dummy.updateMatrix();
+            rails.setMatrixAt(r++, dummy.matrix);
+          }
+        }
+      }
+      surr.count = n;
+      surr.name = '1884-85 block window stone surrounds';
+      surr.castShadow = true;
+      g.add(surr);
+      rails.count = r;
+      rails.name = '1884-85 block etage balcony rails';
+      g.add(rails);
+    }
+    // Round 124: modillions under the 1884-85 cornices + dormers on the mansard crowns.
+    {
+      const mods = new THREE.InstancedMesh(new THREE.BoxGeometry(0.35, 0.45, 0.35), materials.warmStone, 2 * 25);
+      const dorm = new THREE.InstancedMesh(new THREE.BoxGeometry(2, 2.2, 1.4), materials.ochre, 6);
+      const dummy = new THREE.Object3D();
+      let n = 0;
+      for (const sx of [-1, 1]) for (let i = 0; i < 25; i++) {
+        dummy.position.set(sx * 30 - 24 + i * 2, 22.2, 108);
+        dummy.updateMatrix();
+        mods.setMatrixAt(n++, dummy.matrix);
+      }
+      mods.count = n;
+      mods.name = '1884-85 block cornice modillions';
+      mods.castShadow = true;
+      g.add(mods);
+      let d = 0;
+      for (const sx of [-1, 1]) for (let i = 0; i < 3; i++) {
+        dummy.position.set(sx * 30 - 15 + i * 15, 25.5, 108);
+        dummy.updateMatrix();
+        dorm.setMatrixAt(d++, dummy.matrix);
+      }
+      dorm.count = d;
+      dorm.name = '1884-85 block mansard dormers (lucarnes)';
+      dorm.castShadow = true;
+      g.add(dorm);
+    }
+    // Round 125: the Cafe de la Bourse (1874 neo-Baroque) carries a sculpted cartouche over its
+    // entrance and an oriel window above (neo-Baroque front, Charles-Emile Janlet).
+    {
+      box(g, 4.5, 2.2, 0.5, 34, 3, 138.3, materials.dark, 'Cafe de la Bourse entrance door');
+      mesh(g, new THREE.SphereGeometry(1.1, 10, 8), materials.warmStone, 34, 6.2, 138.4, 'Cafe de la Bourse cartouche (cartouche sculpte)');
+      box(g, 3.4, 3.6, 1.2, 34, 14, 136.8, materials.glass, 'Cafe de la Bourse oriel (oriel vitre)');
+      box(g, 3.8, 0.3, 1.6, 34, 16, 136.8, materials.warmStone, 'Cafe de la Bourse oriel cornice');
+    }
+    // Round 126: the cafe's canvas awning over the terrace side (generic brasserie awning).
+    {
+      const awning = box(g, 10, 0.08, 3, 34, 4.6, 136.2, materials.canvas, 'Cafe de la Bourse canvas awning (store)');
+      awning.rotation.x = 0.35;
+      for (const sx of [-1, 1]) cylinder(g, 0.05, 0.05, 3.4, 34 + sx * 4.8, 3.1, 136.6, materials.dark, 6);
+    }
+    // Round 127: the premetro kiosks get mullioned glass panes, metal frames and handrails.
+    for (const k of g.children) {
+      if (!k.name || !k.name.startsWith('Bourse premetro station')) continue;
+      for (const sx of [-1, 1]) for (const sz of [-1, 1]) {
+        cylinder(k, 0.04, 0.04, 3, sx * 1.55, 1.5, sz * 1.55, materials.dark, 5);
+      }
+      box(k, 0.06, 3, 3.2, -1.62, 1.5, 0, materials.dark, 'kiosk frame post west');
+      box(k, 0.06, 3, 3.2, 1.62, 1.5, 0, materials.dark, 'kiosk frame post east');
+      box(k, 3.3, 0.07, 0.07, 0, 1.1, 1.7, materials.dark, 'kiosk handrail (garde-corps)');
+    }
+    // Round 128: access 6 (south of the square) carries a glazed elevator shaft beside the stair.
+    {
+      const k = g.children.find((c) => c.name && c.name.includes('access 6'));
+      if (k) {
+        box(k, 1.6, 5.5, 1.6, 2.6, 2.75, -1.2, materials.glass, 'premetro access 6 glazed elevator shaft (ascenseur)');
+        box(k, 1.9, 0.15, 1.9, 2.6, 5.55, -1.2, materials.dark, 'elevator shaft roof');
+      }
+    }
+    // Round 129: the Fontaine Orts column shaft is fluted and its basin has a rim moulding
+    // plus a drinking spout (fontaine d'eau potable a haut debit, 1888).
+    {
+      const f = g.children.find((c) => c.name && c.name.startsWith('Fontaine Orts'));
+      if (f) {
+        const flutes = new THREE.InstancedMesh(new THREE.CylinderGeometry(0.04, 0.04, 3.0, 5), materials.dark, 8);
+        const dummy = new THREE.Object3D();
+        for (let i = 0; i < 8; i++) {
+          const a = i * Math.PI / 4;
+          dummy.position.set(Math.cos(a) * 0.95, 1.6, Math.sin(a) * 0.95);
+          dummy.updateMatrix();
+          flutes.setMatrixAt(i, dummy.matrix);
+        }
+        flutes.count = 8;
+        flutes.name = 'Fontaine Orts fluted shaft (fut cannele)';
+        f.add(flutes);
+        const rim = mesh(f, new THREE.TorusGeometry(2.35, 0.12, 6, 16), materials.warmStone, 0, 0.72, 0, 'Fontaine Orts basin rim moulding');
+        rim.rotation.x = Math.PI / 2;
+        cylinder(f, 0.06, 0.06, 0.5, 0, 4.3, 0.9, materials.bronze, 6);
+        mesh(f, new THREE.SphereGeometry(0.09, 6, 5), materials.bronze, 0, 4.3, 1.15, 'Fontaine Orts drinking spout (bec verseur)');
+      }
+    }
+    // Round 130: the Orts monument gets a stepped base, moulded cap and bronze plaque frame.
+    {
+      const m = g.children.find((c) => c.name && c.name.startsWith('Monument to Auguste Orts'));
+      if (m) {
+        box(m, 3.2, 0.25, 1.8, 0, 0.12, 0, materials.warmStone, 'Orts monument stepped base');
+        box(m, 3.1, 0.16, 1.6, 0, 2.5, 0, materials.blueStone, 'Orts monument cap moulding');
+        box(m, 1.7, 1.0, 0.06, 0, 1.2, 0.66, materials.gold, 'Orts monument plaque frame (cadre bronze dore)');
+      }
+    }
     // __SURROUNDINGS_ROUNDS__
   });
 

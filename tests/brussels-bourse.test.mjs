@@ -480,4 +480,36 @@ testCase('rounds 115-120: side modillions, arch mullions, arcade grilles, coloss
   assert.match(bourse, /'Bourse rear entrance landing'/);
 });
 
+testCase('rounds 121-122: 1949 tower dome ribs + shaft windows, reused balconies from the Grands Magasins', () => {
+  assert.match(surroundings, /'1949 tower dome meridian ribs \(nervures de la coupole\)'/);
+  assert.match(surroundings, /ribs\.count = 8/);
+  assert.match(surroundings, /'1949 tower shaft windows'/);
+  assert.match(surroundings, /'1949 building reused balconies \(balcons recuperes des Grands Magasins\)'/);
+  assert.match(surroundings, /balconies\.count = 8/);
+  assert.match(surroundings, /'1949 balcony iron rails'/);
+});
+
+testCase('rounds 123-126: 1884-85 surrounds + balcony rails + modillions + dormers; Cafe de la Bourse cartouche + oriel + awning', () => {
+  assert.match(surroundings, /'1884-85 block window stone surrounds'/);
+  assert.match(surroundings, /surr\.count = n/);
+  assert.match(surroundings, /'1884-85 block etage balcony rails'/);
+  assert.match(surroundings, /'1884-85 block cornice modillions'/);
+  assert.match(surroundings, /'1884-85 block mansard dormers \(lucarnes\)'/);
+  assert.match(surroundings, /'Cafe de la Bourse cartouche \(cartouche sculpte\)'/);
+  assert.match(surroundings, /'Cafe de la Bourse oriel \(oriel vitre\)'/);
+  assert.match(surroundings, /'Cafe de la Bourse canvas awning \(store\)'/);
+});
+
+testCase('rounds 127-130: kiosk frames + handrails, access-6 elevator shaft, Fontaine Orts fluting + spout, Orts monument base + plaque frame', () => {
+  assert.match(surroundings, /'kiosk frame post west'/);
+  assert.match(surroundings, /'kiosk handrail \(garde-corps\)'/);
+  assert.match(surroundings, /'premetro access 6 glazed elevator shaft \(ascenseur\)'/);
+  assert.match(surroundings, /'Fontaine Orts fluted shaft \(fut cannele\)'/);
+  assert.match(surroundings, /'Fontaine Orts basin rim moulding'/);
+  assert.match(surroundings, /'Fontaine Orts drinking spout \(bec verseur\)'/);
+  assert.match(surroundings, /'Orts monument stepped base'/);
+  assert.match(surroundings, /'Orts monument cap moulding'/);
+  assert.match(surroundings, /'Orts monument plaque frame \(cadre bronze dore\)'/);
+});
+
 // __MORE_BOURSE_TESTS__
