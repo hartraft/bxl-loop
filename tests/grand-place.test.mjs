@@ -356,6 +356,13 @@ test('the four frontages still face the plaza', () => {
   assert.ok(source.includes('east.rotation.y = -Math.PI / 2'));
 });
 
+test('facades pick up a faint warm floodlight wash at night', () => {
+  assert.ok(source.includes('facadeWashMats'));
+  assert.ok(source.includes("for (const key of ['limestone', 'paleStone', 'warmStone', 'ochre', 'plaster'])"));
+  assert.ok(source.includes('m.emissiveIntensity = level * 0.16'));
+  assert.ok(source.includes('m.emissive.setHex(0xffd9a0)'));
+});
+
 test('windows and arcades glow warm at night (floodlit square)', () => {
   assert.ok(source.includes('nightGlowMats'));
   assert.ok(source.includes('glowGlass'));

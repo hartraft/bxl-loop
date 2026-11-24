@@ -35,6 +35,15 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
   const glowGlass = materials.glass.clone();
   glowGlass.emissive = new THREE.Color(0x000000);
   nightGlowMats.push(glowGlass);
+  // Facade stone materials get a faint warm floodlight wash at night (the real square is
+  // floodlit after dark) — clone them so daytime rendering is untouched.
+  const facadeWashMats = [];
+  for (const key of ['limestone', 'paleStone', 'warmStone', 'ochre', 'plaster']) {
+    const m = materials[key].clone();
+    m.emissive = new THREE.Color(0x000000);
+    facadeWashMats.push(m);
+    materials[key] = m;
+  }
 
   function mesh(parent, geometry, material, x = 0, y = 0, z = 0, name = '') {
     const object = new THREE.Mesh(geometry, material);
@@ -1891,6 +1900,10 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     for (const m of nightGlowMats) {
       m.emissive.setHex(0xffb45a);
       m.emissiveIntensity = level * 0.85;
+    }
+    for (const m of facadeWashMats) {
+      m.emissive.setHex(0xffd9a0);
+      m.emissiveIntensity = level * 0.16;
     }
   }
   return {
