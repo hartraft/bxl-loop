@@ -3916,6 +3916,11 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     for (const side of [-1, 1]) {
       box(g, 1.8, 0.12, 1.8, side * 9.8, 1.06, centralFace + 0.9, stone, 'Perron planter rim');
     }
+
+    // Short arms carry the gilded globes from the perron lamp standards.
+    for (const side of [-1, 1]) {
+      box(g, 0.5, 0.06, 0.06, side * 9.6 - side * 0.2, 4.35, centralFace + 1.6, bronze, 'Perron lamp arm');
+    }
   });
   addLandmark('palaceSurroundings', (g) => {
     // Real-world sources: en/fr Wikipedia (Royal Palace of Brussels, Brussels Park, Place des Palais,

@@ -1647,3 +1647,7 @@ testCase('rim stones finish the two perron planters', () => {
 testCase('keystones crown the BELvue piano nobile windows', () => {
   assert.match(palace, /'BELvue window keystone'/);
 });
+
+testCase('arms carry the gilded globes from the perron lamp standards', () => {
+  assert.match(palace, /'Perron lamp arm'/);
+});
