@@ -854,3 +854,8 @@ testCase('a grille closes the Academy Palace garden to the north (wall to the we
   assert.match(palace, /'Academy garden north grille'/);
   assert.match(palace, /agGrille\.count = agi/);
 });
+
+testCase('the pavilion outer faces are capped by an end cornice', () => {
+  assert.match(palace, /pavilion outer faces are capped/);
+  assert.match(palace, /'Pavilion outer cornice'/);
+});

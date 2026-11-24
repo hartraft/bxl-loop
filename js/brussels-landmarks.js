@@ -2402,6 +2402,11 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       }
     }
     box(g, 4.8, 0.22, 0.3, 0, 6.3, centralFace + 0.26, gilded, 'Central door gilded transom');
+
+    // The pavilion outer faces are capped by an end cornice matching the wing ends.
+    for (const side of [-1, 1]) {
+      box(g, 0.5, 0.6, 21.5, side * 80.1, 23.6, -1, moulding, 'Pavilion outer cornice');
+    }
   });
   addLandmark('palaceSurroundings', (g) => {
     // Brussels Park (Parc de Bruxelles): the rectangular 13.1 ha neoclassical park north of the
