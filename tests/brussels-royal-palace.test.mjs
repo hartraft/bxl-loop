@@ -1899,3 +1899,7 @@ testCase('a projecting cornice tops the Palace of the Nation peristyle entablatu
 testCase('corbels carry each wing balcony slab from the facade', () => {
   assert.match(palace, /'Wing balcony corbel'/);
 });
+
+testCase('a stylobate platform carries the Academy portico columns', () => {
+  assert.match(palace, /'Academy portico stylobate'/);
+});

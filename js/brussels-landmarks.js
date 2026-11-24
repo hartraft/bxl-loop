@@ -5301,6 +5301,9 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
 
     // A projecting cornice tops the Palace of the Nation peristyle entablature.
     box(g, 54, 0.35, 3.0, 0, 16.9, 401.3, materials.warmStone, 'Palace of the Nation peristyle cornice');
+
+    // A stylobate platform carries the Academy Palace portico columns.
+    box(g, 20, 0.4, 3.5, -168, 0.2, 19.8, materials.paleStone, 'Academy portico stylobate');
   });
     addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');
