@@ -1817,3 +1817,8 @@ testCase('a door with lintel pierces the west wing of the Palace of the Nation',
 testCase('return caps close the ends of the stylobate edge cap', () => {
   assert.match(palace, /'Stylobate edge cap return'/);
 });
+
+testCase('a gate with piers and lintel opens into the Academy garden', () => {
+  assert.match(palace, /'Academy garden gate pier'/);
+  assert.match(palace, /'Academy garden gate lintel'/);
+});

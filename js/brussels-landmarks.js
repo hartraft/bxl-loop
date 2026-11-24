@@ -5212,6 +5212,12 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     // A door pierces the west wing facade of the Palace of the Nation.
     box(g, 3.0, 6.0, 0.3, -70, 3.0, 406.85, materials.dark, 'Palace of the Nation wing door');
     box(g, 3.4, 0.22, 0.4, -70, 6.2, 406.8, materials.warmStone, 'Palace of the Nation wing door lintel');
+
+    // A gate with piers and lintel opens into the Academy Palace garden.
+    for (const gx of [-172, -164]) {
+      box(g, 0.8, 1.8, 0.5, gx, 0.9, 56, materials.paleStone, 'Academy garden gate pier');
+    }
+    box(g, 9, 0.4, 0.5, -168, 1.9, 56, materials.warmStone, 'Academy garden gate lintel');
   });
     addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');
