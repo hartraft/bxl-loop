@@ -523,3 +523,9 @@ testCase('the Royal Park Theatre (1782) stands on the park edge facing the Palac
   assert.match(palace, /'Royal Park Theatre facade window'/);
   assert.match(palace, /'Royal Park Theatre entrance door'/);
 });
+
+testCase('the Poelaert south gatehouse (1857) crowns the park central path entrance', () => {
+  assert.match(palace, /designed by Joseph Poelaert in/);
+  assert.match(palace, /'Poelaert south gate entablature'/);
+  assert.match(palace, /'Poelaert south gate pediment'/);
+});

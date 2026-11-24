@@ -2450,6 +2450,12 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       box(g, 2.6, 7, 0.2, -60 - 10.5 + i * 7, 9, 414.1, materials.glass, 'Royal Park Theatre facade window');
     }
     box(g, 4.5, 6, 0.4, -60, 5, 414.2, materials.dark, 'Royal Park Theatre entrance door');
+    // The southern entrance to the park's central path was designed by Joseph Poelaert in
+    // 1857 (built 1858, moved further north in 1904-08): a pedimented gatehouse on the axis.
+    box(g, 16, 0.8, 1.2, 0, 3.7, 62, materials.paleStone, 'Poelaert south gate entablature');
+    const pgPed = new THREE.Shape();
+    pgPed.moveTo(-8, 0); pgPed.lineTo(8, 0); pgPed.lineTo(0, 1.8); pgPed.closePath();
+    mesh(g, new THREE.ShapeGeometry(pgPed), materials.warmStone, 0, 4.1, 62, 'Poelaert south gate pediment');
   });
     addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');
