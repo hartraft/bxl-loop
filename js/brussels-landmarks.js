@@ -1721,7 +1721,8 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     }
     // North principal façade: the peristyle is preceded by an emmarchement across its
     // full width, rising from the Place Poelaert esplanade up to the entrance terrace.
-    box(g, 60, 1.2, 16, 0, 0.9, 96, weathered, 'Place Poelaert forecourt landing');
+    // Forecourt landing north of the stair flight (treads occupy z up to ~95.4).
+    box(g, 60, 1.2, 8.5, 0, 0.9, 99.75, weathered, 'Place Poelaert forecourt landing');
     // The flight stops at the terrace's north edge (z=88): the top tread meets the terrace
     // face instead of disappearing inside the opaque terrace volume.
     for (let step = 0; step < 12; step++) {
@@ -1944,7 +1945,7 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       const side = x > 0 ? 1 : -1;
       const street = x > 0 ? 'rue des Minimes' : 'rue aux Laines';
       box(g, 4, 3, 22, x + side * 2, 5, 0, weathered, 'Side entrance landing ' + street);
-      for (let i = 0; i < 7; i++) box(g, 1.8, 0.45, 24, x + side * (84 + (6 - i) * 1.3), 5 + i * 0.45, 0, light, 'Side monumental stair ' + street);
+      for (let i = 0; i < 7; i++) box(g, 1.8, 0.45, 24, side * (84 + (6 - i) * 1.3), 5 + i * 0.45, 0, light, 'Side monumental stair ' + street);
       box(g, 3, 12, 18, x + side * 1.5, 12, 0, stone, 'Side axial portal ' + street);
       for (const z of [-6, 0, 6]) {
         cylinder(g, 0.45, 0.55, 10, x + side * 0.8, 10.5, z, light, 12);

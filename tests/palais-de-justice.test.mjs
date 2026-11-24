@@ -161,6 +161,8 @@ test('the side facades carry axial portals with peristyles and stairs on Minimes
   assert.ok(palace.includes("'Side axial portal ' + street"));
   assert.ok(palace.includes("'Side portal entablature ' + street"));
   assert.ok(palace.includes("const street = x > 0 ? 'rue des Minimes' : 'rue aux Laines';"));
+  assert.ok(palace.includes('side * (84 + (6 - i) * 1.3)'), 'side stairs sit beside the side portals (~82 m), not double-offset');
+  assert.ok(!palace.includes('x + side * (84'), 'no stair treads floating ~90 m beyond the facade');
 });
 
 test('the north and south ranges carry colossal paired pilasters, lintels and alternating pediments', () => {
@@ -233,6 +235,8 @@ test('the Place Poelaert front carries the monumental stair and the double-colon
   assert.ok(palace.includes("'Monumental entrance stair (full-width emmarchement)'"));
   assert.ok(palace.includes('for (let step = 0; step < 12; step++)'), 'the emmarchement runs the full width of the portico');
   assert.ok(palace.includes('95 - step * 0.6'), 'the flight stops at the terrace north edge (z=88), not inside it');
+  assert.ok(palace.includes("box(g, 60, 1.2, 8.5, 0, 0.9, 99.75, weathered, 'Place Poelaert forecourt landing')"), 'landing stays clear of the first treads');
+  assert.ok(!palace.includes('box(g, 60, 1.2, 16, 0, 0.9, 96'), 'no landing overlapping the stair flight');
   assert.ok(palace.includes("'Principal portico entablature'"));
   assert.ok(palace.includes("'Portico architrave'"));
   assert.ok(palace.includes("'Doric abacus'"), 'Doric order: echinus + square abacus');
