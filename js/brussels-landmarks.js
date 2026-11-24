@@ -4268,6 +4268,12 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     // The Academy Palace portico pediment encloses a sculpted tympanum panel with a stone frame.
     box(g, 9.5, 1.7, 0.1, -168, 13.9, 19.58, materials.warmStone, 'Academy Palace tympanum frame');
     box(g, 8.2, 1.3, 0.14, -168, 13.9, 19.54, materials.paleStone, 'Academy Palace tympanum panel');
+
+    // Stone lintels crown the BELvue piano nobile windows under the modillion cornice.
+    for (let i = 0; i < 5; i++) {
+      const wx = 168 - 13 + i * 6.5;
+      box(g, 2.4, 0.24, 0.3, wx, 17.35, 22.1, materials.warmStone, 'BELvue piano nobile lintel');
+    }
   });
     addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');

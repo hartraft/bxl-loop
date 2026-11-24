@@ -1133,3 +1133,7 @@ testCase('the Academy Palace portico pediment holds a framed tympanum panel', ()
   assert.match(palace, /'Academy Palace tympanum frame'/);
   assert.match(palace, /'Academy Palace tympanum panel'/);
 });
+
+testCase('stone lintels crown the BELvue piano nobile windows', () => {
+  assert.match(palace, /'BELvue piano nobile lintel'/);
+});
