@@ -1488,12 +1488,12 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
           box(g, 0.14, winH + 0.34, 0.3, bx + 1.1, floorY, facadeZ + 0.2, ashlar, 'Wing window jamb');
         }
 
-        // Delicate iron balconettes recur along the piano nobile, not every opening.
-        if (i % 2 === 0) {
-          box(g, 2.2, 0.12, 0.58, bx, 7.92, facadeZ + 0.62, bronze, 'Wing balcony rail');
-          for (let k = 0; k < 9; k++) {
-            box(g, 0.045, 0.5, 0.055, bx - 0.94 + k * 0.235, 8.16, facadeZ + 0.84, bronze, 'Wing balcony baluster');
-          }
+        // EVERY piano nobile opening has its iron balconette, set within Suys'
+        // continuous first-floor balcony parapet (the real palace balcony runs the
+        // whole first floor and fronts each opening).
+        box(g, 2.2, 0.12, 0.58, bx, 7.92, facadeZ + 0.62, bronze, 'Wing balcony rail');
+        for (let k = 0; k < 9; k++) {
+          box(g, 0.045, 0.5, 0.055, bx - 0.94 + k * 0.235, 8.16, facadeZ + 0.84, bronze, 'Wing balcony baluster');
         }
       }
 
