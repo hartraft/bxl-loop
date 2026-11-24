@@ -3857,6 +3857,13 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     for (const bx of [-1.2, 0, 1.2]) {
       box(g, 0.22, 0.3, 0.8, bx, 11.2, centralFace + 0.5, ashlar, 'Central balcony corbel');
     }
+
+    // Newel posts finish both ends of each wing balcony rail.
+    for (const side of wingXs) {
+      for (const e of [-1, 1]) {
+        box(g, 0.14, 0.75, 0.14, side + e * (wingW / 2 - 0.3), 8.3, facadeZ + 0.84, bronze, 'Wing balcony end newel');
+      }
+    }
   });
   addLandmark('palaceSurroundings', (g) => {
     // Real-world sources: en/fr Wikipedia (Royal Palace of Brussels, Brussels Park, Place des Palais,

@@ -1542,3 +1542,7 @@ testCase('benches face the main pond from its south rim', () => {
 testCase('stone lintels crown the BELvue ground-floor windows', () => {
   assert.match(palace, /'BELvue ground window lintel'/);
 });
+
+testCase('newel posts finish both ends of each wing balcony rail', () => {
+  assert.match(palace, /'Wing balcony end newel'/);
+});
