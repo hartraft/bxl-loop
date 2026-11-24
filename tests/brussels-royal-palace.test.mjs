@@ -68,6 +68,15 @@ testCase('the front garden holds the real three sunken parterres (central on the
   assert.match(palace, /\{ x: 38, w: 34, z: 12\.4, d: 2\.6 \}/);
 });
 
+testCase('the central wing projects to the south too — rear avant-corps with pediment (Throne Room side)', () => {
+  assert.match(palace, /au Nord et au Sud/);
+  assert.match(palace, /'Palace south rear avant-corps \(Throne Room\)'/);
+  assert.match(palace, /'South avant-corps pediment'/);
+  assert.match(palace, /sp\.rotation\.y = Math\.PI/);
+  assert.match(palace, /'South avant-corps window'/);
+  assert.match(palace, /'South avant-corps ground window'/);
+});
+
 testCase('every piano nobile wing opening has its iron balconette inside the continuous balcony', () => {
   assert.ok(!palace.includes('i % 2 === 0'), 'no more scattered every-other-bay balconettes');
   assert.match(palace, /'Wing balcony rail'/);

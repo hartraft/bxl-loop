@@ -2044,6 +2044,21 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     }
     box(g, 102, 26, 12, 0, 5, -54, stone, 'Palace rear range closing the Cour d’honneur');
     box(g, 103, 0.8, 12.6, 0, 18.4, -54, ashlar, 'Rear range cornice');
+
+    // The central wing is marked by a projection to the north AND south ("avant-corps
+    // au Nord et au Sud") — the rear avant-corps houses the Throne Room (Salle du
+    // Trône) in the west wing's symmetric south projection.
+    box(g, 26, 28, 7, 0, 6, -60, stone, 'Palace south rear avant-corps (Throne Room)');
+    box(g, 27, 0.9, 7.8, 0, 20.4, -60, ashlar, 'South avant-corps cornice');
+    const southPed = new THREE.Shape();
+    southPed.moveTo(-8, 0); southPed.lineTo(8, 0); southPed.lineTo(0, 4.2); southPed.closePath();
+    const sp = mesh(g, new THREE.ShapeGeometry(southPed), ashlar, 0, 20.85, -63.6, 'South avant-corps pediment');
+    sp.rotation.y = Math.PI;
+    for (let i = 0; i < 4; i++) {
+      const wx = -9 + i * 6;
+      box(g, 2.0, 3.6, 0.2, wx, 13.5, -63.5, glass, 'South avant-corps window');
+      box(g, 2.0, 2.8, 0.2, wx, 7.0, -63.5, glass, 'South avant-corps ground window');
+    }
   });
     addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');
