@@ -5187,6 +5187,17 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       asDn.setMatrixAt(asDi++, asDd.matrix);
     }
     asDn.count = asDi; asDn.name = 'Academy stables cornice dentil'; g.add(asDn);
+
+    // A balustrade crowns the BELvue attic storey.
+    const bvAb = new THREE.InstancedMesh(new THREE.BoxGeometry(0.12, 0.6, 0.12), materials.warmStone, 20);
+    const bvAd = new THREE.Object3D();
+    let bvAi = 0;
+    for (let ai = 0; ai < 20; ai++) {
+      bvAd.position.set(150.5 + ai * 1.9, 22.75, 36); bvAd.rotation.y = 0; bvAd.updateMatrix();
+      bvAb.setMatrixAt(bvAi++, bvAd.matrix);
+    }
+    bvAb.count = bvAi; bvAb.name = 'BELvue attic baluster'; g.add(bvAb);
+    box(g, 38, 0.1, 0.35, 168, 23.1, 36, materials.warmStone, 'BELvue attic balustrade rail');
   });
     addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');
