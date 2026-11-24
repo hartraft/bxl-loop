@@ -2887,6 +2887,13 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       bvBal.setMatrixAt(bvi++, bvd.matrix);
     }
     bvBal.count = bvi; bvBal.name = 'BELvue roof terrace balustrade'; g.add(bvBal);
+    // Busts of Roman emperors ring the main pond — the park's original emperor busts
+    // (destroyed by sans-culottes in 1793, later replaced by copies).
+    for (let bk = 0; bk < 8; bk++) {
+      const ba = bk * Math.PI / 4 + Math.PI / 8;
+      box(g, 0.9, 1.1, 0.9, Math.cos(ba) * 17.6, 1.05, 150 + Math.sin(ba) * 17.6, materials.paleStone, 'Pond emperor bust pedestal');
+      mesh(g, new THREE.SphereGeometry(0.42, 10, 8), materials.paleStone, Math.cos(ba) * 17.6, 2.0, 150 + Math.sin(ba) * 17.6, 'Park Roman emperor bust');
+    }
   });
     addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');

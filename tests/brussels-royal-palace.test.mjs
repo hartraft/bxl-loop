@@ -871,3 +871,9 @@ testCase('the central garden gate is crowned by a pediment and gilded urn', () =
   assert.match(palace, /'Garden central gate pediment'/);
   assert.match(palace, /'Garden central gate gilded urn'/);
 });
+
+testCase('busts of Roman emperors ring the main pond of the park', () => {
+  assert.match(palace, /Busts of Roman emperors ring the main pond/);
+  assert.match(palace, /'Park Roman emperor bust'/);
+  assert.match(palace, /for \(let bk = 0; bk < 8; bk\+\+\)/);
+});
