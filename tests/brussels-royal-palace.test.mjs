@@ -68,6 +68,13 @@ testCase('the front garden holds the real three sunken parterres (central on the
   assert.match(palace, /\{ x: 38, w: 34, z: 12\.4, d: 2\.6 \}/);
 });
 
+testCase('rusticated corner quoins chain the central corps and terminal pavilions', () => {
+  assert.match(palace, /corner quoins/);
+  assert.match(palace, /'Palace corner quoins'/);
+  assert.match(palace, /quoins\.count = qi/);
+  assert.match(palace, /new THREE\.InstancedMesh\(new THREE\.BoxGeometry\(0\.5, 0\.8, 0\.34\), ashlar, 200\)/);
+});
+
 testCase('wing ends and pavilion outer faces carry windows (no blank gable ends)', () => {
   assert.match(palace, /'Wing end window \(piano nobile\)'/);
   assert.match(palace, /'Wing end window \(ground\)'/);
