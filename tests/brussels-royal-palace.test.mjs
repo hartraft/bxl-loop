@@ -1855,3 +1855,7 @@ testCase('side gates open in the east and west park railings', () => {
   assert.match(palace, /'Park side gate pier'/);
   assert.match(palace, /'Park side gate lintel'/);
 });
+
+testCase('low walls border the central garden walk', () => {
+  assert.match(palace, /'Garden walk low wall'/);
+});

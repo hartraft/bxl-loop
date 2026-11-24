@@ -4025,6 +4025,11 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     for (const side of wingXs) {
       box(g, wingW, 0.1, 0.15, side, 7.86, facadeZ + 1.08, moulding, 'Wing balcony slab edge');
     }
+
+    // Low walls border the central garden walk.
+    for (const side of [-1, 1]) {
+      box(g, 0.25, 0.5, 3.2, side * 2.1, 0.25, 12.4, ashlar, 'Garden walk low wall');
+    }
   });
   addLandmark('palaceSurroundings', (g) => {
     // Real-world sources: en/fr Wikipedia (Royal Palace of Brussels, Brussels Park, Place des Palais,
