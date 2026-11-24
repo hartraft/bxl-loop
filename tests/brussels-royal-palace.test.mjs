@@ -859,3 +859,9 @@ testCase('the pavilion outer faces are capped by an end cornice', () => {
   assert.match(palace, /pavilion outer faces are capped/);
   assert.match(palace, /'Pavilion outer cornice'/);
 });
+
+testCase('the BELvue roof carries a small balustraded terrace', () => {
+  assert.match(palace, /balustraded terrace around its apex/);
+  assert.match(palace, /'BELvue roof terrace balustrade'/);
+  assert.match(palace, /bvBal\.count = bvi/);
+});

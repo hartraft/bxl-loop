@@ -2870,6 +2870,16 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     }
     agGrille.count = agi; agGrille.name = 'Academy garden north grille'; g.add(agGrille);
     box(g, 65, 0.12, 0.3, -168, 2.66, 66, materials.dark, 'Academy garden north grille rail');
+    // The BELvue hipped roof is topped by a small balustraded terrace around its apex.
+    const bvBal = new THREE.InstancedMesh(new THREE.BoxGeometry(0.24, 0.8, 0.24), materials.paleStone, 12);
+    const bvd = new THREE.Object3D();
+    let bvi = 0;
+    for (let k = 0; k < 12; k++) {
+      const a = k * Math.PI / 6;
+      bvd.position.set(168 + Math.cos(a) * 4.5, 29.6, 36 + Math.sin(a) * 4.5); bvd.rotation.y = 0; bvd.updateMatrix();
+      bvBal.setMatrixAt(bvi++, bvd.matrix);
+    }
+    bvBal.count = bvi; bvBal.name = 'BELvue roof terrace balustrade'; g.add(bvBal);
   });
     addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');
