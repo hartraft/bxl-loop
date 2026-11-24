@@ -1813,3 +1813,7 @@ testCase('a door with lintel pierces the west wing of the Palace of the Nation',
   assert.match(palace, /'Palace of the Nation wing door'/);
   assert.match(palace, /'Palace of the Nation wing door lintel'/);
 });
+
+testCase('return caps close the ends of the stylobate edge cap', () => {
+  assert.match(palace, /'Stylobate edge cap return'/);
+});
