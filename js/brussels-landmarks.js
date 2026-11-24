@@ -4812,6 +4812,12 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     for (const ax of [-11, 0, 11]) {
       mesh(g, new THREE.SphereGeometry(0.45, 10, 8), materials.warmStone, ax, ax === 0 ? 21.6 : 15.6, 401.7, 'Palace of the Nation pediment acroterion');
     }
+
+    // Gate piers with caps flank the Royal Stables gatehouse door.
+    for (const side of [-1, 1]) {
+      box(g, 0.9, 7.2, 0.7, -70 + side * 2.6, 3.6, -68.75, materials.paleStone, 'Royal Stables gate pier');
+      box(g, 1.1, 0.3, 0.9, -70 + side * 2.6, 7.35, -68.75, materials.warmStone, 'Royal Stables gate pier cap');
+    }
   });
     addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');

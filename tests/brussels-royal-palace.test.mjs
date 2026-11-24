@@ -1524,3 +1524,8 @@ testCase('keystones crown the Academy Palace ground-floor arched windows', () =>
 testCase('acroteria stand on the Palace of the Nation pediment', () => {
   assert.match(palace, /'Palace of the Nation pediment acroterion'/);
 });
+
+testCase('gate piers with caps flank the Royal Stables gate door', () => {
+  assert.match(palace, /'Royal Stables gate pier'/);
+  assert.match(palace, /'Royal Stables gate pier cap'/);
+});
