@@ -222,6 +222,11 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     arcade.castShadow = lintels.castShadow = true;
     root.add(arcade, lintels);
     box(root, width - 0.4, 0.2, 0.3, 0, 3.6, 0.36, materials.warmStone, name + ' arcade string course');
+    // Arched door leaf with a gilded fanlight in the centre arcade bay of every house.
+    box(root, 0.95, 2.5, 0.12, 0, 1.55, 0.42, materials.dark, name + ' arched door leaf');
+    const fanlight = cylinder(root, 0.4, 0.4, 0.08, 0, 3.02, 0.44, materials.gold, 16);
+    fanlight.name = name + ' door fanlight';
+    fanlight.rotation.x = Math.PI / 2;
     if (terrace) {
       // Café awning sloping over each ground-floor arcade bay — the real square's
       // brasseries and cafés sit under canvas awnings on the Grand-Place.

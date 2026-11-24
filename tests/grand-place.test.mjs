@@ -193,6 +193,13 @@ test('guild-house windows are divided by stone cross-mullions (croisées)', () =
   assert.ok(square.includes('root.add(windows, frames, mullionV, mullionH)'));
 });
 
+test('every guild house has an arched door leaf with a gilded fanlight in its centre bay', () => {
+  assert.ok(square.includes(" arched door leaf'"));
+  assert.ok(square.includes(" door fanlight'"));
+  assert.ok(square.includes('box(root, 0.95, 2.5, 0.12, 0, 1.55, 0.42, materials.dark, name +'));
+  assert.ok(square.includes('fanlight.rotation.x = Math.PI / 2'));
+});
+
 test('guild houses have the real arcaded ground floors and gilded gable emblems', () => {
   assert.ok(square.includes(' ground-floor arcade'));
   assert.ok(square.includes(' arcade lintel'));
