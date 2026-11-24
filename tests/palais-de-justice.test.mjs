@@ -64,6 +64,14 @@ test('the massing matches the real hors tout 186 x 177 m podium on the 160 x 150
   assert.ok(palace.includes('for (const x of [-66, 66]) for (const z of [-61.5, 64])'));
 });
 
+test('the west/east ranges carry the window rhythm and the south facade a pedimented portal', () => {
+  assert.ok(palace.includes("'Side range lower window'"));
+  assert.ok(palace.includes("'Side range paired pilaster'"));
+  assert.ok(palace.includes("'South avant-corps rue de Wynants'"));
+  assert.ok(palace.includes("'South portal pediment rue de Wynants'"));
+  assert.ok(palace.includes("'South portal door rue de Wynants'"));
+});
+
 test('the side facades carry axial portals with peristyles and stairs on Minimes and aux Laines', () => {
   assert.ok(palace.includes("'Side entrance landing ' + street"));
   assert.ok(palace.includes("'Side axial portal ' + street"));

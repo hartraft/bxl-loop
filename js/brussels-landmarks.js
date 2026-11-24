@@ -1796,6 +1796,21 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
         box(g, 0.5, 29, 0.5, x + 1.7, 18, side < 0 ? -75.2 : 75.2, light, 'Courthouse paired pilaster east');
       }
     }
+    // The west and east ranges carry the same window rhythm along their street faces.
+    for (const x of [80.2, -80.2]) {
+      for (let i = 0; i < 15; i++) {
+        const z = -66 + i * 9.4;
+        box(g, 0.32, 10.5, 2.8, x, 11.5, z, recess, 'Side range lower window');
+        box(g, 0.32, 9.5, 2.8, x, 25, z, recess, 'Side range upper window');
+        box(g, 0.5, 29, 0.5, x, 18, z - 1.7, light, 'Side range paired pilaster');
+      }
+    }
+    // South facade above rue de Wynants: a pedimented central avant-corps with its own portal.
+    box(g, 24, 6, 3, 0, 8, -76.5, stone, 'South avant-corps rue de Wynants');
+    const sp = new THREE.Shape();
+    sp.moveTo(-13, 0); sp.lineTo(0, 6); sp.lineTo(13, 0); sp.closePath();
+    mesh(g, new THREE.ExtrudeGeometry(sp, { depth: 2, bevelEnabled: false }), light, 0, 11, -76.5, 'South portal pediment rue de Wynants');
+    box(g, 6, 9, 0.8, 0, 7.5, -75.8, bronze, 'South portal door rue de Wynants');
     // Eight courts: low paved floors and arcaded inner galleries make the plan readable from above.
     for (let row = 0; row < 2; row++) for (let col = 0; col < 4; col++) {
       const x = -45 + col * 30;
