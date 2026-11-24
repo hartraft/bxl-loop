@@ -4633,6 +4633,12 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     // A small dovecote crowns the Royal Stables hipped roof.
     cylinder(g, 1.2, 1.5, 2.5, -70, 20.2, -85, materials.paleStone, 10).name = 'Royal Stables dovecote';
     mesh(g, new THREE.ConeGeometry(1.6, 1.2, 10), materials.roof, -70, 21.9, -85, 'Royal Stables dovecote roof');
+
+    // A stone plinth carries the park perimeter railing on all four sides.
+    box(g, 344, 0.3, 0.5, 0, 0.15, 62, materials.paleStone, 'Park south railing plinth');
+    box(g, 344, 0.3, 0.5, 0, 0.15, 402, materials.paleStone, 'Park north railing plinth');
+    box(g, 0.5, 0.3, 340, -172, 0.15, 232, materials.paleStone, 'Park west railing plinth');
+    box(g, 0.5, 0.3, 340, 172, 0.15, 232, materials.paleStone, 'Park east railing plinth');
   });
     addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');

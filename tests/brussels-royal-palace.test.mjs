@@ -1376,3 +1376,10 @@ testCase('a dovecote crowns the Royal Stables hipped roof', () => {
   assert.match(palace, /'Royal Stables dovecote'/);
   assert.match(palace, /'Royal Stables dovecote roof'/);
 });
+
+testCase('a stone plinth carries the park perimeter railing on all four sides', () => {
+  assert.match(palace, /'Park south railing plinth'/);
+  assert.match(palace, /'Park north railing plinth'/);
+  assert.match(palace, /'Park west railing plinth'/);
+  assert.match(palace, /'Park east railing plinth'/);
+});
