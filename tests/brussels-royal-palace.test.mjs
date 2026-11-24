@@ -2165,3 +2165,7 @@ testCase('a low wall closes the south side of the Academy stables yard', () => {
 testCase('end blocks close both ends of the portico frieze triglyph run', () => {
   assert.match(palace, /'Triglyph end block'/);
 });
+
+testCase('stone steps lead down to the octagonal basin rim on its south side', () => {
+  assert.match(palace, /'Octagonal basin access step'/);
+});
