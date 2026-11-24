@@ -1,7 +1,7 @@
 // Brussels-specific, procedural landmark geometry. Kept behind the Brussels city selector.
 import * as THREE from 'three/webgpu';
 import { GEO } from './brx-geodata.js';
-import { BRUSSELS_LANDMARK_ANCHORS, MONT_DES_ARTS_ROTATION, PALAIS_DE_JUSTICE_ROTATION, brusselsToWorld } from './brussels-frame.js';
+import { BRUSSELS_LANDMARK_ANCHORS, MONT_DES_ARTS_ROTATION, PALAIS_DE_JUSTICE_ROTATION, BOURSE_ROTATION, brusselsToWorld } from './brussels-frame.js';
 import { foundationSkirtBottom } from './brussels-terrain.js';
 import { createBrusselsLandmarkColliders, splitMontDesArtsWall } from './brussels-colliders.js';
 
@@ -126,6 +126,7 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     if (id === 'palaisDeJustice') root.rotation.y = PALAIS_DE_JUSTICE_ROTATION; // monumental entrance faces Place Poelaert (facade normal bearing ~42 deg)
     if (id === 'montDesArts') root.rotation.y = MONT_DES_ARTS_ROTATION; // local +Z points southeast; the garden descends northwest
     if (id === 'cinquantenaire') root.rotation.y = Math.PI / 2; // triumphal axis east-west; pavilions north/south
+    if (id === 'bourse' || id === 'bourseSurroundings') root.rotation.y = BOURSE_ROTATION; // main facade faces Place de la Bourse (bearing ~306 deg)
     build(root);
     colliders.push(...createBrusselsLandmarkColliders(id, p, root.rotation.y, root.position.y));
     group.add(root);
@@ -4605,6 +4606,278 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     for (const x of [-16, 16]) {
       cylinder(g, 3, 4, 22, x, 11, -7, materials.paleStone, 12);
       mesh(g, new THREE.ConeGeometry(3.2, 6, 8), materials.roof, x, 25, -7);
+    }
+  });
+
+  // ---- Bruxelles Bourse / Beurspaleis (Palais de la Bourse, Leon-Pierre Suys, 1868-1873) ----
+  // Local frame: facade front = +Z toward the Place de la Bourse; the anchor is the building
+  // centroid (OSM way 13494623) and BOURSE_ROTATION points local +Z at bearing ~306 deg, so the
+  // main facade terminates the perspective of the rue Auguste Orts across the square.
+  // Greek-cross plan on a high blue-stone socle; a peristyle of eight Corinthian columns under a
+  // triangular pediment dated 1873; a central dome on four piers with paired Corinthian
+  // pilasters, glazed since 1893, crowned by a circular lantern.
+  function pedimentPrism(parent, w, h, d, x, y, z, material, name = '') {
+    const shape = new THREE.Shape();
+    shape.moveTo(-w / 2, 0); shape.lineTo(w / 2, 0); shape.lineTo(0, h); shape.closePath();
+    const geo = new THREE.ExtrudeGeometry(shape, { depth: d, bevelEnabled: false });
+    geo.translate(0, 0, -d / 2);
+    return mesh(parent, geo, material, x, y, z, name);
+  }
+  function corinthColumn(parent, x, y, z, h = 14, r = 0.8, name = 'Corinthian column') {
+    const col = new THREE.Group();
+    col.name = name;
+    col.position.set(x, y, z);
+    box(col, r * 2.6, 0.5, r * 2.6, 0, 0.25, 0, materials.warmStone, name + ' base');
+    cylinder(col, r * 0.88, r, h, 0, 0.5 + h / 2, 0, materials.paleStone, 12);
+    box(col, r * 2.2, 0.3, r * 2.2, 0, h + 0.5, 0, materials.warmStone, name + ' capital');
+    box(col, r * 2.9, 0.35, r * 2.9, 0, h + 0.85, 0, materials.warmStone, name + ' abacus');
+    parent.add(col);
+    return col;
+  }
+  addLandmark('bourse', (g) => {
+    // Round 1: the landmark frame itself — anchor + facade bearing ~306 deg are wired in
+    // addLandmark via BOURSE_ROTATION (see js/brussels-frame.js); the builder starts here.
+    // Round 2: the high socle (soubassement) is blue stone (petit granit) — "a Bruxelles, le
+    // soubassement est d'ordinaire en pierre bleue" (heritage inventory A001/31241) — coursed
+    // ashlar in refends, i.e. with incised joint grooves.
+    box(g, 106, 5, 82, 0, 2.5, 0, materials.blueStone, 'Bourse blue-stone socle (soubassement en pierre bleue)');
+    {
+      const refends = new THREE.InstancedMesh(new THREE.BoxGeometry(0.07, 4.7, 0.05), materials.dark, 27);
+      const dummy = new THREE.Object3D();
+      for (let i = 0; i < 27; i++) {
+        dummy.position.set(-52 + i * 4, 2.5, 41.03);
+        dummy.updateMatrix();
+        refends.setMatrixAt(i, dummy.matrix);
+      }
+      refends.count = 27;
+      refends.name = 'Bourse socle refend joint grooves (calcaire appareille en refends)';
+      refends.castShadow = true;
+      g.add(refends);
+      const course = mesh(g, new THREE.BoxGeometry(106.2, 0.08, 0.06), materials.dark, 0, 2.5, 41.03, 'Bourse socle horizontal course groove');
+      course.castShadow = false;
+    }
+    // Round 3: the monumental stair (escalier monumental) climbs from the square to the peristyle.
+    {
+      const treads = new THREE.InstancedMesh(new THREE.BoxGeometry(26, 0.25, 0.75), materials.pavingA, 20);
+      const dummy = new THREE.Object3D();
+      for (let i = 0; i < 20; i++) {
+        dummy.position.set(0, i * 0.25 + 0.125, 47.6 - i * 0.7);
+        dummy.updateMatrix();
+        treads.setMatrixAt(i, dummy.matrix);
+      }
+      treads.count = 20;
+      treads.name = 'Bourse monumental stair treads (escalier monumental)';
+      treads.castShadow = true;
+      treads.receiveShadow = true;
+      g.add(treads);
+      box(g, 1.4, 5.4, 15.5, -13.7, 2.7, 41.3, materials.blueStone, 'Bourse stair west cheek wall');
+      box(g, 1.4, 5.4, 15.5, 13.7, 2.7, 41.3, materials.blueStone, 'Bourse stair east cheek wall');
+      box(g, 26, 0.3, 7, 0, 4.9, 34, materials.pavingEdge, 'Bourse stair top landing (portico floor)');
+    }
+    // Round 4: the peristyle — eight Corinthian columns on a stylobate in front of the cella.
+    box(g, 41, 0.4, 4.5, 0, 5.2, 36, materials.paleStone, 'Bourse peristyle stylobate');
+    const peristyleX = [-18, -12.86, -7.71, -2.57, 2.57, 7.71, 12.86, 18];
+    for (let i = 0; i < 8; i++) corinthColumn(g, peristyleX[i], 5.4, 36, 14, 0.8, 'Bourse peristyle Corinthian column ' + (i + 1));
+    // Round 5: the cella wall behind the peristyle, pierced by three doors — the central one
+    // arched with a keystone, in the recess of an aedicule supported by two columns.
+    box(g, 100, 15, 4, 0, 12.5, 28, materials.paleStone, 'Bourse cella wall (pierre blanche, neo-Renaissance)');
+    box(g, 5, 8, 0.6, 0, 9, 30.2, materials.dark, 'Bourse central arched door');
+    {
+      const arch = mesh(g, new THREE.CylinderGeometry(2.5, 2.5, 0.6, 16, 1, false, 0, Math.PI), materials.dark, 0, 13, 30.2, 'Bourse central door arch');
+      arch.rotation.z = Math.PI / 2;
+    }
+    mesh(g, new THREE.BoxGeometry(0.7, 1.1, 0.25), materials.warmStone, 0, 15.6, 30.45, 'Bourse central door keystone');
+    corinthColumn(g, -3.6, 5.4, 31, 8, 0.45, 'Bourse aedicule column west');
+    corinthColumn(g, 3.6, 5.4, 31, 8, 0.45, 'Bourse aedicule column east');
+    box(g, 9, 1.1, 1.6, 0, 13.7, 30.8, materials.paleStone, 'Bourse aedicule entablature over central door');
+    box(g, 3.5, 6, 0.6, -10, 8, 30.2, materials.dark, 'Bourse lateral door west');
+    box(g, 3.5, 6, 0.6, 10, 8, 30.2, materials.dark, 'Bourse lateral door east');
+    // Round 6: the vast entablature over the columns, its frieze ornamented with a garland of
+    // flowers and fruits — the symbol of Abundance (Reflexcity encyclopedia).
+    box(g, 104, 3.5, 9, 0, 21.75, 32.5, materials.paleStone, 'Bourse entablature');
+    box(g, 104, 0.8, 9.3, 0, 20.4, 32.5, materials.warmStone, 'Bourse architrave band');
+    {
+      const fruits = new THREE.InstancedMesh(new THREE.SphereGeometry(0.3, 8, 6), materials.ochre, 41);
+      const leaves = new THREE.InstancedMesh(new THREE.BoxGeometry(0.5, 0.28, 0.1), materials.green, 41);
+      const dummy = new THREE.Object3D();
+      for (let i = 0; i < 41; i++) {
+        const x = -50 + i * 2.5;
+        dummy.position.set(x, 21.9, 37.05);
+        dummy.updateMatrix();
+        fruits.setMatrixAt(i, dummy.matrix);
+        dummy.position.set(x + 1.25, 22.05, 37.05);
+        dummy.updateMatrix();
+        leaves.setMatrixAt(i, dummy.matrix);
+      }
+      fruits.count = 41;
+      fruits.name = 'Bourse frieze garland of abundance - fruits (guirlande de fruits)';
+      fruits.castShadow = true;
+      g.add(fruits);
+      leaves.count = 41;
+      leaves.name = 'Bourse frieze garland of abundance - flowers and leaves (fleurs et feuilles)';
+      leaves.castShadow = true;
+      g.add(leaves);
+      const modillions = new THREE.InstancedMesh(new THREE.BoxGeometry(0.4, 0.5, 0.4), materials.warmStone, 52);
+      for (let i = 0; i < 52; i++) {
+        dummy.position.set(-51 + i * 2, 20.15, 36.9);
+        dummy.updateMatrix();
+        modillions.setMatrixAt(i, dummy.matrix);
+      }
+      modillions.count = 52;
+      modillions.name = 'Bourse cornice modillions (consoles)';
+      modillions.castShadow = true;
+      g.add(modillions);
+    }
+    // Round 7: the triangular pediment dated 1873; its tympanum is sculpted with la Belgique
+    // surrounded by two geniuses symbolising Commerce and Industry (Joseph Jacquet). Above the
+    // middle door, the archivolt encircling the clock carries the arms of Brussels, flanked by
+    // two winged figures of Good and Evil (De Haen).
+    pedimentPrism(g, 38, 8.5, 9, 0, 23.5, 32.5, materials.paleStone, 'Bourse triangular pediment dated 1873');
+    {
+      const belgique = new THREE.Group();
+      belgique.name = 'Bourse tympanum la Belgique (Joseph Jacquet)';
+      belgique.position.set(0, 26.2, 36.6);
+      box(belgique, 1.3, 2.4, 0.5, 0, 1.2, 0, materials.warmStone, 'Belgique figure body');
+      mesh(belgique, new THREE.SphereGeometry(0.45, 10, 8), materials.warmStone, 0, 2.7, 0, 'Belgique figure head');
+      g.add(belgique);
+      for (const sx of [-1, 1]) {
+        const genius = new THREE.Group();
+        genius.name = 'Bourse tympanum genius ' + (sx < 0 ? 'Commerce' : 'Industrie');
+        genius.position.set(sx * 9, 25.4, 36.6);
+        box(genius, 1, 1.8, 0.4, 0, 0.9, 0, materials.warmStone, 'genius body');
+        mesh(genius, new THREE.SphereGeometry(0.35, 8, 6), materials.warmStone, 0, 2.1, 0, 'genius head');
+        box(genius, 0.9, 0.25, 0.25, sx * 0.7, 1.7, 0.15, materials.warmStone, 'genius wing');
+        g.add(genius);
+      }
+      mesh(g, new THREE.BoxGeometry(2.6, 3.2, 0.35), materials.gold, 0, 18.6, 30.35, 'Bourse archivolt arms of Brussels (armes de Bruxelles)');
+      const ring = mesh(g, new THREE.CylinderGeometry(4.3, 4.3, 0.5, 20, 1, false, 0, Math.PI), materials.paleStone, 0, 15.9, 30.35, 'Bourse central archivolt encircling the clock');
+      ring.rotation.z = Math.PI / 2;
+      const clock = mesh(g, new THREE.CylinderGeometry(1.3, 1.3, 0.35, 20), materials.gold, 0, 15.9, 30.6, 'Bourse facade clock above the middle door');
+      clock.rotation.x = Math.PI / 2;
+      box(g, 0.12, 1.0, 0.06, 0, 15.9, 30.8, materials.dark, 'Bourse clock hour hand');
+      for (const sx of [-1, 1]) {
+        const winged = new THREE.Group();
+        winged.name = 'Bourse Bien/Mal winged figure (De Haen) ' + (sx < 0 ? 'Bien' : 'Mal');
+        winged.position.set(sx * 3.4, 15.9, 30.7);
+        box(winged, 0.7, 1.6, 0.3, 0, 0.8, 0, materials.bronze, 'winged figure body');
+        mesh(winged, new THREE.SphereGeometry(0.3, 8, 6), materials.bronze, 0, 1.8, 0, 'winged figure head');
+        box(winged, 0.8, 0.2, 0.2, sx * 0.55, 1.4, 0.1, materials.bronze, 'winged figure wing');
+        g.add(winged);
+      }
+      mesh(g, new THREE.BoxGeometry(2.6, 1.0, 0.25), materials.gold, 0, 32.2, 37.2, 'Bourse pediment date plaque 1873');
+    }
+    // Round 8: the Greek-cross arms and four corner pavilions around the central block, each
+    // arm ending in a pedimented facade; the lateral facades (rue Henri Maus, rue de la Bourse)
+    // were opened up with round-arched arcades (Jules Brunfaut 1892-1898).
+    box(g, 34, 21, 21, 0, 15.5, 31, materials.paleStone, 'Bourse front arm');
+    box(g, 34, 21, 21, 0, 15.5, -31, materials.paleStone, 'Bourse rear arm (rue du Midi side)');
+    box(g, 21, 21, 34, -42, 15.5, 0, materials.paleStone, 'Bourse west arm (rue Henri Maus)');
+    box(g, 21, 21, 34, 42, 15.5, 0, materials.paleStone, 'Bourse east arm (rue de la Bourse)');
+    box(g, 44, 25, 44, 0, 17.5, 0, materials.paleStone, 'Bourse central block');
+    for (const sx of [-1, 1]) for (const sz of [-1, 1]) {
+      box(g, 22, 19, 20, sx * 42, 14.5, sz * 31, materials.paleStone, 'Bourse corner pavilion');
+      pedimentPrism(g, 22, 4, 20, sx * 42, 24, sz * 31, materials.paleStone, 'Bourse corner pavilion pediment');
+    }
+    pedimentPrism(g, 34, 5, 8, 0, 26, 38.5, materials.paleStone, 'Bourse front arm end pediment');
+    pedimentPrism(g, 34, 5, 8, 0, 26, -38.5, materials.paleStone, 'Bourse rear arm end pediment (curved pediment with Asie/Afrique groups by Van Rasbourg/Rodin)');
+    {
+      const arcades = new THREE.InstancedMesh(new THREE.BoxGeometry(3.4, 9, 0.5), materials.dark, 24);
+      const dummy = new THREE.Object3D();
+      let n = 0;
+      for (const wx of [-48.5, -42, -35.5]) for (let i = 0; i < 8; i++) {
+        dummy.position.set(wx, 12, -14 + i * 4.6);
+        dummy.updateMatrix();
+        arcades.setMatrixAt(n++, dummy.matrix);
+      }
+      for (const ex of [48.5, 42, 35.5]) for (let i = 0; i < 8; i++) {
+        dummy.position.set(ex, 12, -14 + i * 4.6);
+        dummy.updateMatrix();
+        arcades.setMatrixAt(n++, dummy.matrix);
+      }
+      arcades.count = n;
+      arcades.name = 'Bourse lateral facade round-arched arcades (facades ajourees, Brunfaut 1892-1898)';
+      arcades.castShadow = true;
+      g.add(arcades);
+    }
+    // Round 9: the central dome — four massive piers adorned with paired Corinthian pilasters
+    // (bundled Corinthian pilasters), a high drum under a richly ornamented entablature, the
+    // original stucco vaulting replaced by curved glazing in 1893, and a circular lantern
+    // with a top ornament (bruxellesmabelle.net; heritage inventory A001/31241).
+    for (const sx of [-1, 1]) for (const sz of [-1, 1]) {
+      box(g, 7, 25, 7, sx * 11, 17.5, sz * 11, materials.paleStone, 'Bourse dome pier');
+      cylinder(g, 0.5, 0.55, 22, sx * 11 + sx * 3.6, 16, sz * 11, materials.paleStone, 10);
+      cylinder(g, 0.5, 0.55, 22, sx * 11, 16, sz * 11 + sz * 3.6, materials.paleStone, 10);
+    }
+    box(g, 26, 8, 26, 0, 34, 0, materials.paleStone, 'Bourse dome drum on high socle');
+    box(g, 27.5, 1.6, 27.5, 0, 38.8, 0, materials.warmStone, 'Bourse dome richly ornamented entablature');
+    mesh(g, new THREE.SphereGeometry(14, 24, 12, 0, Math.PI * 2, 0, Math.PI / 2), materials.glass, 0, 39.6, 0, 'Bourse glazed dome (verriere, curved glazing since 1893)');
+    {
+      const ribs = new THREE.InstancedMesh(new THREE.BoxGeometry(0.5, 13.5, 0.5), materials.blueStone, 8);
+      const dummy = new THREE.Object3D();
+      for (let i = 0; i < 8; i++) {
+        const a = i * Math.PI / 4;
+        dummy.position.set(Math.sin(a) * 9.9, 46.3, Math.cos(a) * 9.9);
+        dummy.rotation.set(Math.cos(a) * 0.72, 0, -Math.sin(a) * 0.72);
+        dummy.updateMatrix();
+        ribs.setMatrixAt(i, dummy.matrix);
+      }
+      ribs.count = 8;
+      ribs.name = 'Bourse dome transversal arch ribs (arcs transversaux)';
+      ribs.castShadow = true;
+      g.add(ribs);
+    }
+    cylinder(g, 3.8, 4.6, 7, 0, 53, 0, materials.paleStone, 16, 'Bourse circular lantern crowning the dome');
+    mesh(g, new THREE.ConeGeometry(1.6, 3.2, 12), materials.gold, 0, 60, 0, 'Bourse lantern top ornament (finial)');
+  });
+  addLandmark('bourseSurroundings', (g) => {
+    // Round 10: the Place de la Bourse itself — created with the covering of the Senne
+    // (1867-1871), pedestrianised since 29 June 2015 and repaved on that occasion; the second
+    // most important square of Brussels after the Grand-Place (Wikipedia EN/FR).
+    box(g, 130, 0.35, 92, 0, -0.175, 88, materials.pavingA, 'Place de la Bourse paved square (repaved 2015)');
+    {
+      const setts = new THREE.InstancedMesh(new THREE.BoxGeometry(1.6, 0.06, 1.6), materials.pavingB, 15 * 32);
+      const dummy = new THREE.Object3D();
+      let n = 0;
+      for (let row = 0; row < 15; row++) for (let col = 0; col < 32; col++) {
+        dummy.position.set(-62 + col * 4 + (row % 2) * 2, 0.02, 44 + row * 6);
+        dummy.updateMatrix();
+        setts.setMatrixAt(n++, dummy.matrix);
+      }
+      setts.count = n;
+      setts.name = 'Place de la Bourse sett paving courses (pavage)';
+      setts.receiveShadow = true;
+      g.add(setts);
+      box(g, 130, 0.22, 1.1, 0, 0.05, 41.5, materials.pavingEdge, 'Place de la Bourse kerb at the stair foot');
+      box(g, 130, 0.22, 1.1, 0, 0.05, 134.5, materials.pavingEdge, 'Place de la Bourse kerb at the boulevard');
+      box(g, 1.1, 0.22, 93, -65.5, 0.05, 88, materials.pavingEdge, 'Place de la Bourse west kerb');
+      box(g, 1.1, 0.22, 93, 65.5, 0.05, 88, materials.pavingEdge, 'Place de la Bourse east kerb');
+    }
+    // The Boulevard Anspach crosses the square halfway; car-free between the Place de la
+    // Bourse and De Brouckere since 29 June 2015 (Le Pietonnier), with embedded planters
+    // (bacs encastres), benches, fountains, bike arches, bins and new lighting.
+    box(g, 170, 0.3, 18, 0, -0.15, 122, materials.pavingB, 'Boulevard Anspach pedestrian strip (car-free since 29 June 2015)');
+    {
+      const planters = new THREE.InstancedMesh(new THREE.BoxGeometry(6, 0.55, 2.2), materials.pavingEdge, 12);
+      const dummy = new THREE.Object3D();
+      for (let i = 0; i < 12; i++) {
+        dummy.position.set(-77 + i * 14, 0.28, 118.5);
+        dummy.updateMatrix();
+        planters.setMatrixAt(i, dummy.matrix);
+      }
+      planters.count = 12;
+      planters.name = 'Boulevard Anspach embedded tree planters (bacs encastres)';
+      planters.castShadow = true;
+      g.add(planters);
+      const trees = new THREE.InstancedMesh(new THREE.CylinderGeometry(1.6, 2.1, 4.5, 8), materials.green, 12);
+      for (let i = 0; i < 12; i++) {
+        dummy.position.set(-77 + i * 14, 2.8, 118.5);
+        dummy.updateMatrix();
+        trees.setMatrixAt(i, dummy.matrix);
+      }
+      trees.count = 12;
+      trees.name = 'Boulevard Anspach planter trees (verdure 200 m2 -> 3000 m2)';
+      trees.castShadow = true;
+      g.add(trees);
     }
   });
 

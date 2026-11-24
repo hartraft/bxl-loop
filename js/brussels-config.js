@@ -26,7 +26,8 @@ const landmarkMeta = [
   ['palaisDeJustice', 'Palace of Justice / Palais de Justice', 'Palace of Justice', 'Marolles', 110],
   ['cinquantenaire', 'Parc du Cinquantenaire / Jubelpark', 'Cinquantenaire', 'European Quarter', 150],
   ['europeanParliament', 'European Parliament', 'European Parliament', 'European Quarter', 100],
-  ['koekelbergBasilica', 'National Basilica of the Sacred Heart', 'Koekelberg Basilica', 'Koekelberg', 130]
+  ['koekelbergBasilica', 'National Basilica of the Sacred Heart', 'Koekelberg Basilica', 'Koekelberg', 130],
+  ['bourse', 'Palais de la Bourse / Beurspaleis', 'Bourse', 'Pentagon', 95]
 ];
 
 export const BRUSSELS_LANDMARKS = landmarkMeta.map(([id, name, short, district, r]) => {

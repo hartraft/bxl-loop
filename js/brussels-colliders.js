@@ -64,9 +64,52 @@ const montDesArts = [
   { name: 'carillon east pier', x: 17, z: -67, hx: 2, hz: 4, maxY: 13 }
 ];
 
+// Palais de la Bourse (Beurspaleis), Greek-cross plan on a high blue-stone socle.
+// Local +Z = main facade toward the Place de la Bourse (bearing ~306 deg); the monumental
+// stair corridor stays open on the front edge (z = 41) for x in [-13, 13].
+const bourse = [
+  // High socle retaining edges; the front edge is split around the central stair.
+  { name: 'west socle edge', x: -53, z: 0, hx: 0.9, hz: 41, maxY: 5 },
+  { name: 'east socle edge', x: 53, z: 0, hx: 0.9, hz: 41, maxY: 5 },
+  { name: 'rear socle edge', x: 0, z: -41, hx: 53, hz: 0.9, maxY: 5 },
+  { name: 'front socle edge west wing', x: -33, z: 41, hx: 20, hz: 0.9, maxY: 5 },
+  { name: 'front socle edge east wing', x: 33, z: 41, hx: 20, hz: 0.9, maxY: 5 },
+  // Peristyle cella wall behind the eight Corinthian columns.
+  { name: 'cella wall', x: 0, z: 28, hx: 50, hz: 2, maxY: 24 },
+  // The eight peristyle columns.
+  ...[-18, -12.86, -7.71, -2.57, 2.57, 7.71, 12.86, 18].map((x, i) => ({ name: 'peristyle column ' + (i + 1), x, z: 36, hx: 1.0, hz: 1.0, maxY: 21 })),
+  // Greek-cross arms and the four corner pavilions (plan ~106 x 82 m).
+  { name: 'front arm', x: 0, z: 31, hx: 17, hz: 10, maxY: 26 },
+  { name: 'rear arm', x: 0, z: -31, hx: 17, hz: 10, maxY: 26 },
+  { name: 'west arm', x: -42, z: 0, hx: 11, hz: 17, maxY: 26 },
+  { name: 'east arm', x: 42, z: 0, hx: 11, hz: 17, maxY: 26 },
+  { name: 'NW corner pavilion', x: -42, z: 31, hx: 11, hz: 10, maxY: 26 },
+  { name: 'NE corner pavilion', x: 42, z: 31, hx: 11, hz: 10, maxY: 26 },
+  { name: 'SW corner pavilion', x: -42, z: -31, hx: 11, hz: 10, maxY: 26 },
+  { name: 'SE corner pavilion', x: 42, z: -31, hx: 11, hz: 10, maxY: 26 },
+  // Dome drum and glazed cupola on the four piers.
+  { name: 'dome drum', x: 0, z: 0, hx: 13, hz: 13, maxY: 57 },
+  // The two stair-flanking lions on their pedestals on the square.
+  { name: 'bull lion pedestal', x: -14, z: 44, hx: 1.8, hz: 1.8, maxY: 3.2 },
+  { name: 'bear lion pedestal', x: 14, z: 44, hx: 1.8, hz: 1.8, maxY: 3.2 }
+];
+
+// Place de la Bourse surroundings: the 1949 corner tower (E. De Heu, replacing the Grands
+// Magasins de la Bourse burned in 1948) and the two 1884-85 eclectic apartment blocks opposite
+// the palace; the square and Boulevard Anspach stay open.
+const bourseSurroundings = [
+  { name: '1949 corner tower (rue Paul Devaux corner)', x: -62, z: 96, hx: 12, hz: 12, maxY: 42 },
+  { name: '1884-85 apartment block west', x: -30, z: 108, hx: 26, hz: 9, maxY: 24 },
+  { name: '1884-85 apartment block east', x: 30, z: 108, hx: 26, hz: 9, maxY: 24 },
+  { name: 'Orts fountain', x: -52, z: 78, hx: 1.2, hz: 1.2, maxY: 2.4 },
+  { name: 'Auguste Orts monument', x: -48, z: 72, hx: 1.5, hz: 1.5, maxY: 5 }
+];
+
 export const BRUSSELS_LANDMARK_COLLIDER_LAYOUT = Object.freeze({
   palaisDeJustice: Object.freeze(palaisDeJustice.map(Object.freeze)),
-  montDesArts: Object.freeze(montDesArts.map(Object.freeze))
+  montDesArts: Object.freeze(montDesArts.map(Object.freeze)),
+  bourse: Object.freeze(bourse.map(Object.freeze)),
+  bourseSurroundings: Object.freeze(bourseSurroundings.map(Object.freeze))
 });
 
 /** Convert local OBB descriptors into the shared world-space AABB + OBB collider format. */
