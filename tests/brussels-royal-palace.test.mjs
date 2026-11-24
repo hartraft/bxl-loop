@@ -1460,3 +1460,8 @@ testCase('urns stand along the Palace of the Nation attic balustrade', () => {
 testCase('a landing slab tops the perron at the foot of the portico', () => {
   assert.match(palace, /'Perron top landing'/);
 });
+
+testCase('a dentil course runs under the Academy Palace cornice', () => {
+  assert.match(palace, /'Academy Palace cornice dentil'/);
+  assert.match(palace, /apDn\.count = apDi/);
+});

@@ -4740,6 +4740,16 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       pnUr.setMatrixAt(pnui++, pnud.matrix);
     }
     pnUr.count = pnui; pnUr.name = 'Palace of the Nation balustrade urn'; g.add(pnUr);
+
+    // A dentil course runs under the Academy Palace cornice.
+    const apDn = new THREE.InstancedMesh(new THREE.BoxGeometry(0.24, 0.3, 0.3), materials.warmStone, 39);
+    const apDd = new THREE.Object3D();
+    let apDi = 0;
+    for (let di3 = 0; di3 < 39; di3++) {
+      apDd.position.set(-200.5 + di3 * 1.7, 17.85, 20.7); apDd.rotation.y = 0; apDd.updateMatrix();
+      apDn.setMatrixAt(apDi++, apDd.matrix);
+    }
+    apDn.count = apDi; apDn.name = 'Academy Palace cornice dentil'; g.add(apDn);
   });
     addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');
