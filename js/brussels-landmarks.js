@@ -5705,6 +5705,9 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
 
     // A cap course finishes the Royal Stables courtyard wall.
     box(g, 48, 0.12, 0.6, -70, 1.06, -98, materials.warmStone, 'Royal Stables courtyard wall cap');
+
+    // A cap course finishes the Academy stables yard wall.
+    box(g, 44, 0.12, 0.6, -168, 1.06, 116, materials.warmStone, 'Academy stables yard wall cap');
   });
     addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');
