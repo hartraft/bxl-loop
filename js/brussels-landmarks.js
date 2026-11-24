@@ -1821,6 +1821,34 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
         box(g, 0.28, 0.48, 0.18, x + dx, 5.12, facadeZ + 0.26, ashlar, 'Pavilion arcade keystone');
       }
     }
+
+    // The real roofline is a continuous stone balustrade across the whole façade —
+    // central corps and terminal pavilions included ("balustrade terminale" in front
+    // of the mansard roof). One instanced mesh for all the balusters.
+    const roofBalusters = new THREE.InstancedMesh(new THREE.BoxGeometry(0.26, 0.62, 0.26), ashlar, 90);
+    const rd = new THREE.Object3D();
+    let ri = 0;
+    for (let x = -17; x <= 17.01; x += 1.2) {
+      rd.position.set(x, 24.35, centralFace + 0.9);
+      rd.rotation.y = 0;
+      rd.updateMatrix();
+      roofBalusters.setMatrixAt(ri++, rd.matrix);
+    }
+    for (const x of [-76, 76]) {
+      for (let dx = -3.6; dx <= 3.61; dx += 1.2) {
+        rd.position.set(x + dx, 23.66, facadeZ + 0.85);
+        rd.updateMatrix();
+        roofBalusters.setMatrixAt(ri++, rd.matrix);
+      }
+    }
+    roofBalusters.count = ri;
+    roofBalusters.name = 'Palace roofline balusters';
+    roofBalusters.castShadow = true;
+    g.add(roofBalusters);
+    box(g, 35, 0.12, 0.34, 0, 24.72, centralFace + 0.9, moulding, 'Central roofline balustrade rail');
+    for (const x of [-76, 76]) {
+      box(g, 9, 0.12, 0.32, x, 24.0, facadeZ + 0.85, moulding, 'Pavilion roofline balustrade rail');
+    }
     // The real front garden (jardin d'honneur, laid out 1904–09) holds three sunken
     // parterres between the façade and the gilded railing ("trois parterres creusés"):
     // a central pair flanking the perron walk on the portico axis, plus two lateral
