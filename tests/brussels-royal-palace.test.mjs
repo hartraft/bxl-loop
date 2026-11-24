@@ -35,6 +35,15 @@ testCase('Royal Palace centre has a sculpted pediment, domed drum and Belgian fl
   assert.match(palace, /Belgian flag stripe/);
 });
 
+testCase("Suys' wrought-iron balcony parapet runs around the entire first floor", () => {
+  assert.match(palace, /wrought-iron balcony parapet surrounds the ENTIRE first floor/);
+  assert.match(palace, /'First-floor wrought-iron balcony rail'/);
+  assert.match(palace, /'First-floor wrought-iron balusters'/);
+  assert.match(palace, /ironRail\.count = ii/);
+  assert.match(palace, /ironBalusters\.count = ib/);
+  assert.match(palace, /Math\.abs\(x \+ 1\.2\) < 18 \? centralFace : facadeZ/);
+});
+
 testCase("the pediment tympanum carries Vinçotte's relief: Belgium flanked by Industry and Agriculture", () => {
   assert.match(palace, /Vin\u00e7otte's tympanum relief/);
   assert.match(palace, /'Industry relief hammer head'/);
