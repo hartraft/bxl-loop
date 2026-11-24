@@ -5224,6 +5224,9 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
 
     // A circular sett medallion marks the centre of the Place des Palais on the palace axis.
     cylinder(g, 4, 4, 0.1, 0, 0.05, 36, materials.pavingB, 24).name = 'Square axis medallion';
+
+    // A glazed fanlight crowns the BELvue entrance door.
+    mesh(g, new THREE.CircleGeometry(1.7, 16, 0, Math.PI), materials.glass, 168, 6.6, 21.9, 'BELvue door fanlight');
   });
     addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');

@@ -1830,3 +1830,7 @@ testCase('a sett medallion marks the centre of the Place des Palais', () => {
 testCase('a kerb closes the garden walk at the gilded railing', () => {
   assert.match(palace, /'Garden walk end kerb'/);
 });
+
+testCase('a glazed fanlight crowns the BELvue entrance door', () => {
+  assert.match(palace, /'BELvue door fanlight'/);
+});
