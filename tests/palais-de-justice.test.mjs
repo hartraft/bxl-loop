@@ -116,7 +116,10 @@ test('four monumental marble jurist statues stand at the foot of the grand stair
 
 test('the four corner pavilions carry hipped pavilion roofs and the north pair projects past the facade', () => {
   assert.ok(palace.includes("'Corner pavilion hipped roof (toit en pavillon)'"));
-  assert.ok(palace.includes('new THREE.ConeGeometry(21, 6.5, 4)'));
+  assert.ok(palace.includes('new THREE.ConeGeometry(21, 6.5, 4), slate'));
+  assert.ok(palace.includes('const zinc = new THREE.MeshStandardMaterial({ color: 0x6d7276, roughness: 0.6, metalness: 0.35 })'));
+  assert.ok((palace.match(/'Range zinc roof'/g) || []).length === 2, 'zinc roofs on all four ranges');
+  assert.ok(palace.includes("'Transverse gallery zinc roof'"));
   assert.ok(palace.includes('const north = z > 0;'), 'north pavilions flank the porch in forte saillie');
   assert.ok(!palace.includes("'Corner pavilion roof'"), 'no flat roof boxes remain');
 });

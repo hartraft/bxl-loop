@@ -1668,7 +1668,8 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     const stone = new THREE.MeshStandardMaterial({ color: 0xc9bda8, roughness: 0.9 });
     const light = new THREE.MeshStandardMaterial({ color: 0xd8cbb6, roughness: 0.88 });
     const weathered = new THREE.MeshStandardMaterial({ color: 0xa99b86, roughness: 0.94 });
-    const roof = new THREE.MeshStandardMaterial({ color: 0x454947, roughness: 0.9 });
+    const slate = new THREE.MeshStandardMaterial({ color: 0x2f3a3e, roughness: 0.95 });
+    const zinc = new THREE.MeshStandardMaterial({ color: 0x6d7276, roughness: 0.6, metalness: 0.35 });
     const recess = new THREE.MeshStandardMaterial({ color: 0x414342, roughness: 0.9 });
     const bronze = new THREE.MeshStandardMaterial({ color: 0x75664b, metalness: 0.42, roughness: 0.65 });
     // The real soubassement is pierre bleue (Belgian bluestone), a dark base under the pale stone.
@@ -1692,14 +1693,18 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     box(g, wingD, wingH, 116, -71.5, wingY, 0, stone, 'East range Rue aux Laines');
     for (const z of [-37.5, 0, 37.5]) {
       box(g, 126, 26, 10, 0, 15, z, light, 'Courthouse transverse gallery');
+      box(g, 127, 1.0, 10.8, 0, 26.5, z, zinc, 'Transverse gallery zinc roof');
     }
+    // Flat zinc roofs over the four perimeter ranges; the corner pavilions wear slate hips.
+    for (const z of [66.5, -66.5]) box(g, 161, 1.2, 17.8, 0, 33.6, z, zinc, 'Range zinc roof');
+    for (const x of [71.5, -71.5]) box(g, 17.8, 1.2, 117, x, 33.6, 0, zinc, 'Range zinc roof');
     // Raised corner pavilions with hipped pavilion roofs (toit en pavillon); the two north
     // pavilions flank the monumental porch in strong projection (forte saillie).
     for (const x of [-66, 66]) for (const z of [-61.5, 64]) {
       const north = z > 0;
       box(g, 28, 39, north ? 30 : 27, x, 20, z, light, 'Projecting courthouse corner pavilion');
       box(g, 30, 1.6, north ? 32 : 29, x, 40, z, weathered, 'Corner pavilion cornice');
-      mesh(g, new THREE.ConeGeometry(21, 6.5, 4), roof, x, 43.85, z, 'Corner pavilion hipped roof (toit en pavillon)');
+      mesh(g, new THREE.ConeGeometry(21, 6.5, 4), slate, x, 43.85, z, 'Corner pavilion hipped roof (toit en pavillon)');
       for (let bay = -1; bay <= 1; bay++) {
         box(g, 2.1, 8, 0.35, x + bay * 7, 18, z + (north ? 15.2 : -13.7), recess, 'Corner pavilion tall window');
       }
