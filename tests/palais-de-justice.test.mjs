@@ -52,6 +52,25 @@ test('the terrace rests on the visible retaining massif toward Wynants and Minim
   assert.ok(palace.includes("'West massif lower tier (rue des Minimes)'"));
 });
 
+test('the whole researched silhouette is present after 30 rounds', () => {
+  for (const name of [
+    'Palais de Justice monumental podium', 'bluestone soubassement band',
+    'South massif retaining tier (rue de Wynants)', 'West massif retaining tier (rue des Minimes)',
+    'Monumental entrance stair (full-width emmarchement)', 'Doric abacus', 'Principal portico entablature',
+    'Triangular principal pediment', 'Bronze entrance door (Houtstont after Van Mansfeld)',
+    'Winged lion body (A.F. Boure)', 'Bust of architect Joseph Poelaert',
+    'Jurist statue plinth', "Escalier d'honneur flight", 'Corner pavilion hipped roof (toit en pavillon)',
+    'South portal pediment rue de Wynants', 'Interior courthouse court paving', 'Court inner arcade',
+    'Salle des Pas Perdus central mass (48 x 22 m hall)', 'Stylobate cross arm north-south',
+    'Square drum base a gradins lower tier', 'Drum angle statue plinth', 'Griffin body under dome',
+    'Gilded copper courthouse dome', 'Courthouse lantern cap',
+    'Place Poelaert esplanade paving', 'Infantry monument bluestone obelisk',
+    'British monument plinth', 'Bronze orientation table (Bouffiaux 1928)'
+  ]) {
+    assert.ok(palace.includes(name), 'missing: ' + name);
+  }
+});
+
 test('colliders match the final 160 x 150 m plan and cover the 116 m dome', () => {
   const layout = BRUSSELS_LANDMARK_COLLIDER_LAYOUT.palaisDeJustice;
   const rear = layout.find(c => c.name === 'rear range');
