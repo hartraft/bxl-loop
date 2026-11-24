@@ -1972,3 +1972,7 @@ testCase('mullions divide the BELvue attic windows', () => {
 testCase('mid rails run between the wing balcony balusters', () => {
   assert.match(palace, /'Wing balcony mid rail'/);
 });
+
+testCase('jambs frame the Academy Palace portico door', () => {
+  assert.match(palace, /'Academy portico door jamb'/);
+});

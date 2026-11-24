@@ -5387,6 +5387,11 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       const wx = 168 - 13 + i * 6.5;
       box(g, 0.08, 3.6, 0.06, wx, 20, 22.2, materials.warmStone, 'BELvue attic window mullion');
     }
+
+    // Jambs frame the Academy Palace portico door.
+    for (const side of [-1, 1]) {
+      box(g, 0.3, 7, 0.35, -168 + side * 2.0, 3.5, 20.8, materials.warmStone, 'Academy portico door jamb');
+    }
   });
     addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');
