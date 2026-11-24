@@ -2770,6 +2770,12 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     // A transverse walk crosses the park east-west at mid-depth, completing the star-shaped
     // alley pattern with the central and radiating avenues.
     box(g, 320, 0.07, 8, 0, 0.07, 232, materials.pavingA, 'Park transverse walk');
+    // Seasonal flower beds ring the main pond on the central axis (the park's ornamental
+    // beds were part of the 1776-83 neoclassical planting).
+    for (const fx of [-24, -16, 16, 24]) {
+      box(g, 6, 0.22, 3.2, fx, 0.11, 150, materials.green, 'Park pond flower bed');
+      box(g, 5.4, 0.1, 2.6, fx, 0.24, 150, new THREE.MeshStandardMaterial({ color: 0xb06a5a, roughness: 0.95 }), 'Park pond flower planting');
+    }
   });
     addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');

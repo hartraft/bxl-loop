@@ -759,3 +759,9 @@ testCase('a transverse walk crosses Brussels Park east-west at mid-depth', () =>
   assert.match(palace, /transverse walk crosses the park east-west/);
   assert.match(palace, /'Park transverse walk'/);
 });
+
+testCase('flower beds ring the main pond of Brussels Park', () => {
+  assert.match(palace, /flower beds ring the main pond/);
+  assert.match(palace, /'Park pond flower bed'/);
+  assert.match(palace, /'Park pond flower planting'/);
+});
