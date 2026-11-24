@@ -3608,6 +3608,26 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     for (const x of wingXs) {
       box(g, wingW + 1.1, 0.32, wingD + 0.8, x, 1.05, -1, moulding, 'Wing plinth cap');
     }
+
+    // The whole palace complex is "entirely enclosed by balustraded walls" (Wikipedia):
+    // grounds walls run along the south, east and west sides with balustrade copings.
+    for (const [wx, wz, ww, wd] of [[0, -68, 200, 0.8], [92, -20, 0.8, 96], [-92, -20, 0.8, 96]]) {
+      box(g, ww, 2.2, wd, wx, 1.1, wz, stone, 'Palace grounds boundary wall');
+    }
+    const gwBal = new THREE.InstancedMesh(new THREE.BoxGeometry(0.26, 0.8, 0.26), ashlar, 120);
+    const gwd = new THREE.Object3D();
+    let gwi = 0;
+    for (let gx = -98; gx <= 98; gx += 4) {
+      gwd.position.set(gx, 2.6, -68); gwd.rotation.y = 0; gwd.updateMatrix();
+      gwBal.setMatrixAt(gwi++, gwd.matrix);
+    }
+    for (const side of [-1, 1]) {
+      for (let gz = -64; gz <= 28; gz += 4) {
+        gwd.position.set(side * 92, 2.6, gz); gwd.updateMatrix();
+        gwBal.setMatrixAt(gwi++, gwd.matrix);
+      }
+    }
+    gwBal.count = gwi; gwBal.name = 'Palace grounds wall balustrade'; g.add(gwBal);
   });
   addLandmark('palaceSurroundings', (g) => {
     // Real-world sources: en/fr Wikipedia (Royal Palace of Brussels, Brussels Park, Place des Palais,

@@ -1049,3 +1049,10 @@ testCase('a projecting plinth cap crowns the rusticated base of each wing', () =
   assert.match(palace, /plinth cap crowns the rusticated base/);
   assert.match(palace, /'Wing plinth cap'/);
 });
+
+testCase('the palace grounds are enclosed by balustraded walls (south, east, west)', () => {
+  assert.match(palace, /entirely enclosed by balustraded walls/);
+  assert.match(palace, /'Palace grounds boundary wall'/);
+  assert.match(palace, /'Palace grounds wall balustrade'/);
+  assert.match(palace, /gwBal\.count = gwi/);
+});
