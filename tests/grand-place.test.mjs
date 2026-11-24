@@ -238,6 +238,13 @@ test('every guild house has an arched door leaf with a gilded fanlight in its ce
   assert.ok(square.includes('fanlight.rotation.x = Math.PI / 2'));
 });
 
+test('guild-house windows have folded-back shutters and storeys are split by string courses', () => {
+  assert.ok(square.includes(" window shutters'"));
+  assert.ok(square.includes('shutters.count = index * 2'));
+  assert.ok(square.includes(" inter-floor string courses'"));
+  assert.ok(square.includes('stringCourses.count = sc'));
+});
+
 test('guild houses have the real arcaded ground floors and gilded gable emblems', () => {
   assert.ok(square.includes(' ground-floor arcade'));
   assert.ok(square.includes(' arcade lintel'));

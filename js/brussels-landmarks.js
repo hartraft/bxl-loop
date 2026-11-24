@@ -162,6 +162,19 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     quoins.castShadow = true;
     root.add(quoins);
     box(root, width + 0.45, 0.45, 0.35, 0, 1.15, 0.12, materials.warmStone, name + ' plinth');
+    // Horizontal string-course bands between the window storeys, as on the real facades.
+    const stringCourses = new THREE.InstancedMesh(new THREE.BoxGeometry(width - 0.4, 0.14, 0.12), materials.warmStone, floors);
+    const scd = new THREE.Object3D();
+    let sc = 0;
+    for (let floor = 2; floor <= floors; floor++) {
+      const wy = 4.4 + (floor - 1) * ((height - 6.6) / Math.max(1, floors - 1));
+      scd.position.set(0, wy - 1.32, 0.12);
+      scd.updateMatrix();
+      stringCourses.setMatrixAt(sc++, scd.matrix);
+    }
+    stringCourses.count = sc;
+    stringCourses.name = name + ' inter-floor string courses';
+    root.add(stringCourses);
 
     const bays = Math.max(3, Math.round(width / 2.8));
     const windowGeo = new THREE.BoxGeometry(1.05, 1.45, 0.16);
@@ -172,6 +185,8 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     // houses' upper windows are crossed like this (blue-stone croisillons on e.g. Le Mont Thabor).
     const mullionV = new THREE.InstancedMesh(new THREE.BoxGeometry(0.09, 1.45, 0.06), stone, bays * floors);
     const mullionH = new THREE.InstancedMesh(new THREE.BoxGeometry(1.05, 0.09, 0.06), stone, bays * floors);
+    // Wooden shutters folded back beside every window, as on the real houses.
+    const shutters = new THREE.InstancedMesh(new THREE.BoxGeometry(0.34, 1.5, 0.06), materials.dark, bays * floors * 2);
     const dummy = new THREE.Object3D();
     let index = 0;
     for (let floor = 1; floor <= floors; floor++) {
@@ -190,9 +205,18 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
         dummy.updateMatrix();
         mullionV.setMatrixAt(index, dummy.matrix);
         mullionH.setMatrixAt(index, dummy.matrix);
+        dummy.position.set(wx - 0.78, wy, 0.1);
+        dummy.updateMatrix();
+        shutters.setMatrixAt(index * 2, dummy.matrix);
+        dummy.position.set(wx + 0.78, wy, 0.1);
+        dummy.updateMatrix();
+        shutters.setMatrixAt(index * 2 + 1, dummy.matrix);
         index++;
       }
     }
+    shutters.count = index * 2;
+    shutters.name = name + ' window shutters';
+    root.add(shutters);
     windows.name = name + ' windows';
     frames.name = name + ' gilded window surrounds';
     mullionV.name = mullionH.name = name + ' window stone cross-mullions';
