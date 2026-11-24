@@ -1971,6 +1971,17 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       wing.rotation.z = w * 0.55;
     }
     g.add(victory);
+    // Monument aux soldats britanniques (architect T.S. Tait): about 3 m, a British and a Belgian
+    // soldier standing side by side, on the esplanade edge in line with rue de la Regence.
+    box(g, 5, 0.5, 5, 34, 0.55, 148, bluestone, 'British monument plinth');
+    for (const dx of [-1, 1]) {
+      cylinder(g, 0.32, 0.4, 2.2, 34 + dx, 2.2, 148, bronze, 8);
+      mesh(g, new THREE.SphereGeometry(0.28, 8, 6), bronze, 34 + dx, 3.5, 148, 'British/Belgian soldier figure');
+    }
+    // Bronze orientation table after Alexandre Bouffiaux (placed 1928, ateliers Van Aerschodt),
+    // giving the view over the lower city toward Anderlecht and Molenbeek.
+    cylinder(g, 0.5, 0.7, 1.1, 48, 0.85, 118, bronze, 12);
+    mesh(g, new THREE.CylinderGeometry(2.6, 2.6, 0.18, 20), bronze, 48, 1.55, 118, 'Bronze orientation table (Bouffiaux 1928)');
     // The real terrace rests on a massive retaining massif, plainly visible from
     // rue de Wynants (south) and rue des Minimes (west) where the plateau drops to the Marolles.
     box(g, 190, 3.5, 4, 0, -2.6, -90.5, weathered, 'South massif retaining tier (rue de Wynants)');

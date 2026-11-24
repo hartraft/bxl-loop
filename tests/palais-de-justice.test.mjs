@@ -50,6 +50,12 @@ test('the terrace rests on the visible retaining massif toward Wynants and Minim
   assert.ok(palace.includes("'West massif lower tier (rue des Minimes)'"));
 });
 
+test('the British soldiers monument and the Bouffiaux orientation table stand on the esplanade', () => {
+  assert.ok(palace.includes("'British monument plinth'"));
+  assert.ok(palace.includes("'British/Belgian soldier figure'"));
+  assert.ok(palace.includes("'Bronze orientation table (Bouffiaux 1928)'"));
+});
+
 test('the Monument national a l\'Infanterie Belge stands on the esplanade', () => {
   assert.ok(palace.includes("'Infantry monument bluestone obelisk'"));
   assert.ok(palace.includes("'Gilded royal crown on obelisk'"));
