@@ -1445,6 +1445,11 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     const glass = new THREE.MeshStandardMaterial({ color: 0x273b43, roughness: 0.34, metalness: 0.12 });
     const bronze = new THREE.MeshStandardMaterial({ color: 0x74664d, metalness: 0.48, roughness: 0.58 });
     const shadow = new THREE.MeshStandardMaterial({ color: 0x303638, roughness: 0.84 });
+    // The real palace is floodlit after dark (night photos show the whole north
+    // façade washed warm with glowing windows): register the palace materials with
+    // the shared night floodlight/window-glow systems.
+    facadeWashMats.push(stone, ashlar, moulding);
+    nightGlowMats.push(glass);
     const facadeZ = 8.15;
     const wingW = 52, wingH = 20.5, wingD = 19;
     const wingXs = [-44, 44];
