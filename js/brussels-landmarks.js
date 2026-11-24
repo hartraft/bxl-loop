@@ -5469,6 +5469,13 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       ep.moveTo(-4.5, 0); ep.lineTo(4.5, 0); ep.lineTo(0, 2.2); ep.closePath();
       mesh(g, new THREE.ShapeGeometry(ep), materials.warmStone, px, 20.8, 19.75, 'Academy end pavilion pediment');
     }
+
+    // Kerbs edge both sides of the BELvue entrance steps.
+    for (const cz of [21.2, 20.7]) {
+      for (const side of [-1, 1]) {
+        box(g, 0.25, 0.35, 1.1, 168 + side * 2.5, 0.18, cz, materials.pavingEdge, 'BELvue step kerb');
+      }
+    }
   });
     addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');

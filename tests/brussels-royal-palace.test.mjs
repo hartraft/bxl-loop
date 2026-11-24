@@ -2040,3 +2040,7 @@ testCase('small pediments cap the Academy Palace end pavilions', () => {
 testCase('cap strips finish the wing balcony corbels', () => {
   assert.match(palace, /'Wing balcony corbel cap'/);
 });
+
+testCase('kerbs edge both sides of the BELvue entrance steps', () => {
+  assert.match(palace, /'BELvue step kerb'/);
+});
