@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.IO;
 using Newtonsoft.Json.Linq;
 using UnityEditor;
+using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.Rendering;
 
