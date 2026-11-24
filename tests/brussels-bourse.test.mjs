@@ -673,4 +673,27 @@ testCase('rounds 196-200: kiosk door + glass band, terrace chairs, fountain rims
   assert.match(surroundings, /'Bicycle arch inner rails \(second rail des arceaux\)'/);
 });
 
+testCase('rounds 201-205: pavilion side windows, terrace urns, canopy columns, 2023 entrance canopy, socle corner quoins', () => {
+  assert.match(bourse, /'Bourse corner pavilion side windows'/);
+  assert.match(bourse, /wins\.count = n/);
+  assert.match(bourse, /'Bourse roof terrace urn finial'/);
+  assert.match(bourse, /'Bourse brass canopy support columns \(colonnes du luifel\)'/);
+  assert.match(bourse, /cols\.count = 4/);
+  assert.match(bourse, /'Bourse 2023 entrance canopy \(auvent laiton\)'/);
+  assert.match(bourse, /'Bourse socle corner quoin blocks/);
+  assert.match(bourse, /q\.count = n/);
+});
+
+testCase('rounds 206-210: attic parapet + balusters, dormer glazing, chimney pots, valley flashings', () => {
+  assert.match(bourse, /'Bourse wing attic parapet band/);
+  assert.match(bourse, /'Bourse wing parapet balusters'/);
+  assert.match(bourse, /bal\.count = n/);
+  assert.match(bourse, /'Bourse wing parapet top rails'/);
+  assert.match(bourse, /'Bourse dormer glazing \(vitres des lucarnes\)'/);
+  assert.match(bourse, /glass\.count = 12/);
+  assert.match(bourse, /'Bourse chimney pots \(pots de cheminee\)'/);
+  assert.match(bourse, /pots\.count = 6/);
+  assert.match(bourse, /'Bourse roof valley lead flashing \(noue en plomb\)'/);
+});
+
 // __MORE_BOURSE_TESTS__

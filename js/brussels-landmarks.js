@@ -6176,6 +6176,116 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       plinths.castShadow = true;
       g.add(plinths);
     }
+    // Round 201: windows on the corner pavilions' side faces (toward the flanking streets).
+    {
+      const wins = new THREE.InstancedMesh(new THREE.BoxGeometry(0.35, 4, 2.0), materials.glass, 8);
+      const dummy = new THREE.Object3D();
+      let n = 0;
+      for (const sz of [-1, 1]) for (const sx of [-1, 1]) for (const wy of [10.5, 18]) {
+        dummy.position.set(sx * 50.3, wy, sz * 31 + (sz > 0 ? 5 : -5));
+        dummy.updateMatrix();
+        wins.setMatrixAt(n++, dummy.matrix);
+      }
+      wins.count = n;
+      wins.name = 'Bourse corner pavilion side windows';
+      wins.castShadow = true;
+      g.add(wins);
+    }
+    // Round 202: urn finials at the four corners of the roof terrace balustrade.
+    for (const [ux, uz] of [[-14.5, -38.6], [14.5, -38.6], [-14.5, -23.4], [14.5, -23.4]]) {
+      cylinder(g, 0.22, 0.3, 0.8, ux, 32.3, uz, materials.warmStone, 8);
+      mesh(g, new THREE.SphereGeometry(0.24, 8, 6), materials.warmStone, ux, 32.85, uz, 'Bourse roof terrace urn finial');
+    }
+    // Round 203: four slender brass columns carry the panorama canopy over the roof.
+    {
+      const cols = new THREE.InstancedMesh(new THREE.CylinderGeometry(0.12, 0.12, 7.9, 8), materials.gold, 4);
+      const dummy = new THREE.Object3D();
+      for (let i = 0; i < 4; i++) {
+        const sx = i % 2 ? 1 : -1, sz = i < 2 ? -1 : 1;
+        dummy.position.set(sx * 9, 42.6, sz * 9);
+        dummy.updateMatrix();
+        cols.setMatrixAt(i, dummy.matrix);
+      }
+      cols.count = 4;
+      cols.name = 'Bourse brass canopy support columns (colonnes du luifel)';
+      cols.castShadow = true;
+      g.add(cols);
+    }
+    // Round 204: a shallow canopy slab shelters the 2023 rear entrance.
+    box(g, 8.6, 0.22, 2.6, 0, 4.6, -42.2, materials.gold, 'Bourse 2023 entrance canopy (auvent laiton)');
+    // Round 205: big blue-stone quoin blocks chain the four socle corners.
+    {
+      const q = new THREE.InstancedMesh(new THREE.BoxGeometry(0.8, 1.6, 0.8), materials.warmStone, 4 * 3);
+      const dummy = new THREE.Object3D();
+      let n = 0;
+      for (const sx of [-1, 1]) for (const sz of [-1, 1]) for (let r = 0; r < 3; r++) {
+        dummy.position.set(sx * 52.6, 0.8 + r * 1.6, sz * 40.6);
+        dummy.updateMatrix();
+        q.setMatrixAt(n++, dummy.matrix);
+      }
+      q.count = n;
+      q.name = 'Bourse socle corner quoin blocks (chaines d\'angle du soubassement)';
+      q.castShadow = true;
+      g.add(q);
+    }
+    // Round 206: a low attic parapet band runs above the main cornice on the wings.
+    box(g, 100, 0.9, 8.6, 0, 24.35, 32.5, materials.paleStone, 'Bourse wing attic parapet band (bande d\'attique)');
+    // Round 207: balustrade on top of the wing parapets.
+    {
+      const bal = new THREE.InstancedMesh(new THREE.BoxGeometry(0.14, 0.55, 0.14), materials.warmStone, 2 * 30);
+      const rail = new THREE.InstancedMesh(new THREE.BoxGeometry(29, 0.1, 0.16), materials.warmStone, 2);
+      const dummy = new THREE.Object3D();
+      let n = 0;
+      for (const sx of [-1, 1]) {
+        for (let i = 0; i < 30; i++) {
+          dummy.position.set(sx * (36 + i * 0.1), 25.1, 32.5);
+          dummy.updateMatrix();
+          bal.setMatrixAt(n++, dummy.matrix);
+        }
+        dummy.position.set(sx * 36, 25.4, 32.5);
+        dummy.updateMatrix();
+        rail.setMatrixAt(sx < 0 ? 0 : 1, dummy.matrix);
+      }
+      bal.count = n; bal.name = 'Bourse wing parapet balusters';
+      g.add(bal);
+      rail.count = 2; rail.name = 'Bourse wing parapet top rails';
+      rail.castShadow = true;
+      g.add(rail);
+    }
+    // Round 208: glass panes in the 12 arm-roof dormers.
+    {
+      const glass = new THREE.InstancedMesh(new THREE.BoxGeometry(1.4, 1.6, 0.1), materials.glass, 12);
+      const dummy = new THREE.Object3D();
+      const spots = [[-10, 31, 28.2], [10, 31, 28.2], [-10, -31, 28.2], [10, -31, 28.2], [-42, -10, 28.2], [-42, 10, 28.2], [42, -10, 28.2], [42, 10, 28.2], [-46, 31, 24.7], [46, 31, 24.7], [-46, -31, 24.7], [46, -31, 24.7]];
+      for (let i = 0; i < 12; i++) {
+        dummy.position.set(spots[i][0], spots[i][2], spots[i][1]);
+        dummy.updateMatrix();
+        glass.setMatrixAt(i, dummy.matrix);
+      }
+      glass.count = 12;
+      glass.name = 'Bourse dormer glazing (vitres des lucarnes)';
+      g.add(glass);
+    }
+    // Round 209: chimney pots on the six stacks.
+    {
+      const pots = new THREE.InstancedMesh(new THREE.CylinderGeometry(0.22, 0.26, 0.8, 8), materials.warmStone, 6);
+      const dummy = new THREE.Object3D();
+      const spots = [[-14, 24, 31.4], [14, 24, 31.4], [-14, -24, 31.4], [14, -24, 31.4], [-46, 6, 31.4], [46, -6, 31.4]];
+      for (let i = 0; i < 6; i++) {
+        dummy.position.set(spots[i][0], spots[i][2], spots[i][1]);
+        dummy.updateMatrix();
+        pots.setMatrixAt(i, dummy.matrix);
+      }
+      pots.count = 6;
+      pots.name = 'Bourse chimney pots (pots de cheminee)';
+      pots.castShadow = true;
+      g.add(pots);
+    }
+    // Round 210: lead valley flashings where the arm roofs meet the central block.
+    for (const [vx, vz, ry] of [[-21, 0, Math.PI / 2], [21, 0, Math.PI / 2], [0, 21, 0], [0, -21, 0]]) {
+      const valley = box(g, ry === 0 ? 6 : 0.3, 0.1, ry === 0 ? 0.3 : 6, vx, 26.2, vz, materials.dark, 'Bourse roof valley lead flashing (noue en plomb)');
+      valley.rotation.y = ry;
+    }
     // __BOURSE_ROUNDS__
   });
   addLandmark('bourseSurroundings', (g) => {
