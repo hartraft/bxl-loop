@@ -1248,3 +1248,7 @@ testCase('a low stone wall encloses the Academy Palace garden toward the square'
 testCase('a straight garden walk leads from the perron to the gilded railing', () => {
   assert.match(palace, /'Central garden walk'/);
 });
+
+testCase('broad stone steps lead up to the Palace of the Nation peristyle', () => {
+  assert.match(palace, /'Palace of the Nation peristyle step'/);
+});
