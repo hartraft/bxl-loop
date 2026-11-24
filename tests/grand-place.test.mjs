@@ -117,6 +117,11 @@ test('the Town Hall buttresses are pinnacled with spires and gilded finials', ()
   assert.ok(square.includes('pinnacleSpires.count = pinnacleFinials.count = pin'));
 });
 
+test('the Town Hall corner turret spires end in gilded finials', () => {
+  assert.ok(square.includes("'Facade corner turret gilded finial'"));
+  assert.ok(square.includes('new THREE.SphereGeometry(0.24, 8, 6), materials.gold, 0, height + 14.3, 0'));
+});
+
 test('the Town Hall facade carries the real statue niches and wing-terminating corner turrets', () => {
   assert.ok(square.includes('Town Hall facade statue niches'));
   assert.ok(square.includes('Town Hall gilded facade statues'));

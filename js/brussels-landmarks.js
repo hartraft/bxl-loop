@@ -785,6 +785,7 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       const shaft = cylinder(turret, 1.5, 1.8, height + 7, 0, (height + 7) / 2, 0, trim, 8);
       shaft.name = 'Facade corner turret';
       mesh(turret, new THREE.ConeGeometry(1.9, 7, 8), roofMat, 0, height + 10.5, 0, 'Facade corner turret spire');
+      mesh(turret, new THREE.SphereGeometry(0.24, 8, 6), materials.gold, 0, height + 14.3, 0, 'Facade corner turret gilded finial');
     }
 
     // The off-centre tower rises from the ground-level portal to the real 96 m: square
