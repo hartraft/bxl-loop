@@ -3967,6 +3967,11 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
         box(g, 0.15, 0.32, 0.62, side * 8.5, 0.79 - s * 0.32, centralFace + 0.3 + s * 0.62, moulding, 'Perron step edge');
       }
     }
+
+    // Glazed side lights flank the central door behind the portico colonnade.
+    for (const side of [-1, 1]) {
+      box(g, 1.2, 6.6, 0.18, side * 3.3, 14.6, centralFace + 0.16, glass, 'Portico door side light');
+    }
   });
   addLandmark('palaceSurroundings', (g) => {
     // Real-world sources: en/fr Wikipedia (Royal Palace of Brussels, Brussels Park, Place des Palais,

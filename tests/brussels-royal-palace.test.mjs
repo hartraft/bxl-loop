@@ -1730,3 +1730,7 @@ testCase('moulded edges finish the sides of each perron step', () => {
 testCase('mullions divide the BELvue piano nobile windows', () => {
   assert.match(palace, /'BELvue piano nobile mullion'/);
 });
+
+testCase('glazed side lights flank the central portico door', () => {
+  assert.match(palace, /'Portico door side light'/);
+});
