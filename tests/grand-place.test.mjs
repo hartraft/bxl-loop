@@ -1110,3 +1110,20 @@ test('rounds 283-292: blind niches, sill brackets, gallery top rail, portal spli
   assert.ok(square.includes('King’s House side entrance door'));
   assert.ok(square.includes('door lamp'));
 });
+
+test('rounds 293-302: side lancet hoods, gallery drip + modillions, roof ridge crests, corner sett fans, Manneken sett ring, portal plaque, portal oculus, attic hoods, turret base doors', () => {
+  assert.ok(square.includes('Tower side lancet hood moulds'));
+  assert.ok(square.includes('sideHoods.count = sh'));
+  assert.ok(square.includes('Tower gallery drip mould'));
+  assert.ok(square.includes('Tower gallery modillion corbels'));
+  assert.ok(square.includes('galleryMods.count = 8'));
+  assert.ok(square.includes('roof ridge crest finials'));
+  assert.ok(square.includes('ridgeCrests.count = 3'));
+  assert.ok(square.includes('Grand-Place corner sett fans'));
+  assert.ok(square.includes('cornerFans.count = cf'));
+  assert.ok(source.includes('Manneken Pis sett ring'));
+  assert.ok(square.includes('Portal side commemorative plaque'));
+  assert.ok(square.includes('King’s House portal oculus'));
+  assert.ok(square.includes('attic window hood mould'));
+  assert.ok(square.includes('Corner turret base door'));
+});
