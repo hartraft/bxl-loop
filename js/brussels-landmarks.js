@@ -2246,6 +2246,37 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     cylinder(g, 5.4, 6.0, 0.5, 46, 0.25, 210, materials.paleStone, 8).name = 'Park Vauxhall bandstand base';
     cylinder(g, 3.0, 3.4, 3.8, 46, 2.4, 210, materials.dark, 8).name = 'Park Vauxhall bandstand kiosk';
     mesh(g, new THREE.ConeGeometry(4.0, 2.6, 8), materials.roof, 46, 5.5, 210, 'Park Vauxhall bandstand dome');
+    // Monumental neoclassical railings enclose the park; they were only erected in 1849 to
+    // designs by Tilman-Francois Suys, with main gates on the central axis south and north.
+    const railGeo = new THREE.BoxGeometry(0.12, 1.1, 0.12);
+    const parkRail = new THREE.InstancedMesh(railGeo, materials.dark, 600);
+    const prd = new THREE.Object3D();
+    let pri = 0;
+    for (let rx = -172; rx <= 172; rx += 2.4) {
+      for (const rz of [62, 402]) {
+        prd.position.set(rx, 0.55, rz); prd.rotation.y = 0; prd.updateMatrix();
+        parkRail.setMatrixAt(pri++, prd.matrix);
+      }
+    }
+    for (let rz = 64.4; rz <= 400; rz += 2.4) {
+      for (const rx of [-172, 172]) {
+        prd.position.set(rx, 0.55, rz); prd.updateMatrix();
+        parkRail.setMatrixAt(pri++, prd.matrix);
+      }
+    }
+    parkRail.count = pri;
+    parkRail.name = 'Park perimeter railing posts';
+    g.add(parkRail);
+    box(g, 344, 0.1, 0.3, 0, 1.15, 62, materials.dark, 'Park south railing top rail');
+    box(g, 344, 0.1, 0.3, 0, 1.15, 402, materials.dark, 'Park north railing top rail');
+    box(g, 0.3, 0.1, 340, -172, 1.15, 232, materials.dark, 'Park west railing top rail');
+    box(g, 0.3, 0.1, 340, 172, 1.15, 232, materials.dark, 'Park east railing top rail');
+    for (const gz of [62, 402]) {
+      for (const gx of [-6, 6]) {
+        box(g, 1.2, 3.2, 0.4, gx, 1.6, gz, materials.paleStone, 'Park main gate pier');
+      }
+      box(g, 14, 0.5, 0.5, 0, 3.4, gz, materials.dark, 'Park axis gate lintel');
+    }
   });
     addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');

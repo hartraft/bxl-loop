@@ -410,3 +410,10 @@ testCase('two bandstands: Cluysenaar 1841 twelve-sided kiosk and the 1913 Vauxha
   assert.match(palace, /'Park Vauxhall bandstand kiosk'/);
   assert.match(palace, /'Park Vauxhall bandstand dome'/);
 });
+
+testCase('monumental railings (erected 1849 to Suys designs) enclose the park with axis gates', () => {
+  assert.match(palace, /erected in 1849/);
+  assert.match(palace, /'Park perimeter railing posts'/);
+  assert.match(palace, /'Park main gate pier'/);
+  assert.match(palace, /parkRail\.count = pri/);
+});
