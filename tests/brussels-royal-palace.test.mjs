@@ -536,3 +536,10 @@ testCase('Art Deco lampposts (1930s) line the park avenues', () => {
   assert.match(palace, /'Park Art Deco lamp heads'/);
   assert.match(palace, /lampPole\.count = lpi/);
 });
+
+testCase('a double row of lime trees surrounds the park perimeter (19th century)', () => {
+  assert.match(palace, /double row of lime trees/);
+  assert.match(palace, /'Park perimeter lime trunks'/);
+  assert.match(palace, /'Park perimeter lime canopies'/);
+  assert.match(palace, /limeTrunk\.count = lti/);
+});

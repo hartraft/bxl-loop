@@ -2472,6 +2472,32 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     }
     lampPole.count = lpi; lampPole.name = 'Park Art Deco lamppost poles'; g.add(lampPole);
     lampHead.count = lpi; lampHead.name = 'Park Art Deco lamp heads'; g.add(lampHead);
+    // Since the 19th century the park has been surrounded by a double row of lime trees,
+    // emphasising the perspectives on either side.
+    const limeTrunk = new THREE.InstancedMesh(new THREE.CylinderGeometry(0.24, 0.32, 3.4, 6), materials.dark, 100);
+    const limeCan = new THREE.InstancedMesh(new THREE.SphereGeometry(2.2, 8, 6), materials.green, 100);
+    const ltd = new THREE.Object3D();
+    let lti = 0;
+    for (let lx = -164; lx <= 164; lx += 16) {
+      for (const lz of [68, 396]) {
+        ltd.position.set(lx, 1.7, lz); ltd.rotation.y = 0; ltd.updateMatrix();
+        limeTrunk.setMatrixAt(lti, ltd.matrix);
+        ltd.position.set(lx, 4.4, lz); ltd.updateMatrix();
+        limeCan.setMatrixAt(lti, ltd.matrix);
+        lti++;
+      }
+    }
+    for (let lz = 84; lz <= 380; lz += 16) {
+      for (const lx of [-164, 164]) {
+        ltd.position.set(lx, 1.7, lz); ltd.updateMatrix();
+        limeTrunk.setMatrixAt(lti, ltd.matrix);
+        ltd.position.set(lx, 4.4, lz); ltd.updateMatrix();
+        limeCan.setMatrixAt(lti, ltd.matrix);
+        lti++;
+      }
+    }
+    limeTrunk.count = lti; limeTrunk.name = 'Park perimeter lime trunks'; g.add(limeTrunk);
+    limeCan.count = lti; limeCan.name = 'Park perimeter lime canopies'; g.add(limeCan);
   });
     addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');
