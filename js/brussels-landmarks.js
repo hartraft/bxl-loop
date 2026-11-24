@@ -5554,6 +5554,167 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       bollards.castShadow = true;
       g.add(bollards);
     }
+    // Rounds 61-63: the traditional blue enamel street-name plates on their posts at each street
+    // mouth of the square and boulevard (bilingual French/Dutch, as everywhere in Brussels).
+    {
+      const signs = [
+        ['BOULEVARD ANSPACH / ANSPACHLAAN', -20, 112.5],
+        ['BOULEVARD ANSPACH / ANSPACHLAAN', 20, 131.5],
+        ['RUE AUGUSTE ORTS / AUGUSTE ORTSSTRAAT', -56, 88],
+        ['RUE DE LA BOURSE / BEURSSTRAAT', 56, 60],
+        ['RUE HENRI MAUS / HENRI MAUSSTRAAT', -56, 55],
+        ['RUE PAUL DEVAUX / PAUL DEVAUXSTRAAT', -60, 104],
+        ['RUE JULES VAN PRAET / JULES VAN PRAETSTRAAT', -30, 112.5],
+        ['RUE DU MARCHE AUX POULETS / KIEKEMARKT', 60, 100]
+      ];
+      for (const [label, sx, sz] of signs) {
+        const sign = new THREE.Group();
+        sign.name = 'Enamel street sign ' + label;
+        sign.position.set(sx, 0, sz);
+        cylinder(sign, 0.05, 0.06, 2.6, 0, 1.3, 0, materials.dark, 6);
+        box(sign, 1.9, 0.5, 0.06, 0, 2.72, 0, materials.enamelBlue, 'enamel plate ' + label);
+        mesh(sign, new THREE.SphereGeometry(0.09, 8, 6), materials.dark, 0, 2.95, 0, 'sign post finial ball');
+        g.add(sign);
+      }
+    }
+    // Round 64: zebra crossings with Belisha beacons (black-and-white striped poles with glowing
+    // globes) where the boulevard crosses the square — the Brussels convention.
+    {
+      const stripes = new THREE.InstancedMesh(new THREE.BoxGeometry(0.5, 0.05, 4.2), materials.paleStone, 24);
+      const beacons = new THREE.InstancedMesh(new THREE.CylinderGeometry(0.09, 0.12, 3.4, 8), materials.dark, 4);
+      const globes = new THREE.InstancedMesh(new THREE.SphereGeometry(0.28, 10, 8), materials.enamelBlue, 4);
+      const dummy = new THREE.Object3D();
+      let s = 0;
+      for (const [bx, bz] of [[-8, 108], [8, 108], [-8, 134], [8, 134]]) {
+        for (let i = 0; i < 6; i++) {
+          dummy.position.set(bx - 2.5 + i * 1, 0.05, bz);
+          dummy.updateMatrix();
+          stripes.setMatrixAt(s++, dummy.matrix);
+        }
+      }
+      stripes.count = s;
+      stripes.name = 'Zebra crossing stripes at the boulevard crossings of the square';
+      stripes.receiveShadow = true;
+      g.add(stripes);
+      let b = 0;
+      for (const [bx, bz] of [[-11, 108], [11, 108], [-11, 134], [11, 134]]) {
+        dummy.position.set(bx, 1.7, bz);
+        dummy.updateMatrix();
+        beacons.setMatrixAt(b, dummy.matrix);
+        dummy.position.set(bx, 3.6, bz);
+        dummy.updateMatrix();
+        globes.setMatrixAt(b++, dummy.matrix);
+      }
+      beacons.count = b; beacons.name = 'Belisha beacon poles (poteaux belisha)';
+      beacons.castShadow = true; g.add(beacons);
+      globes.count = b; globes.name = 'Belisha beacon globes';
+      globes.castShadow = true; g.add(globes);
+    }
+    // Round 65: benches on the square and along the boulevard (pietonnier furniture).
+    {
+      const seats = new THREE.InstancedMesh(new THREE.BoxGeometry(2.2, 0.09, 0.6), materials.warmStone, 10);
+      const legs = new THREE.InstancedMesh(new THREE.BoxGeometry(0.12, 0.45, 0.55), materials.dark, 20);
+      const dummy = new THREE.Object3D();
+      let n = 0;
+      const spots = [[-30, 70], [-15, 70], [0, 70], [15, 70], [30, 70], [-45, 122], [-25, 122], [-5, 122], [15, 122], [35, 122]];
+      for (const [bx, bz] of spots) {
+        dummy.position.set(bx, 0.5, bz);
+        dummy.updateMatrix();
+        seats.setMatrixAt(n, dummy.matrix);
+        dummy.position.set(bx - 0.9, 0.25, bz);
+        dummy.updateMatrix();
+        legs.setMatrixAt(2 * n, dummy.matrix);
+        dummy.position.set(bx + 0.9, 0.25, bz);
+        dummy.updateMatrix();
+        legs.setMatrixAt(2 * n + 1, dummy.matrix);
+        n++;
+      }
+      seats.count = n; seats.name = 'Square and boulevard benches (bancs, pietonnier)';
+      seats.castShadow = true; g.add(seats);
+      legs.count = 2 * n; legs.name = 'Bench legs';
+      g.add(legs);
+    }
+    // Round 66: public litter bins along the boulevard.
+    {
+      const bins = new THREE.InstancedMesh(new THREE.CylinderGeometry(0.32, 0.28, 0.85, 10), materials.green, 6);
+      const lids = new THREE.InstancedMesh(new THREE.CylinderGeometry(0.34, 0.34, 0.08, 10), materials.dark, 6);
+      const dummy = new THREE.Object3D();
+      for (let i = 0; i < 6; i++) {
+        dummy.position.set(-60 + i * 24, 0.43, 126.5);
+        dummy.updateMatrix();
+        bins.setMatrixAt(i, dummy.matrix);
+        dummy.position.set(-60 + i * 24, 0.9, 126.5);
+        dummy.updateMatrix();
+        lids.setMatrixAt(i, dummy.matrix);
+      }
+      bins.count = 6; bins.name = 'Boulevard public bins (poubelles publiques)';
+      bins.castShadow = true; g.add(bins);
+      lids.count = 6; lids.name = 'Bin lids';
+      g.add(lids);
+    }
+    // Round 67: bicycle arches (arceaux velo) at the square edges — the station has a bike park.
+    {
+      const arches = new THREE.InstancedMesh(new THREE.TorusGeometry(0.55, 0.035, 6, 12, Math.PI), materials.dark, 8);
+      const dummy = new THREE.Object3D();
+      for (let i = 0; i < 8; i++) {
+        dummy.position.set(-58 + i * 3, 0, 50);
+        dummy.rotation.set(Math.PI / 2, 0, 0);
+        dummy.updateMatrix();
+        arches.setMatrixAt(i, dummy.matrix);
+      }
+      arches.count = 8;
+      arches.name = 'Bicycle arches (arceaux velo) at the square edge';
+      arches.castShadow = true;
+      g.add(arches);
+    }
+    // Round 68: the new public lighting of the pietonnier — lamp columns along the boulevard.
+    {
+      const poles = new THREE.InstancedMesh(new THREE.CylinderGeometry(0.09, 0.12, 7.5, 8), materials.dark, 8);
+      const heads = new THREE.InstancedMesh(new THREE.SphereGeometry(0.3, 10, 8), materials.glass, 8);
+      const dummy = new THREE.Object3D();
+      for (let i = 0; i < 8; i++) {
+        dummy.position.set(-70 + i * 20, 3.75, 118.5);
+        dummy.updateMatrix();
+        poles.setMatrixAt(i, dummy.matrix);
+        dummy.position.set(-70 + i * 20, 7.7, 118.5);
+        dummy.updateMatrix();
+        heads.setMatrixAt(i, dummy.matrix);
+      }
+      poles.count = 8; poles.name = 'Pietonnier lighting columns (nouvel eclairage)';
+      poles.castShadow = true; g.add(poles);
+      heads.count = 8; heads.name = 'Pietonnier lamp heads';
+      heads.castShadow = true; g.add(heads);
+    }
+    // Round 69: fountains on the pedestrianised boulevard (fontaines du pietonnier).
+    {
+      const basins = new THREE.InstancedMesh(new THREE.CylinderGeometry(1.6, 1.8, 0.5, 14), materials.pavingEdge, 3);
+      const water = new THREE.InstancedMesh(new THREE.CylinderGeometry(1.45, 1.45, 0.08, 14), materials.glass, 3);
+      const jets = new THREE.InstancedMesh(new THREE.CylinderGeometry(0.06, 0.1, 1.6, 6), materials.glass, 3);
+      const dummy = new THREE.Object3D();
+      for (let i = 0; i < 3; i++) {
+        const x = -30 + i * 30, z = 122;
+        dummy.position.set(x, 0.25, z); dummy.updateMatrix(); basins.setMatrixAt(i, dummy.matrix);
+        dummy.position.set(x, 0.52, z); dummy.updateMatrix(); water.setMatrixAt(i, dummy.matrix);
+        dummy.position.set(x, 1.2, z); dummy.updateMatrix(); jets.setMatrixAt(i, dummy.matrix);
+      }
+      basins.count = 3; basins.name = 'Boulevard Anspach pietonnier fountain basins (fontaines)';
+      basins.castShadow = true; g.add(basins);
+      water.count = 3; water.name = 'Fountain water discs';
+      g.add(water);
+      jets.count = 3; jets.name = 'Fountain jets';
+      g.add(jets);
+    }
+    // Round 70: pedestrian-zone entry signs at the boulevard mouths (zone pietonne, since
+    // 29 June 2015 the boulevard is car-free between the Bourse and De Brouckere).
+    for (const [sx, sz] of [[-20, 112], [20, 131]]) {
+      const sign = new THREE.Group();
+      sign.name = 'Pedestrian-zone entry sign (zone pietonne, 29 June 2015)';
+      sign.position.set(sx, 0, sz);
+      cylinder(sign, 0.06, 0.07, 3.2, 0, 1.6, 0, materials.dark, 6);
+      const plate = mesh(sign, new THREE.CylinderGeometry(0.55, 0.55, 0.05, 20), materials.enamelBlue, 0, 3.0, 0, 'pedestrian zone sign disc (disque bleu zone pietonne)');
+      plate.rotation.x = Math.PI / 2;
+      g.add(sign);
+    }
     // __SURROUNDINGS_ROUNDS__
   });
 

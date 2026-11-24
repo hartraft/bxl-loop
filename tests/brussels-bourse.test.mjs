@@ -314,4 +314,34 @@ testCase('rounds 59-60: enamel street sign PLACE DE LA BOURSE / BEURSPLEIN + str
   assert.match(surroundings, /bollards\.count = 16/);
 });
 
+testCase('rounds 61-63: bilingual enamel street signs at every street mouth', () => {
+  for (const label of ['BOULEVARD ANSPACH / ANSPACHLAAN', 'RUE AUGUSTE ORTS / AUGUSTE ORTSSTRAAT', 'RUE DE LA BOURSE / BEURSSTRAAT', 'RUE HENRI MAUS / HENRI MAUSSTRAAT', 'RUE PAUL DEVAUX / PAUL DEVAUXSTRAAT', 'RUE JULES VAN PRAET / JULES VAN PRAETSTRAAT', 'RUE DU MARCHE AUX POULETS / KIEKEMARKT']) {
+    assert.ok(surroundings.includes("'" + label + "'"), 'sign ' + label);
+  }
+  assert.match(surroundings, /'Enamel street sign ' \+ label/);
+  assert.match(surroundings, /'sign post finial ball'/);
+});
+
+testCase('round 64: zebra crossings + Belisha beacons at the boulevard crossings', () => {
+  assert.match(surroundings, /'Zebra crossing stripes at the boulevard crossings of the square'/);
+  assert.match(surroundings, /stripes\.count = s/);
+  assert.match(surroundings, /'Belisha beacon poles \(poteaux belisha\)'/);
+  assert.match(surroundings, /'Belisha beacon globes'/);
+});
+
+testCase('rounds 65-70: benches, bins, bike arches, lighting columns, fountains, pedestrian-zone signs', () => {
+  assert.match(surroundings, /'Square and boulevard benches \(bancs, pietonnier\)'/);
+  assert.match(surroundings, /seats\.count = n/);
+  assert.match(surroundings, /'Boulevard public bins \(poubelles publiques\)'/);
+  assert.match(surroundings, /bins\.count = 6/);
+  assert.match(surroundings, /'Bicycle arches \(arceaux velo\) at the square edge'/);
+  assert.match(surroundings, /arches\.count = 8/);
+  assert.match(surroundings, /'Pietonnier lighting columns \(nouvel eclairage\)'/);
+  assert.match(surroundings, /poles\.count = 8/);
+  assert.match(surroundings, /'Boulevard Anspach pietonnier fountain basins \(fontaines\)'/);
+  assert.match(surroundings, /'Fountain jets'/);
+  assert.match(surroundings, /'Pedestrian-zone entry sign \(zone pietonne, 29 June 2015\)'/);
+  assert.match(surroundings, /'pedestrian zone sign disc \(disque bleu zone pietonne\)'/);
+});
+
 // __MORE_BOURSE_TESTS__
