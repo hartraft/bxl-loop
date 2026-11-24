@@ -868,3 +868,23 @@ test('rounds 165-172: dormer cheeks/hoods, turret rings + spire crockets, ridge 
   assert.ok(square.includes('Lancet transom bars'));
   assert.ok(square.includes('transoms.count = tb'));
 });
+
+test('rounds 173-180: Broodhuis spandrel reliefs, gallery tracery, pavilion quoins, shaft string rings, dome ribs, dormer cheeks, eave gutter + downpipes, portal lantern, sill brackets', () => {
+  assert.ok(square.includes('King’s House arcade spandrel reliefs'));
+  assert.ok(square.includes('khSpandrels.count = bays'));
+  assert.ok(square.includes('gallery arch tracery (vertical)'));
+  assert.ok(square.includes('khTracV.count = khTracH.count = bays'));
+  assert.ok(square.includes('King’s House pavilion corner quoins'));
+  assert.ok(square.includes('pvQuoins.count = pvq'));
+  assert.ok(square.includes('King’s House tower shaft string rings'));
+  assert.ok(square.includes('khShaftRings.count = 3'));
+  assert.ok(square.includes('King’s House tower dome meridian ribs'));
+  assert.ok(square.includes('khDomeRibs.count = 8'));
+  assert.ok(square.includes('King’s House dormer side cheeks'));
+  assert.ok(square.includes('khDormCheeks.count = kdc'));
+  assert.ok(square.includes('King’s House front eave gutter'));
+  assert.ok(square.includes('King’s House rainwater downpipes'));
+  assert.ok(square.includes('King’s House portal lantern'));
+  assert.ok(square.includes('King’s House upper window sill brackets'));
+  assert.ok(square.includes('khSillBrackets.count = ksb'));
+});
