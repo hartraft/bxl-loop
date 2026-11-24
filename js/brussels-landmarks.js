@@ -4807,6 +4807,11 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     for (let i = 0; i < 7; i++) {
       box(g, 0.5, 0.8, 0.3, -168 - 24 + i * 8, 7.9, 20.95, materials.warmStone, 'Academy Palace window keystone');
     }
+
+    // Acroteria stand at the apex and both feet of the Palace of the Nation pediment.
+    for (const ax of [-11, 0, 11]) {
+      mesh(g, new THREE.SphereGeometry(0.45, 10, 8), materials.warmStone, ax, ax === 0 ? 21.6 : 15.6, 401.7, 'Palace of the Nation pediment acroterion');
+    }
   });
     addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');

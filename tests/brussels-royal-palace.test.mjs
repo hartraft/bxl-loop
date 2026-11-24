@@ -1520,3 +1520,7 @@ testCase('a muntin cross divides the portico door fanlight into panes', () => {
 testCase('keystones crown the Academy Palace ground-floor arched windows', () => {
   assert.match(palace, /'Academy Palace window keystone'/);
 });
+
+testCase('acroteria stand on the Palace of the Nation pediment', () => {
+  assert.match(palace, /'Palace of the Nation pediment acroterion'/);
+});
