@@ -50,6 +50,12 @@ test('the terrace rests on the visible retaining massif toward Wynants and Minim
   assert.ok(palace.includes("'West massif lower tier (rue des Minimes)'"));
 });
 
+test('Place Poelaert is a vast paved esplanade with sett borders', () => {
+  assert.ok(palace.includes("'Place Poelaert esplanade paving'"));
+  assert.ok(palace.includes('box(g, 150, 0.3, 70, 0, 0.15, 126, materials.pavingA'));
+  assert.ok((palace.match(/'Place Poelaert \w+ sett border'/g) || []).length === 3, 'south, north and side sett borders');
+});
+
 test('facades mix pale sandstone with ochre/sable avant-corps, not a uniform white', () => {
   assert.ok(palace.includes('const ochre = new THREE.MeshStandardMaterial({ color: 0xd3b98a, roughness: 0.88 })'));
   assert.ok(palace.includes("x, 20, z, ochre, 'Projecting courthouse corner pavilion'"));

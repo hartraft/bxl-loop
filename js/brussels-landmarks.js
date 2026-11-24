@@ -1946,6 +1946,12 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       box(g, 0.5, 1.2, 0.5, x, 3.9, 88.5, weathered, 'Forecourt terrace baluster');
     }
     box(g, 178, 1.8, 3, 0, 1.6, 90, weathered, 'Place Poelaert retaining wall');
+    // Place Poelaert itself: the vast paved parvis stretching north from the palace toward
+    // rue de la Regence, edged with blue-stone setts.
+    box(g, 150, 0.3, 70, 0, 0.15, 126, materials.pavingA, 'Place Poelaert esplanade paving');
+    box(g, 152, 0.34, 3, 0, 0.16, 89.8, materials.pavingEdge, 'Place Poelaert south sett border');
+    box(g, 152, 0.34, 3, 0, 0.16, 161.2, materials.pavingEdge, 'Place Poelaert north sett border');
+    for (const x of [-75, 75]) box(g, 3, 0.34, 72, x, 0.16, 126, materials.pavingEdge, 'Place Poelaert side sett border');
     // The real terrace rests on a massive retaining massif, plainly visible from
     // rue de Wynants (south) and rue des Minimes (west) where the plateau drops to the Marolles.
     box(g, 190, 3.5, 4, 0, -2.6, -90.5, weathered, 'South massif retaining tier (rue de Wynants)');
