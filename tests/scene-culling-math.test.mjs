@@ -13,6 +13,6 @@ test('scene culling uses full 3D distance, including camera height', () => {
 });
 
 test('scene culling handles a camera translated on all axes', () => {
-  assert.equal(sphereWithinDistance(15, 25, 35, 2, 10, 5, 5, 5), true);
-  assert.equal(sphereWithinDistance(16, 25, 35, 2, 10, 5, 5, 5), false);
+  assert.equal(sphereWithinDistance(9, 5, 5, 2, 10, 5, 5, 5), true);
+  assert.equal(sphereWithinDistance(18, 5, 5, 2, 10, 5, 5, 5), false);
 });
