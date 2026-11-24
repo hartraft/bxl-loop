@@ -1143,3 +1143,24 @@ test('rounds 303-312: Broodhuis portal outer archivolt + attendant niches, windo
   assert.ok(square.includes('King’s House corner pilasters'));
   assert.ok(square.includes('khCornerPilasters.count = 2'));
 });
+
+test('rounds 313-322: gallery spandrels, sill dripstones, mouth threshold lintels, facade pilaster strips, dormer oculus bars, sword point, gable oculus tracery, frontage sett crosses, side window hoods, pipe brackets', () => {
+  assert.ok(square.includes('King’s House first-gallery spandrel panels'));
+  assert.ok(square.includes('khGalSpandrels.count = bays'));
+  assert.ok(square.includes('window sill dripstones'));
+  assert.ok(square.includes('sillDrips.count = sd2'));
+  assert.ok(square.includes('Grand-Place street-mouth threshold lintels'));
+  assert.ok(square.includes('thresholds.count = mouths.length'));
+  assert.ok(square.includes('Upper-storey facade pilaster strips'));
+  assert.ok(square.includes('facadePilasters.count = fp'));
+  assert.ok(square.includes('King’s House dormer oculus tracery bars'));
+  assert.ok(square.includes('khDormBars.count = kdb'));
+  assert.ok(square.includes('Saint Michael sword point'));
+  assert.ok(square.includes('gable oculus tracery vertical'));
+  assert.ok(square.includes('Grand-Place frontage sett crosses'));
+  assert.ok(square.includes('frontageCrosses.count = 4'));
+  assert.ok(square.includes('King’s House side window hood moulds'));
+  assert.ok(square.includes('khSideHoods.count = ksh'));
+  assert.ok(square.includes('downpipe wall brackets'));
+  assert.ok(square.includes('pipeBrackets.count = 6'));
+});
