@@ -557,6 +557,10 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     box(root, 0.8, 0.28, 0.06, 0, 0.34, 0.48, materials.gold, name + ' door kick plate');
     // A lit door lamp glows above every house entrance at night, as on the real arcades.
     box(root, 0.22, 0.3, 0.1, 0, 3.75, 0.5, glowGlass, name + ' door lamp');
+    // A bronze hanging shop sign on a bracket projects over each arcade, as on the real
+    // brasseries.
+    box(root, 0.08, 0.08, 0.7, 0, 3.6, 0.75, materials.bronze, name + ' hanging sign bracket');
+    box(root, 0.5, 0.4, 0.06, 0, 3.35, 1.05, materials.bronze, name + ' hanging shop sign');
     // Small attic windows in the gable base, flanking the oculus.
     const atticWindows = new THREE.InstancedMesh(new THREE.BoxGeometry(0.5, 0.7, 0.1), spec.windowMat || glowGlass, 2);
     for (let i = 0; i < 2; i++) {
@@ -584,6 +588,7 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     // Hood moulds shelter both gable attic windows, as on the real gable fronts.
     for (let i = 0; i < 2; i++) {
       box(root, 0.62, 0.12, 0.14, (i === 0 ? -1 : 1) * 0.55, height + 1.68, 0.16, stone, name + ' attic window hood mould');
+      box(root, 0.6, 0.1, 0.16, (i === 0 ? -1 : 1) * 0.55, height + 0.86, 0.16, materials.warmStone, name + ' attic window sill');
     }
     root.add(atticWindows);
     if (terrace) {
@@ -824,6 +829,17 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     railBrackets.count = 4;
     railBrackets.name = name + ' parapet rail brackets';
     root.add(railBrackets);
+    // Openwork gaps pierce the house parapet between its rail brackets, as on the real
+    // openwork parapets.
+    const parapetGaps = new THREE.InstancedMesh(new THREE.BoxGeometry(0.6, 0.5, 0.28), materials.dark, modillionCount - 1);
+    for (let i = 0; i < modillionCount - 1; i++) {
+      modDummy.position.set(-width / 2 + 0.95 + i * (width - 1.9) / (modillionCount - 2), height + 0.88, 0.14);
+      modDummy.updateMatrix();
+      parapetGaps.setMatrixAt(i, modDummy.matrix);
+    }
+    parapetGaps.count = modillionCount - 1;
+    parapetGaps.name = name + ' openwork parapet gaps';
+    root.add(parapetGaps);
     // Gilded finial balls terminate the parapet rail at both ends of every house.
     const parapetFinials = new THREE.InstancedMesh(new THREE.SphereGeometry(0.14, 8, 6), materials.gold, 2);
     for (let i = 0; i < 2; i++) {
@@ -1670,6 +1686,16 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     canopies.count = cn;
     canopies.name = 'Arcade statue canopy hoods';
     root.add(canopies);
+    // Gilded crocket balls tip each arcade statue canopy hood, as on the real canopies.
+    const canopyCrochets = new THREE.InstancedMesh(new THREE.SphereGeometry(0.08, 6, 5), materials.gold, arcBays);
+    for (let i = 0; i < arcBays; i++) {
+      wbd.position.set(arcBaysList[i][0], 10.32, 0.3);
+      wbd.updateMatrix();
+      canopyCrochets.setMatrixAt(i, wbd.matrix);
+    }
+    canopyCrockets.count = arcBays;
+    canopyCrochets.name = 'Arcade canopy crocket balls';
+    root.add(canopyCrochets);
 
     // Upper storeys: paired lancets with stone mouldings, balconies, a buttress rhythm at
     // alternating bay joints, and a gilded statue in a niche at the remaining joints — the
@@ -2065,6 +2091,16 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     merlons.count = merlonCount;
     merlons.name = 'Town Hall crenellated openwork parapet';
     root.add(merlons);
+    // The real parapet is OPENWORK: dark arch openings pierce it between the merlons.
+    const parapetOpenings = new THREE.InstancedMesh(new THREE.BoxGeometry(0.6, 0.5, 0.34), materials.dark, merlonCount - 1);
+    for (let i = 0; i < merlonCount - 1; i++) {
+      merDummy.position.set(-width / 2 + 1.2 + i * 1.2, eaveY + 0.35, 0.6);
+      merDummy.updateMatrix();
+      parapetOpenings.setMatrixAt(i, merDummy.matrix);
+    }
+    parapetOpenings.count = merlonCount - 1;
+    parapetOpenings.name = 'Town Hall openwork parapet arches';
+    root.add(parapetOpenings);
     // Gilded cresting (fleurons) along the roof ridge — the real roofline is dressed in gold.
     const crestCount = Math.floor(width / 1.5);
     const crests = new THREE.InstancedMesh(new THREE.ConeGeometry(0.16, 0.6, 6), materials.gold, crestCount);
@@ -2262,6 +2298,8 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     baseButtresses.count = 4;
     baseButtresses.name = 'Tower base corner buttresses';
     tower.add(baseButtresses);
+    // A wider dark stone plinth courses around the tower base, as on the real tower foot.
+    box(tower, towerW + 1.6, 1.0, towerW + 1.6, 0, 0.5, 0, darkStone, 'Tower base plinth course');
     // The square shaft is chained with oversized stone quoins at its four corners.
     const tqRows = Math.floor(54 / 4.5);
     const towerQuoins = new THREE.InstancedMesh(new THREE.BoxGeometry(0.42, 0.9, 0.42), trim, tqRows * 4);
@@ -2823,6 +2861,8 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     box(root, width + 0.9, 0.8, depth + 0.7, 0, height - 0.4, -depth / 2, trim, 'King’s House upper cornice');
     // A string-course band runs under the upper-storey windows of the real Broodhuis.
     box(root, width - 1.2, 0.22, 0.4, 0, 14.6, 0.22, darkStone, 'King’s House upper string course');
+    // A gilded trim line runs along the upper string course, as on the real Broodhuis.
+    box(root, width - 1.2, 0.05, 0.1, 0, 14.74, 0.3, materials.gold, 'King’s House upper string course gold trim');
     // Oversized quoins chain the front corners of the main block, and a row of modillions
     // stands under the upper cornice — standard dressing of Jamaer's real facade.
     const khQRows = Math.floor((height - 2) / 0.9);
@@ -3221,6 +3261,16 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     khUrns.count = 2;
     khUrns.name = 'King’s House parapet urns';
     root.add(khUrns);
+    // Openwork arch gaps pierce the Broodhuis crenellated parapet between the merlons.
+    const khParapetGaps = new THREE.InstancedMesh(new THREE.BoxGeometry(0.5, 0.45, 0.34), darkStone, 25);
+    for (let i = 0; i < 25; i++) {
+      khLd2.position.set(-width / 2 + 1.1 + i * (width - 2.2) / 25, height + 0.85, 0.6);
+      khLd2.updateMatrix();
+      khParapetGaps.setMatrixAt(i, khLd2.matrix);
+    }
+    khParapetGaps.count = 25;
+    khParapetGaps.name = 'King’s House openwork parapet gaps';
+    root.add(khParapetGaps);
 
     // Vast slate roof behind the central pavilion, ridge running along the long axis.
     const ridgeY = height + 6.5, eaveY = height + 0.5;
@@ -3356,6 +3406,8 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     khShaftSide.count = kss;
     khShaftSide.name = 'King’s House tower shaft side lancets';
     root.add(khShaftSide);
+    // A wider plinth course grounds the Broodhuis tower, as on the real tower foot.
+    box(root, 4.0, 1.0, 4.0, 0, 0.5, towerZ, darkStone, 'King’s House tower base plinth');
     cylinder(root, 1.35, 1.5, 2.6, 0, 34.3, towerZ, trim, 8).name = 'King’s House central tower octagonal top';
     // Louvered belfry openings around the octagonal top of the real Broodhuis tower.
     const khLouvers = new THREE.InstancedMesh(new THREE.BoxGeometry(0.9, 0.1, 0.2), darkStone, 8);
@@ -3681,6 +3733,19 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     frontageCrosses.count = 4;
     frontageCrosses.name = 'Grand-Place frontage sett crosses';
     plaza.add(frontageCrosses);
+    // A sett ring surrounds the Town Hall portal steps on the square, as on the real
+    // forecourt paving.
+    const portalRing = new THREE.InstancedMesh(new THREE.BoxGeometry(0.6, 0.06, 0.6), materials.pavingEdge, 8);
+    for (let i = 0; i < 8; i++) {
+      const a = i * Math.PI / 4;
+      dummy.position.set(8.5 + Math.cos(a) * 5.2, 0.015, 28.6 + Math.sin(a) * 3.4);
+      dummy.rotation.y = 0;
+      dummy.updateMatrix();
+      portalRing.setMatrixAt(i, dummy.matrix);
+    }
+    portalRing.count = 8;
+    portalRing.name = 'Grand-Place Town Hall portal sett ring';
+    plaza.add(portalRing);
     // Granite kerb stones along all four facade lines where the paving meets the buildings.
     for (const [w, d, x, z, n] of [[110, 0.5, 0, 35.6, 'south'], [110, 0.5, 0, -35.6, 'north'], [0.5, 71, -54.6, 0, 'west'], [0.5, 71, 54.6, 0, 'east']]) {
       box(plaza, w, 0.18, d, x, 0.02, z, materials.pavingEdge, `Grand-Place ${n} facade kerb`);

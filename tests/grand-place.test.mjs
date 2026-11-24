@@ -1164,3 +1164,21 @@ test('rounds 313-322: gallery spandrels, sill dripstones, mouth threshold lintel
   assert.ok(square.includes('downpipe wall brackets'));
   assert.ok(square.includes('pipeBrackets.count = 6'));
 });
+
+test('rounds 323-332: openwork parapet gaps (TH/Broodhuis/houses), tower base plinths, hanging shop signs, canopy crockets, string-course gold trim, portal sett ring, attic sills', () => {
+  assert.ok(square.includes('Town Hall openwork parapet arches'));
+  assert.ok(square.includes('parapetOpenings.count = merlonCount - 1'));
+  assert.ok(square.includes('King’s House openwork parapet gaps'));
+  assert.ok(square.includes('khParapetGaps.count = 25'));
+  assert.ok(square.includes('openwork parapet gaps'));
+  assert.ok(square.includes('parapetGaps.count = modillionCount - 1'));
+  assert.ok(square.includes('Tower base plinth course'));
+  assert.ok(square.includes('King’s House tower base plinth'));
+  assert.ok(square.includes('hanging shop sign'));
+  assert.ok(square.includes('Arcade canopy crocket balls'));
+  assert.ok(square.includes('canopyCrochets.count = arcBays'));
+  assert.ok(square.includes('King’s House upper string course gold trim'));
+  assert.ok(square.includes('Grand-Place Town Hall portal sett ring'));
+  assert.ok(square.includes('portalRing.count = 8'));
+  assert.ok(square.includes('attic window sill'));
+});
