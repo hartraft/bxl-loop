@@ -81,6 +81,13 @@ test('the tower lantern is openwork, with corner turrets and flying buttresses',
   assert.ok(square.includes('Flying buttress'));
 });
 
+test('the spire apex carries a gilded orb and St Michael his raised sword', () => {
+  assert.ok(square.includes("'Spire gilded orb finial'"));
+  assert.ok(square.includes('new THREE.SphereGeometry(0.5, 12, 10), materials.gold, 0, 96.15, 0'));
+  assert.ok(square.includes("'Saint Michael raised sword'"));
+  assert.ok(square.includes("'Saint Michael dragon'"));
+});
+
 test('the Town Hall buttresses are pinnacled with spires and gilded finials', () => {
   assert.ok(square.includes("'Facade pinnacle spire'"));
   assert.ok(square.includes("'Facade pinnacle gilded finial'"));
