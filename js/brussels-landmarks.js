@@ -4823,6 +4823,15 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       box(g, 0.9, 7.2, 0.7, -70 + side * 2.6, 3.6, -68.75, materials.paleStone, 'Royal Stables gate pier');
       box(g, 1.1, 0.3, 0.9, -70 + side * 2.6, 7.35, -68.75, materials.warmStone, 'Royal Stables gate pier cap');
     }
+
+    // Benches face the park main pond from its south rim.
+    for (const bx of [-10, 10]) {
+      box(g, 3.0, 0.12, 0.8, bx, 1.35, 165.5, materials.dark, 'Park pond bench seat');
+      box(g, 3.0, 0.6, 0.12, bx, 1.6, 165.9, materials.dark, 'Park pond bench back');
+      for (const side of [-1, 1]) {
+        box(g, 0.12, 1.3, 0.7, bx + side * 1.4, 0.65, 165.5, materials.dark, 'Park pond bench leg');
+      }
+    }
   });
     addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');

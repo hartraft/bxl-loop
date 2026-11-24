@@ -1533,3 +1533,8 @@ testCase('gate piers with caps flank the Royal Stables gate door', () => {
 testCase('stone corbels carry the central balcony slab', () => {
   assert.match(palace, /'Central balcony corbel'/);
 });
+
+testCase('benches face the main pond from its south rim', () => {
+  assert.match(palace, /'Park pond bench seat'/);
+  assert.match(palace, /'Park pond bench back'/);
+});
