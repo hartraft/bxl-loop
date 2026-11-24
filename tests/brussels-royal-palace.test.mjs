@@ -329,3 +329,691 @@ testCase('real-world fidelity lock: every documented feature of the real palace 
   ];
   for (const marker of markers) assert.match(palace, marker);
 });
+
+testCase('portico column shafts are fluted (fût cannelé)', () => {
+  assert.match(palace, /fluted shafts/);
+  assert.match(palace, /'Portico column fluting'/);
+  assert.match(palace, /flutes\.count = fi/);
+  assert.match(palace, /for \(let fk = 0; fk < 16; fk\+\+\)/);
+});
+
+testCase('piano nobile wing windows carry a small triangular pediment (inférieure à fronton)', () => {
+  assert.match(palace, /inférieure à fronton/);
+  assert.match(palace, /if \(floorY === 9\.9\)/);
+  assert.match(palace, /'Piano nobile window pediment'/);
+});
+
+testCase('pavilion dormers (lucarne en pavillon) pierce the terminal pavilion roofs', () => {
+  assert.match(palace, /lucarne en pavillon/);
+  assert.match(palace, /'Pavilion dormer'/);
+  assert.match(palace, /'Pavilion dormer window'/);
+  assert.match(palace, /'Pavilion dormer pavilion roof'/);
+  assert.match(palace, /for \(const dx of \[-3\.2, 0, 3\.2\]\)/);
+});
+
+testCase('double smooth colonnettes with socles flank each central attic window', () => {
+  assert.match(palace, /Double smooth-shafted colonnettes/);
+  assert.match(palace, /'Attic colonnette socle'/);
+  assert.match(palace, /'Attic colonnette capital'/);
+  assert.match(palace, /for \(const dx of \[-1\.95, 1\.95\]\)/);
+});
+
+testCase('a second row of attic oculi lights the central attic (deux rangs d’oeil-de-boeuf)', () => {
+  assert.match(palace, /deux rangs d'œil-de-boeuf/);
+  assert.match(palace, /'Central attic oculus'/);
+  assert.match(palace, /'Central attic oculus surround'/);
+  assert.match(palace, /for \(let i = 0; i < 4; i\+\+\)/);
+});
+
+testCase('the central corps roof is a flat terrasson bordered by a stone balustrade', () => {
+  assert.match(palace, /flat terrasson bordered by a stone balustrade/);
+  assert.match(palace, /'Central corps roof terrasson'/);
+  assert.match(palace, /'Terrasson balustrade posts'/);
+  assert.match(palace, /'Terrasson balustrade front rail'/);
+  assert.match(palace, /trPost\.count = tri/);
+});
+
+testCase('the side façades keep the pilaster order of the front (aile de sept travées)', () => {
+  assert.match(palace, /aile de sept travées/);
+  assert.match(palace, /'Wing end pilaster'/);
+  assert.match(palace, /box\(g, 0\.34, 20, 0\.3, side \* 70\.1, 10, -3\.5 - i \* 5/);
+});
+
+testCase('a palace-surroundings landmark carries the rectangular 13.1 ha Brussels Park lawn', () => {
+  assert.match(palace, /rectangular 13\.1 ha neoclassical park/);
+  assert.match(palace, /addLandmark\('palaceSurroundings'/);
+  assert.match(palace, /'Brussels Park lawn'/);
+});
+
+testCase('a central avenue leads from the palace axis to the park main pond', () => {
+  assert.match(palace, /central avenue leads to the main pond/);
+  assert.match(palace, /'Park central avenue to the main pond'/);
+});
+
+testCase('the main park pond with its 1855 fountain stands at the end of the central avenue', () => {
+  assert.match(palace, /constructed in 1855/);
+  assert.match(palace, /'Park main pond rim'/);
+  assert.match(palace, /'Park main pond water'/);
+  assert.match(palace, /'Park main fountain jet'/);
+});
+
+testCase('the octagonal basin (1780) with eight Hermes busts rings the north end of the axis', () => {
+  assert.match(palace, /octagonal basin \(1780\)/);
+  assert.match(palace, /'Park octagonal basin rim'/);
+  assert.match(palace, /'Park Hermes bust'/);
+  assert.match(palace, /for \(let hk = 0; hk < 8; hk\+\+\)/);
+});
+
+testCase('two bandstands: Cluysenaar 1841 twelve-sided kiosk and the 1913 Vauxhall bandstand', () => {
+  assert.match(palace, /twelve-sided cast-iron kiosk by Cluysenaar \(1841\)/);
+  assert.match(palace, /'Park main bandstand kiosk'/);
+  assert.match(palace, /'Park Vauxhall bandstand kiosk'/);
+  assert.match(palace, /'Park Vauxhall bandstand dome'/);
+});
+
+testCase('monumental railings (erected 1849 to Suys designs) enclose the park with axis gates', () => {
+  assert.match(palace, /erected in 1849/);
+  assert.match(palace, /'Park perimeter railing posts'/);
+  assert.match(palace, /'Park main gate pier'/);
+  assert.match(palace, /parkRail\.count = pri/);
+});
+
+testCase('around sixty Greco-Roman statues on pedestals stand in Brussels Park', () => {
+  assert.match(palace, /Greco-Roman mythology/);
+  assert.match(palace, /'Park statue pedestals'/);
+  assert.match(palace, /'Park statue figures'/);
+  assert.match(palace, /for \(let i = 0; i < 60; i\+\+\)/);
+});
+
+testCase('three avenues radiate from the main pond toward the long views', () => {
+  assert.match(palace, /three other avenues radiate/);
+  assert.match(palace, /'Park radiating avenue'/);
+  assert.match(palace, /av\.rotation\.y = Math\.PI \/ 2 - ra/);
+});
+
+testCase('rows of trees line the central avenue of Brussels Park', () => {
+  assert.match(palace, /Tree-lined avenues/);
+  assert.match(palace, /'Park avenue tree trunks'/);
+  assert.match(palace, /'Park avenue tree canopies'/);
+  assert.match(palace, /trunks\.count = tri2/);
+});
+
+testCase('the two shallows (bas-fonds) on the palace side of the park remain', () => {
+  assert.match(palace, /Two shallows \(bas-fonds\)/);
+  assert.match(palace, /'Park west shallow \(bas-fond\)'/);
+  assert.match(palace, /'Park east shallow \(bas-fond\)'/);
+});
+
+testCase('the Academy Palace closes the east end of the Place des Palais (1823-28, Prince of Orange)', () => {
+  assert.match(palace, /Prince of Orange by Vander Straeten and Suys/);
+  assert.match(palace, /'Academy Palace main block'/);
+  assert.match(palace, /'Academy Palace portico column'/);
+  assert.match(palace, /'Academy Palace portico pediment'/);
+  assert.match(palace, /'Academy Palace Ionic pilaster'/);
+  assert.match(palace, /'Academy Palace attic'/);
+});
+
+testCase('the Academy Palace garden holds its six named statues', () => {
+  assert.match(palace, /Stas monument/);
+  assert.match(palace, /'Academy garden pedestal'/);
+  assert.match(palace, /'Quetelet statue'/);
+  assert.match(palace, /'Discobole statue'/);
+  assert.match(palace, /'La Surprise statue'/);
+});
+
+testCase('the Hôtel Belle-Vue (BELvue museum) closes the west end of the Place des Palais', () => {
+  assert.match(palace, /built 1776-77 by Philippe de Proft/);
+  assert.match(palace, /'BELvue Hôtel Belle-Vue block'/);
+  assert.match(palace, /'BELvue pavilion roof'/);
+  assert.match(palace, /'BELvue piano nobile window'/);
+});
+
+testCase('the Place des Palais sett paving spans the full 350 m width of the square', () => {
+  assert.match(palace, /70 x 350 m and entirely paved/);
+  assert.match(palace, /'Place des Palais west sett field'/);
+  assert.match(palace, /'Place des Palais full-width sett paving'/);
+  assert.match(palace, /setts2\.count = si2/);
+});
+
+testCase('the Palace of the Nation faces the Royal Palace across the park on the axis', () => {
+  assert.match(palace, /Guimard's 1778-83 neoclassical palace facing the Royal Palace/);
+  assert.match(palace, /'Palace of the Nation central block'/);
+  assert.match(palace, /'Palace of the Nation peristyle column'/);
+  assert.match(palace, /'Palace of the Nation pediment'/);
+  assert.match(palace, /for \(let i = 0; i < 8; i\+\+\)/);
+});
+
+testCase('Godecharle Justice relief figures and an attic balustrade crown the Palace of the Nation', () => {
+  assert.match(palace, /Justice punishing Vices and rewarding/);
+  assert.match(palace, /'Palace of the Nation pediment relief figure'/);
+  assert.match(palace, /'Palace of the Nation attic balustrade'/);
+  assert.match(palace, /pnBal\.count = pni/);
+});
+
+testCase('the Royal Stables stand south-east of the palace by the Rue Ducale', () => {
+  assert.match(palace, /Royal Stables \(Écuries royales\)/);
+  assert.match(palace, /'Royal Stables main range'/);
+  assert.match(palace, /'Royal Stables hipped roof'/);
+  assert.match(palace, /'Royal Stables arched window'/);
+});
+
+testCase('the equestrian statue of Leopold II stands on the Place du Trône south-east of the palace', () => {
+  assert.match(palace, /Place du Trône, south-east of the palace/);
+  assert.match(palace, /'Leopold II statue pedestal'/);
+  assert.match(palace, /'Leopold II equestrian horse'/);
+  assert.match(palace, /'Leopold II pedestal dedication plaque'/);
+});
+
+testCase('the Place du Trône carries three parterres from Balat 1868-69 design', () => {
+  assert.match(palace, /three parterres and a monumental fence/);
+  assert.match(palace, /'Place du Trône parterre bed'/);
+  assert.match(palace, /'Place du Trône paving'/);
+});
+
+testCase('the four thoroughfares frame Brussels Park (Rue de la Loi, Royale, Ducale)', () => {
+  assert.match(palace, /four thoroughfares/);
+  assert.match(palace, /'Rue de la Loi street strip'/);
+  assert.match(palace, /'Rue Royale street strip'/);
+  assert.match(palace, /'Rue Ducale street strip'/);
+});
+
+testCase('the Royal Park Theatre (1782) stands on the park edge facing the Palace of the Nation', () => {
+  assert.match(palace, /built 1782 on the Vaux-Hall site/);
+  assert.match(palace, /'Royal Park Theatre block'/);
+  assert.match(palace, /'Royal Park Theatre facade window'/);
+  assert.match(palace, /'Royal Park Theatre entrance door'/);
+});
+
+testCase('the Poelaert south gatehouse (1857) crowns the park central path entrance', () => {
+  assert.match(palace, /designed by Joseph Poelaert in/);
+  assert.match(palace, /'Poelaert south gate entablature'/);
+  assert.match(palace, /'Poelaert south gate pediment'/);
+});
+
+testCase('Art Deco lampposts (1930s) line the park avenues', () => {
+  assert.match(palace, /Art Deco lampposts/);
+  assert.match(palace, /'Park Art Deco lamppost poles'/);
+  assert.match(palace, /'Park Art Deco lamp heads'/);
+  assert.match(palace, /lampPole\.count = lpi/);
+});
+
+testCase('a double row of lime trees surrounds the park perimeter (19th century)', () => {
+  assert.match(palace, /double row of lime trees/);
+  assert.match(palace, /'Park perimeter lime trunks'/);
+  assert.match(palace, /'Park perimeter lime canopies'/);
+  assert.match(palace, /limeTrunk\.count = lti/);
+});
+
+testCase('the 1960s Parc/Park metro entrance pavilion stands in the park NW corner', () => {
+  assert.match(palace, /north-western corner/);
+  assert.match(palace, /'Parc metro entrance pavilion base'/);
+  assert.match(palace, /'Parc metro entrance canopy'/);
+});
+
+testCase('the Hôtel de la Liste Civile attaches to the east end of the palace frontage', () => {
+  assert.match(palace, /Hôtel de la Liste Civile stands at the EAST end/);
+  assert.match(palace, /'Hôtel de la Liste Civile block'/);
+  assert.match(palace, /'Liste Civile hipped roof'/);
+  assert.match(palace, /'Liste Civile piano nobile window'/);
+});
+
+testCase('the palace rear gardens are English style with lawn and scattered trees', () => {
+  assert.match(palace, /English style at the rear/);
+  assert.match(palace, /'Rear English-style garden lawn'/);
+  assert.match(palace, /'Rear garden tree canopies'/);
+});
+
+testCase('the portico carries a coffered soffit ceiling under the entablature', () => {
+  assert.match(palace, /coffered soffit ceiling/);
+  assert.match(palace, /'Portico soffit ceiling'/);
+  assert.match(palace, /'Portico soffit coffers'/);
+  assert.match(palace, /coffers\.count = cfi/);
+});
+
+testCase('the central avant-corps carries windows on its side faces too', () => {
+  assert.match(palace, /oblique views from the square never see a blank side wall/);
+  assert.match(palace, /'Central corps side window \(piano nobile\)'/);
+  assert.match(palace, /'Central corps side window \(ground\)'/);
+});
+
+testCase('the dome lantern is crowned by a gilded finial ball and spike', () => {
+  assert.match(palace, /gilded finial ball and spike/);
+  assert.match(palace, /'Dome lantern gilded finial'/);
+  assert.match(palace, /'Dome lantern finial spike'/);
+});
+
+testCase('a gravel central walk runs from the garden gate to the perron on the axis', () => {
+  assert.match(palace, /gravel central walk runs from the garden gate/);
+  assert.match(palace, /'Garden central walk'/);
+});
+
+testCase('each sunken parterre is edged with a clipped boxwood border', () => {
+  assert.match(palace, /clipped boxwood border/);
+  assert.match(palace, /'Parterre boxwood border'/);
+});
+
+testCase('bronze floodlight fixtures along the garden wall light the palace at night', () => {
+  assert.match(palace, /floodlight fixtures stand along the garden/);
+  assert.match(palace, /'Facade floodlight fixture'/);
+  assert.match(palace, /'Facade floodlight head'/);
+});
+
+testCase('the Academy Palace avant-corps carry double pilasters, pediments and 1879 reliefs', () => {
+  assert.match(palace, /1879 bas-reliefs of Arts, Letters, Sciences, Medicine/);
+  assert.match(palace, /'Academy Palace avant-corps'/);
+  assert.match(palace, /'Academy avant-corps double pilaster'/);
+  assert.match(palace, /'Academy 1879 bas-relief panel'/);
+});
+
+testCase('the Academy Palace garden is closed along Rue Ducale by a balustraded wall', () => {
+  assert.match(palace, /white-stone wall/);
+  assert.match(palace, /'Academy Rue Ducale boundary wall'/);
+  assert.match(palace, /'Academy boundary balustrade'/);
+  assert.match(palace, /awBal\.count = awi/);
+});
+
+testCase('the BELvue pavilion carries corner quoins and hipped-roof dormers', () => {
+  assert.match(palace, /chaînage d'angle/);
+  assert.match(palace, /'BELvue corner quoin'/);
+  assert.match(palace, /'BELvue dormer'/);
+  assert.match(palace, /'BELvue dormer roof'/);
+});
+
+testCase('the Royal Stables open with a carriage arch onto the courtyard road', () => {
+  assert.match(palace, /carriage arch on their courtyard front/);
+  assert.match(palace, /'Royal Stables carriage arch'/);
+  assert.match(palace, /'Royal Stables arch impost'/);
+});
+
+testCase('the Boulevard du Régent runs south-east from the Place du Trône (Small Ring)', () => {
+  assert.match(palace, /Boulevard du Régent \(Small Ring\)/);
+  assert.match(palace, /'Boulevard du Régent street strip'/);
+  assert.match(palace, /bdR\.rotation\.y = Math\.PI \/ 4/);
+});
+
+testCase('the Rue Ducale extends south from the park to the Place du Trône', () => {
+  assert.match(palace, /Rue Ducale runs south from the park/);
+  assert.match(palace, /'Rue Ducale south extension to Place du Trône'/);
+});
+
+testCase('a carriage gate arch pierces the south avant-corps on the palace axis', () => {
+  assert.match(palace, /accessible by road from the south/);
+  assert.match(palace, /Cour d’honneur south carriage gate/);
+  assert.match(palace, /'South carriage gate impost'/);
+});
+
+testCase('the Chamber and Senate hemicycles stand behind the Palace of the Nation', () => {
+  assert.match(palace, /two hemicycles/);
+  assert.match(palace, /'Chamber of Representatives hemicycle'/);
+  assert.match(palace, /'Senate hemicycle'/);
+  assert.match(palace, /'Senate hemicycle cornice'/);
+});
+
+testCase('16 rue de la Loi beside the Palace of the Nation is the Prime Minister seat', () => {
+  assert.match(palace, /Law Street 16/);
+  assert.match(palace, /'16 rue de la Loi Prime Minister seat'/);
+  assert.match(palace, /'Law Street 16 window'/);
+});
+
+testCase('the 1769 statue of Prince Charles Alexander of Lorraine stands in the park', () => {
+  assert.match(palace, /statue of Prince Charles Alexander of Lorraine/);
+  assert.match(palace, /'Charles of Lorraine statue pedestal'/);
+  assert.match(palace, /'Charles of Lorraine statue figure'/);
+});
+
+testCase('the Godecharle monument stands in Brussels Park', () => {
+  assert.match(palace, /monument to Godecharle/);
+  assert.match(palace, /'Godecharle monument pedestal'/);
+  assert.match(palace, /'Godecharle monument figure'/);
+});
+
+testCase('string courses divide the central corps storeys on the front', () => {
+  assert.match(palace, /String courses divide the central corps/);
+  assert.match(palace, /'Central first string course'/);
+  assert.match(palace, /'Central second string course'/);
+});
+
+testCase('every wing window has a projecting moulded surround (encadrement mouluré)', () => {
+  assert.match(palace, /encadrement mouluré/);
+  assert.match(palace, /'Wing window moulded surround'/);
+});
+
+testCase('the Academy Palace corner bays are coach-door entrances (portes cochères)', () => {
+  assert.match(palace, /coach doors \(portes/);
+  assert.match(palace, /'Academy Palace corner coach door'/);
+  assert.match(palace, /'Academy coach door lintel'/);
+});
+
+testCase('the Palace of the Nation wings carry window grids and hipped roofs', () => {
+  assert.match(palace, /window grids and slate roofs/);
+  assert.match(palace, /'Palace of the Nation wing roof'/);
+  assert.match(palace, /'Palace of the Nation wing window'/);
+});
+
+testCase('benches line the central avenue of Brussels Park', () => {
+  assert.match(palace, /Benches line the park's central avenue/);
+  assert.match(palace, /'Park avenue bench seat'/);
+  assert.match(palace, /'Park avenue bench back'/);
+});
+
+testCase('the perron is flanked by stone balustrade ramps', () => {
+  assert.match(palace, /flanked by stone balustrade ramps/);
+  assert.match(palace, /'Perron side balustrade'/);
+  assert.match(palace, /'Perron side rail'/);
+});
+
+testCase('the terminal pavilion roofs are crowned by gilded finial balls', () => {
+  assert.match(palace, /gilded finial ball, like the dome lantern/);
+  assert.match(palace, /'Pavilion roof gilded finial'/);
+  assert.match(palace, /for \(const x of \[-76, 76\]\)/);
+});
+
+testCase('ground-floor wing openings carry wrought-iron grilles', () => {
+  assert.match(palace, /wrought-iron grilles/);
+  assert.match(palace, /'Wing ground-floor window grille'/);
+  assert.match(palace, /'Wing grille bar'/);
+});
+
+testCase('the central entrance carries a gilded radial fanlight in the arch head', () => {
+  assert.match(palace, /gilded fanlight/);
+  assert.match(palace, /'Central entrance gilded fanlight'/);
+  assert.match(palace, /'Central fanlight radial bar'/);
+});
+
+testCase('the rear range and south avant-corps are roofed in slate', () => {
+  assert.match(palace, /roofed with slate/);
+  assert.match(palace, /'Rear range slate roof'/);
+  assert.match(palace, /'South avant-corps slate roof'/);
+});
+
+testCase('the Cour d’honneur is a gravelled court between the rear wings', () => {
+  assert.match(palace, /gravelled court/);
+  assert.match(palace, /'Cour d’honneur gravel court'/);
+});
+
+testCase('eight stone ribs stiffen the flattened dome from drum to lantern', () => {
+  assert.match(palace, /eight stone ribs/);
+  assert.match(palace, /'Dome rib'/);
+  assert.match(palace, /for \(let ri = 0; ri < 8; ri\+\+\)/);
+});
+
+testCase('the Academy Palace has seven bays on its north and south faces', () => {
+  assert.match(palace, /seven bays on its north and south faces/);
+  assert.match(palace, /'Academy Palace side window'/);
+  assert.match(palace, /for \(let i = 0; i < 7; i\+\+\)/);
+});
+
+testCase('the BELvue north face carries windows and an entrance door toward the park', () => {
+  assert.match(palace, /BELvue north face/);
+  assert.match(palace, /'BELvue north window'/);
+  assert.match(palace, /'BELvue north entrance door'/);
+});
+
+testCase('the Palace of the Nation closes its U around the Place de la Nation courtyard', () => {
+  assert.match(palace, /U-shaped around the Place de la Nation courtyard/);
+  assert.match(palace, /'Palace of the Nation rear range'/);
+  assert.match(palace, /'Place de la Nation courtyard paving'/);
+});
+
+testCase('a transverse walk crosses Brussels Park east-west at mid-depth', () => {
+  assert.match(palace, /transverse walk crosses the park east-west/);
+  assert.match(palace, /'Park transverse walk'/);
+});
+
+testCase('flower beds ring the main pond of Brussels Park', () => {
+  assert.match(palace, /flower beds ring the main pond/);
+  assert.match(palace, /'Park pond flower bed'/);
+  assert.match(palace, /'Park pond flower planting'/);
+});
+
+testCase('a lighter paved vista carpet runs from the portico to the park north gate', () => {
+  assert.match(palace, /central axis vista/);
+  assert.match(palace, /'Place des Palais central axis vista'/);
+});
+
+testCase('a moulded base cornice runs at the foot of each wing mansard', () => {
+  assert.match(palace, /mansard's base cornice/);
+  assert.match(palace, /'Wing mansard base cornice'/);
+});
+
+testCase('the terminal pavilion cornices carry modillions', () => {
+  assert.match(palace, /pavilion cornices carry modillions/);
+  assert.match(palace, /'Terminal pavilion modillion'/);
+  assert.match(palace, /for \(let mi2 = 0; mi2 < 7; mi2\+\+\)/);
+});
+
+testCase('the Academy Palace is roofed with a slate mansard and dormers', () => {
+  assert.match(palace, /slate mansard carrying dormers/);
+  assert.match(palace, /'Academy Palace mansard roof'/);
+  assert.match(palace, /'Academy Palace roof dormer'/);
+});
+
+testCase('the Royal Stables wrap a paved courtyard with side and rear ranges', () => {
+  assert.match(palace, /wrap a courtyard with a side range/);
+  assert.match(palace, /'Royal Stables west range'/);
+  assert.match(palace, /'Royal Stables rear range'/);
+  assert.match(palace, /'Royal Stables courtyard paving'/);
+});
+
+testCase('the octagonal basin carries its own central fountain', () => {
+  assert.match(palace, /own central fountain jet/);
+  assert.match(palace, /'Octagonal basin fountain jet'/);
+  assert.match(palace, /'Octagonal basin fountain spray'/);
+});
+
+testCase('the portico colonnade stands on a raised paved stylobate', () => {
+  assert.match(palace, /raised paved stylobate floor/);
+  assert.match(palace, /'Portico stylobate floor'/);
+  assert.match(palace, /'Portico stylobate edge'/);
+});
+
+testCase('the main pediment is crowned with corner and apex acroteria', () => {
+  assert.match(palace, /acroteria/);
+  assert.match(palace, /'Pediment acroterion figure'/);
+  assert.match(palace, /'Pediment acroterion head'/);
+});
+
+testCase('the Rue Royale extends south from the park toward the Place Royale', () => {
+  assert.match(palace, /Rue Royale runs south from the park/);
+  assert.match(palace, /'Rue Royale south extension to Place Royale'/);
+});
+
+testCase('the Academy boulevard side is scanned by blue-stone pilasters', () => {
+  assert.match(palace, /blue-stone pilasters/);
+  assert.match(palace, /'Academy boulevard-side blue-stone pilaster'/);
+});
+
+testCase('the wing end faces are capped by an end cornice and blocking course', () => {
+  assert.match(palace, /end cornice/);
+  assert.match(palace, /'Wing end cornice'/);
+  assert.match(palace, /'Wing end blocking course'/);
+});
+
+testCase('the Palace of the Nation peristyle has an entablature and portico steps', () => {
+  assert.match(palace, /full entablature over its columns/);
+  assert.match(palace, /'Palace of the Nation peristyle entablature'/);
+  assert.match(palace, /'Palace of the Nation portico step'/);
+  assert.match(palace, /for \(let s = 0; s < 4; s\+\+\)/);
+});
+
+testCase('the central portico bay has a bronze double door with panels and gilded transom', () => {
+  assert.match(palace, /bronze double entrance door/);
+  assert.match(palace, /'Central bronze entrance door'/);
+  assert.match(palace, /'Central door recessed panel'/);
+  assert.match(palace, /'Central door gilded transom'/);
+});
+
+testCase('four clipped lawn panels fill Brussels Park between the walks', () => {
+  assert.match(palace, /clipped lawn panels/);
+  assert.match(palace, /'Park lawn panel'/);
+  assert.match(palace, /'Park lawn panel edging'/);
+});
+
+testCase('a grille closes the Academy Palace garden to the north (wall to the west)', () => {
+  assert.match(palace, /grille to the north and east/);
+  assert.match(palace, /'Academy garden north grille'/);
+  assert.match(palace, /agGrille\.count = agi/);
+});
+
+testCase('the pavilion outer faces are capped by an end cornice', () => {
+  assert.match(palace, /pavilion outer faces are capped/);
+  assert.match(palace, /'Pavilion outer cornice'/);
+});
+
+testCase('the BELvue roof carries a small balustraded terrace', () => {
+  assert.match(palace, /balustraded terrace around its apex/);
+  assert.match(palace, /'BELvue roof terrace balustrade'/);
+  assert.match(palace, /bvBal\.count = bvi/);
+});
+
+testCase('the central garden gate is crowned by a pediment and gilded urn', () => {
+  assert.match(palace, /crowned by a small pediment and gilded urn/);
+  assert.match(palace, /'Garden central gate pediment'/);
+  assert.match(palace, /'Garden central gate gilded urn'/);
+});
+
+testCase('busts of Roman emperors ring the main pond of the park', () => {
+  assert.match(palace, /Busts of Roman emperors ring the main pond/);
+  assert.match(palace, /'Park Roman emperor bust'/);
+  assert.match(palace, /for \(let bk = 0; bk < 8; bk\+\+\)/);
+});
+
+testCase('a grille closes the Academy Palace garden to the east toward the palace', () => {
+  assert.match(palace, /grilled to the east/);
+  assert.match(palace, /'Academy garden east grille'/);
+  assert.match(palace, /aeGrille\.count = aei/);
+});
+
+testCase('the rear Cour d’honneur wings are roofed in slate', () => {
+  assert.match(palace, /rear Cour d'honneur wings are roofed in slate/);
+  assert.match(palace, /'Rear wing slate roof'/);
+});
+
+testCase('the south avant-corps is capped by an end cornice over its pediment', () => {
+  assert.match(palace, /capped by an end cornice over its pediment/);
+  assert.match(palace, /'South avant-corps end cornice'/);
+});
+
+testCase('gilded finials mark the ends of each wing mansard ridge', () => {
+  assert.match(palace, /ridge finials mark the ends/);
+  assert.match(palace, /'Wing mansard ridge finial'/);
+});
+
+testCase('the Palace of the Nation colonnade stands on a stylobate platform', () => {
+  assert.match(palace, /raised stylobate platform/);
+  assert.match(palace, /'Palace of the Nation peristyle stylobate'/);
+  assert.match(palace, /'Palace of the Nation stylobate edge'/);
+});
+
+testCase('the main bandstand kiosk has a raised orchestra platform', () => {
+  assert.match(palace, /raised circular platform/);
+  assert.match(palace, /'Bandstand orchestra platform'/);
+});
+
+testCase('the Rue de la Loi continues north past Parliament toward the EU quarter', () => {
+  assert.match(palace, /north extension to the EU quarter/);
+  assert.match(palace, /'Rue de la Loi north extension to the EU quarter'/);
+});
+
+testCase('each terminal pavilion carries a capped chimney stack', () => {
+  assert.match(palace, /chimney stack with a stone cap/);
+  assert.match(palace, /'Pavilion chimney stack'/);
+  assert.match(palace, /'Pavilion chimney cap'/);
+});
+
+testCase('a moulded base course runs under the central attic', () => {
+  assert.match(palace, /base course runs under the central attic/);
+  assert.match(palace, /'Central attic base course'/);
+});
+
+testCase('the Academy Palace portico pediment carries an acroterion', () => {
+  assert.match(palace, /pediment is crowned by a small sculptural acroterion/);
+  assert.match(palace, /'Academy portico pediment acroterion'/);
+});
+
+testCase('surroundings fidelity lock: park, square, end buildings and Parliament all present', () => {
+  const markers = [
+    /'Brussels Park lawn'/,
+    /'Park central avenue to the main pond'/,
+    /'Park main pond rim'/,
+    /'Park octagonal basin rim'/,
+    /'Park Hermes bust'/,
+    /'Park main bandstand kiosk'/,
+    /'Park Vauxhall bandstand kiosk'/,
+    /'Park perimeter railing posts'/,
+    /'Poelaert south gate pediment'/,
+    /'Park Art Deco lamppost poles'/,
+    /'Park perimeter lime trunks'/,
+    /'Park statue pedestals'/,
+    /'Park Roman emperor bust'/,
+    /'Place des Palais full-width sett paving'/,
+    /'Academy Palace main block'/,
+    /'Academy Palace portico pediment'/,
+    /'Academy garden north grille'/,
+    /'BELvue Hôtel Belle-Vue block'/,
+    /'Hôtel de la Liste Civile block'/,
+    /'Palace of the Nation central block'/,
+    /'Palace of the Nation peristyle column'/,
+    /'Chamber of Representatives hemicycle'/,
+    /'Senate hemicycle'/,
+    /'Royal Stables main range'/,
+    /'Leopold II equestrian horse'/,
+    /'Royal Park Theatre block'/,
+    /'Parc metro entrance canopy'/,
+    /'16 rue de la Loi Prime Minister seat'/,
+  ];
+  for (const marker of markers) assert.match(palace, marker);
+});
+
+testCase('the lateral garden gates carry pediments and gilded urns like the central gate', () => {
+  assert.match(palace, /like the central gate/);
+  assert.match(palace, /'Garden lateral gate pediment'/);
+  assert.match(palace, /'Garden lateral gate gilded urn'/);
+  assert.match(palace, /for \(const gx of \[-38, 38\]\)/);
+});
+
+testCase('final lock: palace and surroundings both fully present in the landmarks source', () => {
+  const palaceMarkers = [
+    /'Portico column fluting'/,
+    /'Piano nobile window pediment'/,
+    /'Pavilion dormer pavilion roof'/,
+    /'Central attic oculus'/,
+    /'Central corps roof terrasson'/,
+    /'Wing end pilaster'/,
+    /'Curved gallery column'/,
+    /'Portico soffit coffers'/,
+    /'Central corps side window \(piano nobile\)'/,
+    /'Dome lantern gilded finial'/,
+    /'Garden central walk'/,
+    /'Facade floodlight fixture'/,
+    /'Cour d’honneur south carriage gate'/,
+    /'Portico stylobate floor'/,
+    /'Pediment acroterion figure'/,
+    /'Central bronze entrance door'/,
+    /'Wing mansard base cornice'/,
+    /'Terminal pavilion modillion'/,
+    /'Rear wing slate roof'/,
+    /'Wing mansard ridge finial'/,
+    /'Pavilion chimney cap'/,
+    /'Central attic base course'/,
+    /'Garden lateral gate pediment'/,
+  ];
+  const surroundingsMarkers = [
+    /addLandmark\('palaceSurroundings'/,
+    /'Brussels Park lawn'/,
+    /'Palace of the Nation central block'/,
+    /'Academy Palace main block'/,
+    /'BELvue Hôtel Belle-Vue block'/,
+    /'Place des Palais full-width sett paving'/,
+    /'Leopold II equestrian horse'/,
+  ];
+  for (const marker of [...palaceMarkers, ...surroundingsMarkers]) assert.match(palace, marker);
+  assert.match(palace, /monument\.heritage\.brussels inventories 30402/);
+});
+
+testCase('the rear English-style garden lives in the surroundings landmark, not the palace bounds', () => {
+  assert.match(palace, /'Rear English-style garden lawn'/);
+  const surStart = palace.indexOf("addLandmark('palaceSurroundings'");
+  const lawnIdx = palace.indexOf("'Rear English-style garden lawn'");
+  assert.ok(surStart !== -1 && lawnIdx > surStart, 'rear garden must be inside the palaceSurroundings slice');
+});
