@@ -1,4 +1,5 @@
 import * as THREE from 'three/webgpu';
+import { sphereWithinDistance } from './culling-math.mjs';
 
 // js/scene-culling.js
 // Spatial culling for the city-wide static geometry. Most of the street furniture and building massing is
@@ -307,10 +308,7 @@ const state = { culled: [] };
 function updateSceneCulling(cameraPosition) {
   const { x, y, z } = cameraPosition;
   for (const c of state.culled) {
-    const dx = c.x - x;
-    const dy = c.y - y;
-    const dz = c.z - z;
-    c.mesh.visible = Math.sqrt(dx * dx + dy * dy + dz * dz) - c.r < c.d;
+    c.mesh.visible = sphereWithinDistance(c.x, c.y, c.z, c.r, c.d, x, y, z);
   }
 }
 
