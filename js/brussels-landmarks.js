@@ -3937,6 +3937,15 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       const px = -30 + k * 6;
       cylinder(g, 0.62, 0.58, 0.18, px, 0.99, 11.0, potMat, 12).name = 'Flower pot rim';
     }
+
+    // Mullions divide the wing end windows on both gable ends.
+    for (const side of [-1, 1]) {
+      for (let i = 0; i < 3; i++) {
+        const wz = -6 - i * 5;
+        box(g, 0.06, 3.2, 0.08, side * 70.12, 12.5, wz, ashlar, 'Wing end window mullion');
+        box(g, 0.06, 2.4, 0.08, side * 70.12, 6.5, wz, ashlar, 'Wing end ground window mullion');
+      }
+    }
   });
   addLandmark('palaceSurroundings', (g) => {
     // Real-world sources: en/fr Wikipedia (Royal Palace of Brussels, Brussels Park, Place des Palais,

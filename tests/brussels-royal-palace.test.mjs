@@ -1687,3 +1687,8 @@ testCase('rim rings finish the eleven great flower pots', () => {
 testCase('centre mullions divide the Palace of the Nation wing windows', () => {
   assert.match(palace, /'Palace of the Nation wing window mullion'/);
 });
+
+testCase('mullions divide the wing end windows on both gable ends', () => {
+  assert.match(palace, /'Wing end window mullion'/);
+  assert.match(palace, /'Wing end ground window mullion'/);
+});
