@@ -596,3 +596,14 @@ test('every workflow that runs tools/shot.py installs Pillow for its render asse
     assert.match(yml, /pip install[^\n]*pillow/, `${f} runs tools/shot.py but does not install pillow`);
   }
 });
+
+test('Broodhuis: gable oculus with step cresting, gallery voussoirs, niche canopy pinnacles (rounds 69-72)', () => {
+  assert.ok(square.includes('King’s House gable oculus'));
+  assert.ok(square.includes('King’s House gable oculus rim'));
+  assert.ok(square.includes('King’s House gable step cresting'));
+  assert.ok(square.includes('khVoussoirs.count = khV'));
+  assert.ok(square.includes('bays * 5'));
+  assert.ok(square.includes('King’s House gallery arch voussoirs'));
+  assert.ok(square.includes('King’s House statue canopy pinnacles'));
+  assert.ok(square.includes('khPinnacles.count = khPinBalls.count = khN'));
+});

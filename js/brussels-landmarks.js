@@ -1249,6 +1249,25 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       archR.rotation.z = 0.55;
     }
     box(root, width - 1.2, 0.24, 0.5, 0, 6.7, 0.2, darkStone, 'Ground gallery string course');
+    // Dressed voussoir wedges ringing each pointed gallery arch, as in the real
+    // Broodhuis ground arcade archivolt.
+    const khVoussoirs = new THREE.InstancedMesh(new THREE.BoxGeometry(0.36, 0.3, 0.42), trim, bays * 5);
+    const khVd = new THREE.Object3D();
+    let khV = 0;
+    for (let i = 0; i < bays; i++) {
+      const x = -width / 2 + bayW * (i + 0.5);
+      for (let j = 0; j < 5; j++) {
+        const a = Math.PI * (0.14 + 0.72 * (j / 4));
+        khVd.position.set(x + Math.cos(a) * 1.12, 6.05 + Math.sin(a) * 0.85, 0.2);
+        khVd.rotation.z = a - Math.PI / 2;
+        khVd.updateMatrix();
+        khVoussoirs.setMatrixAt(khV++, khVd.matrix);
+        khVd.rotation.z = 0;
+      }
+    }
+    khVoussoirs.count = khV;
+    khVoussoirs.name = 'King’s House gallery arch voussoirs';
+    root.add(khVoussoirs);
     // First-floor gallery: arched windows above a continuous balustrade.
     box(root, width - 1.5, 0.85, 0.55, 0, 7.6, 0.4, trim, 'First gallery balustrade');
     for (let i = 0; i < bays; i++) {
@@ -1304,6 +1323,23 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     khStatues.name = 'King’s House gilded statues';
     khNiches.castShadow = khStatues.castShadow = true;
     root.add(khNiches, khStatues);
+    // Crocketed canopy pinnacles crowning each gilded-statue niche, as on the real facade.
+    const khPinnacles = new THREE.InstancedMesh(new THREE.ConeGeometry(0.22, 0.7, 4), trim, khN);
+    const khPinBalls = new THREE.InstancedMesh(new THREE.SphereGeometry(0.08, 6, 5), materials.gold, khN);
+    const khPd = new THREE.Object3D();
+    for (let i = 1, p = 0; i <= bays; i += 2, p++) {
+      const x = -width / 2 + i * bayW;
+      khPd.position.set(x, 11.85, 0.36);
+      khPd.updateMatrix();
+      khPinnacles.setMatrixAt(p, khPd.matrix);
+      khPd.position.y += 0.42;
+      khPd.updateMatrix();
+      khPinBalls.setMatrixAt(p, khPd.matrix);
+    }
+    khPinnacles.count = khPinBalls.count = khN;
+    khPinnacles.name = 'King’s House statue canopy pinnacles';
+    khPinBalls.name = 'King’s House pinnacle finial balls';
+    root.add(khPinnacles, khPinBalls);
 
     // Standard-bearer statues dotting the parapet, as on the real roofline.
     for (let i = 0; i < 6; i++) {
@@ -1340,6 +1376,27 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     gable.lineTo(gw / 2 - 1.2, 2.2); gable.lineTo(gw / 2 - 1.2, 1.1); gable.lineTo(gw / 2, 1.1);
     gable.lineTo(gw / 2, 0); gable.closePath();
     mesh(root, new THREE.ShapeGeometry(gable), stone, 0, height + 2.5, 0.3, 'King’s House central stepped gable');
+    // Oculus (oeil-de-boeuf) traceried into the central gable with stone cresting
+    // finials on each gable step, as on Jamaer's real 1890s Broodhuis risalit gable.
+    const gableRim = cylinder(root, 0.66, 0.66, 0.18, 0, height + 5.0, 0.32, trim, 20);
+    gableRim.name = 'King’s House gable oculus rim';
+    mesh(root, new THREE.CircleGeometry(0.5, 20), glass, 0, height + 5.0, 0.34, 'King’s House gable oculus');
+    const khCrest = new THREE.InstancedMesh(new THREE.CylinderGeometry(0.07, 0.2, 0.55, 6), trim, 6);
+    const khCrestBall = new THREE.InstancedMesh(new THREE.SphereGeometry(0.09, 6, 5), materials.gold, 6);
+    const khCd = new THREE.Object3D();
+    const crestPts = [[-gw / 2 + 0.6, 1.1], [-gw / 2 + 1.8, 2.2], [-gw / 2 + 3.0, 3.3], [gw / 2 - 3.0, 3.3], [gw / 2 - 1.8, 2.2], [gw / 2 - 0.6, 1.1]];
+    for (let c = 0; c < 6; c++) {
+      khCd.position.set(crestPts[c][0], height + 2.5 + crestPts[c][1] + 0.28, 0.32);
+      khCd.updateMatrix();
+      khCrest.setMatrixAt(c, khCd.matrix);
+      khCd.position.y += 0.32;
+      khCd.updateMatrix();
+      khCrestBall.setMatrixAt(c, khCd.matrix);
+    }
+    khCrest.count = khCrestBall.count = 6;
+    khCrest.name = 'King’s House gable step cresting';
+    khCrestBall.name = 'King’s House gable crest finial balls';
+    root.add(khCrest, khCrestBall);
     const towerZ = -depth / 2 - 0.7;
     box(root, 2.8, 33, 2.8, 0, 16.5, towerZ, trim, 'King’s House central tower square shaft');
     cylinder(root, 1.35, 1.5, 2.6, 0, 34.3, towerZ, trim, 8).name = 'King’s House central tower octagonal top';
