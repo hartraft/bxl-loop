@@ -3654,6 +3654,17 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     tymp.moveTo(-9.6, 0); tymp.lineTo(9.6, 0); tymp.lineTo(0, 4.6); tymp.closePath();
     mesh(g, new THREE.ShapeGeometry(tymp), stone, 0, 23.85, centralFace + 0.24, 'Pediment tympanum panel');
     box(g, 23.0, 0.3, 0.5, 0, 23.62, centralFace + 0.3, moulding, 'Pediment tympanum frame base');
+
+    // Real dormers (lucarne en pavillon style) pierce the front slope of each wing mansard.
+    for (const x of wingXs) {
+      for (const dx of [-14, 0, 14]) {
+        box(g, 1.3, 1.7, 0.32, x + dx, 21.9, facadeZ + 0.55, stone, 'Wing mansard dormer');
+        box(g, 0.85, 1.1, 0.36, x + dx, 21.9, facadeZ + 0.58, glass, 'Wing mansard dormer window');
+        const dm = new THREE.Shape();
+        dm.moveTo(-0.85, 0); dm.lineTo(0.85, 0); dm.lineTo(0, 0.55); dm.closePath();
+        mesh(g, new THREE.ShapeGeometry(dm), moulding, x + dx, 22.85, facadeZ + 0.56, 'Wing dormer pediment');
+      }
+    }
   });
   addLandmark('palaceSurroundings', (g) => {
     // Real-world sources: en/fr Wikipedia (Royal Palace of Brussels, Brussels Park, Place des Palais,

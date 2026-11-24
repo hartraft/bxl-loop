@@ -1074,3 +1074,9 @@ testCase('the pediment tympanum is an inset panel within its moulded frame', () 
   assert.match(palace, /'Pediment tympanum panel'/);
   assert.match(palace, /'Pediment tympanum frame base'/);
 });
+
+testCase('dormers pierce the front slope of each wing mansard', () => {
+  assert.match(palace, /pierce the front slope/);
+  assert.match(palace, /'Wing mansard dormer'/);
+  assert.match(palace, /'Wing dormer pediment'/);
+});
