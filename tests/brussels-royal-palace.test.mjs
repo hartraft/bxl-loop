@@ -1722,3 +1722,7 @@ testCase('a moulded surround frames the Palace of the Nation main door', () => {
 testCase('jambs frame the BELvue entrance door', () => {
   assert.match(palace, /'BELvue door jamb'/);
 });
+
+testCase('moulded edges finish the sides of each perron step', () => {
+  assert.match(palace, /'Perron step edge'/);
+});

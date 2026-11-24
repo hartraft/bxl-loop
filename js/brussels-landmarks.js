@@ -3960,6 +3960,13 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
         box(g, 0.14, 0.2, 2.3, side * 70.12, 5.25, wz, ashlar, 'Wing end ground window sill');
       }
     }
+
+    // Moulded edges finish the sides of each perron step.
+    for (let s = 0; s < 3; s++) {
+      for (const side of [-1, 1]) {
+        box(g, 0.15, 0.32, 0.62, side * 8.5, 0.79 - s * 0.32, centralFace + 0.3 + s * 0.62, moulding, 'Perron step edge');
+      }
+    }
   });
   addLandmark('palaceSurroundings', (g) => {
     // Real-world sources: en/fr Wikipedia (Royal Palace of Brussels, Brussels Park, Place des Palais,
