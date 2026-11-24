@@ -5236,6 +5236,9 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       const px = -168 - 28 + i * 8;
       mesh(g, new THREE.SphereGeometry(0.28, 10, 8), materials.warmStone, px, 18.6, 21.15, 'Academy pilaster volute');
     }
+
+    // A projecting plinth bases the Palace of the Nation facade.
+    box(g, 62, 0.5, 0.6, 0, 0.25, 403.1, materials.paleStone, 'Palace of the Nation base plinth');
   });
     addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');

@@ -1842,3 +1842,7 @@ testCase('a leaf split divides the portico main door into two leaves', () => {
 testCase('volutes finish the Academy Palace pilaster capitals', () => {
   assert.match(palace, /'Academy pilaster volute'/);
 });
+
+testCase('a projecting plinth bases the Palace of the Nation facade', () => {
+  assert.match(palace, /'Palace of the Nation base plinth'/);
+});
