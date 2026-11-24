@@ -2225,6 +2225,12 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     box(g, 344, 0.24, 340, 0, 0.0, 232, materials.green, 'Brussels Park lawn');
     // A central avenue leads to the main pond from the palace axis (Wikipedia, Brussels Park).
     box(g, 12, 0.08, 176, 0, 0.06, 150, materials.pavingA, 'Park central avenue to the main pond');
+    // The main water basin with its fountain was constructed in 1855 at the end of the central avenue.
+    const parkWater = new THREE.MeshStandardMaterial({ color: 0x3d6b7a, roughness: 0.25, metalness: 0.1 });
+    cylinder(g, 16, 16.6, 1.0, 0, 0.5, 150, materials.paleStone, 28).name = 'Park main pond rim';
+    cylinder(g, 15.4, 15.4, 0.5, 0, 0.55, 150, parkWater, 28).name = 'Park main pond water';
+    cylinder(g, 0.22, 0.55, 6.5, 0, 3.4, 150, parkWater, 10).name = 'Park main fountain jet';
+    mesh(g, new THREE.ConeGeometry(1.6, 2.2, 10), parkWater, 0, 6.6, 150, 'Park main fountain spray');
   });
     addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');

@@ -389,3 +389,10 @@ testCase('a central avenue leads from the palace axis to the park main pond', ()
   assert.match(palace, /central avenue leads to the main pond/);
   assert.match(palace, /'Park central avenue to the main pond'/);
 });
+
+testCase('the main park pond with its 1855 fountain stands at the end of the central avenue', () => {
+  assert.match(palace, /constructed in 1855/);
+  assert.match(palace, /'Park main pond rim'/);
+  assert.match(palace, /'Park main pond water'/);
+  assert.match(palace, /'Park main fountain jet'/);
+});
