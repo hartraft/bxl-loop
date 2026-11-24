@@ -1859,3 +1859,7 @@ testCase('side gates open in the east and west park railings', () => {
 testCase('low walls border the central garden walk', () => {
   assert.match(palace, /'Garden walk low wall'/);
 });
+
+testCase('stone surrounds frame the Royal Stables arched windows', () => {
+  assert.match(palace, /'Royal Stables window surround'/);
+});
