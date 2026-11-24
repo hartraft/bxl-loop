@@ -748,3 +748,9 @@ testCase('the BELvue north face carries windows and an entrance door toward the 
   assert.match(palace, /'BELvue north window'/);
   assert.match(palace, /'BELvue north entrance door'/);
 });
+
+testCase('the Palace of the Nation closes its U around the Place de la Nation courtyard', () => {
+  assert.match(palace, /U-shaped around the Place de la Nation courtyard/);
+  assert.match(palace, /'Palace of the Nation rear range'/);
+  assert.match(palace, /'Place de la Nation courtyard paving'/);
+});

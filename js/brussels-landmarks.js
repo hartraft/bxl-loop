@@ -2762,6 +2762,11 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       box(g, 2.2, 4.6, 0.2, 168 - 13 + i * 6.5, 11, 50.1, materials.glass, 'BELvue north window');
     }
     box(g, 3.6, 4.8, 0.4, 168, 2.4, 50.2, materials.dark, 'BELvue north entrance door');
+    // The Palace of the Nation is U-shaped around the Place de la Nation courtyard: a rear
+    // range joins the wings behind the central block.
+    box(g, 80, 18, 16, 0, 9, 446, materials.plaster, 'Palace of the Nation rear range');
+    box(g, 82, 1.0, 18, 0, 18.5, 446, materials.warmStone, 'Palace of the Nation rear cornice');
+    box(g, 150, 0.14, 22, 0, 0.05, 438, materials.pavingEdge, 'Place de la Nation courtyard paving');
   });
     addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');
