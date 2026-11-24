@@ -1149,3 +1149,7 @@ testCase('the Royal Stables have a projecting gatehouse with pediment and gate d
   assert.match(palace, /'Royal Stables gatehouse pediment'/);
   assert.match(palace, /'Royal Stables gate door'/);
 });
+
+testCase('contrasting sett accent rows cross the Place des Palais on the palace axis', () => {
+  assert.match(palace, /'Place des Palais sett accent row'/);
+});

@@ -4291,6 +4291,11 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     mesh(g, new THREE.ShapeGeometry(rsPed), materials.warmStone, -70, 15.8, -68.95, 'Royal Stables gatehouse pediment');
     box(g, 3.8, 0.25, 0.5, -70, 6.7, -68.9, materials.warmStone, 'Royal Stables gate lintel');
     box(g, 3.2, 6.5, 0.3, -70, 3.25, -68.8, materials.dark, 'Royal Stables gate door');
+
+    // Contrasting sett rows mark the palace axis across the paved Place des Palais.
+    for (const az of [24, 36, 48]) {
+      box(g, 260, 0.12, 1.2, 0, 0.06, az, materials.pavingB, 'Place des Palais sett accent row');
+    }
   });
     addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');
