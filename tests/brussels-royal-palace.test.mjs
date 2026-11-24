@@ -68,6 +68,14 @@ testCase('the front garden holds the real three sunken parterres (central on the
   assert.match(palace, /\{ x: 38, w: 34, z: 12\.4, d: 2\.6 \}/);
 });
 
+testCase("the north façade is white Euville limestone over a dark slate roof, as in the real building", () => {
+  assert.match(palace, /white Euville limestone/);
+  assert.match(palace, /color: 0xece4d3/);
+  assert.match(palace, /color: 0xf2ead9/);
+  assert.match(palace, /color: 0x4b555e/);
+  assert.match(palace, /color: 0x2c3338/);
+});
+
 testCase("the palace wraps a southern quadrangle: rear wings and rear range close the Cour d'honneur", () => {
   assert.match(palace, /Cour d'honneur/);
   assert.match(palace, /'Palace rear wing \(Cour d’honneur\)'/);
