@@ -2926,6 +2926,9 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     box(g, 55, 0.16, 5.1, 0, 0.56, 400.2, materials.warmStone, 'Palace of the Nation stylobate edge');
     // Inside the Cluysenaar kiosk the orchestra plays from a raised circular platform.
     cylinder(g, 2.6, 2.9, 0.6, -46, 0.55, 150, materials.warmStone, 12).name = 'Bandstand orchestra platform';
+    // The Rue de la Loi continues north from the Palace of the Nation toward the
+    // European Quarter (the N3 to Aachen begins here).
+    box(g, 16, 0.06, 90, 0, 0.03, 470, materials.pavingA, 'Rue de la Loi north extension to the EU quarter');
   });
     addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');

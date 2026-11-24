@@ -909,3 +909,8 @@ testCase('the main bandstand kiosk has a raised orchestra platform', () => {
   assert.match(palace, /raised circular platform/);
   assert.match(palace, /'Bandstand orchestra platform'/);
 });
+
+testCase('the Rue de la Loi continues north past Parliament toward the EU quarter', () => {
+  assert.match(palace, /north extension to the EU quarter/);
+  assert.match(palace, /'Rue de la Loi north extension to the EU quarter'/);
+});
