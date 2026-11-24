@@ -672,3 +672,8 @@ testCase('string courses divide the central corps storeys on the front', () => {
   assert.match(palace, /'Central first string course'/);
   assert.match(palace, /'Central second string course'/);
 });
+
+testCase('every wing window has a projecting moulded surround (encadrement mouluré)', () => {
+  assert.match(palace, /encadrement mouluré/);
+  assert.match(palace, /'Wing window moulded surround'/);
+});

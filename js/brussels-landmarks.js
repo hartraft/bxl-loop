@@ -2296,6 +2296,17 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     // String courses divide the central corps' storeys on the front, as on the wings.
     box(g, 34.6, 0.3, 0.3, 0, 8.6, centralFace + 0.15, moulding, 'Central first string course');
     box(g, 34.6, 0.3, 0.3, 0, 16.4, centralFace + 0.15, moulding, 'Central second string course');
+
+    // Every wing window has a projecting moulded surround band (encadrement mouluré),
+    // proud of the wall face — the heritage fiche's "fenêtres à encadrement mouluré".
+    for (const x of wingXs) {
+      for (let i = 0; i < 9; i++) {
+        const bx = x - 22 + i * 5.5;
+        for (const [floorY, winH] of [[9.9, 3.55], [16.0, 3.0]]) {
+          box(g, 2.5, winH + 0.6, 0.12, bx, floorY, facadeZ + 0.3, ashlar, 'Wing window moulded surround');
+        }
+      }
+    }
   });
   addLandmark('palaceSurroundings', (g) => {
     // Brussels Park (Parc de Bruxelles): the rectangular 13.1 ha neoclassical park north of the
