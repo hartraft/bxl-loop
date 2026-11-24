@@ -110,6 +110,44 @@ test('the spire apex carries a gilded orb and St Michael his raised sword', () =
   assert.ok(square.includes("'Saint Michael dragon'"));
 });
 
+test('the Town Hall portal has wooden door leaves, transom bar and kick plate', () => {
+  assert.ok(square.includes("'Portal door leaves'"));
+  assert.ok(square.includes("'Portal door transom bar'"));
+  assert.ok(square.includes("'Portal door kick plate'"));
+});
+
+test('the Town Hall portal has stone entrance steps onto the square', () => {
+  assert.equal((square.match(/'Portal entrance step'/g) || []).length, 1);
+  assert.ok(square.includes("box(tower, 5.4 - i * 0.8, 0.22, 0.7, 0, 0.11 + i * 0.22, towerW / 2 + 0.55 + i * 0.55, darkStone, 'Portal entrance step')"));
+});
+
+test('the Town Hall base lancets sit under trefoil tympana', () => {
+  assert.ok(square.includes("'Tower lancet trefoil tympana'"));
+  assert.ok(square.includes('trefoils.count = tr'));
+  assert.ok(square.includes('new THREE.CylinderGeometry(0.32, 0.32, 0.14, 12).rotateX(Math.PI / 2), trim, 12)'));
+});
+
+test('a balustraded balcony connects the Town Hall wings; statues have canopy hoods', () => {
+  assert.ok(square.includes("'Wing-connecting balcony'"));
+  assert.ok(square.includes("'Wing-connecting balcony balusters'"));
+  assert.ok(square.includes('wingBalusters.count = wb'));
+  assert.ok(square.includes("'Arcade statue canopy hoods'"));
+  assert.ok(square.includes('canopies.count = cn'));
+});
+
+test('Town Hall arcade arches carry voussoirs; wing cornices stand on modillions', () => {
+  assert.ok(square.includes("'Arcade arch voussoirs'"));
+  assert.ok(square.includes('voussoirs.count = vi'));
+  assert.ok(square.includes("'Town Hall wing cornice modillions'"));
+  assert.ok(square.includes('wingMods.count = wm'));
+});
+
+test('the Town Hall tower shaft is chained with corner quoins', () => {
+  assert.ok(square.includes("'Town Hall tower corner quoins'"));
+  assert.ok(square.includes('towerQuoins.count = tq'));
+  assert.ok(square.includes('new THREE.BoxGeometry(0.42, 0.9, 0.42), trim, tqRows * 4)'));
+});
+
 test('the Town Hall buttresses are pinnacled with spires and gilded finials', () => {
   assert.ok(square.includes("'Facade pinnacle spire'"));
   assert.ok(square.includes("'Facade pinnacle gilded finial'"));
@@ -159,6 +197,13 @@ test('guild-house cornices stand on a row of stone corbels (modillions)', () => 
   assert.ok(square.includes("box(root, width + 0.8, 0.65, depth + 0.4, 0, height - 0.35, -depth / 2, materials.gold, name + ' cornice')"));
 });
 
+test('guild-house cornices have dentils and plinths have rustication grooves', () => {
+  assert.ok(square.includes(" cornice dentils'"));
+  assert.ok(square.includes('dentils.count = dentilCount'));
+  assert.ok(square.includes(" plinth rustication grooves'"));
+  assert.ok(square.includes('rustication.count = 2'));
+});
+
 test('guild-house corners are chained with rusticated quoins', () => {
   assert.ok(square.includes(" corner quoins'"));
   assert.ok(square.includes('const quoinRows = Math.max(3, Math.floor((height - 2.2) / 0.85))'));
@@ -171,6 +216,27 @@ test('guild-house gables are flanked by pots à feu (stone vase + flame)', () =>
   assert.ok(square.includes(" gable fire pot flame'"));
   assert.ok(square.includes('new THREE.ConeGeometry(0.17, 0.5, 8), materials.gold, 2)'));
   assert.ok(square.includes('potVases.count = potFlames.count = 2'));
+});
+
+test('Sainte-Barbe has her niche statue; every house roof has chimneys with pots', () => {
+  assert.ok(square.includes('style: \'stepped\', saintStatue: true }'));
+  assert.ok(square.includes(" St Barbara niche'"));
+  assert.ok(square.includes(" St Barbara statue'"));
+  assert.ok(square.includes(" roof chimneys'"));
+  assert.ok(square.includes('chimneys.count = ch'));
+  assert.ok(square.includes('chimneyPots.count = ch * 2'));
+});
+
+test('paving has banded rows + facade kerbs; houses have downpipes and awning side flaps', () => {
+  assert.ok(source.includes("'Grand-Place cobblestone courses C (banded rows)'"));
+  assert.ok(source.includes('cobblesC.count = c'));
+  assert.ok(source.includes('if (row % 5 === 4) cobblesC.setMatrixAt(c++, dummy.matrix);'));
+  assert.ok(source.includes('`Grand-Place ${n} facade kerb`'), 'kerb template in the four-side loop');
+  assert.equal((source.match(/\[(110, 0\.5, 0, 35\.6|110, 0\.5, 0, -35\.6|0\.5, 71, -54\.6|0\.5, 71, 54\.6)/g) || []).length, 4, 'kerb on all four sides');
+  assert.ok(square.includes(" rainwater downpipes'"));
+  assert.ok(square.includes('downpipes.count = 2'));
+  assert.ok(square.includes(" awning side flaps'"));
+  assert.ok(square.includes('sideFlaps.count = 2'));
 });
 
 test('guild houses carry the real names on the real sides, with Baroque detailing', () => {
@@ -187,8 +253,8 @@ test('guild houses carry the real names on the real sides, with Baroque detailin
 
 test('guild-house windows are divided by stone cross-mullions (croisées)', () => {
   assert.ok(square.includes(" window stone cross-mullions'"));
-  assert.ok(square.includes('new THREE.BoxGeometry(0.09, 1.45, 0.06), stone, bays * floors)'));
-  assert.ok(square.includes('new THREE.BoxGeometry(1.05, 0.09, 0.06), stone, bays * floors)'));
+  assert.ok(square.includes('new THREE.BoxGeometry(0.09, 1.45, 0.06), croisillonMat, bays * floors)'));
+  assert.ok(square.includes('new THREE.BoxGeometry(1.05, 0.09, 0.06), croisillonMat, bays * floors)'));
   assert.ok(square.includes('mullionV.setMatrixAt(index, dummy.matrix)'));
   assert.ok(square.includes('root.add(windows, frames, mullionV, mullionH)'));
 });
@@ -198,6 +264,21 @@ test('every guild house has an arched door leaf with a gilded fanlight in its ce
   assert.ok(square.includes(" door fanlight'"));
   assert.ok(square.includes('box(root, 0.95, 2.5, 0.12, 0, 1.55, 0.42, materials.dark, name +'));
   assert.ok(square.includes('fanlight.rotation.x = Math.PI / 2'));
+});
+
+test('guild-house windows have folded-back shutters and storeys are split by string courses', () => {
+  assert.ok(square.includes(" window shutters'"));
+  assert.ok(square.includes('shutters.count = index * 2'));
+  assert.ok(square.includes(" inter-floor string courses'"));
+  assert.ok(square.includes('stringCourses.count = sc'));
+});
+
+test('guild houses carry rebuild-date cartouches, door pediments and gable attic windows', () => {
+  assert.ok(square.includes(" rebuild date cartouche'"));
+  assert.ok(square.includes(" rebuild date cartouche rim'"));
+  assert.ok(square.includes(" door surround pediment'"));
+  assert.ok(square.includes(" gable attic windows'"));
+  assert.ok(square.includes('atticWindows.count = 2'));
 });
 
 test('guild houses have the real arcaded ground floors and gilded gable emblems', () => {
@@ -219,7 +300,7 @@ test('guild houses have the real arcaded ground floors and gilded gable emblems'
 test('Le Paon wears the characteristic 18th-century neck gable (halsgevel)', () => {
   assert.ok(square.includes("style === 'neck'"));
   assert.ok(square.includes('shape.quadraticCurveTo(-w2, 3.2, -w2 + 1.8, 3.2)'));
-  assert.ok(square.includes("Le Paon', x: -38, width: 12, height: 22, floors: 3, style: 'neck', stone: materials.paleStone }"));
+  assert.ok(square.includes("Le Paon', x: -38, width: 12, height: 22, floors: 3, style: 'neck', stone: materials.paleStone, emblem: 'peacock' }"));
 });
 
 test('guild-house rooflines stay varied and instanced', () => {
@@ -271,7 +352,7 @@ test('the east frontage is the Maison des Ducs de Brabant: duke busts + Abundanc
 });
 
 test('L’Arbre d’Or roof carries the gilded equestrian statue of Charles of Lorraine', () => {
-  assert.ok(square.includes("L’Arbre d’Or', x: -18, width: 15, height: 22, style: 'stepped', stone: materials.ochre, terrace: true, equestrian: true, dukeBusts: true }"));
+  assert.ok(square.includes("L’Arbre d’Or', x: -18, width: 15, height: 22, style: 'stepped', stone: materials.ochre, terrace: true, equestrian: true, dukeBusts: true, emblem: 'barley' }"));
   assert.ok(square.includes(" equestrian horse body'"));
   assert.ok(square.includes(" Charles of Lorraine rider'"));
   assert.ok(square.includes(" Charles of Lorraine rider head'"));
@@ -297,7 +378,7 @@ test('La Louve carries the Romulus-and-Remus she-wolf relief and the Apollo pedi
 });
 
 test('La Brouette carries St Giles in the gable niche, the wheelbarrow and Anno 1697 cartouches', () => {
-  assert.ok(square.includes("La Brouette', x: 13.5, width: 8.5, height: 20, style: 'stepped', stone: materials.plaster, brouette: true }"));
+  assert.ok(square.includes("La Brouette', x: 13.5, width: 8.5, height: 20, style: 'stepped', stone: materials.plaster, brouette: true, pilasters: true }"));
   assert.ok(square.includes(" St Giles arched niche'"));
   assert.ok(square.includes(" St Giles statue'"));
   assert.ok(square.includes(" gilded wheelbarrow'"));
@@ -305,7 +386,7 @@ test('La Brouette carries St Giles in the gable niche, the wheelbarrow and Anno 
 });
 
 test('Le Sac carries the carpenter tool cartouches and the globe-compass finial', () => {
-  assert.ok(square.includes("Le Sac', x: 4, width: 8.5, height: 22, style: 'gable', stone: materials.warmStone, guildTools: true }"));
+  assert.ok(square.includes("Le Sac', x: 4, width: 8.5, height: 22, style: 'gable', stone: materials.warmStone, guildTools: true, garlands: true }"));
   assert.ok(square.includes(" globe finial'"));
   assert.ok(square.includes(" compass needle N-S'"));
   assert.ok(square.includes(" carpenter tool cartouches'"));
@@ -313,7 +394,7 @@ test('Le Sac carries the carpenter tool cartouches and the globe-compass finial'
 });
 
 test('Le Renard carries Justice with the four continents, St Nicholas and the fox sign', () => {
-  assert.ok(square.includes("Le Renard', x: -24.5, width: 8.5, height: 20, style: 'gable', stone: materials.warmStone, continents: true }"));
+  assert.ok(square.includes("Le Renard', x: -24.5, width: 8.5, height: 20, style: 'gable', stone: materials.warmStone, continents: true, caryatids: true }"));
   assert.ok(square.includes(" Justice and four continents statues'"));
   assert.ok(square.includes('continentStatues.count = 5'));
   assert.ok(square.includes(" St Nicholas gable statue body'"));
@@ -321,11 +402,45 @@ test('Le Renard carries Justice with the four continents, St Nicholas and the fo
 });
 
 test('Le Roy d’Espagne carries Roman emperor medallions and the St Aubert bust', () => {
-  assert.ok(square.includes('emblem: \'vane\', balustradeStatues: true, terrace: true, medallions: true }'));
+  assert.ok(square.includes('emblem: \'vane\', balustradeStatues: true, terrace: true, medallions: true, pilasters: true }'));
   assert.ok(square.includes(" Roman emperor medallions'"));
   assert.ok(square.includes('new THREE.CylinderGeometry(0.55, 0.55, 0.12, 20).rotateX(Math.PI / 2), materials.gold, 4)'));
   assert.ok(square.includes(" St Aubert bust'"));
   assert.ok(square.includes('medallions.count = 4'));
+});
+
+test('the named houses wear their real gable emblems', () => {
+  const expected = [
+    ['L’Étoile', "emblem: 'star'"],
+    ['Le Heaume', "emblem: 'helmet'"],
+    ['Le Paon', "emblem: 'peacock'"],
+    ['Le Cerf', "emblem: 'stag'"],
+    ['L’Ange', "emblem: 'angel'"],
+    ['La Chaloupe d’Or', "emblem: 'boat'"],
+    ['L’Arbre d’Or', "emblem: 'barley'"],
+    ['La Rose', "emblem: 'rose'"],
+    ['Le Mont Thabor', "emblem: 'flags'"]
+  ];
+  for (const [house, emblem] of expected) {
+    assert.ok(square.includes(`${house}', `) && square.includes(emblem), `${house} missing ${emblem}`);
+    const line = square.split('\n').find(l => l.includes(house) && l.includes('guildHouse'));
+    assert.ok(line && line.includes(emblem), `${house} spec line lacks ${emblem}`);
+  }
+});
+
+test('gable emblem kinds exist for the named houses: helmet, peacock, stag, angel, boat, star, rose, flags, barley', () => {
+  for (const kind of ['helmet', 'peacock', 'stag', 'angel', 'boat', 'star', 'rose', 'flags', 'barley']) {
+    assert.ok(square.includes(`kind === '${kind}'`), `missing emblem kind ${kind}`);
+  }
+  assert.ok(square.includes(" gilded helmet emblem'"));
+  assert.ok(square.includes(" peacock tail fan'"));
+  assert.ok(square.includes(" stag antler'"));
+  assert.ok(square.includes(" angel wing'"));
+  assert.ok(square.includes(" gilded chaloupe hull'"));
+  assert.ok(square.includes(" gilded star emblem'"));
+  assert.ok(square.includes(" gilded rose emblem'"));
+  assert.ok(square.includes(" gilded flag'"));
+  assert.ok(square.includes(" gilded barley sheaf'"));
 });
 
 test('signature house emblems: Le Cornet horse, Le Roy d’Espagne cupola-vane and six statues', () => {
@@ -343,19 +458,28 @@ test('houses wear their real facade colours: ochre and plaster alongside the sto
   assert.ok(source.includes('plaster: new THREE.MeshStandardMaterial'));
   assert.ok(square.includes("Le Cornet', x: -15, width: 8.5, height: 21, style: 'scroll', stone: materials.ochre"));
   assert.ok(square.includes("La Louve', x: -5.5, width: 8.5, height: 23, floors: 3, style: 'scroll', stone: materials.ochre"));
-  assert.ok(square.includes("La Chaloupe d’Or', x: 46.5, width: 11, height: 24, style: 'bell', stone: materials.ochre"));
+  assert.ok(square.includes("La Chaloupe d’Or', x: 46.5, width: 11, height: 24, style: 'bell', stone: materials.euville"));
   assert.ok(square.includes("L’Arbre d’Or', x: -18, width: 15, height: 22, style: 'stepped', stone: materials.ochre"));
   assert.ok(square.includes("Le Roy d’Espagne', x: 23, width: 8.5, height: 24, floors: 4, style: 'bell', stone: materials.plaster"));
-  assert.ok(square.includes("Le Cygne', x: -44, width: 12, height: 23, floors: 4, style: 'bell', stone: materials.plaster"));
+  assert.ok(square.includes("Le Cygne', x: -44, width: 12, height: 23, floors: 4, style: 'bell', stone: materials.gobertange"));
 });
 
 test('each street mouth carries a traditional blue enamel Brussels street sign', () => {
   assert.ok(source.includes('enamelBlue: new THREE.MeshStandardMaterial({ color: 0x1d4f91'));
   assert.ok(square.includes("'Brussels enamel street signs'"));
   assert.ok(square.includes("'Street sign posts'"));
-  assert.ok(square.includes('new THREE.BoxGeometry(1.5, 0.42, 0.06), materials.enamelBlue, plaques.length)'));
+  assert.ok(square.includes('new THREE.BoxGeometry(1.5, 0.42, 0.06), signGlow, plaques.length)'));
   assert.ok(square.includes('signRims.count = signBoards.count = signPosts.count = sg'));
   assert.ok(square.includes('applyMatrix4(front.matrixWorld)'));
+});
+
+test('’t Serclaes plaque on L’Étoile, plaque hoods, manholes and areaway grates in the paving', () => {
+  assert.ok(square.includes('Everard ’t Serclaes memorial plaque'));
+  assert.ok(square.includes('UNESCO plaque hood – ${street}'), 'a bronze hood over each UNESCO plaque (in the plaque loop)');
+  assert.ok(source.includes("'Grand-Place manhole covers'"));
+  assert.ok(source.includes('manholes.count = mh'));
+  assert.ok(source.includes("'Grand-Place cellar areaway grates'"));
+  assert.ok(source.includes('grates.count = gr'));
 });
 
 test('the seven real street mouths stay open, each with its bronze UNESCO plaque', () => {
@@ -379,7 +503,7 @@ test('the four frontages still face the plaza', () => {
 
 test('facades pick up a faint warm floodlight wash at night', () => {
   assert.ok(source.includes('facadeWashMats'));
-  assert.ok(source.includes("for (const key of ['limestone', 'paleStone', 'warmStone', 'ochre', 'plaster'])"));
+  assert.ok(source.includes("for (const key of ['limestone', 'paleStone', 'warmStone', 'ochre', 'plaster', 'gobertange', 'euville', 'gold', 'bronze', 'pavingA', 'pavingB'])"));
   assert.ok(source.includes('m.emissiveIntensity = level * 0.16'));
   assert.ok(source.includes('m.emissive.setHex(0xffd9a0)'));
 });
@@ -471,4 +595,211 @@ test('every workflow that runs tools/shot.py installs Pillow for its render asse
     const yml = readFileSync(new URL(`../.github/workflows/${f}`, import.meta.url), 'utf8');
     assert.match(yml, /pip install[^\n]*pillow/, `${f} runs tools/shot.py but does not install pillow`);
   }
+});
+
+test('Broodhuis: gable oculus with step cresting, gallery voussoirs, niche canopy pinnacles (rounds 69-72)', () => {
+  assert.ok(square.includes('King’s House gable oculus'));
+  assert.ok(square.includes('King’s House gable oculus rim'));
+  assert.ok(square.includes('King’s House gable step cresting'));
+  assert.ok(square.includes('khVoussoirs.count = khV'));
+  assert.ok(square.includes('bays * 5'));
+  assert.ok(square.includes('King’s House gallery arch voussoirs'));
+  assert.ok(square.includes('King’s House statue canopy pinnacles'));
+  assert.ok(square.includes('khPinnacles.count = khPinBalls.count = khN'));
+});
+
+test('Broodhuis: tower clock, central pointed portal with steps, city arms, dormer oculi, ridge cresting (rounds 73-76)', () => {
+  assert.ok(square.includes('King’s House tower clock face'));
+  assert.ok(square.includes('King’s House clock minute hand'));
+  assert.ok(square.includes('King’s House portal door leaves'));
+  assert.ok(square.includes('King’s House portal tympanum'));
+  assert.ok(square.includes('King’s House portal step'));
+  assert.ok(square.includes('King’s House Brussels coat of arms shield'));
+  assert.ok(square.includes('King’s House dormer oculi'));
+  assert.ok(square.includes('khDormOculi.count = khDormRims.count = 7'));
+  assert.ok(square.includes('King’s House roof ridge cresting'));
+  assert.ok(square.includes('khRidge.count = 11'));
+});
+
+test('Town Hall: belfry louvers + great bell, spire crochets, dragon wings (rounds 77-79)', () => {
+  assert.ok(square.includes('Belfry louver slats'));
+  assert.ok(square.includes('louvrs'.replace('rs', 'ers.count = lo')));
+  assert.ok(square.includes('Belfry great bell'));
+  assert.ok(square.includes('Spire rib gilded crochets'));
+  assert.ok(square.includes('crochets.count = ck'));
+  assert.ok(square.includes('Saint Michael dragon wings'));
+  assert.ok(square.includes('dragonWings.count = 2'));
+});
+
+test('Town Hall: archivolt prophets, gallery balustrade panels, lantern turret finials (rounds 80-82)', () => {
+  assert.ok(square.includes('Archivolt prophet statues'));
+  assert.ok(square.includes('archivoltProphets.count = ap'));
+  assert.ok(square.includes('Tower gallery balustrade panels'));
+  assert.ok(square.includes('galleryBalusters.count = 8'));
+  assert.ok(square.includes('Lantern corner turret gilded finials'));
+  assert.ok(square.includes('turretFinials.count = 4'));
+});
+
+test('Le Renard caryatids + haberdashery reliefs, La Brouette colossal pilasters, Le Sac garlands (rounds 83-86)', () => {
+  assert.ok(square.includes('second-floor caryatids'));
+  assert.ok(square.includes('caryatids.count = caryatidHeads.count = 3'));
+  assert.ok(square.includes('haberdashery bas-relief panels'));
+  assert.ok(square.includes('reliefs.count = 4'));
+  assert.ok(square.includes('colossal pilaster bands'));
+  assert.ok(square.includes('pilasters.count = 4'));
+  assert.ok(square.includes('flower garland ribbons'));
+  assert.ok(square.includes('garland fruit and flower dots'));
+  assert.ok(square.includes('fruits.count = fr'));
+});
+
+test('real building stones: Gobertange sandstone and Euville limestone houses, blue-stone croisillons on Le Mont Thabor (rounds 87-88)', () => {
+  assert.ok(source.includes("gobertange: new THREE.MeshStandardMaterial"));
+  assert.ok(source.includes("euville: new THREE.MeshStandardMaterial"));
+  assert.ok(source.includes("blueStone: new THREE.MeshStandardMaterial"));
+  assert.ok(source.includes("stone: materials.gobertange, emblem: 'star'"));
+  assert.ok(source.includes("style: 'bell', stone: materials.gobertange"));
+  assert.ok(square.includes("Sainte-Barbe', stone: materials.gobertange"));
+  assert.ok(source.includes("stone: materials.euville, emblem: 'helmet'"));
+  assert.ok(source.includes("stone: materials.euville, emblem: 'boat'"));
+  assert.ok(square.includes("croisillonMat = spec.blueStone ? materials.blueStone : stone"));
+  assert.ok(square.includes("emblem: 'flags', blueStone: true, stoneVase: true }"));
+  assert.ok(source.includes("'gobertange', 'euville'"), 'night floodlight wash also covers the new stones');
+});
+
+test('night: lit enamel street signs, floodlit gilding/bronze/paving, glowing café awnings (rounds 89-90, 95-96)', () => {
+  assert.ok(source.includes('nightGlowMats.push(signGlow)'));
+  assert.ok(square.includes('signGlow, plaques.length'));
+  assert.ok(source.includes("'gold', 'bronze', 'pavingA', 'pavingB'"), 'gold, bronze and paving join the night floodlight wash');
+  assert.ok(source.includes('nightGlowMats.push(awningGlow)'));
+  assert.ok(square.includes('awningGlow, bays'));
+});
+
+test('square paving detail: calepinage joints, street-mouth sett patches, tactile strips, facade floodlights (rounds 91-94)', () => {
+  assert.ok(square.includes('Grand-Place paving joints (long axis)'));
+  assert.ok(square.includes('jointsX.count = jx'));
+  assert.ok(square.includes('Grand-Place street-mouth granite sett patches'));
+  assert.ok(square.includes('settPatches.count = mouths.length'));
+  assert.ok(square.includes('Grand-Place tactile guidance strips'));
+  assert.ok(square.includes('tactiles.count = mouths.length'));
+  assert.ok(square.includes('Grand-Place facade floodlight projectors'));
+  assert.ok(square.includes('uplights.count = ul'));
+  assert.ok(square.includes('glowGlass, 24'));
+});
+
+test('Town Hall: hipped dormer pediments, balcony balusters, corner-turret lancet slits, spire-base pinnacles (rounds 97-100)', () => {
+  assert.ok(square.includes('Hipped dormer pediments'));
+  assert.ok(square.includes('dormerPeds.count = 11'));
+  assert.ok(square.includes('Upper-storey balcony balusters'));
+  assert.ok(square.includes('balconyBalusters.count = bb'));
+  assert.ok(square.includes('Corner turret lancet slits'));
+  assert.ok(square.includes('turretSlits.count = ts'));
+  assert.ok(square.includes('Spire base parapet ring'));
+  assert.ok(square.includes('Spire base pinnacles'));
+  assert.ok(square.includes('spireBasePins.count = 8'));
+});
+
+test('Town Hall: wing corner quoins, portal fanlight + hood mould, second-floor trefoils, ridge tiles (rounds 101-104)', () => {
+  assert.ok(square.includes('Town Hall wing corner quoins'));
+  assert.ok(square.includes('wingQuoins.count = wq'));
+  assert.ok(square.includes('Portal fanlight'));
+  assert.ok(square.includes('Portal hood mould'));
+  assert.ok(square.includes('Second-floor trefoil tympana'));
+  assert.ok(square.includes('floor2Trefoils.count = f2'));
+  assert.ok(square.includes('Town Hall roof ridge tiles'));
+  assert.ok(square.includes('ridgeTiles.count = ridgeTileCount'));
+});
+
+test('Broodhuis: corner quoins + cornice modillions, gallery balusters, upper mullions, dormer pediments, tower flag (rounds 105-110)', () => {
+  assert.ok(square.includes('King’s House corner quoins'));
+  assert.ok(square.includes('khQuoins.count = khQ'));
+  assert.ok(square.includes('King’s House cornice modillions'));
+  assert.ok(square.includes('khMods.count = 26'));
+  assert.ok(square.includes('King’s House first-gallery balusters'));
+  assert.ok(square.includes('khBalusters.count = 30'));
+  assert.ok(square.includes('King’s House upper window mullions'));
+  assert.ok(square.includes('khMullions.count = bays'));
+  assert.ok(square.includes('King’s House dormer pediments'));
+  assert.ok(square.includes('khDormPeds.count = 7'));
+  assert.ok(square.includes('King’s House tower gilded flag'));
+});
+
+test('guild houses: number plaques, arcade keystones, pilaster strips, blind frieze, tile rows, oculus rings, Roy d’Espagne pilasters, Mont Thabor vase (rounds 111-118)', () => {
+  assert.ok(square.includes('house number plaque'));
+  assert.ok(square.includes('arcade keystones'));
+  assert.ok(square.includes('keystones.count = bays'));
+  assert.ok(square.includes('facade pilaster strips'));
+  assert.ok(square.includes('pilasterStrips.count = pilasterStripCount'));
+  assert.ok(square.includes('blind-arcade cornice frieze'));
+  assert.ok(square.includes('frieze.count = friezeCount'));
+  assert.ok(square.includes('roof tile rows'));
+  assert.ok(square.includes('tileRows.count = tileRowCount'));
+  assert.ok(square.includes('gable oculus gilded ring'));
+  assert.ok(square.includes("medallions: true, pilasters: true }"));
+  assert.ok(square.includes('gable stone vase'));
+  assert.ok(square.includes("emblem: 'flags', blueStone: true, stoneVase: true }"));
+});
+
+test('Town Hall: eight archivolt prophets, cabbage-leaf finials, trefoil arcade band, historiated corbels (rounds 119-122)', () => {
+  assert.ok(square.includes('new THREE.BoxGeometry(0.22, 1.0, 0.14), materials.gold, 8)'));
+  assert.ok(square.includes('for (const f of [0.15, 0.4, 0.65, 0.9])'));
+  assert.ok(square.includes('archivoltProphets.count = ap'));
+  assert.ok(square.includes('Arcade arch cabbage-leaf finials'));
+  assert.ok(square.includes('leafFinials.count = trefoilBand.count = bays'));
+  assert.ok(square.includes('Arcade trefoil band'));
+  assert.ok(square.includes('Knight statue historiated corbels'));
+  assert.ok(square.includes('histCorbels.count = hc'));
+});
+
+test('Manneken Pis in his 1770 blue-stone rocaille niche with basin and 1851 railings; Broodhuis belfry louvers (rounds 123-124)', () => {
+  assert.ok(source.includes('Manneken Pis rocaille niche back'));
+  assert.ok(source.includes('Manneken Pis rocaille niche arch'));
+  assert.ok(source.includes('Manneken Pis bronze figure'));
+  assert.ok(source.includes('Manneken Pis water jet'));
+  assert.ok(source.includes('Manneken Pis stone basin'));
+  assert.ok(source.includes('Manneken Pis basin water'));
+  assert.ok(source.includes('Manneken Pis railing top hoop'));
+  assert.ok(source.includes('Manneken Pis commemorative plaque'));
+  assert.ok(source.includes('materials.blueStone, 12'));
+  assert.ok(square.includes('King’s House belfry louver openings'));
+  assert.ok(square.includes('khLouvers.count = 8'));
+});
+
+test('rounds 125-130: Broodhuis plinth rustication + gable cross, paving repairs, Serclaes sett ring, window sill corbels, gable volutes', () => {
+  assert.ok(square.includes('King’s House plinth rustication'));
+  assert.ok(square.includes('khRust.count = 3'));
+  assert.ok(square.includes('King’s House gable apex cross vertical'));
+  assert.ok(square.includes('Grand-Place paving repair patches'));
+  assert.ok(square.includes('repairs.count = 12'));
+  assert.ok(square.includes("Grand-Place 't Serclaes plaque sett ring"));
+  assert.ok(square.includes('serclaesRing.count = 8'));
+  assert.ok(square.includes('window sill corbels'));
+  assert.ok(square.includes('sillCorbels.count = scc'));
+  assert.ok(square.includes('gable shoulder volute scrolls'));
+  assert.ok(square.includes('volutes.count = 2'));
+});
+
+test('rounds 131-136: shutter hinge straps, Broodhuis gallery sills, balcony corbels, gallery merlons, Broodhuis dentils, fanlight rays', () => {
+  assert.ok(square.includes('shutter hinge straps'));
+  assert.ok(square.includes('hinges.count = hg'));
+  assert.ok(square.includes('King’s House first-gallery window sills'));
+  assert.ok(square.includes('khSills.count = bays'));
+  assert.ok(square.includes('Wing balcony historiated corbels'));
+  assert.ok(square.includes('balconyCorbels.count = 16'));
+  assert.ok(square.includes('Tower gallery parapet merlons'));
+  assert.ok(square.includes('galleryMerlons.count = 8'));
+  assert.ok(square.includes('King’s House upper cornice dentils'));
+  assert.ok(square.includes('khDentils.count = 26'));
+  assert.ok(square.includes('door fanlight rays'));
+  assert.ok(square.includes('fanRays.count = 5'));
+});
+
+test('rounds 137-140: arcade pier capitals, Broodhuis impost blocks, parapet finials, standard-bearer lances', () => {
+  assert.ok(square.includes('Arcade pier capitals'));
+  assert.ok(square.includes('pierCapitals.count = pc'));
+  assert.ok(square.includes('King’s House gallery arch impost blocks'));
+  assert.ok(square.includes('khImposts.count = ki'));
+  assert.ok(square.includes('parapet rail end finials'));
+  assert.ok(square.includes('parapetFinials.count = 2'));
+  assert.ok(square.includes('King’s House standard-bearer lances'));
+  assert.ok(square.includes('lances.count = 6'));
 });

@@ -20,6 +20,11 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     bronze: new THREE.MeshStandardMaterial({ color: 0x7a6238, roughness: 0.5, metalness: 0.55 }),
     ochre: new THREE.MeshStandardMaterial({ color: 0xc9a05e, roughness: 0.85 }),
     plaster: new THREE.MeshStandardMaterial({ color: 0xe9e0cb, roughness: 0.9 }),
+    // The two real building stones of the UNESCO facades: Gobertange calcareous
+    // sandstone and Euville oolitic limestone, plus blue stone (petit granit).
+    gobertange: new THREE.MeshStandardMaterial({ color: 0xcbbd9c, roughness: 0.86 }),
+    euville: new THREE.MeshStandardMaterial({ color: 0xd9cfb6, roughness: 0.8 }),
+    blueStone: new THREE.MeshStandardMaterial({ color: 0x55606e, roughness: 0.72 }),
     canvas: new THREE.MeshStandardMaterial({ color: 0x94402f, roughness: 0.95 }),
     enamelBlue: new THREE.MeshStandardMaterial({ color: 0x1d4f91, roughness: 0.45, metalness: 0.15 }),
     dark: new THREE.MeshStandardMaterial({ color: 0x4a4035, roughness: 0.92 }),
@@ -35,10 +40,18 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
   const glowGlass = materials.glass.clone();
   glowGlass.emissive = new THREE.Color(0x000000);
   nightGlowMats.push(glowGlass);
+  // The traditional enamel street signs are lit after dark — register a glowing clone.
+  const signGlow = materials.enamelBlue.clone();
+  signGlow.emissive = new THREE.Color(0x000000);
+  nightGlowMats.push(signGlow);
+  // The brasserie awnings glow warm from the café lights beneath them after dark.
+  const awningGlow = materials.canvas.clone();
+  awningGlow.emissive = new THREE.Color(0x000000);
+  nightGlowMats.push(awningGlow);
   // Facade stone materials get a faint warm floodlight wash at night (the real square is
   // floodlit after dark) — clone them so daytime rendering is untouched.
   const facadeWashMats = [];
-  for (const key of ['limestone', 'paleStone', 'warmStone', 'ochre', 'plaster']) {
+  for (const key of ['limestone', 'paleStone', 'warmStone', 'ochre', 'plaster', 'gobertange', 'euville', 'gold', 'bronze', 'pavingA', 'pavingB']) {
     const m = materials[key].clone();
     m.emissive = new THREE.Color(0x000000);
     facadeWashMats.push(m);
@@ -162,7 +175,65 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     quoins.name = name + ' corner quoins';
     quoins.castShadow = true;
     root.add(quoins);
+    // Lead rainwater downpipes at the front corners, as on the real houses.
+    const downpipes = new THREE.InstancedMesh(new THREE.CylinderGeometry(0.05, 0.05, height - 0.8, 6), materials.dark, 2);
+    const dpd = new THREE.Object3D();
+    for (let i = 0; i < 2; i++) {
+      dpd.position.set((i === 0 ? -1 : 1) * (width / 2 - 0.25), (height - 0.8) / 2 + 0.4, 0.28);
+      dpd.updateMatrix();
+      downpipes.setMatrixAt(i, dpd.matrix);
+    }
+    downpipes.count = 2;
+    downpipes.name = name + ' rainwater downpipes';
+    root.add(downpipes);
+
+    // Dentil teeth under the gilded cornice and rustication grooves in the plinth — standard
+    // dressing of the real Baroque facades.
+    const dentilCount = Math.floor(width / 0.5);
+    const dentils = new THREE.InstancedMesh(new THREE.BoxGeometry(0.18, 0.22, 0.2), materials.warmStone, dentilCount);
+    for (let i = 0; i < dentilCount; i++) {
+      modDummy.position.set(-width / 2 + 0.3 + i * 0.5, height - 0.78, 0.18);
+      modDummy.updateMatrix();
+      dentils.setMatrixAt(i, modDummy.matrix);
+    }
+    dentils.count = dentilCount;
+    dentils.name = name + ' cornice dentils';
+    root.add(dentils);
+    // Blind-arcade frieze panels under the cornice — the real cornices carry a recessed
+    // arcade frieze.
+    const friezeCount = Math.max(4, Math.round(width / 1.2));
+    const frieze = new THREE.InstancedMesh(new THREE.BoxGeometry(0.5, 0.3, 0.1), materials.dark, friezeCount);
+    for (let i = 0; i < friezeCount; i++) {
+      modDummy.position.set(-width / 2 + 0.6 + i * (width - 1.2) / (friezeCount - 1), height - 1.12, 0.2);
+      modDummy.updateMatrix();
+      frieze.setMatrixAt(i, modDummy.matrix);
+    }
+    frieze.count = friezeCount;
+    frieze.name = name + ' blind-arcade cornice frieze';
+    root.add(frieze);
+    const rustication = new THREE.InstancedMesh(new THREE.BoxGeometry(width + 0.3, 0.05, 0.06), materials.dark, 2);
+    for (let i = 0; i < 2; i++) {
+      modDummy.position.set(0, 0.8 + i * 0.55, 0.31);
+      modDummy.updateMatrix();
+      rustication.setMatrixAt(i, modDummy.matrix);
+    }
+    rustication.count = 2;
+    rustication.name = name + ' plinth rustication grooves';
+    root.add(rustication);
     box(root, width + 0.45, 0.45, 0.35, 0, 1.15, 0.12, materials.warmStone, name + ' plinth');
+    // Horizontal string-course bands between the window storeys, as on the real facades.
+    const stringCourses = new THREE.InstancedMesh(new THREE.BoxGeometry(width - 0.4, 0.14, 0.12), materials.warmStone, floors);
+    const scd = new THREE.Object3D();
+    let sc = 0;
+    for (let floor = 2; floor <= floors; floor++) {
+      const wy = 4.4 + (floor - 1) * ((height - 6.6) / Math.max(1, floors - 1));
+      scd.position.set(0, wy - 1.32, 0.12);
+      scd.updateMatrix();
+      stringCourses.setMatrixAt(sc++, scd.matrix);
+    }
+    stringCourses.count = sc;
+    stringCourses.name = name + ' inter-floor string courses';
+    root.add(stringCourses);
 
     const bays = Math.max(3, Math.round(width / 2.8));
     const windowGeo = new THREE.BoxGeometry(1.05, 1.45, 0.16);
@@ -171,8 +242,11 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     const frames = new THREE.InstancedMesh(frameGeo, materials.gold, bays * floors);
     // Stone cross-mullions (croisées de pierre) dividing each window into four lights — the real
     // houses' upper windows are crossed like this (blue-stone croisillons on e.g. Le Mont Thabor).
-    const mullionV = new THREE.InstancedMesh(new THREE.BoxGeometry(0.09, 1.45, 0.06), stone, bays * floors);
-    const mullionH = new THREE.InstancedMesh(new THREE.BoxGeometry(1.05, 0.09, 0.06), stone, bays * floors);
+    const croisillonMat = spec.blueStone ? materials.blueStone : stone;
+    const mullionV = new THREE.InstancedMesh(new THREE.BoxGeometry(0.09, 1.45, 0.06), croisillonMat, bays * floors);
+    const mullionH = new THREE.InstancedMesh(new THREE.BoxGeometry(1.05, 0.09, 0.06), croisillonMat, bays * floors);
+    // Wooden shutters folded back beside every window, as on the real houses.
+    const shutters = new THREE.InstancedMesh(new THREE.BoxGeometry(0.34, 1.5, 0.06), materials.dark, bays * floors * 2);
     const dummy = new THREE.Object3D();
     let index = 0;
     for (let floor = 1; floor <= floors; floor++) {
@@ -191,14 +265,69 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
         dummy.updateMatrix();
         mullionV.setMatrixAt(index, dummy.matrix);
         mullionH.setMatrixAt(index, dummy.matrix);
+        dummy.position.set(wx - 0.78, wy, 0.1);
+        dummy.updateMatrix();
+        shutters.setMatrixAt(index * 2, dummy.matrix);
+        dummy.position.set(wx + 0.78, wy, 0.1);
+        dummy.updateMatrix();
+        shutters.setMatrixAt(index * 2 + 1, dummy.matrix);
         index++;
       }
     }
+    shutters.count = index * 2;
+    shutters.name = name + ' window shutters';
+    root.add(shutters);
+    // Gilded hinge straps fasten each folded-back shutter to the window frame.
+    const hinges = new THREE.InstancedMesh(new THREE.BoxGeometry(0.06, 0.3, 0.1), materials.gold, bays * floors);
+    let hg = 0;
+    for (let floor = 1; floor <= floors; floor++) {
+      const wy = 4.4 + (floor - 1) * ((height - 6.6) / Math.max(1, floors - 1));
+      for (let bay = 0; bay < bays; bay++) {
+        const wx = (bay - (bays - 1) / 2) * (width - 2.8) / Math.max(1, bays - 1);
+        dummy.position.set(wx - 0.62, wy + 0.3, 0.12);
+        dummy.updateMatrix();
+        hinges.setMatrixAt(hg++, dummy.matrix);
+      }
+    }
+    hinges.count = hg;
+    hinges.name = name + ' shutter hinge straps';
+    root.add(hinges);
     windows.name = name + ' windows';
     frames.name = name + ' gilded window surrounds';
     mullionV.name = mullionH.name = name + ' window stone cross-mullions';
     windows.castShadow = frames.castShadow = true;
     root.add(windows, frames, mullionV, mullionH);
+    // Flat pilaster strips rise the full facade height at the window joints, structuring
+    // the real Baroque elevations.
+    const pilasterStripCount = bays + 1;
+    const pilasterStrips = new THREE.InstancedMesh(new THREE.BoxGeometry(0.22, height - 2.6, 0.14), stone, pilasterStripCount);
+    const spacing = (width - 2.8) / Math.max(1, bays - 1);
+    for (let i = 0; i <= bays; i++) {
+      const px = i === 0 ? -width / 2 + 0.7 : i === bays ? width / 2 - 0.7 : -width / 2 + 1.4 + spacing * (i - 0.5);
+      dummy.position.set(px, 1.15 + (height - 2.6) / 2, 0.1);
+      dummy.updateMatrix();
+      pilasterStrips.setMatrixAt(i, dummy.matrix);
+    }
+    pilasterStrips.count = pilasterStripCount;
+    pilasterStrips.name = name + ' facade pilaster strips';
+    root.add(pilasterStrips);
+    // Stone corbels under every window sill, carrying the sills of the real facades.
+    const sillCorbels = new THREE.InstancedMesh(new THREE.BoxGeometry(0.2, 0.18, 0.24), materials.warmStone, bays * floors * 2);
+    let scc = 0;
+    for (let floor = 1; floor <= floors; floor++) {
+      const wy = 4.4 + (floor - 1) * ((height - 6.6) / Math.max(1, floors - 1));
+      for (let bay = 0; bay < bays; bay++) {
+        const wx = (bay - (bays - 1) / 2) * (width - 2.8) / Math.max(1, bays - 1);
+        for (const side of [-1, 1]) {
+          dummy.position.set(wx + side * 0.5, wy - 0.85, 0.16);
+          dummy.updateMatrix();
+          sillCorbels.setMatrixAt(scc++, dummy.matrix);
+        }
+      }
+    }
+    sillCorbels.count = scc;
+    sillCorbels.name = name + ' window sill corbels';
+    root.add(sillCorbels);
 
     // Ground floor: a recessed arcade opening per bay — on the real square the cafés and
     // shops sit under these arcades, so the ground floor is taller and darker than the
@@ -223,15 +352,57 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     arcade.castShadow = lintels.castShadow = true;
     root.add(arcade, lintels);
     box(root, width - 0.4, 0.2, 0.3, 0, 3.6, 0.36, materials.warmStone, name + ' arcade string course');
+    // Keystone at the apex of every ground-floor arcade opening, as on the real arcades.
+    const keystones = new THREE.InstancedMesh(new THREE.BoxGeometry(0.22, 0.4, 0.3), materials.warmStone, bays);
+    for (let bay = 0; bay < bays; bay++) {
+      arcDummy.position.set((bay - (bays - 1) / 2) * (width - 2.8) / Math.max(1, bays - 1), 3.42, 0.44);
+      arcDummy.updateMatrix();
+      keystones.setMatrixAt(bay, arcDummy.matrix);
+    }
+    keystones.count = bays;
+    keystones.name = name + ' arcade keystones';
+    root.add(keystones);
     // Arched door leaf with a gilded fanlight in the centre arcade bay of every house.
     box(root, 0.95, 2.5, 0.12, 0, 1.55, 0.42, materials.dark, name + ' arched door leaf');
     const fanlight = cylinder(root, 0.4, 0.4, 0.08, 0, 3.02, 0.44, materials.gold, 16);
     fanlight.name = name + ' door fanlight';
     fanlight.rotation.x = Math.PI / 2;
+    // Gilded fanlight ray spokes radiating over the door leaf, as on the real fanlights.
+    const fanRays = new THREE.InstancedMesh(new THREE.BoxGeometry(0.04, 0.34, 0.04), materials.gold, 5);
+    for (let i = 0; i < 5; i++) {
+      const a = Math.PI * (0.15 + 0.7 * (i / 4));
+      arcDummy.position.set(Math.cos(a) * 0.36, 3.02 + Math.sin(a) * 0.36, 0.46);
+      arcDummy.rotation.z = a - Math.PI / 2;
+      arcDummy.updateMatrix();
+      fanRays.setMatrixAt(i, arcDummy.matrix);
+      arcDummy.rotation.z = 0;
+    }
+    fanRays.count = 5;
+    fanRays.name = name + ' door fanlight rays';
+    root.add(fanRays);
+    // Rebuild-date cartouche beside the door — the real houses carry "Anno 1697" etc. after the
+    // 1695 bombardment — and a small pediment crowns the doorway.
+    box(root, 0.8, 0.3, 0.1, width / 2 - 1.3, 3.9, 0.34, materials.dark, name + ' rebuild date cartouche');
+    box(root, 0.6, 0.18, 0.04, width / 2 - 1.3, 3.9, 0.4, materials.gold, name + ' rebuild date cartouche rim');
+    // Gilded house-number plaque beside the doorway, as on the real facades.
+    box(root, 0.4, 0.5, 0.06, width / 2 - 1.3, 3.15, 0.36, materials.gold, name + ' house number plaque');
+    const doorPed = new THREE.Shape();
+    doorPed.moveTo(-0.35, 0); doorPed.lineTo(0, 0.32); doorPed.lineTo(0.35, 0); doorPed.closePath();
+    mesh(root, new THREE.ShapeGeometry(doorPed), stone, 0, 3.32, 0.42, name + ' door surround pediment');
+    // Small attic windows in the gable base, flanking the oculus.
+    const atticWindows = new THREE.InstancedMesh(new THREE.BoxGeometry(0.5, 0.7, 0.1), spec.windowMat || glowGlass, 2);
+    for (let i = 0; i < 2; i++) {
+      modDummy.position.set((i === 0 ? -1 : 1) * width / 4, height + 0.75, 0.14);
+      modDummy.updateMatrix();
+      atticWindows.setMatrixAt(i, modDummy.matrix);
+    }
+    atticWindows.count = 2;
+    atticWindows.name = name + ' gable attic windows';
+    root.add(atticWindows);
     if (terrace) {
       // Café awning sloping over each ground-floor arcade bay — the real square's
       // brasseries and cafés sit under canvas awnings on the Grand-Place.
-      const awnings = new THREE.InstancedMesh(new THREE.BoxGeometry((width - 2.8) / bays - 0.3, 0.05, 1.3), materials.canvas, bays);
+      const awnings = new THREE.InstancedMesh(new THREE.BoxGeometry((width - 2.8) / bays - 0.3, 0.05, 1.3), awningGlow, bays);
       for (let bay = 0; bay < bays; bay++) {
         const wx = (bay - (bays - 1) / 2) * (width - 2.8) / Math.max(1, bays - 1);
         arcDummy.position.set(wx, 3.2, 0.85);
@@ -255,6 +426,16 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       valances.count = bays;
       valances.name = name + ' awning valance';
       root.add(valances);
+      // Canvas side flaps close the awning ends.
+      const sideFlaps = new THREE.InstancedMesh(new THREE.BoxGeometry(0.05, 0.55, 1.05), materials.canvas, 2);
+      for (let i = 0; i < 2; i++) {
+        arcDummy.position.set((i === 0 ? -1 : 1) * (width - 2.8) / 2, 3.0, 0.95);
+        arcDummy.updateMatrix();
+        sideFlaps.setMatrixAt(i, arcDummy.matrix);
+      }
+      sideFlaps.count = 2;
+      sideFlaps.name = name + ' awning side flaps';
+      root.add(sideFlaps);
       // Terrace furniture set out on the square in front of the awnings — the real brasseries
       // (Le Roy d'Espagne's parasols in the house colours, etc.) line the plaza with tables,
       // chairs and parasols. All instanced per house.
@@ -338,6 +519,16 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     pilasters.castShadow = balusters.castShadow = niches.castShadow = statues.castShadow = true;
     root.add(pilasters, balusters, niches, statues);
     box(root, width + 0.7, 0.16, 0.24, 0, height + 0.9, 0.14, stone, name + ' parapet rail');
+    // Gilded finial balls terminate the parapet rail at both ends of every house.
+    const parapetFinials = new THREE.InstancedMesh(new THREE.SphereGeometry(0.14, 8, 6), materials.gold, 2);
+    for (let i = 0; i < 2; i++) {
+      modDummy.position.set((i === 0 ? -1 : 1) * (width / 2 + 0.2), height + 1.0, 0.14);
+      modDummy.updateMatrix();
+      parapetFinials.setMatrixAt(i, modDummy.matrix);
+    }
+    parapetFinials.count = 2;
+    parapetFinials.name = name + ' parapet rail end finials';
+    root.add(parapetFinials);
 
     // Each house gets a distinct roofline instead of the repeated identical cones of the old model.
     const gableHeight = style === 'stepped' ? 4.8 : style === 'bell' ? 3.6 : 4.6;
@@ -377,6 +568,47 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     shape.closePath();
     mesh(root, new THREE.ShapeGeometry(shape), stone, 0, height, 0.08, name + ' gable');
     box(root, width + 0.7, 0.35, depth + 0.5, 0, height + 0.2, -depth / 2, roof, name + ' roof cap');
+    // Tile rows run across the roof cap, as on the real slate-tiled house roofs.
+    const tileRowCount = Math.ceil((width + 0.7) / 0.6);
+    const tileRows = new THREE.InstancedMesh(new THREE.BoxGeometry(0.5, 0.05, depth + 0.4), materials.dark, tileRowCount);
+    for (let i = 0; i < tileRowCount; i++) {
+      modDummy.position.set(-width / 2 - 0.35 + 0.3 + i * 0.6, height + 0.42, -depth / 2);
+      modDummy.updateMatrix();
+      tileRows.setMatrixAt(i, modDummy.matrix);
+    }
+    tileRows.count = tileRowCount;
+    tileRows.name = name + ' roof tile rows';
+    root.add(tileRows);
+    // Gilded volute scrolls at the gable shoulders — the baroque gables end in scrolls.
+    const volutes = new THREE.InstancedMesh(new THREE.SphereGeometry(0.18, 8, 6), materials.gold, 2);
+    for (let i = 0; i < 2; i++) {
+      modDummy.position.set((i === 0 ? -1 : 1) * (width / 2 - 1.0), height + 0.9, 0.12);
+      modDummy.updateMatrix();
+      volutes.setMatrixAt(i, modDummy.matrix);
+    }
+    volutes.count = 2;
+    volutes.name = name + ' gable shoulder volute scrolls';
+    root.add(volutes);
+    // Chimneys with terracotta pots rise from the roof, as on the real houses.
+    const chimneys = new THREE.InstancedMesh(new THREE.BoxGeometry(0.55, 1.6, 0.55), materials.warmStone, 2);
+    const chimneyPots = new THREE.InstancedMesh(new THREE.CylinderGeometry(0.16, 0.2, 0.5, 8), materials.dark, 4);
+    let ch = 0;
+    for (const side of [-1, 1]) {
+      modDummy.position.set(side * (width / 2 - 1.6), height + 1.05, -depth / 2 + 1.6);
+      modDummy.updateMatrix();
+      chimneys.setMatrixAt(ch, modDummy.matrix);
+      for (let p = 0; p < 2; p++) {
+        modDummy.position.set(side * (width / 2 - 1.6) + (p - 0.5) * 0.24, height + 2.05, -depth / 2 + 1.6);
+        modDummy.updateMatrix();
+        chimneyPots.setMatrixAt(ch * 2 + p, modDummy.matrix);
+      }
+      ch++;
+    }
+    chimneys.count = ch;
+    chimneyPots.count = ch * 2;
+    chimneys.name = name + ' roof chimneys';
+    chimneyPots.name = name + ' chimney pots';
+    root.add(chimneys, chimneyPots);
     box(root, 0.35, height - 1.8, 0.25, -width / 2 + 0.45, height / 2 + 0.5, 0.16, materials.gold);
     box(root, 0.35, height - 1.8, 0.25, width / 2 - 0.45, height / 2 + 0.5, 0.16, materials.gold);
     cylinder(root, 0.12, 0.12, 1.3, 0, height + gableHeight + 0.55, 0.08, materials.gold, 8);
@@ -397,6 +629,11 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     potVases.name = name + ' gable fire pot vase';
     potFlames.name = name + ' gable fire pot flame';
     root.add(potVases, potFlames);
+    if (spec.stoneVase) {
+      // Le Mont Thabor ("Maison aux Trois Couleurs"): a stone vase crowns the volute gable.
+      cylinder(root, 0.22, 0.3, 0.7, 0, height + gableHeight + 0.9, 0.1, stone, 10).name = name + ' gable stone vase';
+      box(root, 0.5, 0.08, 0.08, 0, height + gableHeight + 1.3, 0.1, stone, name + ' stone vase rim');
+    }
     if (emblem) {
       const kind = emblem === true ? 'phoenix' : emblem;
       if (kind === 'vane') {
@@ -409,6 +646,70 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
         // Le Cornet: the ship-stern gable is manned by a gilded horse.
         box(root, 0.9, 0.5, 0.25, 0, height + gableHeight + 1.2, 0.1, materials.gold, name + ' gilded horse body');
         mesh(root, new THREE.SphereGeometry(0.22, 8, 6), materials.gold, 0.5, height + gableHeight + 1.55, 0.1, name + ' gilded horse head');
+      } else if (kind === 'helmet') {
+        // Le Heaume: gilded helmet.
+        mesh(root, new THREE.SphereGeometry(0.4, 10, 8), materials.gold, 0, height + gableHeight + 1.5, 0.1, name + ' gilded helmet emblem');
+        box(root, 0.72, 0.12, 0.12, 0, height + gableHeight + 1.12, 0.1, materials.gold, name + ' helmet brim');
+      } else if (kind === 'peacock') {
+        // Le Paon: gilded peacock with a fanned tail.
+        mesh(root, new THREE.SphereGeometry(0.22, 8, 6), materials.gold, 0, height + gableHeight + 1.4, 0.1, name + ' gilded peacock body');
+        const fan = new THREE.InstancedMesh(new THREE.BoxGeometry(0.06, 0.85, 0.06), materials.gold, 5);
+        for (let i = 0; i < 5; i++) {
+          modDummy.position.set(0, height + gableHeight + 1.75, 0.1);
+          modDummy.rotation.z = (i - 2) * 0.4;
+          modDummy.updateMatrix();
+          fan.setMatrixAt(i, modDummy.matrix);
+        }
+        modDummy.rotation.set(0, 0, 0);
+        fan.count = 5;
+        fan.name = name + ' peacock tail fan';
+        root.add(fan);
+      } else if (kind === 'stag') {
+        // Le Cerf: gilded stag head with antlers.
+        mesh(root, new THREE.SphereGeometry(0.2, 8, 6), materials.gold, 0, height + gableHeight + 1.5, 0.1, name + ' gilded stag head');
+        for (const side of [-1, 1]) {
+          const antler = box(root, 0.07, 0.7, 0.07, side * 0.22, height + gableHeight + 1.95, 0.1, materials.gold, name + ' stag antler');
+          antler.rotation.z = side * 0.5;
+        }
+      } else if (kind === 'angel') {
+        // L'Ange: gilded angel figure.
+        box(root, 0.3, 1.0, 0.14, 0, height + gableHeight + 1.5, 0.1, materials.gold, name + ' gilded angel body');
+        mesh(root, new THREE.SphereGeometry(0.16, 8, 6), materials.gold, 0, height + gableHeight + 2.15, 0.1, name + ' angel head');
+        for (const side of [-1, 1]) {
+          const wing = box(root, 0.5, 0.3, 0.06, side * 0.4, height + gableHeight + 1.8, 0.12, materials.gold, name + ' angel wing');
+          wing.rotation.z = side * 0.6;
+        }
+      } else if (kind === 'boat') {
+        // La Chaloupe d'Or: gilded chaloupe (skiff).
+        box(root, 0.9, 0.3, 0.3, 0, height + gableHeight + 1.4, 0.1, materials.gold, name + ' gilded chaloupe hull');
+        const mast = box(root, 0.06, 0.8, 0.06, 0, height + gableHeight + 1.9, 0.1, materials.gold, name + ' chaloupe mast');
+      } else if (kind === 'star') {
+        // L'Étoile: gilded star (the house demolished 1852 for the tramway kept its name).
+        mesh(root, new THREE.ConeGeometry(0.42, 0.9, 5), materials.gold, 0, height + gableHeight + 1.6, 0.1, name + ' gilded star emblem');
+      } else if (kind === 'rose') {
+        // La Rose: gilded rose.
+        mesh(root, new THREE.SphereGeometry(0.3, 10, 8), materials.gold, 0, height + gableHeight + 1.6, 0.1, name + ' gilded rose emblem');
+        mesh(root, new THREE.TorusGeometry(0.34, 0.07, 6, 12), materials.gold, 0, height + gableHeight + 1.6, 0.16, name + ' rose petal ring');
+      } else if (kind === 'flags') {
+        // Le Mont Thabor (Maison aux Trois Couleurs): cartouche with gilded flags.
+        box(root, 0.6, 0.45, 0.12, 0, height + gableHeight + 1.3, 0.14, materials.dark, name + ' flags cartouche');
+        for (let i = 0; i < 3; i++) {
+          const flag = box(root, 0.14, 0.2, 0.04, -0.2 + i * 0.2, height + gableHeight + 1.55, 0.2, materials.gold, name + ' gilded flag');
+          flag.rotation.z = (i - 1) * 0.25;
+        }
+      } else if (kind === 'barley') {
+        // L'Arbre d'Or (brewers): gilded barley sheaf.
+        const sheaf = new THREE.InstancedMesh(new THREE.ConeGeometry(0.1, 0.9, 6), materials.gold, 5);
+        for (let i = 0; i < 5; i++) {
+          modDummy.position.set((i - 2) * 0.12, height + gableHeight + 1.7, 0.1);
+          modDummy.rotation.z = (i - 2) * 0.22;
+          modDummy.updateMatrix();
+          sheaf.setMatrixAt(i, modDummy.matrix);
+        }
+        modDummy.rotation.set(0, 0, 0);
+        sheaf.count = 5;
+        sheaf.name = name + ' gilded barley sheaf';
+        root.add(sheaf);
       } else {
         // Gilded guild emblem crowning the gable — La Louve's golden phoenix and the like.
         const em = mesh(root, new THREE.SphereGeometry(0.34, 10, 8), materials.gold, 0, height + gableHeight + 1.7, 0.1, name + ' gilded gable emblem');
@@ -427,6 +728,8 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     const oculus = cylinder(root, 0.42, 0.42, 0.1, 0, height + 1.6, 0.12, materials.glass, 16);
     oculus.name = name + ' gable oculus';
     oculus.rotation.x = Math.PI / 2;
+    // Gilded ring tracery around the gable oculus.
+    cylinder(root, 0.5, 0.5, 0.08, 0, height + 1.6, 0.14, materials.gold, 16).name = name + ' gable oculus gilded ring';
     const pedShape = new THREE.Shape();
     pedShape.moveTo(-0.42, 0); pedShape.lineTo(0, 0.4); pedShape.lineTo(0.42, 0); pedShape.closePath();
     const pediments = new THREE.InstancedMesh(new THREE.ShapeGeometry(pedShape), stone, bays * floors);
@@ -481,6 +784,36 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       mesh(root, new THREE.SphereGeometry(0.24, 8, 6), materials.gold, 0, height + gableHeight + 2.25, 0.1, name + ' St Nicholas gable statue head');
       box(root, 0.8, 0.3, 0.2, 0, 3.95, 0.55, materials.bronze, name + ' fox sign body');
       mesh(root, new THREE.SphereGeometry(0.18, 8, 6), materials.bronze, 0.45, 4.05, 0.55, name + ' fox sign head');
+      // Four haberdashery bas-relief panels (needles, scissors, thread, buttons) above the
+      // ground-floor arcade — the real Le Renard facade tells the guild's trade in relief.
+      const reliefs = new THREE.InstancedMesh(new THREE.BoxGeometry(0.6, 0.5, 0.1), materials.bronze, 4);
+      for (let i = 0; i < 4; i++) {
+        pedDummy.position.set(-1.5 * bayStep + i * bayStep, 3.95, 0.3);
+        pedDummy.updateMatrix();
+        reliefs.setMatrixAt(i, pedDummy.matrix);
+      }
+      reliefs.count = 4;
+      reliefs.name = name + ' haberdashery bas-relief panels';
+      root.add(reliefs);
+    }
+    if (spec.caryatids) {
+      // Le Renard: caryatids — female figure supports — at the second-floor pilaster
+      // joints, as on the real 1699 haberdashers' facade.
+      const wy3 = 4.4 + 2 * ((height - 6.6) / Math.max(1, floors - 1));
+      const caryatids = new THREE.InstancedMesh(new THREE.BoxGeometry(0.3, 1.6, 0.16), stone, 3);
+      const caryatidHeads = new THREE.InstancedMesh(new THREE.SphereGeometry(0.16, 8, 6), stone, 3);
+      for (let i = 0; i < 3; i++) {
+        pedDummy.position.set((i - 1) * bayStep, wy3, 0.26);
+        pedDummy.updateMatrix();
+        caryatids.setMatrixAt(i, pedDummy.matrix);
+        pedDummy.position.set((i - 1) * bayStep, wy3 + 0.95, 0.28);
+        pedDummy.updateMatrix();
+        caryatidHeads.setMatrixAt(i, pedDummy.matrix);
+      }
+      caryatids.count = caryatidHeads.count = 3;
+      caryatids.name = name + ' second-floor caryatids';
+      caryatidHeads.name = name + ' caryatid heads';
+      root.add(caryatids, caryatidHeads);
     }
     if (spec.guildTools) {
       // Le Sac (carpenters' and coopers' house, no. 4): the guild tools decorate the facade —
@@ -499,6 +832,33 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       toolCartouches.name = name + ' carpenter tool cartouches';
       root.add(toolCartouches);
     }
+    if (spec.garlands) {
+      // Le Sac: stone garlands of flowers and fruits swag beneath every window — the real
+      // carpenters'/coopers' facade is festooned with them.
+      const garlandCount = bays * floors;
+      const ribbons = new THREE.InstancedMesh(new THREE.BoxGeometry(1.0, 0.1, 0.08), stone, garlandCount);
+      const fruits = new THREE.InstancedMesh(new THREE.SphereGeometry(0.09, 6, 5), materials.green, garlandCount * 3);
+      let rg = 0, fr = 0;
+      for (let floor = 1; floor <= floors; floor++) {
+        const wy = 4.4 + (floor - 1) * ((height - 6.6) / Math.max(1, floors - 1));
+        for (let bay = 0; bay < bays; bay++) {
+          const wx = (bay - (bays - 1) / 2) * (width - 2.8) / Math.max(1, bays - 1);
+          pedDummy.position.set(wx, wy - 0.95, 0.18);
+          pedDummy.updateMatrix();
+          ribbons.setMatrixAt(rg++, pedDummy.matrix);
+          for (let f = 0; f < 3; f++) {
+            pedDummy.position.set(wx - 0.3 + f * 0.3, wy - 1.0 - Math.sin((f + 1) * Math.PI / 4) * 0.12, 0.2);
+            pedDummy.updateMatrix();
+            fruits.setMatrixAt(fr++, pedDummy.matrix);
+          }
+        }
+      }
+      ribbons.count = rg;
+      fruits.count = fr;
+      ribbons.name = name + ' flower garland ribbons';
+      fruits.name = name + ' garland fruit and flower dots';
+      root.add(ribbons, fruits);
+    }
     if (spec.brouette) {
       // La Brouette (greasers' house, nos. 2-3): the gable's pediment holds an arched niche with
       // St Giles, patron of greasers (with his deer and a scallop); the centre cartouche carries
@@ -511,6 +871,21 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       box(root, 0.45, 0.2, 0.06, 0, (4.4 + wyB) / 2, 0.4, materials.gold, name + ' gilded wheelbarrow');
       box(root, 0.55, 0.3, 0.12, -bayStep, wyB - 1.35, 0.28, materials.warmStone, name + ' Anno 1697 cartouche');
       box(root, 0.55, 0.3, 0.12, bayStep, wyB - 1.35, 0.28, materials.warmStone, name + ' Anno 1697 cartouche');
+    }
+    if (spec.pilasters) {
+      // La Brouette: colossal pilasters rise the full facade height between the bays,
+      // carrying the four classical orders of the real 1697 greasers' facade.
+      const ph = height - 1.9;
+      const px = [-width / 2 + 0.25, -(width - 2.8) / 4, (width - 2.8) / 4, width / 2 - 0.25];
+      const pilasters = new THREE.InstancedMesh(new THREE.BoxGeometry(0.36, ph, 0.2), materials.warmStone, 4);
+      for (let i = 0; i < 4; i++) {
+        pedDummy.position.set(px[i], 1.15 + ph / 2, 0.12);
+        pedDummy.updateMatrix();
+        pilasters.setMatrixAt(i, pedDummy.matrix);
+      }
+      pilasters.count = 4;
+      pilasters.name = name + ' colossal pilaster bands';
+      root.add(pilasters);
     }
     if (spec.louve) {
       // La Louve (archers' oath, no. 5): a bronze bas-relief of Romulus and Remus suckled by the
@@ -575,6 +950,12 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       neck.rotation.z = -0.5;
       mesh(root, new THREE.SphereGeometry(0.12, 8, 6), materials.gold, 0.22, 4.9, 0.5, name + ' swan head');
     }
+    if (spec.saintStatue) {
+      // Sainte-Barbe: a statue of St Barbara in a niche at the gable base.
+      box(root, 0.7, 1.9, 0.22, 0, height + 0.95, 0.16, materials.dark, name + ' St Barbara niche');
+      box(root, 0.28, 1.05, 0.12, 0, height + 0.95, 0.3, materials.gold, name + ' St Barbara statue');
+      mesh(root, new THREE.SphereGeometry(0.15, 8, 6), materials.gold, 0, height + 1.65, 0.3, name + ' St Barbara statue head');
+    }
     return root;
   }
 
@@ -606,12 +987,47 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     box(root, 33.8, 1.0, depth + 1.0, westWingX, 0.5, -depth / 2, darkStone, 'West wing stepped stone plinth');
     box(root, 16.0, 0.8, depth + 0.8, eastWingX, height - 0.35, -depth / 2, trim, 'East wing upper cornice');
     box(root, 33.0, 0.8, depth + 0.8, westWingX, height - 0.35, -depth / 2, trim, 'West wing upper cornice');
+    // Both wing cornices stand on rows of corbels (modillions), like the guild houses.
+    const wingMods = new THREE.InstancedMesh(new THREE.BoxGeometry(0.3, 0.34, 0.34), darkStone, 40);
+    const wmd = new THREE.Object3D();
+    let wm = 0;
+    for (const [wx, ww] of [[eastWingX, 16], [westWingX, 33]]) {
+      const n = Math.floor(ww / 1.2);
+      for (let i = 0; i < n; i++) {
+        wmd.position.set(wx - ww / 2 + 0.5 + i * (ww - 1) / (n - 1), height - 0.85, 0.2);
+        wmd.updateMatrix();
+        wingMods.setMatrixAt(wm++, wmd.matrix);
+      }
+    }
+    wingMods.count = wm;
+    wingMods.name = 'Town Hall wing cornice modillions';
+    root.add(wingMods);
+    // Oversized stone quoins chain the front corners of both wings, as on the real facade.
+    const wqRows = Math.floor((height - 2) / 0.9);
+    const wingQuoins = new THREE.InstancedMesh(new THREE.BoxGeometry(0.4, 0.8, 0.4), trim, wqRows * 4);
+    const wqd = new THREE.Object3D();
+    let wq = 0;
+    for (const [wx, ww] of [[eastWingX, 15], [westWingX, 32]]) {
+      for (let r = 0; r < wqRows; r++) {
+        for (const sx of [-1, 1]) {
+          wqd.position.set(wx + sx * (ww / 2 - 0.1), 1.4 + r * 0.9, 0.15);
+          wqd.updateMatrix();
+          wingQuoins.setMatrixAt(wq++, wqd.matrix);
+        }
+      }
+    }
+    wingQuoins.count = wq;
+    wingQuoins.name = 'Town Hall wing corner quoins';
+    root.add(wingQuoins);
 
     // Repeated pointed ground-floor arcade: dark recessed openings, piers and pointed heads.
     const bays = 16, bayW = width / bays;
     // The arcade pillars are adorned with statues of knights and squires of the Seven Noble
     // Houses of Brussels — instanced gilded figures on top of every pier.
     const knightStatues = new THREE.InstancedMesh(new THREE.BoxGeometry(0.22, 0.95, 0.12), materials.gold, bays * 2);
+    const voussoirs = new THREE.InstancedMesh(new THREE.BoxGeometry(0.22, 0.3, 0.34), trim, bays * 6);
+    const vd = new THREE.Object3D();
+    let vi = 0;
     const knightDummy = new THREE.Object3D();
     let kn = 0;
     for (let i = 0; i < bays; i++) {
@@ -630,11 +1046,102 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       const archR = box(root, 2.05, 0.28, 0.48, x + 0.52, 7.12, 0.22, trim, 'Pointed arcade arch');
       archR.rotation.z = 0.55;
       box(root, bayW - 0.55, 0.24, 0.5, x, 7.55, 0.22, darkStone, 'Arcade string course');
+      for (const t of [0.3, 0.6, 0.9]) {
+        for (const side of [-1, 1]) {
+          vd.position.set(x + side * (0.52 - t * 0.95), 7.12 + t * 0.62, 0.24);
+          vd.rotation.z = side * 0.55;
+          vd.updateMatrix();
+          voussoirs.setMatrixAt(vi++, vd.matrix);
+        }
+      }
     }
+    voussoirs.count = vi;
+    voussoirs.name = 'Arcade arch voussoirs';
+    root.add(voussoirs);
     knightStatues.count = kn;
     knightStatues.name = 'Arcade pillar knight statues (Noble Houses)';
     knightStatues.castShadow = true;
     root.add(knightStatues);
+    // Cabbage-leaf (kropblad) finials top each ground-arcade arch apex, and a trefoil
+    // arcade band runs above the arcade string course — both Brabantine-Gothic motifs of
+    // the real facade. The knights rest on historiated corbels.
+    const leafFinials = new THREE.InstancedMesh(new THREE.SphereGeometry(0.16, 8, 6), materials.gold, bays);
+    const trefoilBand = new THREE.InstancedMesh(new THREE.CylinderGeometry(0.3, 0.3, 0.14, 12).rotateX(Math.PI / 2), trim, bays);
+    const histCorbels = new THREE.InstancedMesh(new THREE.BoxGeometry(0.34, 0.42, 0.4), darkStone, bays * 2);
+    let lf = 0, hc = 0;
+    for (let i = 0; i < bays; i++) {
+      const x = -width / 2 + bayW * (i + 0.5);
+      vd.position.set(x, 7.82, 0.28);
+      vd.rotation.z = 0;
+      vd.updateMatrix();
+      leafFinials.setMatrixAt(lf++, vd.matrix);
+      vd.position.set(x, 8.05, 0.26);
+      vd.updateMatrix();
+      trefoilBand.setMatrixAt(lf - 1, vd.matrix);
+      for (const px of [x - bayW / 2 + 0.12, x + bayW / 2 - 0.12]) {
+        vd.position.set(px, 7.45, 0.32);
+        vd.updateMatrix();
+        histCorbels.setMatrixAt(hc++, vd.matrix);
+      }
+    }
+    leafFinials.count = trefoilBand.count = bays;
+    histCorbels.count = hc;
+    leafFinials.name = 'Arcade arch cabbage-leaf finials';
+    trefoilBand.name = 'Arcade trefoil band';
+    histCorbels.name = 'Knight statue historiated corbels';
+    root.add(leafFinials, trefoilBand, histCorbels);
+    // Capitals widen the top of every arcade pier, as on the real Brabantine arcade.
+    const pierCapitals = new THREE.InstancedMesh(new THREE.BoxGeometry(0.44, 0.22, 0.6), trim, bays * 2);
+    let pc = 0;
+    for (let i = 0; i < bays; i++) {
+      const x = -width / 2 + bayW * (i + 0.5);
+      for (const px of [x - bayW / 2 + 0.12, x + bayW / 2 - 0.12]) {
+        vd.position.set(px, 7.62, 0.24);
+        vd.rotation.z = 0;
+        vd.updateMatrix();
+        pierCapitals.setMatrixAt(pc++, vd.matrix);
+      }
+    }
+    pierCapitals.count = pc;
+    pierCapitals.name = 'Arcade pier capitals';
+    root.add(pierCapitals);
+    // A stone balcony connects the two wings across the facade above the arcade, on a row of
+    // balusters — as on the real elevation.
+    box(root, width + 1.2, 0.4, 1.3, 0, 8.7, 0.55, trim, 'Wing-connecting balcony');
+    const wingBalusters = new THREE.InstancedMesh(new THREE.BoxGeometry(0.14, 0.55, 0.14), trim, 48);
+    const wbd = new THREE.Object3D();
+    let wb = 0;
+    for (let i = 0; i < 48; i++) {
+      wbd.position.set(-width / 2 + 0.7 + i * (width - 1.4) / 47, 9.15, 1.05);
+      wbd.updateMatrix();
+      wingBalusters.setMatrixAt(wb++, wbd.matrix);
+    }
+    wingBalusters.count = wb;
+    wingBalusters.name = 'Wing-connecting balcony balusters';
+    root.add(wingBalusters);
+    // Historiated corbels carry the wing-connecting balcony along its length.
+    const balconyCorbels = new THREE.InstancedMesh(new THREE.BoxGeometry(0.3, 0.45, 0.5), darkStone, 16);
+    for (let i = 0; i < 16; i++) {
+      wbd.position.set(-width / 2 + 1.5 + i * (width - 3) / 15, 8.25, 0.85);
+      wbd.updateMatrix();
+      balconyCorbels.setMatrixAt(i, wbd.matrix);
+    }
+    balconyCorbels.count = 16;
+    balconyCorbels.name = 'Wing balcony historiated corbels';
+    root.add(balconyCorbels);
+    // Small gabled canopy hoods shelter the statues standing above the arcade arch heads.
+    const canopyShape = new THREE.Shape();
+    canopyShape.moveTo(-0.45, 0); canopyShape.lineTo(0, 0.4); canopyShape.lineTo(0.45, 0); canopyShape.closePath();
+    const canopies = new THREE.InstancedMesh(new THREE.ShapeGeometry(canopyShape), trim, bays);
+    let cn = 0;
+    for (let i = 0; i < bays; i++) {
+      wbd.position.set(-width / 2 + bayW * (i + 0.5), 9.85, 0.3);
+      wbd.updateMatrix();
+      canopies.setMatrixAt(cn++, wbd.matrix);
+    }
+    canopies.count = cn;
+    canopies.name = 'Arcade statue canopy hoods';
+    root.add(canopies);
 
     // Upper storeys: paired lancets with stone mouldings, balconies, a buttress rhythm at
     // alternating bay joints, and a gilded statue in a niche at the remaining joints — the
@@ -711,6 +1218,24 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     lancetOculi.name = 'Lancet pair oculus (quatrefoil tracery)';
     lancetKeystones.name = 'Lancet keystone';
     root.add(lancetMullions, lancetOculi, lancetKeystones);
+    // Balusters along the front of every upper-storey stone balcony — the real balconies
+    // are balustraded, not open slabs.
+    const balconyBalusters = new THREE.InstancedMesh(new THREE.BoxGeometry(0.12, 0.5, 0.12), trim, bays * 2 * 5);
+    let bb = 0;
+    for (let floor = 0; floor < 2; floor++) {
+      const y = floor === 0 ? 12.5 : 20.0;
+      for (let i = 0; i < bays; i++) {
+        const x = -width / 2 + bayW * (i + 0.5);
+        for (let k = 0; k < 5; k++) {
+          facadeDummy.position.set(x - 1.0 + k * 0.5, y - 2.38, 1.02);
+          facadeDummy.updateMatrix();
+          balconyBalusters.setMatrixAt(bb++, facadeDummy.matrix);
+        }
+      }
+    }
+    balconyBalusters.count = bb;
+    balconyBalusters.name = 'Upper-storey balcony balusters';
+    root.add(balconyBalusters);
     // Statues in niches above the ground-floor arcade arch heads as well — the real
     // facade carries nearly three hundred figures on every level.
     for (let i = 0; i < bays; i++) {
@@ -744,6 +1269,19 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     facadeGargoyles.name = 'Town Hall facade gargoyles';
     facadeGargoyles.castShadow = true;
     root.add(facadeGargoyles);
+    // Trefoil tympana above every second-floor window, as on the real upper storey.
+    const floor2Trefoils = new THREE.InstancedMesh(new THREE.CylinderGeometry(0.3, 0.3, 0.14, 12).rotateX(Math.PI / 2), trim, bays);
+    let f2 = 0;
+    for (let i = 0; i < bays; i++) {
+      const x = -width / 2 + bayW * (i + 0.5);
+      gd.position.set(x, 22.8, 0.3);
+      gd.rotation.set(0, 0, 0);
+      gd.updateMatrix();
+      floor2Trefoils.setMatrixAt(f2++, gd.matrix);
+    }
+    floor2Trefoils.count = f2;
+    floor2Trefoils.name = 'Second-floor trefoil tympana';
+    root.add(floor2Trefoils);
     // A continuous steep slate roof, ridge running along the long axis.
     const roofHalf = depth / 2 + 0.7, ridgeY = height + 7.8, eaveY = height + 0.6;
     const roofVertices = new Float32Array([
@@ -781,6 +1319,17 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     crests.count = crestCount;
     crests.name = 'Town Hall gilded roof cresting';
     root.add(crests);
+    // Ridge tiles cap the slate roof ridge, overlapping like real slate ridging.
+    const ridgeTileCount = Math.floor(width / 1.5) + 1;
+    const ridgeTiles = new THREE.InstancedMesh(new THREE.BoxGeometry(0.34, 0.1, 0.55), darkStone, ridgeTileCount);
+    for (let i = 0; i < ridgeTileCount; i++) {
+      merDummy.position.set(-width / 2 + 0.7 + i * 1.5, ridgeY + 0.26, -depth / 2);
+      merDummy.updateMatrix();
+      ridgeTiles.setMatrixAt(i, merDummy.matrix);
+    }
+    ridgeTiles.count = ridgeTileCount;
+    ridgeTiles.name = 'Town Hall roof ridge tiles';
+    root.add(ridgeTiles);
 
     // Dormers and small roof turrets make the skyline read as a Gothic civic palace.
     for (let i = 0; i < 11; i++) {
@@ -794,7 +1343,23 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       const cap = mesh(dormer, new THREE.ConeGeometry(1.0, 1.6, 4), roofMat, 0, 2.8, 0, 'Dormer pointed cap');
       cap.rotation.y = Math.PI / 4;
     }
+    // Small triangular pediments crown each hipped roof dormer, as on the real saddleback roof.
+    const dormerPedShape = new THREE.Shape();
+    dormerPedShape.moveTo(-0.8, 0); dormerPedShape.lineTo(0, 0.55); dormerPedShape.lineTo(0.8, 0); dormerPedShape.closePath();
+    const dormerPeds = new THREE.InstancedMesh(new THREE.ShapeGeometry(dormerPedShape), trim, 11);
+    for (let i = 0; i < 11; i++) {
+      pinDummy.position.set(-width / 2 + 2.8 + i * 4.25, height + 4.35, -depth / 2 + (i % 2 ? -3.1 : 3.1));
+      pinDummy.updateMatrix();
+      dormerPeds.setMatrixAt(i, pinDummy.matrix);
+    }
+    dormerPeds.count = 11;
+    dormerPeds.name = 'Hipped dormer pediments';
+    root.add(dormerPeds);
     // Both wings terminate in corner turrets that rise the full facade height, above the roofline.
+    // Narrow lancet slits pierce both corner turret shafts, as on the real turrets.
+    const turretSlits = new THREE.InstancedMesh(new THREE.BoxGeometry(0.3, 3.2, 0.14), glass, 8);
+    const tsd = new THREE.Object3D();
+    let ts = 0;
     for (const side of [-1, 1]) {
       const turret = new THREE.Group();
       turret.position.set(side * (width / 2 - 2.2), 0, -depth / 2);
@@ -803,7 +1368,15 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       shaft.name = 'Facade corner turret';
       mesh(turret, new THREE.ConeGeometry(1.9, 7, 8), roofMat, 0, height + 10.5, 0, 'Facade corner turret spire');
       mesh(turret, new THREE.SphereGeometry(0.24, 8, 6), materials.gold, 0, height + 14.3, 0, 'Facade corner turret gilded finial');
+      for (let s = 0; s < 4; s++) {
+        tsd.position.set(side * (width / 2 - 2.2), 8 + s * 7, 1.45);
+        tsd.updateMatrix();
+        turretSlits.setMatrixAt(ts++, tsd.matrix);
+      }
     }
+    turretSlits.count = ts;
+    turretSlits.name = 'Corner turret lancet slits';
+    root.add(turretSlits);
 
     // The off-centre tower rises from the ground-level portal to the real 96 m: square
     // shaft, gallery above the roofline, three-tier openwork octagonal lantern with corner
@@ -817,6 +1390,21 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     for (const y of [9, 19, 29, 39, 49]) {
       box(tower, towerW + 0.8, 0.5, towerW + 0.8, 0, y, 0, trim, 'Tower projecting string course');
     }
+    // The square shaft is chained with oversized stone quoins at its four corners.
+    const tqRows = Math.floor(54 / 4.5);
+    const towerQuoins = new THREE.InstancedMesh(new THREE.BoxGeometry(0.42, 0.9, 0.42), trim, tqRows * 4);
+    const tqd = new THREE.Object3D();
+    let tq = 0;
+    for (let r = 0; r < tqRows; r++) {
+      for (const sx of [-1, 1]) for (const sz of [-1, 1]) {
+        tqd.position.set(sx * (towerW / 2 - 0.1), 2 + r * 4.5, sz * (towerW / 2 - 0.1));
+        tqd.updateMatrix();
+        towerQuoins.setMatrixAt(tq++, tqd.matrix);
+      }
+    }
+    towerQuoins.count = tq;
+    towerQuoins.name = 'Town Hall tower corner quoins';
+    tower.add(towerQuoins);
     // Main portal at the base of the tower, with a balcony above it.
     box(tower, 4.6, 9.5, 0.5, 0, 4.75, towerW / 2 + 0.15, glass, 'Town Hall main portal recess');
     const portalL = box(tower, 2.6, 0.3, 0.6, -1.35, 9.9, towerW / 2 + 0.15, trim, 'Portal pointed arch rib');
@@ -856,6 +1444,37 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       box(tower, 0.66, 2.4, 0.25, side * 2.6, 5.5, towerW / 2 + 0.08, darkStone, 'Portal jamb knight niche');
       box(tower, 0.24, 1.1, 0.12, side * 2.6, 5.5, towerW / 2 + 0.22, materials.gold, 'Portal jamb knight statue');
     }
+    // Prophet figures in niches along the portal archivolt mouldings — the real ogival
+    // portal carries a procession of prophets on its archivolt.
+    // Eight seated prophets (Claus Sluter / Master of Hakendover, 1401-05) fit the curve
+    // of the real portal archivolt — four per side.
+    const archivoltProphets = new THREE.InstancedMesh(new THREE.BoxGeometry(0.22, 1.0, 0.14), materials.gold, 8);
+    const apd = new THREE.Object3D();
+    let ap = 0;
+    for (const side of [-1, 1]) {
+      for (const f of [0.15, 0.4, 0.65, 0.9]) {
+        apd.position.set(side * (1.75 + 0.92 * (2 * f - 1)), 10.15 + 1.19 * (2 * f - 1), towerW / 2 + 0.3);
+        apd.updateMatrix();
+        archivoltProphets.setMatrixAt(ap++, apd.matrix);
+      }
+    }
+    archivoltProphets.count = ap;
+    archivoltProphets.name = 'Archivolt prophet statues';
+    tower.add(archivoltProphets);
+    // Stone entrance steps descend from the ogival portal onto the square.
+    for (let i = 0; i < 3; i++) {
+      box(tower, 5.4 - i * 0.8, 0.22, 0.7, 0, 0.11 + i * 0.22, towerW / 2 + 0.55 + i * 0.55, darkStone, 'Portal entrance step');
+    }
+    // Massive wooden door leaves with a gilded transom bar and kick plates.
+    box(tower, 2.3, 3.4, 0.18, 0, 1.9, towerW / 2 + 0.2, materials.dark, 'Portal door leaves');
+    box(tower, 2.3, 0.12, 0.1, 0, 3.68, towerW / 2 + 0.24, materials.gold, 'Portal door transom bar');
+    box(tower, 2.3, 0.3, 0.06, 0, 0.35, towerW / 2 + 0.26, materials.gold, 'Portal door kick plate');
+    // Gilded semicircular fanlight above the portal door leaves.
+    mesh(tower, new THREE.CircleGeometry(1.05, 16, 0, Math.PI), glass, 0, 3.72, towerW / 2 + 0.22, 'Portal fanlight');
+    // Hood mould sheltering the whole ogival portal, as on the real tower base.
+    const hoodShape = new THREE.Shape();
+    hoodShape.moveTo(-3.4, 0); hoodShape.lineTo(0, 1.3); hoodShape.lineTo(3.4, 0); hoodShape.closePath();
+    mesh(tower, new THREE.ShapeGeometry(hoodShape), trim, 0, 11.3, towerW / 2 + 0.2, 'Portal hood mould');
     // Prophet figures in niches above the portal, between the shaft lancets.
     for (const side of [-1, 1]) {
       for (const dx of [1.1, 3.3]) {
@@ -863,14 +1482,24 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
         box(tower, 0.24, 1.05, 0.12, side * dx, 10.75, towerW / 2 + 0.2, materials.gold, 'Portal prophet gilded figure');
       }
     }
-    // Narrow lancet recesses on the front and side faces of the shaft.
+    // Narrow lancet recesses on the front and side faces of the shaft, each under a trefoil
+    // tympanum — the real base of the tower has mullioned windows beneath trefoil tympana.
+    const trefoils = new THREE.InstancedMesh(new THREE.CylinderGeometry(0.32, 0.32, 0.14, 12).rotateX(Math.PI / 2), trim, 12);
+    const trd = new THREE.Object3D();
+    let tr = 0;
     for (const y of [6.5, 15, 23.5, 32, 40.5, 48.5]) {
       for (const side of [-1, 1]) {
         box(tower, 1.15, 4.4, 0.2, side * 2.3, y, towerW / 2 + 0.08, glass, 'Tower lancet');
         box(tower, 0.16, 4.75, 0.26, side * 2.3, y, towerW / 2, trim, 'Tower lancet moulding');
         box(tower, 0.2, 4.4, 1.15, towerW / 2 + 0.08, y, side * 2.3, glass, 'Tower side lancet');
+        trd.position.set(side * 2.3, y + 2.62, towerW / 2 + 0.1);
+        trd.updateMatrix();
+        trefoils.setMatrixAt(tr++, trd.matrix);
       }
     }
+    trefoils.count = tr;
+    trefoils.name = 'Tower lancet trefoil tympana';
+    tower.add(trefoils);
     // Gallery above the roofline, with projecting pinnacles at its corners and mid-sides.
     cylinder(tower, 5.6, 6.2, 1.8, 0, 56.9, 0, trim, 8).name = 'Tower gallery above the roofline';
     for (let i = 0; i < 8; i++) {
@@ -879,6 +1508,31 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       cylinder(tower, 0.3, 0.44, 5.6, x, 60.6, z, trim, 8).name = 'Gallery projecting pinnacle';
       mesh(tower, new THREE.ConeGeometry(0.52, 2.3, 8), roofMat, x, 64.2, z, 'Gallery pinnacle spire');
     }
+    // Balustrade panels filling the gallery between its projecting pinnacles.
+    const galleryBalusters = new THREE.InstancedMesh(new THREE.BoxGeometry(1.15, 0.75, 0.22), trim, 8);
+    const gbd = new THREE.Object3D();
+    for (let i = 0; i < 8; i++) {
+      const a = i * Math.PI / 4;
+      gbd.position.set(Math.cos(a) * 5.7, 57.55, Math.sin(a) * 5.7);
+      gbd.rotation.y = -a;
+      gbd.updateMatrix();
+      galleryBalusters.setMatrixAt(i, gbd.matrix);
+    }
+    galleryBalusters.count = 8;
+    galleryBalusters.name = 'Tower gallery balustrade panels';
+    tower.add(galleryBalusters);
+    // Merlons crown the tower gallery parapet between the balustrade panels.
+    const galleryMerlons = new THREE.InstancedMesh(new THREE.BoxGeometry(0.4, 0.55, 0.24), trim, 8);
+    for (let i = 0; i < 8; i++) {
+      const a = i * Math.PI / 4 + Math.PI / 8;
+      gbd.position.set(Math.cos(a) * 5.7, 58.0, Math.sin(a) * 5.7);
+      gbd.rotation.y = -a;
+      gbd.updateMatrix();
+      galleryMerlons.setMatrixAt(i, gbd.matrix);
+    }
+    galleryMerlons.count = 8;
+    galleryMerlons.name = 'Tower gallery parapet merlons';
+    tower.add(galleryMerlons);
     // Three-tier openwork octagonal lantern: slender piers, pointed arch ribs, parapets.
     cylinder(tower, 4.9, 5.3, 2.0, 0, 59.6, 0, darkStone, 8).name = 'Openwork octagonal lantern base';
     for (let level = 0; level < 3; level++) {
@@ -892,6 +1546,39 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       cylinder(tower, 4.75, 4.75, 0.55, 0, y0 + 6.25, 0, trim, 8).name = 'Lantern openwork parapet';
     }
     cylinder(tower, 4.2, 4.6, 0.9, 0, 80.6, 0, trim, 8).name = 'Lantern crown';
+    // Parapet ring at the spire base with eight crocketed pinnacles around it, as on the
+    // real openwork spire's foot.
+    cylinder(tower, 4.0, 4.0, 0.7, 0, 81.3, 0, trim, 8).name = 'Spire base parapet ring';
+    const spireBasePins = new THREE.InstancedMesh(new THREE.ConeGeometry(0.22, 1.4, 6), trim, 8);
+    const spd = new THREE.Object3D();
+    for (let i = 0; i < 8; i++) {
+      const a = i * Math.PI / 4 + Math.PI / 8;
+      spd.position.set(Math.cos(a) * 4.0, 82.1, Math.sin(a) * 4.0);
+      spd.updateMatrix();
+      spireBasePins.setMatrixAt(i, spd.matrix);
+    }
+    spireBasePins.count = 8;
+    spireBasePins.name = 'Spire base pinnacles';
+    tower.add(spireBasePins);
+    // Louver slats inside each belfry opening and the great bell in the middle tier —
+    // the real openwork lantern houses the tower bells behind wooden louvers.
+    const louvers = new THREE.InstancedMesh(new THREE.BoxGeometry(2.2, 0.12, 0.3), trim, 24);
+    mesh(tower, new THREE.CylinderGeometry(0.55, 0.75, 1.3, 10), materials.gold, 0, 67.5, 0, 'Belfry great bell');
+    const ld = new THREE.Object3D();
+    let lo = 0;
+    for (let level = 0; level < 3; level++) {
+      const y0 = 60.6 + level * 6.6;
+      for (let i = 0; i < 8; i++) {
+        const a = i * Math.PI / 4;
+        ld.position.set(Math.cos(a) * 3.7, y0 + 2.2, Math.sin(a) * 3.7);
+        ld.rotation.y = -a;
+        ld.updateMatrix();
+        louvers.setMatrixAt(lo++, ld.matrix);
+      }
+    }
+    louvers.count = lo;
+    louvers.name = 'Belfry louver slats';
+    tower.add(louvers);
     // Four buttressed octagonal corner turrets and four slender side pinnacles, tied to
     // the shaft by flying buttresses.
     const up = new THREE.Vector3(0, 1, 0);
@@ -905,6 +1592,18 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       const buttress = mesh(tower, new THREE.BoxGeometry(0.34, d.length(), 0.34), trim, (bx + x) / 2, 59.75, (bz + z) / 2, 'Flying buttress');
       buttress.quaternion.setFromUnitVectors(up, d.normalize());
     }
+    // Gilded finial balls crowning the four lantern corner turret spires.
+    const turretFinials = new THREE.InstancedMesh(new THREE.SphereGeometry(0.2, 8, 6), materials.gold, 4);
+    const tfd = new THREE.Object3D();
+    for (let k = 0; k < 4; k++) {
+      const a = Math.PI / 4 + k * Math.PI / 2;
+      tfd.position.set(Math.cos(a) * 5.7, 79.9, Math.sin(a) * 5.7);
+      tfd.updateMatrix();
+      turretFinials.setMatrixAt(k, tfd.matrix);
+    }
+    turretFinials.count = 4;
+    turretFinials.name = 'Lantern corner turret gilded finials';
+    tower.add(turretFinials);
     for (let k = 0; k < 4; k++) {
       const a = k * Math.PI / 2;
       const x = Math.cos(a) * 5.7, z = Math.sin(a) * 5.7;
@@ -940,6 +1639,23 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       rib.quaternion.setFromUnitVectors(up, d.normalize());
     }
     cylinder(tower, 2.75, 2.75, 0.16, 0, 85.2, 0, materials.gold, 8).name = 'Spire gilded ring armature';
+    // Gilded crochets hooking each openwork spire rib at intervals, as on the real spire.
+    const crochets = new THREE.InstancedMesh(new THREE.ConeGeometry(0.1, 0.34, 6), materials.gold, 24);
+    const cd = new THREE.Object3D();
+    let ck = 0;
+    for (let i = 0; i < 8; i++) {
+      const a = i * Math.PI / 4;
+      const sx = Math.cos(a) * 3.7, sz = Math.sin(a) * 3.7;
+      for (const t of [0.35, 0.65, 0.9]) {
+        cd.position.set(sx * (1 - t), 80.9 + (96 - 80.9) * t, sz * (1 - t));
+        cd.rotation.y = -a;
+        cd.updateMatrix();
+        crochets.setMatrixAt(ck++, cd.matrix);
+      }
+    }
+    crochets.count = ck;
+    crochets.name = 'Spire rib gilded crochets';
+    tower.add(crochets);
     cylinder(tower, 1.5, 1.5, 0.14, 0, 90.6, 0, materials.gold, 8).name = 'Spire gilded ring armature';
     // The openwork spire's apex carries a gilded orb, and the statue of Saint Michael at the
     // 96 m summit holds his sword raised against the dragon.
@@ -950,6 +1666,18 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     const sword = box(tower, 0.07, 1.6, 0.07, 0.42, 99.4, 0.1, materials.gold, 'Saint Michael raised sword');
     sword.rotation.z = 0.5;
     mesh(tower, new THREE.SphereGeometry(0.42, 8, 6), darkStone, 0.55, 96.2, 0.35, 'Saint Michael dragon');
+    // Wings on the dragon at Saint Michael's feet.
+    const wingShape = new THREE.Shape();
+    wingShape.moveTo(0, 0); wingShape.lineTo(0.5, 0.28); wingShape.lineTo(0.12, 0.5); wingShape.closePath();
+    const dragonWings = new THREE.InstancedMesh(new THREE.ShapeGeometry(wingShape), darkStone, 2);
+    const wd = new THREE.Object3D();
+    wd.position.set(0.42, 96.32, 0.35); wd.rotation.z = 0.5; wd.updateMatrix();
+    dragonWings.setMatrixAt(0, wd.matrix);
+    wd.position.set(0.68, 96.32, 0.35); wd.rotation.z = -0.9; wd.updateMatrix();
+    dragonWings.setMatrixAt(1, wd.matrix);
+    dragonWings.count = 2;
+    dragonWings.name = 'Saint Michael dragon wings';
+    tower.add(dragonWings);
   }
 
   function kingsHouse(parent) {
@@ -972,7 +1700,52 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
 
     box(root, width, height, depth, 0, height / 2, -depth / 2, stone, 'King’s House neo-Gothic main block');
     box(root, width + 1.6, 1.0, depth + 0.9, 0, 0.5, -depth / 2, darkStone, 'King’s House plinth');
+    // Rustication grooves in the plinth band of the real Broodhuis base.
+    const khRust = new THREE.InstancedMesh(new THREE.BoxGeometry(width + 1.2, 0.05, 0.06), trim, 3);
+    const khRd0 = new THREE.Object3D();
+    for (let i = 0; i < 3; i++) {
+      khRd0.position.set(0, 0.3 + i * 0.32, 0.32);
+      khRd0.updateMatrix();
+      khRust.setMatrixAt(i, khRd0.matrix);
+    }
+    khRust.count = 3;
+    khRust.name = 'King’s House plinth rustication';
+    root.add(khRust);
     box(root, width + 0.9, 0.8, depth + 0.7, 0, height - 0.4, -depth / 2, trim, 'King’s House upper cornice');
+    // Oversized quoins chain the front corners of the main block, and a row of modillions
+    // stands under the upper cornice — standard dressing of Jamaer's real facade.
+    const khQRows = Math.floor((height - 2) / 0.9);
+    const khQuoins = new THREE.InstancedMesh(new THREE.BoxGeometry(0.4, 0.8, 0.4), darkStone, khQRows * 2);
+    const khMods = new THREE.InstancedMesh(new THREE.BoxGeometry(0.3, 0.34, 0.34), darkStone, 26);
+    const khQd = new THREE.Object3D();
+    let khQ = 0;
+    for (let r = 0; r < khQRows; r++) {
+      for (const sx of [-1, 1]) {
+        khQd.position.set(sx * (width / 2 - 0.1), 1.4 + r * 0.9, 0.2);
+        khQd.updateMatrix();
+        khQuoins.setMatrixAt(khQ++, khQd.matrix);
+      }
+    }
+    for (let i = 0; i < 26; i++) {
+      khQd.position.set(-width / 2 + 0.6 + i * (width - 1.2) / 25, height - 0.95, 0.25);
+      khQd.updateMatrix();
+      khMods.setMatrixAt(i, khQd.matrix);
+    }
+    khQuoins.count = khQ;
+    khMods.count = 26;
+    khQuoins.name = 'King’s House corner quoins';
+    khMods.name = 'King’s House cornice modillions';
+    root.add(khQuoins, khMods);
+    // Dentil teeth under the upper cornice of the real Broodhuis.
+    const khDentils = new THREE.InstancedMesh(new THREE.BoxGeometry(0.18, 0.22, 0.2), darkStone, 26);
+    for (let i = 0; i < 26; i++) {
+      khQd.position.set(-width / 2 + 0.6 + i * (width - 1.2) / 25, height - 0.92, 0.28);
+      khQd.updateMatrix();
+      khDentils.setMatrixAt(i, khQd.matrix);
+    }
+    khDentils.count = 26;
+    khDentils.name = 'King’s House upper cornice dentils';
+    root.add(khDentils);
 
     // Ground-floor arcade gallery: recessed arched openings between piers, pointed heads.
     const bays = 9, bayW = width / bays;
@@ -987,13 +1760,54 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       archR.rotation.z = 0.55;
     }
     box(root, width - 1.2, 0.24, 0.5, 0, 6.7, 0.2, darkStone, 'Ground gallery string course');
+    // Dressed voussoir wedges ringing each pointed gallery arch, as in the real
+    // Broodhuis ground arcade archivolt.
+    const khVoussoirs = new THREE.InstancedMesh(new THREE.BoxGeometry(0.36, 0.3, 0.42), trim, bays * 5);
+    const khVd = new THREE.Object3D();
+    let khV = 0;
+    for (let i = 0; i < bays; i++) {
+      const x = -width / 2 + bayW * (i + 0.5);
+      for (let j = 0; j < 5; j++) {
+        const a = Math.PI * (0.14 + 0.72 * (j / 4));
+        khVd.position.set(x + Math.cos(a) * 1.12, 6.05 + Math.sin(a) * 0.85, 0.2);
+        khVd.rotation.z = a - Math.PI / 2;
+        khVd.updateMatrix();
+        khVoussoirs.setMatrixAt(khV++, khVd.matrix);
+        khVd.rotation.z = 0;
+      }
+    }
+    khVoussoirs.count = khV;
+    khVoussoirs.name = 'King’s House gallery arch voussoirs';
+    root.add(khVoussoirs);
     // First-floor gallery: arched windows above a continuous balustrade.
     box(root, width - 1.5, 0.85, 0.55, 0, 7.6, 0.4, trim, 'First gallery balustrade');
+    // Balusters rise along the first gallery balustrade, as on the real Broodhuis.
+    const khBalusters = new THREE.InstancedMesh(new THREE.BoxGeometry(0.12, 0.6, 0.12), trim, 30);
+    const khBd = new THREE.Object3D();
+    for (let i = 0; i < 30; i++) {
+      khBd.position.set(-width / 2 + 0.8 + i * (width - 1.6) / 29, 8.35, 0.55);
+      khBd.updateMatrix();
+      khBalusters.setMatrixAt(i, khBd.matrix);
+    }
+    khBalusters.count = 30;
+    khBalusters.name = 'King’s House first-gallery balusters';
+    root.add(khBalusters);
     for (let i = 0; i < bays; i++) {
       const x = -width / 2 + bayW * (i + 0.5);
       box(root, 1.5, 4.2, 0.2, x, 10.6, 0.22, glass, 'King’s House first-floor gallery arch');
       box(root, 1.7, 0.24, 0.3, x, 13.1, 0.22, trim, 'First gallery window hood');
     }
+    // Stone sills project under every first-floor gallery window, as on the real Broodhuis.
+    const khSills = new THREE.InstancedMesh(new THREE.BoxGeometry(1.8, 0.18, 0.34), darkStone, bays);
+    const khSd = new THREE.Object3D();
+    for (let i = 0; i < bays; i++) {
+      khSd.position.set(-width / 2 + bayW * (i + 0.5), 8.55, 0.32);
+      khSd.updateMatrix();
+      khSills.setMatrixAt(i, khSd.matrix);
+    }
+    khSills.count = bays;
+    khSills.name = 'King’s House first-gallery window sills';
+    root.add(khSills);
     // Keystones at every gallery arch apex and quatrefoil oculi above the first-floor gallery
     // arches — the neo-Gothic galleries of the real Broodhuis are tracery-dressed.
     const khKeystones = new THREE.InstancedMesh(new THREE.BoxGeometry(0.2, 0.4, 0.34), darkStone, bays * 2);
@@ -1017,6 +1831,20 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     khKeystones.name = 'King’s House gallery arch keystones';
     khOculi.name = 'King’s House gallery oculi';
     root.add(khKeystones, khOculi);
+    // Impost blocks spring the gallery arches from the piers, as on the real Broodhuis.
+    const khImposts = new THREE.InstancedMesh(new THREE.BoxGeometry(0.34, 0.3, 0.4), trim, bays * 2);
+    let ki = 0;
+    for (let i = 0; i < bays; i++) {
+      const x = -width / 2 + bayW * (i + 0.5);
+      for (const side of [-1, 1]) {
+        khd.position.set(x + side * (bayW / 2 - 0.1), 6.6, 0.24);
+        khd.updateMatrix();
+        khImposts.setMatrixAt(ki++, khd.matrix);
+      }
+    }
+    khImposts.count = ki;
+    khImposts.name = 'King’s House gallery arch impost blocks';
+    root.add(khImposts);
     // Upper storey: windows plus gilded statues in niches at the alternating bay joints.
     const khNiches = new THREE.InstancedMesh(new THREE.BoxGeometry(0.66, 2.2, 0.2), darkStone, bays);
     const khStatues = new THREE.InstancedMesh(new THREE.BoxGeometry(0.24, 1.1, 0.12), materials.gold, bays);
@@ -1027,6 +1855,18 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       box(root, 1.4, 3.4, 0.18, x, 16.8, 0.22, glass, 'King’s House upper window');
       box(root, 1.6, 0.22, 0.3, x, 18.6, 0.22, trim, 'Upper window hood');
     }
+    // A stone mullion divides each upper-storey window into twin lights, as in the real
+    // neo-Gothic upper floor.
+    const khMullions = new THREE.InstancedMesh(new THREE.BoxGeometry(0.1, 3.4, 0.2), trim, bays);
+    const khMd = new THREE.Object3D();
+    for (let i = 0; i < bays; i++) {
+      khMd.position.set(-width / 2 + bayW * (i + 0.5), 16.8, 0.24);
+      khMd.updateMatrix();
+      khMullions.setMatrixAt(i, khMd.matrix);
+    }
+    khMullions.count = bays;
+    khMullions.name = 'King’s House upper window mullions';
+    root.add(khMullions);
     for (let i = 1; i <= bays; i += 2) {
       const x = -width / 2 + i * bayW;
       khDummy.position.set(x, 10.6, 0.3);
@@ -1042,12 +1882,40 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     khStatues.name = 'King’s House gilded statues';
     khNiches.castShadow = khStatues.castShadow = true;
     root.add(khNiches, khStatues);
+    // Crocketed canopy pinnacles crowning each gilded-statue niche, as on the real facade.
+    const khPinnacles = new THREE.InstancedMesh(new THREE.ConeGeometry(0.22, 0.7, 4), trim, khN);
+    const khPinBalls = new THREE.InstancedMesh(new THREE.SphereGeometry(0.08, 6, 5), materials.gold, khN);
+    const khPd = new THREE.Object3D();
+    for (let i = 1, p = 0; i <= bays; i += 2, p++) {
+      const x = -width / 2 + i * bayW;
+      khPd.position.set(x, 11.85, 0.36);
+      khPd.updateMatrix();
+      khPinnacles.setMatrixAt(p, khPd.matrix);
+      khPd.position.y += 0.42;
+      khPd.updateMatrix();
+      khPinBalls.setMatrixAt(p, khPd.matrix);
+    }
+    khPinnacles.count = khPinBalls.count = khN;
+    khPinnacles.name = 'King’s House statue canopy pinnacles';
+    khPinBalls.name = 'King’s House pinnacle finial balls';
+    root.add(khPinnacles, khPinBalls);
 
     // Standard-bearer statues dotting the parapet, as on the real roofline.
     for (let i = 0; i < 6; i++) {
       const x = -width / 2 + 3.5 + i * 5.2;
       box(root, 0.24, 1.0, 0.12, x, height + 0.55, 0.18, materials.gold, 'King’s House standard-bearer statue');
     }
+    // Each standard-bearer carries a gilded lance, as on the real roofline statues.
+    const lances = new THREE.InstancedMesh(new THREE.CylinderGeometry(0.03, 0.03, 1.7, 6), materials.gold, 6);
+    const khLd2 = new THREE.Object3D();
+    for (let i = 0; i < 6; i++) {
+      khLd2.position.set(-width / 2 + 3.5 + i * 5.2 + 0.2, height + 1.3, 0.18);
+      khLd2.updateMatrix();
+      lances.setMatrixAt(i, khLd2.matrix);
+    }
+    lances.count = 6;
+    lances.name = 'King’s House standard-bearer lances';
+    root.add(lances);
 
     // Vast slate roof behind the central pavilion, ridge running along the long axis.
     const ridgeY = height + 6.5, eaveY = height + 0.5;
@@ -1066,6 +1934,19 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       const z = -depth / 2 + (i % 2 ? -2.6 : 2.6);
       box(root, 1.3, 2.0, 0.6, x, height + 2.0, z, trim, 'King’s House roof dormer');
     }
+    // Triangular pediments crown the seven slate-roof dormers of the real Broodhuis roof.
+    const khDormPedShape = new THREE.Shape();
+    khDormPedShape.moveTo(-0.75, 0); khDormPedShape.lineTo(0, 0.5); khDormPedShape.lineTo(0.75, 0); khDormPedShape.closePath();
+    const khDormPeds = new THREE.InstancedMesh(new THREE.ShapeGeometry(khDormPedShape), trim, 7);
+    const khPd2 = new THREE.Object3D();
+    for (let i = 0; i < 7; i++) {
+      khPd2.position.set(-width / 2 + 3 + i * 4.3, height + 3.05, -depth / 2 + (i % 2 ? -2.6 : 2.6));
+      khPd2.updateMatrix();
+      khDormPeds.setMatrixAt(i, khPd2.matrix);
+    }
+    khDormPeds.count = 7;
+    khDormPeds.name = 'King’s House dormer pediments';
+    root.add(khDormPeds);
 
     // Central pavilion with a stepped gable and Jamaer's central tower: square shaft,
     // octagonal top, domed slate spire — 38.49 m in reality.
@@ -1078,12 +1959,52 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     gable.lineTo(gw / 2 - 1.2, 2.2); gable.lineTo(gw / 2 - 1.2, 1.1); gable.lineTo(gw / 2, 1.1);
     gable.lineTo(gw / 2, 0); gable.closePath();
     mesh(root, new THREE.ShapeGeometry(gable), stone, 0, height + 2.5, 0.3, 'King’s House central stepped gable');
+    // Oculus (oeil-de-boeuf) traceried into the central gable with stone cresting
+    // finials on each gable step, as on Jamaer's real 1890s Broodhuis risalit gable.
+    const gableRim = cylinder(root, 0.66, 0.66, 0.18, 0, height + 5.0, 0.32, trim, 20);
+    gableRim.name = 'King’s House gable oculus rim';
+    mesh(root, new THREE.CircleGeometry(0.5, 20), glass, 0, height + 5.0, 0.34, 'King’s House gable oculus');
+    const khCrest = new THREE.InstancedMesh(new THREE.CylinderGeometry(0.07, 0.2, 0.55, 6), trim, 6);
+    const khCrestBall = new THREE.InstancedMesh(new THREE.SphereGeometry(0.09, 6, 5), materials.gold, 6);
+    const khCd = new THREE.Object3D();
+    const crestPts = [[-gw / 2 + 0.6, 1.1], [-gw / 2 + 1.8, 2.2], [-gw / 2 + 3.0, 3.3], [gw / 2 - 3.0, 3.3], [gw / 2 - 1.8, 2.2], [gw / 2 - 0.6, 1.1]];
+    for (let c = 0; c < 6; c++) {
+      khCd.position.set(crestPts[c][0], height + 2.5 + crestPts[c][1] + 0.28, 0.32);
+      khCd.updateMatrix();
+      khCrest.setMatrixAt(c, khCd.matrix);
+      khCd.position.y += 0.32;
+      khCd.updateMatrix();
+      khCrestBall.setMatrixAt(c, khCd.matrix);
+    }
+    khCrest.count = khCrestBall.count = 6;
+    khCrest.name = 'King’s House gable step cresting';
+    khCrestBall.name = 'King’s House gable crest finial balls';
+    root.add(khCrest, khCrestBall);
+    // Gilded cross finial at the apex of the central gable.
+    box(root, 0.06, 0.7, 0.06, 0, height + 2.5 + gh + 0.35, 0.32, materials.gold, 'King’s House gable apex cross vertical');
+    box(root, 0.42, 0.06, 0.06, 0, height + 2.5 + gh + 0.5, 0.32, materials.gold, 'King’s House gable apex cross arm');
     const towerZ = -depth / 2 - 0.7;
     box(root, 2.8, 33, 2.8, 0, 16.5, towerZ, trim, 'King’s House central tower square shaft');
     cylinder(root, 1.35, 1.5, 2.6, 0, 34.3, towerZ, trim, 8).name = 'King’s House central tower octagonal top';
+    // Louvered belfry openings around the octagonal top of the real Broodhuis tower.
+    const khLouvers = new THREE.InstancedMesh(new THREE.BoxGeometry(0.9, 0.1, 0.2), darkStone, 8);
+    const khLd = new THREE.Object3D();
+    for (let i = 0; i < 8; i++) {
+      const a = i * Math.PI / 4;
+      khLd.position.set(Math.cos(a) * 1.42, 34.3, towerZ + Math.sin(a) * 1.42);
+      khLd.rotation.y = -a;
+      khLd.updateMatrix();
+      khLouvers.setMatrixAt(i, khLd.matrix);
+    }
+    khLouvers.count = 8;
+    khLouvers.name = 'King’s House belfry louver openings';
+    root.add(khLouvers);
     const dome = mesh(root, new THREE.SphereGeometry(1.7, 12, 8), roofMat, 0, 36.3, towerZ, 'King’s House tower domed slate spire');
     dome.scale.set(1, 0.75, 1);
     cylinder(root, 0.08, 0.14, 1.2, 0, 38.2, towerZ, materials.gold, 6).name = 'King’s House tower finial';
+    // Gilded flag flying from the tower finial.
+    const khFlag = box(root, 0.7, 0.4, 0.04, 0.4, 38.9, towerZ, materials.gold, 'King’s House tower gilded flag');
+    khFlag.rotation.z = 0.12;
     // Statue of Charles V on the central tower, as on the real building.
     box(root, 0.5, 1.8, 0.2, 0, 30.5, towerZ + 1.55, darkStone, 'King’s House Charles V statue');
     mesh(root, new THREE.SphereGeometry(0.24, 8, 6), darkStone, 0, 31.6, towerZ + 1.55, 'King’s House Charles V statue head');
@@ -1094,6 +2015,67 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       box(root, 0.4, 1.5, 0.18, side * 1.2, 18.8, 0.26, stone, 'King’s House saint statue');
       mesh(root, new THREE.SphereGeometry(0.2, 8, 6), stone, side * 1.2, 19.65, 0.26, 'King’s House saint statue head');
     }
+    // Clock face on the tower shaft below the octagonal belfry — the real Broodhuis
+    // tower carries a clock above the roofline.
+    const clockRim = cylinder(root, 1.18, 1.18, 0.12, 0, 29.0, towerZ + 1.42, darkStone, 24);
+    clockRim.name = 'King’s House tower clock rim';
+    mesh(root, new THREE.CircleGeometry(1.05, 24), materials.plaster, 0, 29.0, towerZ + 1.43, 'King’s House tower clock face');
+    box(root, 0.09, 0.62, 0.04, 0, 29.12, towerZ + 1.49, materials.dark, 'King’s House clock minute hand');
+    box(root, 0.09, 0.42, 0.04, 0.18, 28.9, towerZ + 1.49, materials.dark, 'King’s House clock hour hand');
+    // Grand pointed portal in the central ground-floor bay: door leaves, archivolt,
+    // sculpted tympanum and a flight of steps — the real Broodhuis main entrance.
+    box(root, 2.3, 4.0, 0.2, 0, 2.5, 0.18, materials.dark, 'King’s House portal door leaves');
+    box(root, 0.12, 3.6, 0.24, 0, 2.3, 0.18, trim, 'King’s House portal door mullion');
+    const portL = box(root, 1.6, 0.24, 0.4, -0.55, 5.35, 0.2, trim, 'King’s House portal pointed arch');
+    portL.rotation.z = -0.6;
+    const portR = box(root, 1.6, 0.24, 0.4, 0.55, 5.35, 0.2, trim, 'King’s House portal pointed arch');
+    portR.rotation.z = 0.6;
+    const tymp = new THREE.Shape();
+    tymp.moveTo(-1.1, 0); tymp.lineTo(1.1, 0); tymp.lineTo(0, 0.85); tymp.closePath();
+    mesh(root, new THREE.ShapeGeometry(tymp), darkStone, 0, 5.6, 0.2, 'King’s House portal tympanum');
+    for (let s = 0; s < 3; s++) {
+      box(root, 3.6 + s * 0.4, 0.22, 0.35, 0, 0.11 + (2 - s) * 0.22, 0.55 + s * 0.3, darkStone, 'King’s House portal step');
+    }
+    // Arms of the City of Brussels with a crown above the central gallery, as on the
+    // real Broodhuis facade.
+    const shield = new THREE.Shape();
+    shield.moveTo(-0.55, 0.5); shield.lineTo(0.55, 0.5); shield.lineTo(0.55, 0);
+    shield.quadraticCurveTo(0.55, -0.45, 0, -0.62); shield.quadraticCurveTo(-0.55, -0.45, -0.55, 0);
+    shield.closePath();
+    mesh(root, new THREE.ShapeGeometry(shield), materials.gold, 0, 15.1, 0.3, 'King’s House Brussels coat of arms shield');
+    box(root, 0.5, 0.16, 0.1, 0, 15.68, 0.3, materials.gold, 'King’s House coat of arms crown');
+    // Round oeil-de-boeuf windows in each roof dormer of the real slate roof.
+    const khDormOculi = new THREE.InstancedMesh(new THREE.CircleGeometry(0.3, 12), glass, 7);
+    const khDormRims = new THREE.InstancedMesh(new THREE.CylinderGeometry(0.36, 0.36, 0.1, 12), trim, 7);
+    const khDd = new THREE.Object3D();
+    for (let i = 0; i < 7; i++) {
+      const x = -width / 2 + 3 + i * 4.3;
+      const z = -depth / 2 + (i % 2 ? -2.6 : 2.6);
+      const facing = z > -depth / 2 ? 1 : -1;
+      khDd.rotation.y = facing > 0 ? 0 : Math.PI;
+      khDd.position.set(x, height + 2.1, z + facing * 0.31);
+      khDd.updateMatrix();
+      khDormRims.setMatrixAt(i, khDd.matrix);
+      khDd.position.z += facing * 0.03;
+      khDd.updateMatrix();
+      khDormOculi.setMatrixAt(i, khDd.matrix);
+      khDd.rotation.y = 0;
+    }
+    khDormOculi.count = khDormRims.count = 7;
+    khDormOculi.name = 'King’s House dormer oculi';
+    khDormRims.name = 'King’s House dormer oculus rims';
+    root.add(khDormOculi, khDormRims);
+    // Stone cresting finials marching along the roof ridge of the real Broodhuis.
+    const khRidge = new THREE.InstancedMesh(new THREE.ConeGeometry(0.12, 0.6, 4), trim, 11);
+    const khRd = new THREE.Object3D();
+    for (let i = 0; i < 11; i++) {
+      khRd.position.set(-width / 2 + 1 + i * ((width - 2) / 10), ridgeY + 0.3, -depth / 2);
+      khRd.updateMatrix();
+      khRidge.setMatrixAt(i, khRd.matrix);
+    }
+    khRidge.count = 11;
+    khRidge.name = 'King’s House roof ridge cresting';
+    root.add(khRidge);
   }
 
   function grandPlace(g) {
@@ -1106,8 +2088,9 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     const cobbleGeo = new THREE.BoxGeometry(6.8, 0.12, 4.1);
     const cobblesA = new THREE.InstancedMesh(cobbleGeo, materials.pavingA, 240);
     const cobblesB = new THREE.InstancedMesh(cobbleGeo, materials.pavingB, 240);
+    const cobblesC = new THREE.InstancedMesh(cobbleGeo, materials.pavingEdge, 48);
     const dummy = new THREE.Object3D();
-    let a = 0, b = 0;
+    let a = 0, b = 0, c = 0;
     for (let row = 0; row < 15; row++) {
       for (let col = 0; col < 16; col++) {
         const x = -51.7 + col * 6.9 + (row % 2) * 0.45;
@@ -1115,15 +2098,54 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
         dummy.position.set(x, -0.06, z);
         dummy.rotation.y = ((row + col) % 3) * 0.025;
         dummy.updateMatrix();
-        if ((row + col) % 2) cobblesA.setMatrixAt(a++, dummy.matrix);
+        if (row % 5 === 4) cobblesC.setMatrixAt(c++, dummy.matrix);
+        else if ((row + col) % 2) cobblesA.setMatrixAt(a++, dummy.matrix);
         else cobblesB.setMatrixAt(b++, dummy.matrix);
       }
     }
-    cobblesA.count = a; cobblesB.count = b;
+    cobblesA.count = a; cobblesB.count = b; cobblesC.count = c;
     cobblesA.name = 'Grand-Place cobblestone courses A';
     cobblesB.name = 'Grand-Place cobblestone courses B';
-    cobblesA.receiveShadow = cobblesB.receiveShadow = true;
-    plaza.add(cobblesA, cobblesB);
+    cobblesC.name = 'Grand-Place cobblestone courses C (banded rows)';
+    cobblesA.receiveShadow = cobblesB.receiveShadow = cobblesC.receiveShadow = true;
+    plaza.add(cobblesA, cobblesB, cobblesC);
+    // Fine joints between the paving slabs of the real 1883/1899 calepinage — instanced seams.
+    const jointsX = new THREE.InstancedMesh(new THREE.BoxGeometry(0.07, 0.02, 70), materials.pavingEdge, 21);
+    const jointsZ = new THREE.InstancedMesh(new THREE.BoxGeometry(109, 0.02, 0.07), materials.pavingEdge, 15);
+    let jx = 0, jz = 0;
+    dummy.rotation.y = 0;
+    for (let i = 0; i <= 20; i++) {
+      dummy.position.set(-55 + i * 5.5, 0.005, 0);
+      dummy.updateMatrix();
+      jointsX.setMatrixAt(jx++, dummy.matrix);
+    }
+    for (let i = 0; i <= 14; i++) {
+      dummy.position.set(0, 0.005, -35 + i * 5);
+      dummy.updateMatrix();
+      jointsZ.setMatrixAt(jz++, dummy.matrix);
+    }
+    jointsX.count = jx; jointsZ.count = jz;
+    jointsX.name = 'Grand-Place paving joints (long axis)';
+    jointsZ.name = 'Grand-Place paving joints (cross axis)';
+    plaza.add(jointsX, jointsZ);
+    // Patch repairs in the calepinage — newer slabs set into the old paving, as on the
+    // real square's worn surface.
+    const repairs = new THREE.InstancedMesh(new THREE.BoxGeometry(3.2, 0.1, 2.0), materials.pavingB, 12);
+    const repairSpots = [[-40, 12], [-12, -22], [8, 18], [33, -8], [-25, 25], [45, 20], [-48, -14], [20, -28], [0, 0], [-5, 8], [38, 5], [-33, -5]];
+    for (let i = 0; i < 12; i++) {
+      dummy.position.set(repairSpots[i][0], 0.01, repairSpots[i][1]);
+      dummy.rotation.y = (i % 3) * 0.06;
+      dummy.updateMatrix();
+      repairs.setMatrixAt(i, dummy.matrix);
+    }
+    repairs.count = 12;
+    repairs.name = 'Grand-Place paving repair patches';
+    repairs.receiveShadow = true;
+    plaza.add(repairs);
+    // Granite kerb stones along all four facade lines where the paving meets the buildings.
+    for (const [w, d, x, z, n] of [[110, 0.5, 0, 35.6, 'south'], [110, 0.5, 0, -35.6, 'north'], [0.5, 71, -54.6, 0, 'west'], [0.5, 71, 54.6, 0, 'east']]) {
+      box(plaza, w, 0.18, d, x, 0.02, z, materials.pavingEdge, `Grand-Place ${n} facade kerb`);
+    }
     // Darker blue-stone sett border framing the paved square along all four facade lines, as in
     // the real 1883/1899 calepinage. Instanced around the perimeter.
     const border = new THREE.InstancedMesh(new THREE.BoxGeometry(0.9, 0.08, 0.9), materials.pavingEdge, 420);
@@ -1193,6 +2215,45 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     streetCobbles.name = 'Grand-Place street cobble stubs';
     streetCobbles.receiveShadow = true;
     plaza.add(streetCobbles);
+    // Darker granite sett patch at each of the seven street mouths, where the carriageway
+    // meets the square's calepinage.
+    const settPatches = new THREE.InstancedMesh(new THREE.BoxGeometry(6.4, 0.05, 4.4), materials.pavingEdge, mouths.length);
+    for (let m = 0; m < mouths.length; m++) {
+      const [mx, mz, dx, dz] = mouths[m];
+      sd.position.set(mx + dx * 2.2, -0.02, mz + dz * 2.2);
+      sd.rotation.y = dx ? Math.PI / 2 : 0;
+      sd.updateMatrix();
+      settPatches.setMatrixAt(m, sd.matrix);
+    }
+    settPatches.count = mouths.length;
+    settPatches.name = 'Grand-Place street-mouth granite sett patches';
+    plaza.add(settPatches);
+    // Tactile guidance strips across each street mouth for visually impaired pedestrians —
+    // a standard feature of the real paved square.
+    const tactiles = new THREE.InstancedMesh(new THREE.BoxGeometry(3.2, 0.05, 0.5), materials.warmStone, mouths.length);
+    for (let m = 0; m < mouths.length; m++) {
+      const [mx, mz, dx, dz] = mouths[m];
+      sd.position.set(mx + dx * 3.4, 0.01, mz + dz * 3.4);
+      sd.rotation.y = dx ? Math.PI / 2 : 0;
+      sd.updateMatrix();
+      tactiles.setMatrixAt(m, sd.matrix);
+    }
+    tactiles.count = mouths.length;
+    tactiles.name = 'Grand-Place tactile guidance strips';
+    plaza.add(tactiles);
+    // Blue-stone sett ring in the paving in front of Everard 't Serclaes' memorial plaque on
+    // L'Étoile (no. 1, south frontage) — the real plaque is set off by a paved surround.
+    const serclaesRing = new THREE.InstancedMesh(new THREE.BoxGeometry(0.7, 0.06, 0.7), materials.pavingEdge, 8);
+    for (let i = 0; i < 8; i++) {
+      const a = i * Math.PI / 4;
+      sd.position.set(-30 + Math.cos(a) * 1.6, 0.005, 34.6 + Math.sin(a) * 1.1);
+      sd.rotation.y = 0;
+      sd.updateMatrix();
+      serclaesRing.setMatrixAt(i, sd.matrix);
+    }
+    serclaesRing.count = 8;
+    serclaesRing.name = "Grand-Place 't Serclaes plaque sett ring";
+    plaza.add(serclaesRing);
 
     // Bollards flank each street entrance — the real square is pedestrianised at its mouths.
     const bollards = new THREE.InstancedMesh(new THREE.CylinderGeometry(0.14, 0.18, 0.9, 10), materials.dark, mouths.length * 2);
@@ -1208,6 +2269,34 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     bollards.count = bi;
     bollards.name = 'Grand-Place entrance bollards';
     plaza.add(bollards);
+    // Facade-mounted floodlight projectors at the base of each frontage — the real square is
+    // floodlit from projectors fixed to the facades, not from lamp posts. They use the night
+    // glow glass, so they light up after dark.
+    const uplights = new THREE.InstancedMesh(new THREE.BoxGeometry(0.35, 0.5, 0.18), glowGlass, 24);
+    let ul = 0;
+    for (let i = 0; i < 8; i++) {
+      sd.position.set(-48 + i * 13.7, 0.35, 35.75);
+      sd.rotation.y = Math.PI;
+      sd.updateMatrix();
+      uplights.setMatrixAt(ul++, sd.matrix);
+      sd.position.set(-48 + i * 13.7, 0.35, -35.75);
+      sd.rotation.y = 0;
+      sd.updateMatrix();
+      uplights.setMatrixAt(ul++, sd.matrix);
+    }
+    for (let i = 0; i < 4; i++) {
+      sd.position.set(-54.75, 0.35, -24 + i * 16);
+      sd.rotation.y = Math.PI / 2;
+      sd.updateMatrix();
+      uplights.setMatrixAt(ul++, sd.matrix);
+      sd.position.set(54.75, 0.35, -24 + i * 16);
+      sd.rotation.y = -Math.PI / 2;
+      sd.updateMatrix();
+      uplights.setMatrixAt(ul++, sd.matrix);
+    }
+    uplights.count = ul;
+    uplights.name = 'Grand-Place facade floodlight projectors';
+    plaza.add(uplights);
 
     // Perimeter facades frame the plaza with the real houses, by name and side.
     // North = negative Z; south = positive Z. The Town Hall holds the south-west of the
@@ -1218,20 +2307,23 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     south.rotation.y = Math.PI;
     plaza.add(south);
     townHall(south);
-    guildHouse(south, { name: 'Guild House – L’Étoile', x: -30, width: 13, height: 21, floors: 3, style: 'stepped', stone: materials.warmStone });
-    guildHouse(south, { name: 'Guild House – Le Cygne', x: -44, width: 12, height: 23, floors: 4, style: 'bell', stone: materials.plaster, emblem: true, terrace: true, swan: true });
+    guildHouse(south, { name: 'Guild House – L’Étoile', x: -30, width: 13, height: 21, floors: 3, style: 'stepped', stone: materials.gobertange, emblem: 'star' });
+    // Everard 't Serclaes, the alderman who died defending the city's liberties at this house in
+    // 1388, is commemorated by a bronze memorial plaque on the facade.
+    box(south, 0.5, 0.7, 0.08, -30, 3.2, 0.14, materials.bronze, 'Everard ’t Serclaes memorial plaque – L’Étoile');
+    guildHouse(south, { name: 'Guild House – Le Cygne', x: -44, width: 12, height: 23, floors: 4, style: 'bell', stone: materials.gobertange, emblem: true, terrace: true, swan: true });
 
     const north = new THREE.Group();
     north.name = 'North frontage';
     north.position.set(0, 0, -36);
     plaza.add(north);
     kingsHouse(north);
-    guildHouse(north, { name: 'Guild House – Le Heaume', x: -27, width: 11, height: 20, style: 'gable', stone: materials.warmStone });
-    guildHouse(north, { name: 'Guild House – Le Paon', x: -38, width: 12, height: 22, floors: 3, style: 'neck', stone: materials.paleStone });
-    guildHouse(north, { name: 'Guild House – Sainte-Barbe', x: -48.5, width: 10, height: 19, style: 'stepped' });
-    guildHouse(north, { name: 'Guild House – Le Cerf', x: 23.5, width: 11, height: 21, style: 'stepped', stone: materials.warmStone });
-    guildHouse(north, { name: 'Guild House – L’Ange', x: 34, width: 11, height: 23, floors: 4, style: 'scroll', stone: materials.plaster });
-    guildHouse(north, { name: 'Guild House – La Chaloupe d’Or', x: 46.5, width: 11, height: 24, style: 'bell', stone: materials.ochre, emblem: true, terrace: true });
+    guildHouse(north, { name: 'Guild House – Le Heaume', x: -27, width: 11, height: 20, style: 'gable', stone: materials.euville, emblem: 'helmet' });
+    guildHouse(north, { name: 'Guild House – Le Paon', x: -38, width: 12, height: 22, floors: 3, style: 'neck', stone: materials.paleStone, emblem: 'peacock' });
+    guildHouse(north, { name: 'Guild House – Sainte-Barbe', stone: materials.gobertange, x: -48.5, width: 10, height: 19, style: 'stepped', saintStatue: true });
+    guildHouse(north, { name: 'Guild House – Le Cerf', x: 23.5, width: 11, height: 21, style: 'stepped', stone: materials.warmStone, emblem: 'stag' });
+    guildHouse(north, { name: 'Guild House – L’Ange', x: 34, width: 11, height: 23, floors: 4, style: 'scroll', stone: materials.plaster, emblem: 'angel' });
+    guildHouse(north, { name: 'Guild House – La Chaloupe d’Or', x: 46.5, width: 11, height: 24, style: 'bell', stone: materials.euville, emblem: 'boat', terrace: true });
 
     const west = new THREE.Group();
     west.name = 'West frontage';
@@ -1240,21 +2332,21 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     plaza.add(west);
     // West side, numbered from the north corner like the real nos. 1-7, with the street
     // mouths left open at both ends: Rue au Beurre (north) and Rue de la Tête d'or (south).
-    guildHouse(west, { name: 'Guild House – Le Roy d’Espagne', x: 23, width: 8.5, height: 24, floors: 4, style: 'bell', stone: materials.plaster, emblem: 'vane', balustradeStatues: true, terrace: true, medallions: true });
-    guildHouse(west, { name: 'Guild House – La Brouette', x: 13.5, width: 8.5, height: 20, style: 'stepped', stone: materials.plaster, brouette: true });
-    guildHouse(west, { name: 'Guild House – Le Sac', x: 4, width: 8.5, height: 22, style: 'gable', stone: materials.warmStone, guildTools: true });
+    guildHouse(west, { name: 'Guild House – Le Roy d’Espagne', x: 23, width: 8.5, height: 24, floors: 4, style: 'bell', stone: materials.plaster, emblem: 'vane', balustradeStatues: true, terrace: true, medallions: true, pilasters: true });
+    guildHouse(west, { name: 'Guild House – La Brouette', x: 13.5, width: 8.5, height: 20, style: 'stepped', stone: materials.plaster, brouette: true, pilasters: true });
+    guildHouse(west, { name: 'Guild House – Le Sac', x: 4, width: 8.5, height: 22, style: 'gable', stone: materials.warmStone, guildTools: true, garlands: true });
     guildHouse(west, { name: 'Guild House – La Louve', x: -5.5, width: 8.5, height: 23, floors: 3, style: 'scroll', stone: materials.ochre, emblem: true, terrace: true, louve: true });
     guildHouse(west, { name: 'Guild House – Le Cornet', x: -15, width: 8.5, height: 21, style: 'scroll', stone: materials.ochre, emblem: 'horse', cornet: true });
-    guildHouse(west, { name: 'Guild House – Le Renard', x: -24.5, width: 8.5, height: 20, style: 'gable', stone: materials.warmStone, continents: true });
+    guildHouse(west, { name: 'Guild House – Le Renard', x: -24.5, width: 8.5, height: 20, style: 'gable', stone: materials.warmStone, continents: true, caryatids: true });
 
     const east = new THREE.Group();
     east.name = 'East frontage';
     east.position.set(55, 0, 0);
     east.rotation.y = -Math.PI / 2;
     plaza.add(east);
-    guildHouse(east, { name: 'Guild House – L’Arbre d’Or', x: -18, width: 15, height: 22, style: 'stepped', stone: materials.ochre, terrace: true, equestrian: true, dukeBusts: true });
-    guildHouse(east, { name: 'Guild House – La Rose', x: 1, width: 16, height: 24, style: 'bell', stone: materials.paleStone, emblem: true, dukeBusts: true, abundance: true });
-    guildHouse(east, { name: 'Guild House – Le Mont Thabor', x: 20, width: 15, height: 20, style: 'gable', terrace: true, dukeBusts: true });
+    guildHouse(east, { name: 'Guild House – L’Arbre d’Or', x: -18, width: 15, height: 22, style: 'stepped', stone: materials.ochre, terrace: true, equestrian: true, dukeBusts: true, emblem: 'barley' });
+    guildHouse(east, { name: 'Guild House – La Rose', x: 1, width: 16, height: 24, style: 'bell', stone: materials.paleStone, emblem: 'rose', dukeBusts: true, abundance: true });
+    guildHouse(east, { name: 'Guild House – Le Mont Thabor', x: 20, width: 15, height: 20, style: 'gable', terrace: true, dukeBusts: true, emblem: 'flags', blueStone: true, stoneVase: true });
 
     // The real square is entered by seven narrow streets (Rue au Beurre, Rue de la Tête
     // d'or, Rue des Chapeliers, Rue Charles Buls, Rue de la Colline, Rue d'Arenberg and
@@ -1271,12 +2363,37 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     ];
     for (const [front, x, street] of plaques) {
       box(front, 0.55, 0.75, 0.08, x, 1.2, 0.12, materials.bronze, `UNESCO entrance plaque – ${street}`);
+      // A small bronze hood shelters each 2018 UNESCO plaque from the rain.
+      box(front, 0.7, 0.12, 0.18, x, 1.68, 0.12, materials.bronze, `UNESCO plaque hood – ${street}`);
     }
+    // Manhole covers and cellar areaway grates set into the paving along the facade lines.
+    const manholes = new THREE.InstancedMesh(new THREE.CylinderGeometry(0.42, 0.42, 0.06, 14).rotateX(Math.PI / 2), materials.dark, 24);
+    const grates = new THREE.InstancedMesh(new THREE.BoxGeometry(1.6, 0.05, 0.5), materials.dark, 28);
+    const md = new THREE.Object3D();
+    let mh = 0, gr = 0;
+    for (let i = 0; i < 24; i++) {
+      const x = -50 + (i % 8) * 14.3, z = (Math.floor(i / 8) % 2 ? 33.4 : -33.4);
+      md.position.set(x, -0.05, z);
+      md.updateMatrix();
+      manholes.setMatrixAt(mh++, md.matrix);
+    }
+    for (const z of [33.2, -33.2]) {
+      for (let i = 0; i < 14; i++) {
+        md.position.set(-49 + i * 7.2, -0.05, z + (z > 0 ? -1.6 : 1.6));
+        md.updateMatrix();
+        grates.setMatrixAt(gr++, md.matrix);
+      }
+    }
+    manholes.count = mh;
+    grates.count = gr;
+    manholes.name = 'Grand-Place manhole covers';
+    grates.name = 'Grand-Place cellar areaway grates';
+    plaza.add(manholes, grates);
 
     // Traditional Brussels enamel street signs — blue board with a white rim on a dark post —
     // stand at each of the seven street mouths, naming the street that opens onto the square.
     const signRims = new THREE.InstancedMesh(new THREE.BoxGeometry(1.56, 0.48, 0.04), materials.plaster, plaques.length);
-    const signBoards = new THREE.InstancedMesh(new THREE.BoxGeometry(1.5, 0.42, 0.06), materials.enamelBlue, plaques.length);
+    const signBoards = new THREE.InstancedMesh(new THREE.BoxGeometry(1.5, 0.42, 0.06), signGlow, plaques.length);
     const signPosts = new THREE.InstancedMesh(new THREE.CylinderGeometry(0.05, 0.06, 2.6, 8), materials.dark, plaques.length);
     const sgd = new THREE.Object3D();
     const sv = new THREE.Vector3();
@@ -1307,9 +2424,26 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
 
   addLandmark('grandPlace', grandPlace);
   addLandmark('mannekenPis', (g) => {
-    box(g, 2.2, 1.3, 2.2, 0, 0.65, 0, materials.dark);
-    cylinder(g, 0.34, 0.45, 1.6, 0, 2.1, 0, materials.gold, 8);
-    mesh(g, new THREE.SphereGeometry(0.32, 10, 8), materials.gold, 0, 3.15, 0);
+    // Manneken Pis at the corner of Rue de l'Étuve / Rue du Chêne, a stone's throw from the
+    // Grand-Place: Duquesnoy's 1619 bronze boy set in his 1770 blue-stone rocaille niche,
+    // pouring into a stone basin, fenced by the 1851 wrought-iron railings.
+    box(g, 3.2, 4.4, 0.7, 0, 2.2, -0.3, materials.blueStone, 'Manneken Pis rocaille niche back');
+    mesh(g, new THREE.CircleGeometry(1.15, 16, 0, Math.PI), materials.blueStone, 0, 2.2, -0.24, 'Manneken Pis rocaille niche arch');
+    box(g, 2.5, 0.5, 0.8, 0, 4.65, -0.28, materials.blueStone, 'Manneken Pis niche cornice');
+    box(g, 2.2, 1.3, 2.2, 0, 0.65, 0, materials.dark, 'Manneken Pis pedestal plinth');
+    cylinder(g, 0.34, 0.45, 1.6, 0, 2.1, 0, materials.blueStone, 8).name = 'Manneken Pis column';
+    box(g, 0.3, 0.62, 0.22, 0, 3.15, 0, materials.bronze, 'Manneken Pis bronze figure');
+    mesh(g, new THREE.SphereGeometry(0.16, 10, 8), materials.bronze, 0, 3.56, 0, 'Manneken Pis bronze head');
+    cylinder(g, 0.02, 0.02, 0.5, 0.14, 3.0, 0.12, materials.glass, 6).name = 'Manneken Pis water jet';
+    cylinder(g, 1.1, 1.25, 0.5, 0, 0.25, 0, materials.blueStone, 12).name = 'Manneken Pis stone basin';
+    mesh(g, new THREE.CircleGeometry(1.05, 12), materials.glass, 0, 0.42, 0, 'Manneken Pis basin water');
+    for (let i = 0; i < 4; i++) {
+      const a = i * Math.PI / 2 + Math.PI / 4;
+      box(g, 0.06, 0.8, 0.06, Math.cos(a) * 1.55, 0.4, Math.sin(a) * 1.55, materials.dark, 'Manneken Pis railing post');
+    }
+    const hoop = mesh(g, new THREE.TorusGeometry(1.55, 0.04, 6, 20), materials.dark, 0, 0.82, 0, 'Manneken Pis railing top hoop');
+    hoop.rotation.x = Math.PI / 2;
+    box(g, 0.5, 0.3, 0.05, 0, 1.6, -0.62, materials.bronze, 'Manneken Pis commemorative plaque');
   });
   addLandmark('montDesArts', (g) => {
     // Mont des Arts: René Péchère's 1957–58 suspended garden, restored in 2001.
