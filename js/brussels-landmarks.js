@@ -3921,6 +3921,9 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     for (const side of [-1, 1]) {
       box(g, 0.5, 0.06, 0.06, side * 9.6 - side * 0.2, 4.35, centralFace + 1.6, bronze, 'Perron lamp arm');
     }
+
+    // A moulded cap finishes the front edge of the portico stylobate.
+    box(g, 31, 0.1, 0.3, 0, 0.68, centralFace + 7.75, moulding, 'Stylobate edge cap');
   });
   addLandmark('palaceSurroundings', (g) => {
     // Real-world sources: en/fr Wikipedia (Royal Palace of Brussels, Brussels Park, Place des Palais,

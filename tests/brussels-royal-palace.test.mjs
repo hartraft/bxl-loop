@@ -1659,3 +1659,7 @@ testCase('a sett-paved yard lies behind the Academy stables block', () => {
 testCase('collar rings anchor the emperor bust pedestals around the pond', () => {
   assert.match(palace, /'Pond emperor bust collar'/);
 });
+
+testCase('a moulded cap finishes the front edge of the portico stylobate', () => {
+  assert.match(palace, /'Stylobate edge cap'/);
+});
