@@ -3737,6 +3737,9 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     for (const side of [-1, 1]) {
       box(g, 0.8, 1.2, 2.2, side * 8.9, 0.6, centralFace + 1.2, ashlar, 'Perron cheek wall');
     }
+
+    // A straight garden walk leads from the perron to the gilded railing on the axis.
+    box(g, 3, 0.08, 3.2, 0, 0.05, 12.4, ashlar, 'Central garden walk');
   });
   addLandmark('palaceSurroundings', (g) => {
     // Real-world sources: en/fr Wikipedia (Royal Palace of Brussels, Brussels Park, Place des Palais,

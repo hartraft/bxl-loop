@@ -1244,3 +1244,7 @@ testCase('hayloft windows pierce the Royal Stables range under the eaves', () =>
 testCase('a low stone wall encloses the Academy Palace garden toward the square', () => {
   assert.match(palace, /'Academy garden front wall'/);
 });
+
+testCase('a straight garden walk leads from the perron to the gilded railing', () => {
+  assert.match(palace, /'Central garden walk'/);
+});
