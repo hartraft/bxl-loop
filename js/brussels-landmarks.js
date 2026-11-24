@@ -1893,8 +1893,21 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       const x = Math.cos(a) * 18.3, z = Math.sin(a) * 18.3;
       box(g, 1.1, 9.0, 1.1, x, 77, z, weathered, 'Circular drum pier');
     }
-    cylinder(g, 20.5, 20.5, 1.5, 0, 85, 0, bronze, 32);
-    mesh(g, new THREE.SphereGeometry(20, 32, 20, 0, Math.PI * 2, 0, Math.PI / 2), roof, 0, 85, 0, 'Copper courthouse dome');
+    cylinder(g, 20.5, 20.5, 1.5, 0, 85, 0, gilded, 32);
+    // The dome is copper clad in 275 m2 of gold leaf, with the slightly bombé profile of the
+    // 1948 raising (dome raised 2.5 m); it rises to 105 m.
+    const domeGeom = new THREE.SphereGeometry(20, 32, 20, 0, Math.PI * 2, 0, Math.PI / 2);
+    domeGeom.scale(1, 1.06, 1);
+    mesh(g, domeGeom, gilded, 0, 85, 0, 'Gilded copper courthouse dome');
+    const meridian = new THREE.CatmullRomCurve3(Array.from({ length: 9 }, (_, i) => {
+      const t = i / 8 * Math.PI / 2;
+      return new THREE.Vector3(20 * Math.cos(t), 85 + 21.2 * Math.sin(t), 0);
+    }));
+    const ribGeom = new THREE.TubeGeometry(meridian, 16, 0.22, 6);
+    for (let i = 0; i < 16; i++) {
+      const rib = mesh(g, ribGeom, gilded, 0, 0, 0, 'Gilded dome rib');
+      rib.rotation.y = i * Math.PI * 2 / 16;
+    }
     cylinder(g, 5.8, 7.5, 9, 0, 104, 0, bronze, 24);
     for (let i = 0; i < 12; i++) {
       const a = i * Math.PI * 2 / 12;

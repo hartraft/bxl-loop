@@ -136,7 +136,9 @@ test('the monumental dome stack exists: square drum, circular drum, copper dome,
   assert.ok(palace.includes('cylinder(g, 0.6, 0.85, 5.55, x, 90.0, z, bronze, 10)'), '5.55 m statues');
   assert.ok(palace.includes("'Stylobate cross arm north-south'"), 'Greek-cross stylobate');
   assert.ok(palace.includes("'Stylobate paired pilaster'"));
-  assert.ok(palace.includes("'Copper courthouse dome'"));
+  assert.ok(palace.includes("'Gilded copper courthouse dome'"), '275 m2 of gold leaf over the copper dome');
+  assert.ok(palace.includes('domeGeom.scale(1, 1.06, 1)'), 'bombe profile of the 1948 raising');
+  assert.ok(palace.includes("'Gilded dome rib'"));
   assert.ok(palace.includes("'Courthouse lantern cap'"));
 });
 
