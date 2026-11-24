@@ -605,12 +605,30 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     box(root, 33.8, 1.0, depth + 1.0, westWingX, 0.5, -depth / 2, darkStone, 'West wing stepped stone plinth');
     box(root, 16.0, 0.8, depth + 0.8, eastWingX, height - 0.35, -depth / 2, trim, 'East wing upper cornice');
     box(root, 33.0, 0.8, depth + 0.8, westWingX, height - 0.35, -depth / 2, trim, 'West wing upper cornice');
+    // Both wing cornices stand on rows of corbels (modillions), like the guild houses.
+    const wingMods = new THREE.InstancedMesh(new THREE.BoxGeometry(0.3, 0.34, 0.34), darkStone, 40);
+    const wmd = new THREE.Object3D();
+    let wm = 0;
+    for (const [wx, ww] of [[eastWingX, 16], [westWingX, 33]]) {
+      const n = Math.floor(ww / 1.2);
+      for (let i = 0; i < n; i++) {
+        wmd.position.set(wx - ww / 2 + 0.5 + i * (ww - 1) / (n - 1), height - 0.85, 0.2);
+        wmd.updateMatrix();
+        wingMods.setMatrixAt(wm++, wmd.matrix);
+      }
+    }
+    wingMods.count = wm;
+    wingMods.name = 'Town Hall wing cornice modillions';
+    root.add(wingMods);
 
     // Repeated pointed ground-floor arcade: dark recessed openings, piers and pointed heads.
     const bays = 16, bayW = width / bays;
     // The arcade pillars are adorned with statues of knights and squires of the Seven Noble
     // Houses of Brussels — instanced gilded figures on top of every pier.
     const knightStatues = new THREE.InstancedMesh(new THREE.BoxGeometry(0.22, 0.95, 0.12), materials.gold, bays * 2);
+    const voussoirs = new THREE.InstancedMesh(new THREE.BoxGeometry(0.22, 0.3, 0.34), trim, bays * 6);
+    const vd = new THREE.Object3D();
+    let vi = 0;
     const knightDummy = new THREE.Object3D();
     let kn = 0;
     for (let i = 0; i < bays; i++) {
@@ -629,7 +647,18 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       const archR = box(root, 2.05, 0.28, 0.48, x + 0.52, 7.12, 0.22, trim, 'Pointed arcade arch');
       archR.rotation.z = 0.55;
       box(root, bayW - 0.55, 0.24, 0.5, x, 7.55, 0.22, darkStone, 'Arcade string course');
+      for (const t of [0.3, 0.6, 0.9]) {
+        for (const side of [-1, 1]) {
+          vd.position.set(x + side * (0.52 - t * 0.95), 7.12 + t * 0.62, 0.24);
+          vd.rotation.z = side * 0.55;
+          vd.updateMatrix();
+          voussoirs.setMatrixAt(vi++, vd.matrix);
+        }
+      }
     }
+    voussoirs.count = vi;
+    voussoirs.name = 'Arcade arch voussoirs';
+    root.add(voussoirs);
     knightStatues.count = kn;
     knightStatues.name = 'Arcade pillar knight statues (Noble Houses)';
     knightStatues.castShadow = true;

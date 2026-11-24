@@ -135,6 +135,13 @@ test('a balustraded balcony connects the Town Hall wings; statues have canopy ho
   assert.ok(square.includes('canopies.count = cn'));
 });
 
+test('Town Hall arcade arches carry voussoirs; wing cornices stand on modillions', () => {
+  assert.ok(square.includes("'Arcade arch voussoirs'"));
+  assert.ok(square.includes('voussoirs.count = vi'));
+  assert.ok(square.includes("'Town Hall wing cornice modillions'"));
+  assert.ok(square.includes('wingMods.count = wm'));
+});
+
 test('the Town Hall tower shaft is chained with corner quoins', () => {
   assert.ok(square.includes("'Town Hall tower corner quoins'"));
   assert.ok(square.includes('towerQuoins.count = tq'));
