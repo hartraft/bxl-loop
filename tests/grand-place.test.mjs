@@ -1055,3 +1055,21 @@ test('rounds 254-262: belfry quatrefoils, buttress pinnacle caps, spire rib feet
   assert.ok(square.includes('awning canvas stripes'));
   assert.ok(square.includes('stripes.count = bays * 2'));
 });
+
+test('rounds 263-272: turret hood moulds, gallery crocket balls, lantern turret slit windows, Broodhuis gallery archivolt + gable oculus tracery + clock studs, stepped-gable edge stones, door colonettes, floodlight conduits, Manneken shell crown', () => {
+  assert.ok(square.includes('Corner turret lancet hood moulds'));
+  assert.ok(square.includes('turretHoods.count = th'));
+  assert.ok(square.includes('Gallery pinnacle crocket ball'));
+  assert.ok(square.includes('Lantern corner turret slit windows'));
+  assert.ok(square.includes('turretWin.count = tw'));
+  assert.ok(square.includes('King’s House gallery outer archivolt'));
+  assert.ok(square.includes('khArchivolt.count = khA'));
+  assert.ok(square.includes('King’s House gable oculus tracery vertical'));
+  assert.ok(square.includes('King’s House clock rim gilded studs'));
+  assert.ok(square.includes('clockStuds.count = 12'));
+  assert.ok(square.includes('stepped gable edge stones'));
+  assert.ok(square.includes('stepEdges.count = 6'));
+  assert.ok(square.includes('door surround colonette'));
+  assert.ok(square.includes('Grand-Place floodlight cable conduits'));
+  assert.ok(source.includes('Manneken Pis niche shell crown'));
+});
