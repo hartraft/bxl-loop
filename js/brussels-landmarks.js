@@ -4106,6 +4106,13 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
 
     // A bronze kick plate protects the foot of the portico main door.
     box(g, 3.8, 0.5, 0.06, 0, 0.4, centralFace + 0.26, bronze, 'Portico door kick plate');
+
+    // Gilded balls crown the perron side rail posts.
+    for (const side of [-1, 1]) {
+      for (const pz of [0.5, 2.1]) {
+        mesh(g, new THREE.SphereGeometry(0.1, 10, 8), gilded, side * 8.4, 1.32, centralFace + pz, 'Perron rail post ball');
+      }
+    }
   });
   addLandmark('palaceSurroundings', (g) => {
     // Real-world sources: en/fr Wikipedia (Royal Palace of Brussels, Brussels Park, Place des Palais,

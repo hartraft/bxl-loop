@@ -2028,3 +2028,7 @@ testCase('jambs frame the great door of the Academy stables block', () => {
 testCase('a projecting plinth bases the BELvue pavilion block', () => {
   assert.match(palace, /'BELvue base plinth'/);
 });
+
+testCase('gilded balls crown the perron side rail posts', () => {
+  assert.match(palace, /'Perron rail post ball'/);
+});
