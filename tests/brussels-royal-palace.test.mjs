@@ -543,3 +543,9 @@ testCase('a double row of lime trees surrounds the park perimeter (19th century)
   assert.match(palace, /'Park perimeter lime canopies'/);
   assert.match(palace, /limeTrunk\.count = lti/);
 });
+
+testCase('the 1960s Parc/Park metro entrance pavilion stands in the park NW corner', () => {
+  assert.match(palace, /north-western corner/);
+  assert.match(palace, /'Parc metro entrance pavilion base'/);
+  assert.match(palace, /'Parc metro entrance canopy'/);
+});

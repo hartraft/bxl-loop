@@ -2498,6 +2498,13 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     }
     limeTrunk.count = lti; limeTrunk.name = 'Park perimeter lime trunks'; g.add(limeTrunk);
     limeCan.count = lti; limeCan.name = 'Park perimeter lime canopies'; g.add(limeCan);
+    // In the 1960s an entrance was built in the park's north-western corner for the
+    // underground Parc/Park metro station (lines 1 and 5).
+    box(g, 10, 1.2, 6, -168, 0.6, 398, materials.paleStone, 'Parc metro entrance pavilion base');
+    box(g, 12, 0.25, 7, -168, 3.2, 398, materials.glass, 'Parc metro entrance canopy');
+    for (const cx of [-172.5, -163.5]) {
+      box(g, 0.4, 3.1, 0.4, cx, 1.55, 398, materials.dark, 'Parc metro entrance canopy post');
+    }
   });
     addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');
