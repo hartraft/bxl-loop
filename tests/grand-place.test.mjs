@@ -1241,3 +1241,24 @@ test('rounds 353-362: balcony medallion, dormer cap balls, octagonal-top balls, 
   assert.ok(square.includes('chimney pot rim rings'));
   assert.ok(square.includes('potRims.count = 4'));
 });
+
+test('rounds 363-372: wing-end pilasters, tower side dripstones, Broodhuis cornice trim, quoin gold caps, portal tactile strips, portal voussoirs, dormer pediment balls, arcade lamps, inner sett ring, Manneken mid hoop', () => {
+  assert.ok(square.includes('Wing-end pilaster strips'));
+  assert.ok(square.includes('endPilasters.count = ep'));
+  assert.ok(square.includes('Tower side lancet sill dripstones'));
+  assert.ok(square.includes('sideDrips.count = sd3'));
+  assert.ok(square.includes('King’s House upper cornice gold trim'));
+  assert.ok(square.includes('corner quoin gold caps'));
+  assert.ok(square.includes('quoinCaps.count = 2'));
+  assert.ok(square.includes('Grand-Place portal tactile strips'));
+  assert.ok(square.includes('portalTactiles.count = 2'));
+  assert.ok(square.includes('Portal arch gilded voussoirs'));
+  assert.ok(square.includes('portalVoussoirs.count = 6'));
+  assert.ok(square.includes('King’s House dormer pediment finial balls'));
+  assert.ok(square.includes('khDormTips.count = 7'));
+  assert.ok(square.includes('arcade pendant lamps'));
+  assert.ok(square.includes('arcadeLamps.count = bays'));
+  assert.ok(square.includes('Grand-Place inner sett ring'));
+  assert.ok(square.includes('innerRing.count = ir'));
+  assert.ok(source.includes('Manneken Pis railing mid hoop'));
+});
