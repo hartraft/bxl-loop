@@ -1713,3 +1713,8 @@ testCase('stone sills sit under the wing end windows on both gable ends', () => 
   assert.match(palace, /'Wing end window sill'/);
   assert.match(palace, /'Wing end ground window sill'/);
 });
+
+testCase('a moulded surround frames the Palace of the Nation main door', () => {
+  assert.match(palace, /'Palace of the Nation door jamb'/);
+  assert.match(palace, /'Palace of the Nation door lintel'/);
+});

@@ -5076,6 +5076,12 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     for (let i = 0; i < 5; i++) {
       box(g, 0.45, 0.6, 0.3, -70 - 16 + i * 8, 8.7, -73.0, materials.warmStone, 'Royal Stables window keystone');
     }
+
+    // A moulded surround frames the Palace of the Nation main door.
+    for (const side of [-1, 1]) {
+      box(g, 0.35, 8.5, 0.4, side * 2.45, 4.25, 402.75, materials.warmStone, 'Palace of the Nation door jamb');
+    }
+    box(g, 5.0, 0.3, 0.45, 0, 8.75, 402.75, materials.warmStone, 'Palace of the Nation door lintel');
   });
     addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');
