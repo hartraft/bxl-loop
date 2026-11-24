@@ -1887,3 +1887,7 @@ testCase('jambs frame the Palace of the Nation wing door', () => {
 testCase('a stone rim rings the fountain jet of the main pond', () => {
   assert.match(palace, /'Park fountain rim'/);
 });
+
+testCase('a cap finishes the plinth of the gilded garden railing', () => {
+  assert.match(palace, /'Garden railing plinth cap'/);
+});

@@ -4038,6 +4038,9 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     for (const hy of [1.5, 4.1, 6.7]) {
       box(g, 0.4, 0.12, 0.08, -1.9, hy, centralFace + 0.28, bronze, 'Portico door hinge');
     }
+
+    // A cap finishes the plinth of the gilded garden railing.
+    box(g, 68, 0.06, 0.56, 0, 0.25, 14, moulding, 'Garden railing plinth cap');
   });
   addLandmark('palaceSurroundings', (g) => {
     // Real-world sources: en/fr Wikipedia (Royal Palace of Brussels, Brussels Park, Place des Palais,
