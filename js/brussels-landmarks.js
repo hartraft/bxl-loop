@@ -4881,6 +4881,13 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     // The Academy Palace stables block has a great door on its court facade.
     box(g, 3.0, 5.5, 0.3, -168, 2.75, 71.85, materials.dark, 'Academy stables door');
     box(g, 3.4, 0.22, 0.4, -168, 5.7, 71.8, materials.warmStone, 'Academy stables door lintel');
+
+    // Stone sills sit under each Palace of the Nation wing window.
+    for (const side of [-1, 1]) {
+      for (let i = 0; i < 4; i++) {
+        box(g, 2.8, 0.2, 0.35, side * 70 - 15 + i * 10, 4.35, 407.0, materials.warmStone, 'Palace of the Nation wing window sill');
+      }
+    }
   });
     addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');
