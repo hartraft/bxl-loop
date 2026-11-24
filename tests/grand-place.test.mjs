@@ -954,3 +954,21 @@ test('rounds 205-212: bollard caps, manhole flange rings + grate hinges, sign po
   assert.ok(square.includes('Grand-Place kerb drainage gullies'));
   assert.ok(square.includes('gullies.count = gu'));
 });
+
+test('rounds 213-222: kerb end stones, tactile bumps, sett patch borders, floodlight brackets/shields, chair backs, menu boards, awning arms/poles, plaque frames', () => {
+  assert.ok(square.includes('kerb end stones at street mouths'));
+  assert.ok(square.includes('kerbEnds.count = ke'));
+  assert.ok(square.includes('tactile strip bumps'));
+  assert.ok(square.includes('tactileBumps.count = tb2'));
+  assert.ok(square.includes('sett patch border stones'));
+  assert.ok(square.includes('patchBorders.count = pb'));
+  assert.ok(square.includes('floodlight mounting brackets'));
+  assert.ok(square.includes('floodlight glare shields'));
+  assert.ok(square.includes('upBrackets.count = upShields.count = ul'));
+  assert.ok(square.includes('terrace chair backs'));
+  assert.ok(square.includes('terrace menu boards'));
+  assert.ok(square.includes('awning support arms'));
+  assert.ok(square.includes('awning front poles'));
+  assert.ok(square.includes('’t Serclaes plaque bronze frame'));
+  assert.ok(square.includes('UNESCO plaque frame'));
+});

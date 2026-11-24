@@ -532,6 +532,28 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       sideFlaps.count = 2;
       sideFlaps.name = name + ' awning side flaps';
       root.add(sideFlaps);
+      // Angled support arms brace each awning from the facade, and slim front poles carry
+      // the valance — the real canvas awnings are propped thus.
+      const awnArms = new THREE.InstancedMesh(new THREE.BoxGeometry(0.06, 1.15, 0.06), materials.dark, bays * 2);
+      const awnPoles = new THREE.InstancedMesh(new THREE.CylinderGeometry(0.03, 0.03, 1.55, 6), materials.dark, bays * 2);
+      for (let bay = 0; bay < bays; bay++) {
+        const wx = (bay - (bays - 1) / 2) * (width - 2.8) / Math.max(1, bays - 1);
+        for (const side of [-1, 1]) {
+          arcDummy.position.set(wx + side * ((width - 2.8) / bays / 2 - 0.15), 3.3, 0.9);
+          arcDummy.rotation.x = 0.5;
+          arcDummy.updateMatrix();
+          awnArms.setMatrixAt(bay * 2 + (side > 0 ? 1 : 0), arcDummy.matrix);
+          arcDummy.rotation.x = 0;
+          arcDummy.position.set(wx + side * ((width - 2.8) / bays / 2 - 0.15), 2.9, 1.6);
+          arcDummy.updateMatrix();
+          awnPoles.setMatrixAt(bay * 2 + (side > 0 ? 1 : 0), arcDummy.matrix);
+        }
+      }
+      awnArms.count = bays * 2;
+      awnPoles.count = bays * 2;
+      awnArms.name = name + ' awning support arms';
+      awnPoles.name = name + ' awning front poles';
+      root.add(awnArms, awnPoles);
       // Terrace furniture set out on the square in front of the awnings — the real brasseries
       // (Le Roy d'Espagne's parasols in the house colours, etc.) line the plaza with tables,
       // chairs and parasols. All instanced per house.
@@ -581,6 +603,28 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       parasolRibs.count = bays;
       parasolRibs.name = name + ' parasol rib tips';
       root.add(parasolRibs);
+      // Chair backs and A-frame menu boards complete each brasserie terrace, as on the real
+      // square's café terraces.
+      const chairBacks = new THREE.InstancedMesh(new THREE.BoxGeometry(0.38, 0.35, 0.05), materials.dark, bays * 2);
+      const menuBoards = new THREE.InstancedMesh(new THREE.BoxGeometry(0.4, 0.55, 0.04), materials.dark, bays);
+      for (let bay = 0; bay < bays; bay++) {
+        const wx = (bay - (bays - 1) / 2) * (width - 2.8) / Math.max(1, bays - 1);
+        for (const side of [-1, 1]) {
+          arcDummy.position.set(wx + side * 0.75, 0.45, 2.55);
+          arcDummy.updateMatrix();
+          chairBacks.setMatrixAt(bay * 2 + (side > 0 ? 1 : 0), arcDummy.matrix);
+        }
+        arcDummy.position.set(wx + 0.9, 0.3, 2.2);
+        arcDummy.rotation.y = 0.3;
+        arcDummy.updateMatrix();
+        menuBoards.setMatrixAt(bay, arcDummy.matrix);
+        arcDummy.rotation.y = 0;
+      }
+      chairBacks.count = bays * 2;
+      menuBoards.count = bays;
+      chairBacks.name = name + ' terrace chair backs';
+      menuBoards.name = name + ' terrace menu boards';
+      root.add(chairBacks, menuBoards);
     }
 
     // Baroque guild-house dressing, as on the real frontages: pilasters between the
@@ -2854,6 +2898,29 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     gullies.count = gu;
     gullies.name = 'Grand-Place kerb drainage gullies';
     plaza.add(gullies);
+    // End stones close the kerb line at each of the seven street mouths, and bump rows make
+    // the tactile guidance strips genuinely tactile.
+    const kerbEnds = new THREE.InstancedMesh(new THREE.BoxGeometry(0.6, 0.22, 0.6), materials.pavingEdge, mouths.length * 2);
+    const tactileBumps = new THREE.InstancedMesh(new THREE.SphereGeometry(0.05, 6, 5), materials.warmStone, mouths.length * 8);
+    let ke = 0, tb2 = 0;
+    for (const [mx, mz, dx, dz] of mouths) {
+      for (const side of [-1, 1]) {
+        sd.position.set(mx + dx * 2.2 + (dz !== 0 ? side * 3.4 : 0), 0.06, mz + dz * 2.2 + (dx !== 0 ? side * 3.4 : 0));
+        sd.rotation.y = 0;
+        sd.updateMatrix();
+        kerbEnds.setMatrixAt(ke++, sd.matrix);
+      }
+      for (let b = 0; b < 8; b++) {
+        sd.position.set(mx + dx * 3.4 + (dz !== 0 ? -1.4 + b * 0.4 : 0), 0.045, mz + dz * 3.4 + (dx !== 0 ? -1.4 + b * 0.4 : 0));
+        sd.updateMatrix();
+        tactileBumps.setMatrixAt(tb2++, sd.matrix);
+      }
+    }
+    kerbEnds.count = ke;
+    tactileBumps.count = tb2;
+    kerbEnds.name = 'Grand-Place kerb end stones at street mouths';
+    tactileBumps.name = 'Grand-Place tactile strip bumps';
+    plaza.add(kerbEnds, tactileBumps);
     // Darker blue-stone sett border framing the paved square along all four facade lines, as in
     // the real 1883/1899 calepinage. Instanced around the perimeter.
     const border = new THREE.InstancedMesh(new THREE.BoxGeometry(0.9, 0.08, 0.9), materials.pavingEdge, 420);
@@ -2936,6 +3003,23 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     settPatches.count = mouths.length;
     settPatches.name = 'Grand-Place street-mouth granite sett patches';
     plaza.add(settPatches);
+    // Border stones frame each street-mouth sett patch.
+    const patchBorders = new THREE.InstancedMesh(new THREE.BoxGeometry(0.5, 0.06, 0.5), materials.pavingB, mouths.length * 8);
+    let pb = 0;
+    for (const [mx, mz, dx, dz] of mouths) {
+      for (let k = 0; k < 8; k++) {
+        const t = k / 8;
+        const px = mx + dx * 2.2 + (dz !== 0 ? -3.2 + t * 6.4 : 0) * (dx !== 0 ? 0 : 1) - (dx !== 0 ? 0 : 0);
+        const pz = mz + dz * 2.2 + (dx !== 0 ? -3.2 + t * 6.4 : 0) * (dz !== 0 ? 0 : 1);
+        sd.position.set(mx + dx * 2.2 + (dz !== 0 ? -3.2 + t * 6.4 : 0), 0.0, mz + dz * 2.2 + (dx !== 0 ? -3.2 + t * 6.4 : 0));
+        sd.rotation.y = 0;
+        sd.updateMatrix();
+        patchBorders.setMatrixAt(pb++, sd.matrix);
+      }
+    }
+    patchBorders.count = pb;
+    patchBorders.name = 'Grand-Place sett patch border stones';
+    plaza.add(patchBorders);
     // Tactile guidance strips across each street mouth for visually impaired pedestrians —
     // a standard feature of the real paved square.
     const tactiles = new THREE.InstancedMesh(new THREE.BoxGeometry(3.2, 0.05, 0.5), materials.warmStone, mouths.length);
@@ -3018,6 +3102,33 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     uplights.count = ul;
     uplights.name = 'Grand-Place facade floodlight projectors';
     plaza.add(uplights);
+    // Mounting brackets fix each floodlight projector to the facade base, with glare shields
+    // above the lenses — as on the real facade-mounted projectors.
+    const upBrackets = new THREE.InstancedMesh(new THREE.BoxGeometry(0.12, 0.4, 0.24), materials.dark, 24);
+    const upShields = new THREE.InstancedMesh(new THREE.BoxGeometry(0.5, 0.06, 0.3), materials.dark, 24);
+    let ub = 0;
+    const placeUp = (x, y, z, ry) => {
+      sd.position.set(x, y, z);
+      sd.rotation.y = ry;
+      sd.updateMatrix();
+      upBrackets.setMatrixAt(ub, sd.matrix);
+      sd.position.y += 0.32;
+      sd.updateMatrix();
+      upShields.setMatrixAt(ub++, sd.matrix);
+      sd.rotation.y = 0;
+    };
+    for (let i = 0; i < 8; i++) {
+      placeUp(-48 + i * 13.7, 0.1, 35.75, Math.PI);
+      placeUp(-48 + i * 13.7, 0.1, -35.75, 0);
+    }
+    for (let i = 0; i < 4; i++) {
+      placeUp(-54.75, 0.1, -24 + i * 16, Math.PI / 2);
+      placeUp(54.75, 0.1, -24 + i * 16, -Math.PI / 2);
+    }
+    upBrackets.count = upShields.count = ul;
+    upBrackets.name = 'Grand-Place floodlight mounting brackets';
+    upShields.name = 'Grand-Place floodlight glare shields';
+    plaza.add(upBrackets, upShields);
 
     // Perimeter facades frame the plaza with the real houses, by name and side.
     // North = negative Z; south = positive Z. The Town Hall holds the south-west of the
@@ -3032,6 +3143,11 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     // Everard 't Serclaes, the alderman who died defending the city's liberties at this house in
     // 1388, is commemorated by a bronze memorial plaque on the facade.
     box(south, 0.5, 0.7, 0.08, -30, 3.2, 0.14, materials.bronze, 'Everard ’t Serclaes memorial plaque – L’Étoile');
+    // A raised bronze frame borders the 't Serclaes plaque, as on the real memorial.
+    box(south, 0.06, 0.82, 0.05, -30.32, 3.2, 0.18, materials.bronze, '’t Serclaes plaque bronze frame');
+    box(south, 0.06, 0.82, 0.05, -29.68, 3.2, 0.18, materials.bronze, '’t Serclaes plaque bronze frame');
+    box(south, 0.7, 0.06, 0.05, -30, 3.62, 0.18, materials.bronze, '’t Serclaes plaque bronze frame');
+    box(south, 0.7, 0.06, 0.05, -30, 2.78, 0.18, materials.bronze, '’t Serclaes plaque bronze frame');
     guildHouse(south, { name: 'Guild House – Le Cygne', x: -44, width: 12, height: 23, floors: 4, style: 'bell', stone: materials.gobertange, emblem: true, terrace: true, swan: true });
 
     const north = new THREE.Group();
@@ -3090,6 +3206,12 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       for (const [bx, bz] of [[-0.3, 0.2], [0.3, 0.2], [-0.3, 0.04], [0.3, 0.04]]) {
         box(front, 0.05, 0.05, 0.05, x + bx, 1.68, bz + 0.12, materials.dark, `UNESCO plaque hood bolt – ${street}`);
       }
+      // Raised bronze border around each UNESCO plaque face.
+      for (const [fx, fw, fh] of [[-0.42, 0.05, 0.6], [0.42, 0.05, 0.6]]) {
+        box(front, fw, fh, 0.03, x + fx, 1.62, 0.1, materials.bronze, `UNESCO plaque frame – ${street}`);
+      }
+      box(front, 0.89, 0.05, 0.03, x, 1.92, 0.1, materials.bronze, `UNESCO plaque frame – ${street}`);
+      box(front, 0.89, 0.05, 0.03, x, 1.32, 0.1, materials.bronze, `UNESCO plaque frame – ${street}`);
     }
     // Manhole covers and cellar areaway grates set into the paving along the facade lines.
     const manholes = new THREE.InstancedMesh(new THREE.CylinderGeometry(0.42, 0.42, 0.06, 14).rotateX(Math.PI / 2), materials.dark, 24);
