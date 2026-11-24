@@ -557,13 +557,28 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     const lancetOculi = new THREE.InstancedMesh(new THREE.CylinderGeometry(0.34, 0.34, 0.16, 12).rotateX(Math.PI / 2), trim, bays * 2);
     const lancetKeystones = new THREE.InstancedMesh(new THREE.BoxGeometry(0.2, 0.42, 0.3), darkStone, bays * 2);
     let traceryIndex = 0;
+    const pinnacleSpires = new THREE.InstancedMesh(new THREE.ConeGeometry(0.34, 1.9, 8), trim, bays / 2 + 1);
+    const pinnacleFinials = new THREE.InstancedMesh(new THREE.SphereGeometry(0.14, 8, 6), materials.gold, bays / 2 + 1);
+    const pinDummy = new THREE.Object3D();
+    let pin = 0;
     for (let i = 0; i <= bays; i++) {
       if (i % 2 === 0) {
         const x = -width / 2 + i * bayW;
         box(root, 0.48, 17.5, 0.62, x, 15.4, 0.12, trim, 'Gothic facade buttress');
         box(root, 0.2, 2.2, 0.18, x, height - 1.6, 0.42, darkStone, 'Facade pinnacle base');
+        pinDummy.position.set(x, height + 0.45, 0.42);
+        pinDummy.updateMatrix();
+        pinnacleSpires.setMatrixAt(pin, pinDummy.matrix);
+        pinDummy.position.set(x, height + 1.55, 0.42);
+        pinDummy.updateMatrix();
+        pinnacleFinials.setMatrixAt(pin, pinDummy.matrix);
+        pin++;
       }
     }
+    pinnacleSpires.count = pinnacleFinials.count = pin;
+    pinnacleSpires.name = 'Facade pinnacle spire';
+    pinnacleFinials.name = 'Facade pinnacle gilded finial';
+    root.add(pinnacleSpires, pinnacleFinials);
     for (let floor = 0; floor < 2; floor++) {
       const y = floor === 0 ? 12.5 : 20.0;
       for (let i = 0; i < bays; i++) {

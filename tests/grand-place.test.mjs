@@ -81,6 +81,13 @@ test('the tower lantern is openwork, with corner turrets and flying buttresses',
   assert.ok(square.includes('Flying buttress'));
 });
 
+test('the Town Hall buttresses are pinnacled with spires and gilded finials', () => {
+  assert.ok(square.includes("'Facade pinnacle spire'"));
+  assert.ok(square.includes("'Facade pinnacle gilded finial'"));
+  assert.ok(square.includes('new THREE.ConeGeometry(0.34, 1.9, 8), trim, bays / 2 + 1)'));
+  assert.ok(square.includes('pinnacleSpires.count = pinnacleFinials.count = pin'));
+});
+
 test('the Town Hall facade carries the real statue niches and wing-terminating corner turrets', () => {
   assert.ok(square.includes('Town Hall facade statue niches'));
   assert.ok(square.includes('Town Hall gilded facade statues'));
