@@ -1546,3 +1546,7 @@ testCase('stone lintels crown the BELvue ground-floor windows', () => {
 testCase('newel posts finish both ends of each wing balcony rail', () => {
   assert.match(palace, /'Wing balcony end newel'/);
 });
+
+testCase('a glazed fanlight crowns the Palace of the Nation main door', () => {
+  assert.match(palace, /'Palace of the Nation door fanlight'/);
+});
