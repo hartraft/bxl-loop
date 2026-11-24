@@ -17,6 +17,9 @@ test('the square is the real entirely paved, completely open Grand-Place', () =>
   assert.ok(source.includes('for (let row = 0; row < 15; row++)'));
   assert.ok(source.includes('for (let col = 0; col < 16; col++)'));
   assert.ok(source.includes('Grand-Place entrance sett strips (passerelles)'));
+  assert.ok(source.includes('Grand-Place street cobble stubs'));
+  assert.ok(source.includes('new THREE.InstancedMesh(stripGeo, materials.pavingB, 7 * 15 * 3)'));
+  assert.ok(source.includes('streetCobbles.count = sc'));
   assert.ok(source.includes('Grand-Place blue-stone sett border'));
   assert.ok(source.includes('new THREE.BoxGeometry(0.9, 0.08, 0.9), materials.pavingEdge, 420)'));
   assert.ok(source.includes('border.count = bd'));

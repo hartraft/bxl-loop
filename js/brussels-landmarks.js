@@ -1157,6 +1157,25 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     strips.receiveShadow = true;
     plaza.add(strips);
 
+    // Cobbled stubs of the seven surrounding lanes continue outward from each mouth — the real
+    // streets around the square are cobbled too, so the paving visibly runs into them.
+    const streetCobbles = new THREE.InstancedMesh(stripGeo, materials.pavingB, 7 * 15 * 3);
+    let sc = 0;
+    for (const [mx, mz, dx, dz] of mouths) {
+      for (let d = 13; d <= 30; d += 1.3) {
+        for (let w = -1.4; w <= 1.41; w += 1.2) {
+          sd.position.set(mx - dx * d + (dz ? w : 0), -0.07, mz - dz * d + (dx ? w : 0));
+          sd.rotation.y = 0;
+          sd.updateMatrix();
+          streetCobbles.setMatrixAt(sc++, sd.matrix);
+        }
+      }
+    }
+    streetCobbles.count = sc;
+    streetCobbles.name = 'Grand-Place street cobble stubs';
+    streetCobbles.receiveShadow = true;
+    plaza.add(streetCobbles);
+
     // Bollards flank each street entrance — the real square is pedestrianised at its mouths.
     const bollards = new THREE.InstancedMesh(new THREE.CylinderGeometry(0.14, 0.18, 0.9, 10), materials.dark, mouths.length * 2);
     let bi = 0;
