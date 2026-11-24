@@ -4601,6 +4601,18 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       const gx = -196 + i * 10;
       box(g, 0.9, 0.5, 0.06, gx, 0.9, 63.55, materials.bronze, 'Academy statue plaque');
     }
+
+    // A low octagonal railing rings the Vauxhall bandstand in the park.
+    const vhRail = new THREE.InstancedMesh(new THREE.BoxGeometry(0.08, 0.6, 0.08), materials.dark, 8);
+    const vhd = new THREE.Object3D();
+    let vhi = 0;
+    for (let va = 0; va < 8; va++) {
+      const a = va * Math.PI / 4;
+      vhd.position.set(46 + Math.cos(a) * 5.4, 0.85, 210 + Math.sin(a) * 5.4);
+      vhd.rotation.y = -a; vhd.updateMatrix();
+      vhRail.setMatrixAt(vhi++, vhd.matrix);
+    }
+    vhRail.count = vhi; vhRail.name = 'Vauxhall bandstand railing'; g.add(vhRail);
   });
     addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');

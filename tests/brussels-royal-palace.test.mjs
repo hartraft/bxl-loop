@@ -1354,3 +1354,8 @@ testCase('the great ground-floor door stands behind the portico colonnade', () =
 testCase('each Academy garden statue pedestal carries a bronze name plaque', () => {
   assert.match(palace, /'Academy statue plaque'/);
 });
+
+testCase('a low railing rings the Vauxhall bandstand', () => {
+  assert.match(palace, /'Vauxhall bandstand railing'/);
+  assert.match(palace, /vhRail\.count = vhi/);
+});
