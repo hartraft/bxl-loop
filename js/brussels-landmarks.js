@@ -2920,6 +2920,10 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     }
     aeGrille.count = aei; aeGrille.name = 'Academy garden east grille'; g.add(aeGrille);
     box(g, 0.3, 0.12, 57, -135.5, 2.66, 36, materials.dark, 'Academy garden east grille rail');
+    // The Palace of the Nation colonnade stands on a raised stylobate platform with a
+    // moulded edge, in front of the portico steps.
+    box(g, 54, 0.5, 4.5, 0, 0.25, 400.2, materials.plaster, 'Palace of the Nation peristyle stylobate');
+    box(g, 55, 0.16, 5.1, 0, 0.56, 400.2, materials.warmStone, 'Palace of the Nation stylobate edge');
   });
     addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');

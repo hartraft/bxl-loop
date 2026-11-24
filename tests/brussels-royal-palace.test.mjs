@@ -898,3 +898,9 @@ testCase('gilded finials mark the ends of each wing mansard ridge', () => {
   assert.match(palace, /ridge finials mark the ends/);
   assert.match(palace, /'Wing mansard ridge finial'/);
 });
+
+testCase('the Palace of the Nation colonnade stands on a stylobate platform', () => {
+  assert.match(palace, /raised stylobate platform/);
+  assert.match(palace, /'Palace of the Nation peristyle stylobate'/);
+  assert.match(palace, /'Palace of the Nation stylobate edge'/);
+});
