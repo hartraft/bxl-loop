@@ -402,7 +402,7 @@ test('Le Renard carries Justice with the four continents, St Nicholas and the fo
 });
 
 test('Le Roy d’Espagne carries Roman emperor medallions and the St Aubert bust', () => {
-  assert.ok(square.includes('emblem: \'vane\', balustradeStatues: true, terrace: true, medallions: true }'));
+  assert.ok(square.includes('emblem: \'vane\', balustradeStatues: true, terrace: true, medallions: true, pilasters: true }'));
   assert.ok(square.includes(" Roman emperor medallions'"));
   assert.ok(square.includes('new THREE.CylinderGeometry(0.55, 0.55, 0.12, 20).rotateX(Math.PI / 2), materials.gold, 4)'));
   assert.ok(square.includes(" St Aubert bust'"));
@@ -662,7 +662,7 @@ test('real building stones: Gobertange sandstone and Euville limestone houses, b
   assert.ok(source.includes("stone: materials.euville, emblem: 'helmet'"));
   assert.ok(source.includes("stone: materials.euville, emblem: 'boat'"));
   assert.ok(square.includes("croisillonMat = spec.blueStone ? materials.blueStone : stone"));
-  assert.ok(square.includes("emblem: 'flags', blueStone: true }"));
+  assert.ok(square.includes("emblem: 'flags', blueStone: true, stoneVase: true }"));
   assert.ok(source.includes("'gobertange', 'euville'"), 'night floodlight wash also covers the new stones');
 });
 
@@ -721,4 +721,20 @@ test('Broodhuis: corner quoins + cornice modillions, gallery balusters, upper mu
   assert.ok(square.includes('King’s House dormer pediments'));
   assert.ok(square.includes('khDormPeds.count = 7'));
   assert.ok(square.includes('King’s House tower gilded flag'));
+});
+
+test('guild houses: number plaques, arcade keystones, pilaster strips, blind frieze, tile rows, oculus rings, Roy d’Espagne pilasters, Mont Thabor vase (rounds 111-118)', () => {
+  assert.ok(square.includes('house number plaque'));
+  assert.ok(square.includes('arcade keystones'));
+  assert.ok(square.includes('keystones.count = bays'));
+  assert.ok(square.includes('facade pilaster strips'));
+  assert.ok(square.includes('pilasterStrips.count = pilasterStripCount'));
+  assert.ok(square.includes('blind-arcade cornice frieze'));
+  assert.ok(square.includes('frieze.count = friezeCount'));
+  assert.ok(square.includes('roof tile rows'));
+  assert.ok(square.includes('tileRows.count = tileRowCount'));
+  assert.ok(square.includes('gable oculus gilded ring'));
+  assert.ok(square.includes("medallions: true, pilasters: true }"));
+  assert.ok(square.includes('gable stone vase'));
+  assert.ok(square.includes("emblem: 'flags', blueStone: true, stoneVase: true }"));
 });

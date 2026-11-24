@@ -198,6 +198,18 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     dentils.count = dentilCount;
     dentils.name = name + ' cornice dentils';
     root.add(dentils);
+    // Blind-arcade frieze panels under the cornice — the real cornices carry a recessed
+    // arcade frieze.
+    const friezeCount = Math.max(4, Math.round(width / 1.2));
+    const frieze = new THREE.InstancedMesh(new THREE.BoxGeometry(0.5, 0.3, 0.1), materials.dark, friezeCount);
+    for (let i = 0; i < friezeCount; i++) {
+      modDummy.position.set(-width / 2 + 0.6 + i * (width - 1.2) / (friezeCount - 1), height - 1.12, 0.2);
+      modDummy.updateMatrix();
+      frieze.setMatrixAt(i, modDummy.matrix);
+    }
+    frieze.count = friezeCount;
+    frieze.name = name + ' blind-arcade cornice frieze';
+    root.add(frieze);
     const rustication = new THREE.InstancedMesh(new THREE.BoxGeometry(width + 0.3, 0.05, 0.06), materials.dark, 2);
     for (let i = 0; i < 2; i++) {
       modDummy.position.set(0, 0.8 + i * 0.55, 0.31);
@@ -269,6 +281,20 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     mullionV.name = mullionH.name = name + ' window stone cross-mullions';
     windows.castShadow = frames.castShadow = true;
     root.add(windows, frames, mullionV, mullionH);
+    // Flat pilaster strips rise the full facade height at the window joints, structuring
+    // the real Baroque elevations.
+    const pilasterStripCount = bays + 1;
+    const pilasterStrips = new THREE.InstancedMesh(new THREE.BoxGeometry(0.22, height - 2.6, 0.14), stone, pilasterStripCount);
+    const spacing = (width - 2.8) / Math.max(1, bays - 1);
+    for (let i = 0; i <= bays; i++) {
+      const px = i === 0 ? -width / 2 + 0.7 : i === bays ? width / 2 - 0.7 : -width / 2 + 1.4 + spacing * (i - 0.5);
+      dummy.position.set(px, 1.15 + (height - 2.6) / 2, 0.1);
+      dummy.updateMatrix();
+      pilasterStrips.setMatrixAt(i, dummy.matrix);
+    }
+    pilasterStrips.count = pilasterStripCount;
+    pilasterStrips.name = name + ' facade pilaster strips';
+    root.add(pilasterStrips);
 
     // Ground floor: a recessed arcade opening per bay — on the real square the cafés and
     // shops sit under these arcades, so the ground floor is taller and darker than the
@@ -293,6 +319,16 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     arcade.castShadow = lintels.castShadow = true;
     root.add(arcade, lintels);
     box(root, width - 0.4, 0.2, 0.3, 0, 3.6, 0.36, materials.warmStone, name + ' arcade string course');
+    // Keystone at the apex of every ground-floor arcade opening, as on the real arcades.
+    const keystones = new THREE.InstancedMesh(new THREE.BoxGeometry(0.22, 0.4, 0.3), materials.warmStone, bays);
+    for (let bay = 0; bay < bays; bay++) {
+      arcDummy.position.set((bay - (bays - 1) / 2) * (width - 2.8) / Math.max(1, bays - 1), 3.42, 0.44);
+      arcDummy.updateMatrix();
+      keystones.setMatrixAt(bay, arcDummy.matrix);
+    }
+    keystones.count = bays;
+    keystones.name = name + ' arcade keystones';
+    root.add(keystones);
     // Arched door leaf with a gilded fanlight in the centre arcade bay of every house.
     box(root, 0.95, 2.5, 0.12, 0, 1.55, 0.42, materials.dark, name + ' arched door leaf');
     const fanlight = cylinder(root, 0.4, 0.4, 0.08, 0, 3.02, 0.44, materials.gold, 16);
@@ -302,6 +338,8 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     // 1695 bombardment — and a small pediment crowns the doorway.
     box(root, 0.8, 0.3, 0.1, width / 2 - 1.3, 3.9, 0.34, materials.dark, name + ' rebuild date cartouche');
     box(root, 0.6, 0.18, 0.04, width / 2 - 1.3, 3.9, 0.4, materials.gold, name + ' rebuild date cartouche rim');
+    // Gilded house-number plaque beside the doorway, as on the real facades.
+    box(root, 0.4, 0.5, 0.06, width / 2 - 1.3, 3.15, 0.36, materials.gold, name + ' house number plaque');
     const doorPed = new THREE.Shape();
     doorPed.moveTo(-0.35, 0); doorPed.lineTo(0, 0.32); doorPed.lineTo(0.35, 0); doorPed.closePath();
     mesh(root, new THREE.ShapeGeometry(doorPed), stone, 0, 3.32, 0.42, name + ' door surround pediment');
@@ -474,6 +512,17 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     shape.closePath();
     mesh(root, new THREE.ShapeGeometry(shape), stone, 0, height, 0.08, name + ' gable');
     box(root, width + 0.7, 0.35, depth + 0.5, 0, height + 0.2, -depth / 2, roof, name + ' roof cap');
+    // Tile rows run across the roof cap, as on the real slate-tiled house roofs.
+    const tileRowCount = Math.ceil((width + 0.7) / 0.6);
+    const tileRows = new THREE.InstancedMesh(new THREE.BoxGeometry(0.5, 0.05, depth + 0.4), materials.dark, tileRowCount);
+    for (let i = 0; i < tileRowCount; i++) {
+      modDummy.position.set(-width / 2 - 0.35 + 0.3 + i * 0.6, height + 0.42, -depth / 2);
+      modDummy.updateMatrix();
+      tileRows.setMatrixAt(i, modDummy.matrix);
+    }
+    tileRows.count = tileRowCount;
+    tileRows.name = name + ' roof tile rows';
+    root.add(tileRows);
     // Chimneys with terracotta pots rise from the roof, as on the real houses.
     const chimneys = new THREE.InstancedMesh(new THREE.BoxGeometry(0.55, 1.6, 0.55), materials.warmStone, 2);
     const chimneyPots = new THREE.InstancedMesh(new THREE.CylinderGeometry(0.16, 0.2, 0.5, 8), materials.dark, 4);
@@ -514,6 +563,11 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     potVases.name = name + ' gable fire pot vase';
     potFlames.name = name + ' gable fire pot flame';
     root.add(potVases, potFlames);
+    if (spec.stoneVase) {
+      // Le Mont Thabor ("Maison aux Trois Couleurs"): a stone vase crowns the volute gable.
+      cylinder(root, 0.22, 0.3, 0.7, 0, height + gableHeight + 0.9, 0.1, stone, 10).name = name + ' gable stone vase';
+      box(root, 0.5, 0.08, 0.08, 0, height + gableHeight + 1.3, 0.1, stone, name + ' stone vase rim');
+    }
     if (emblem) {
       const kind = emblem === true ? 'phoenix' : emblem;
       if (kind === 'vane') {
@@ -608,6 +662,8 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     const oculus = cylinder(root, 0.42, 0.42, 0.1, 0, height + 1.6, 0.12, materials.glass, 16);
     oculus.name = name + ' gable oculus';
     oculus.rotation.x = Math.PI / 2;
+    // Gilded ring tracery around the gable oculus.
+    cylinder(root, 0.5, 0.5, 0.08, 0, height + 1.6, 0.14, materials.gold, 16).name = name + ' gable oculus gilded ring';
     const pedShape = new THREE.Shape();
     pedShape.moveTo(-0.42, 0); pedShape.lineTo(0, 0.4); pedShape.lineTo(0.42, 0); pedShape.closePath();
     const pediments = new THREE.InstancedMesh(new THREE.ShapeGeometry(pedShape), stone, bays * floors);
@@ -2043,7 +2099,7 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     plaza.add(west);
     // West side, numbered from the north corner like the real nos. 1-7, with the street
     // mouths left open at both ends: Rue au Beurre (north) and Rue de la Tête d'or (south).
-    guildHouse(west, { name: 'Guild House – Le Roy d’Espagne', x: 23, width: 8.5, height: 24, floors: 4, style: 'bell', stone: materials.plaster, emblem: 'vane', balustradeStatues: true, terrace: true, medallions: true });
+    guildHouse(west, { name: 'Guild House – Le Roy d’Espagne', x: 23, width: 8.5, height: 24, floors: 4, style: 'bell', stone: materials.plaster, emblem: 'vane', balustradeStatues: true, terrace: true, medallions: true, pilasters: true });
     guildHouse(west, { name: 'Guild House – La Brouette', x: 13.5, width: 8.5, height: 20, style: 'stepped', stone: materials.plaster, brouette: true, pilasters: true });
     guildHouse(west, { name: 'Guild House – Le Sac', x: 4, width: 8.5, height: 22, style: 'gable', stone: materials.warmStone, guildTools: true, garlands: true });
     guildHouse(west, { name: 'Guild House – La Louve', x: -5.5, width: 8.5, height: 23, floors: 3, style: 'scroll', stone: materials.ochre, emblem: true, terrace: true, louve: true });
@@ -2057,7 +2113,7 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     plaza.add(east);
     guildHouse(east, { name: 'Guild House – L’Arbre d’Or', x: -18, width: 15, height: 22, style: 'stepped', stone: materials.ochre, terrace: true, equestrian: true, dukeBusts: true, emblem: 'barley' });
     guildHouse(east, { name: 'Guild House – La Rose', x: 1, width: 16, height: 24, style: 'bell', stone: materials.paleStone, emblem: 'rose', dukeBusts: true, abundance: true });
-    guildHouse(east, { name: 'Guild House – Le Mont Thabor', x: 20, width: 15, height: 20, style: 'gable', terrace: true, dukeBusts: true, emblem: 'flags', blueStone: true });
+    guildHouse(east, { name: 'Guild House – Le Mont Thabor', x: 20, width: 15, height: 20, style: 'gable', terrace: true, dukeBusts: true, emblem: 'flags', blueStone: true, stoneVase: true });
 
     // The real square is entered by seven narrow streets (Rue au Beurre, Rue de la Tête
     // d'or, Rue des Chapeliers, Rue Charles Buls, Rue de la Colline, Rue d'Arenberg and
