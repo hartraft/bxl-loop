@@ -2854,6 +2854,17 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       box(g, 70, 0.1, 60, lx, 0.05, lz, materials.green, 'Park lawn panel');
       box(g, 71, 0.06, 61, lx, 0.02, lz, materials.pavingA, 'Park lawn panel edging');
     }
+    // The Academy Palace garden is closed to the north and east by a grille (heritage
+    // inventory 30098: wall to the west, grille to the north and east).
+    const agGrille = new THREE.InstancedMesh(new THREE.BoxGeometry(0.08, 2.6, 0.08), materials.dark, 30);
+    const agd = new THREE.Object3D();
+    let agi = 0;
+    for (let ax = -200; ax <= -136; ax += 2.2) {
+      agd.position.set(ax, 1.3, 66); agd.rotation.y = 0; agd.updateMatrix();
+      agGrille.setMatrixAt(agi++, agd.matrix);
+    }
+    agGrille.count = agi; agGrille.name = 'Academy garden north grille'; g.add(agGrille);
+    box(g, 65, 0.12, 0.3, -168, 2.66, 66, materials.dark, 'Academy garden north grille rail');
   });
     addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');

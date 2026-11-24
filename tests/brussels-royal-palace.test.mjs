@@ -848,3 +848,9 @@ testCase('four clipped lawn panels fill Brussels Park between the walks', () => 
   assert.match(palace, /'Park lawn panel'/);
   assert.match(palace, /'Park lawn panel edging'/);
 });
+
+testCase('a grille closes the Academy Palace garden to the north (wall to the west)', () => {
+  assert.match(palace, /grille to the north and east/);
+  assert.match(palace, /'Academy garden north grille'/);
+  assert.match(palace, /agGrille\.count = agi/);
+});
