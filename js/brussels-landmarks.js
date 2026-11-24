@@ -1769,6 +1769,14 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     }
     box(g, 1.8, 2.2, 1.2, -8, 7.6, 73.5, weathered, 'Poelaert bust pedestal (Cuypers 1887)');
     mesh(g, new THREE.SphereGeometry(0.55, 12, 10), marble, -8, 9.3, 73.5, 'Bust of architect Joseph Poelaert');
+    // Two escaliers d'honneur flank the monumental porch, climbing from the forecourt up to
+    // the corner pavilions that house the Courts of Cassation and Appeal.
+    for (const side of [-1, 1]) {
+      for (let step = 0; step < 10; step++) {
+        box(g, 14, 0.5, 1.6, side * 40, 6.8 + step * 1.35, 92 - step * 1.7, light, "Escalier d'honneur flight");
+      }
+      box(g, 16, 3.2, 14, side * 46, 19.5, 79, stone, 'Honour stair landing at corner pavilion');
+    }
     // Repeated pilasters, deep window reveals and three storey bands on the outer ranges.
     for (const side of [-1, 1]) {
       for (let i = 0; i < 21; i++) {
