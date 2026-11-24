@@ -120,7 +120,7 @@ test('signature house emblems: Le Cornet horse, Le Roy d’Espagne cupola-vane a
   assert.ok(square.includes(' gilded horse body'));
   assert.ok(square.includes(' gilded weather vane'));
   assert.ok(square.includes(' balustrade statue'));
-  assert.ok(square.includes("kind === 'phoenix'"));
+  assert.ok(square.includes("? 'phoenix' : emblem"));
 });
 
 test('houses wear their real facade colours: ochre and plaster alongside the stone tones', () => {
