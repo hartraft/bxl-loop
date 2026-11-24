@@ -4041,6 +4041,13 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
 
     // A cap finishes the plinth of the gilded garden railing.
     box(g, 68, 0.06, 0.56, 0, 0.25, 14, moulding, 'Garden railing plinth cap');
+
+    // Corbels carry each wing balcony slab from the facade.
+    for (const side of wingXs) {
+      for (let k = 0; k < 7; k++) {
+        box(g, 0.18, 0.4, 0.5, side - 21 + k * 7, 7.5, facadeZ + 0.5, bronze, 'Wing balcony corbel');
+      }
+    }
   });
   addLandmark('palaceSurroundings', (g) => {
     // Real-world sources: en/fr Wikipedia (Royal Palace of Brussels, Brussels Park, Place des Palais,

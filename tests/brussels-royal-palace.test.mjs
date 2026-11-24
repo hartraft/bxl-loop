@@ -1895,3 +1895,7 @@ testCase('a cap finishes the plinth of the gilded garden railing', () => {
 testCase('a projecting cornice tops the Palace of the Nation peristyle entablature', () => {
   assert.match(palace, /'Palace of the Nation peristyle cornice'/);
 });
+
+testCase('corbels carry each wing balcony slab from the facade', () => {
+  assert.match(palace, /'Wing balcony corbel'/);
+});
