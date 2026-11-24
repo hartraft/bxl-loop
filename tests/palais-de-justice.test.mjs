@@ -37,8 +37,18 @@ test('the landmark is anchored and rotated so the principal facade faces Place P
 
 test('the plan keeps the real eight inner courtyards open between the ranges', () => {
   assert.ok(palace.includes('for (let row = 0; row < 2; row++) for (let col = 0; col < 4; col++)'));
-  assert.ok(palace.includes("'Interior courthouse court garden'"));
+  assert.ok(palace.includes("'Interior courthouse court paving'"));
   assert.ok(palace.includes("'Court inner arcade'"));
+});
+
+test('the massing matches the real hors tout 186 x 177 m podium on the 160 x 150 m plan', () => {
+  assert.ok(palace.includes("box(g, 186, 4.2, 177, 0, -1.0, 0, weathered, 'Palais de Justice monumental podium')"));
+  assert.ok(palace.includes('terrainFoundationSkirt(g, g, brusselsToWorld(BRUSSELS_LANDMARK_ANCHORS.palaisDeJustice.lat, BRUSSELS_LANDMARK_ANCHORS.palaisDeJustice.lon), 186, 177, -3.1'));
+  assert.ok(palace.includes("box(g, 160, wingH, wingD, 0, wingY, 66.5, stone, 'North range facing Place Poelaert')"));
+  assert.ok(palace.includes("box(g, 160, wingH, wingD, 0, wingY, -66.5, stone, 'South range above Rue de Wynants')"));
+  assert.ok(palace.includes("box(g, wingD, wingH, 116, 71.5, wingY, 0, stone, 'West range Rue des Minimes')"));
+  assert.ok(palace.includes("box(g, wingD, wingH, 116, -71.5, wingY, 0, stone, 'East range Rue aux Laines')"));
+  assert.ok(palace.includes('for (const x of [-66, 66]) for (const z of [-61.5, 61.5])'));
 });
 
 test('the monumental dome stack exists: square drum, circular drum, copper dome, lantern', () => {

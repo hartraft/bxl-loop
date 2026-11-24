@@ -1673,21 +1673,22 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     const bronze = new THREE.MeshStandardMaterial({ color: 0x75664b, metalness: 0.42, roughness: 0.65 });
 
     // Broad podium and perimeter terrace: the courthouse sits above the Marolles escarpment.
-    box(g, 174, 4.2, 182, 0, -1.0, -1, weathered, 'Palais de Justice monumental podium');
-    terrainFoundationSkirt(g, g, brusselsToWorld(BRUSSELS_LANDMARK_ANCHORS.palaisDeJustice.lat, BRUSSELS_LANDMARK_ANCHORS.palaisDeJustice.lon), 174, 182, -3.1, weathered, 'Palais de Justice terrain retaining skirt');
-    box(g, 166, 2.2, 174, 0, 2.2, -1, light, 'Courthouse podium coping');
+    // Hors tout 186 x 177 m (UNESCO tentative list 5357); the building plan itself is 160 x 150 m.
+    box(g, 186, 4.2, 177, 0, -1.0, 0, weathered, 'Palais de Justice monumental podium');
+    terrainFoundationSkirt(g, g, brusselsToWorld(BRUSSELS_LANDMARK_ANCHORS.palaisDeJustice.lat, BRUSSELS_LANDMARK_ANCHORS.palaisDeJustice.lon), 186, 177, -3.1, weathered, 'Palais de Justice terrain retaining skirt');
+    box(g, 178, 2.2, 169, 0, 2.2, 0, light, 'Courthouse podium coping');
     // Eight internal courts are left open. Four long ranges and cross-ranges create
     // a legible courtyard plan instead of a single opaque rectangular mass.
     const wingY = 17.5, wingH = 31, wingD = 17;
-    box(g, 150, wingH, wingD, 0, wingY, -72, stone, 'North range facing Place Poelaert');
-    box(g, 150, wingH, wingD, 0, wingY, 70, stone, 'South range above Rue de Wynants');
-    box(g, wingD, wingH, 126, -66.5, wingY, -1, stone, 'West range Rue des Minimes');
-    box(g, wingD, wingH, 126, 66.5, wingY, -1, stone, 'East range Rue aux Laines');
-    for (const z of [-34, 0, 34]) {
-      box(g, 116, 26, 10, 0, 15, z, light, 'Courthouse transverse gallery');
+    box(g, 160, wingH, wingD, 0, wingY, 66.5, stone, 'North range facing Place Poelaert');
+    box(g, 160, wingH, wingD, 0, wingY, -66.5, stone, 'South range above Rue de Wynants');
+    box(g, wingD, wingH, 116, 71.5, wingY, 0, stone, 'West range Rue des Minimes');
+    box(g, wingD, wingH, 116, -71.5, wingY, 0, stone, 'East range Rue aux Laines');
+    for (const z of [-37.5, 0, 37.5]) {
+      box(g, 126, 26, 10, 0, 15, z, light, 'Courthouse transverse gallery');
     }
     // Raised corner pavilions and central avant-corps articulate the four elevations.
-    for (const x of [-61, 61]) for (const z of [-61, 61]) {
+    for (const x of [-66, 66]) for (const z of [-61.5, 61.5]) {
       box(g, 28, 39, 27, x, 20, z, light, 'Projecting courthouse corner pavilion');
       box(g, 30, 1.6, 29, x, 40, z, weathered, 'Corner pavilion cornice');
       box(g, 26, 3.2, 25, x, 42.2, z, roof, 'Corner pavilion roof');
@@ -1721,21 +1722,21 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     // Repeated pilasters, deep window reveals and three storey bands on the outer ranges.
     for (const side of [-1, 1]) {
       for (let i = 0; i < 21; i++) {
-        const x = -69 + i * 6.9;
-        box(g, 2.8, 10.5, 0.32, x, 11.5, side < 0 ? -63 : 63, recess, 'Courthouse lower window');
-        box(g, 2.8, 9.5, 0.32, x, 25, side < 0 ? -63 : 63, recess, 'Courthouse upper window');
-        box(g, 0.35, 29, 0.5, x - 2.0, 18, side < 0 ? -63.2 : 63.2, light, 'Courthouse façade pilaster');
+        const x = -72 + i * 7.2;
+        box(g, 2.8, 10.5, 0.32, x, 11.5, side < 0 ? -75 : 75, recess, 'Courthouse lower window');
+        box(g, 2.8, 9.5, 0.32, x, 25, side < 0 ? -75 : 75, recess, 'Courthouse upper window');
+        box(g, 0.35, 29, 0.5, x - 2.0, 18, side < 0 ? -75.2 : 75.2, light, 'Courthouse façade pilaster');
       }
     }
-    // Eight courts: low garden floors and arcaded inner galleries make the plan readable from above.
+    // Eight courts: low paved floors and arcaded inner galleries make the plan readable from above.
     for (let row = 0; row < 2; row++) for (let col = 0; col < 4; col++) {
-      const x = -48 + col * 32;
-      const z = -43 + row * 86;
-      box(g, 22, 0.28, 30, x, 3.45, z, materials.green, 'Interior courthouse court garden');
+      const x = -45 + col * 30;
+      const z = -19 + row * 38;
+      box(g, 24, 0.28, 22, x, 3.45, z, materials.pavingB, 'Interior courthouse court paving');
       for (const edge of [-1, 1]) {
-        box(g, 22, 5.5, 0.45, x, 8.0, z + edge * 15, light, 'Court inner arcade');
+        box(g, 24, 5.5, 0.45, x, 8.0, z + edge * 11, light, 'Court inner arcade');
         for (let bay = -2; bay <= 2; bay++) {
-          box(g, 1.5, 4.0, 0.22, x + bay * 4, 8.0, z + edge * 15.25, recess, 'Court arcade opening');
+          box(g, 1.5, 4.0, 0.22, x + bay * 4.5, 8.0, z + edge * 11.25, recess, 'Court arcade opening');
         }
       }
     }
