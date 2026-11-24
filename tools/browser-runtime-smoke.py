@@ -39,6 +39,8 @@ async def main(url: str) -> None:
                 raise AssertionError(
                     f"Page request failed: {response.status if response else 'no response'}"
                 )
+            if await page.title() != "Brussels Loop":
+                raise AssertionError(f"Unexpected page title: {await page.title()}")
             if not await page.evaluate("() => !!navigator.gpu"):
                 raise AssertionError("Chromium does not expose WebGPU; runtime smoke test cannot run")
 
