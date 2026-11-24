@@ -5504,6 +5504,12 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
         box(g, 0.25, 0.35, 1.2, -168 + side * 2.8, 0.18, cz, materials.pavingEdge, 'Academy portico step kerb');
       }
     }
+
+    // Raking cornices follow both slopes of the Palace of the Nation pediment.
+    const pnRkL = box(g, 12.0, 0.18, 0.2, -5.75, 16.95, 401.65, materials.warmStone, 'Palace of the Nation raking cornice');
+    pnRkL.rotation.z = Math.atan2(3.5, 11.5);
+    const pnRkR = box(g, 12.0, 0.18, 0.2, 5.75, 16.95, 401.65, materials.warmStone, 'Palace of the Nation raking cornice');
+    pnRkR.rotation.z = -Math.atan2(3.5, 11.5);
   });
     addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');

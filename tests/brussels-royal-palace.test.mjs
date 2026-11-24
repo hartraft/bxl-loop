@@ -2061,3 +2061,7 @@ testCase('kerbs edge both sides of the Academy portico steps', () => {
 testCase('rims finish the wing balcony flower boxes', () => {
   assert.match(palace, /'Wing flower box rim'/);
 });
+
+testCase('raking cornices follow both slopes of the Palace of the Nation pediment', () => {
+  assert.match(palace, /'Palace of the Nation raking cornice'/);
+});
