@@ -5751,6 +5751,11 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     for (let s = 0; s < 3; s++) {
       box(g, 0.9, 0.25, 5, -14.0 - s * 0.9, 0.9 - s * 0.25, 262, materials.paleStone, 'Octagonal basin west access step');
     }
+
+    // Steps lead up to the Cluysenaar bandstand platform in the park.
+    for (let s = 0; s < 2; s++) {
+      box(g, 4, 0.25, 0.8, -46, 0.125 + s * 0.25, 157.2 - s * 0.7, materials.paleStone, 'Bandstand access step');
+    }
   });
     addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');

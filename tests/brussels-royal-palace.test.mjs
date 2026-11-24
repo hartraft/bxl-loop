@@ -2265,3 +2265,7 @@ testCase('stone steps lead down to the octagonal basin rim on its west side', ()
 testCase('plinths base both perron cheek walls', () => {
   assert.match(palace, /'Perron cheek wall base'/);
 });
+
+testCase('steps lead up to the park bandstand platform', () => {
+  assert.match(palace, /'Bandstand access step'/);
+});
