@@ -4163,6 +4163,11 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
 
     // A moulded edge finishes the front of the perron top landing.
     box(g, 17, 0.08, 0.12, 0, 1.12, centralFace + 1.58, moulding, 'Perron landing edge');
+
+    // End blocks close both ends of the portico architrave beam.
+    for (const side of [-1, 1]) {
+      box(g, 0.5, 1.05, 4.8, side * 18.5, 22.78, centralFace + 2.9, ashlar, 'Architrave end block');
+    }
   });
   addLandmark('palaceSurroundings', (g) => {
     // Real-world sources: en/fr Wikipedia (Royal Palace of Brussels, Brussels Park, Place des Palais,

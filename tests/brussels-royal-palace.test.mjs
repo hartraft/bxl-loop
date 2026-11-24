@@ -2153,3 +2153,7 @@ testCase('a lintel spans the palace-park gate in the Place du Trone fence', () =
 testCase('stone steps lead down to the main pond rim on the north side', () => {
   assert.match(palace, /'Main pond north access step'/);
 });
+
+testCase('end blocks close both ends of the portico architrave', () => {
+  assert.match(palace, /'Architrave end block'/);
+});
