@@ -1746,3 +1746,7 @@ testCase('a frieze band runs above the Palace of the Nation architrave', () => {
 testCase('dark soil fills the two perron planters', () => {
   assert.match(palace, /'Perron planter soil'/);
 });
+
+testCase('raking cornices follow both slopes of the Academy pediment', () => {
+  assert.match(palace, /'Academy pediment raking cornice'/);
+});
