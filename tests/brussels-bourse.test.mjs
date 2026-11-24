@@ -857,4 +857,30 @@ testCase('rounds 276-280: socle drainage outlets, rear downpipes, 2023 lateral e
   assert.match(bourse, /socle\.material = socleWash/);
 });
 
+testCase('rounds 281-285: peristyle base plinths and tori, lateral archivolts, tympanum relief, clock minute hand, peristyle dentils', () => {
+  assert.match(bourse, /'Bourse peristyle base plinths \(plinthes des bases attiques\)'/);
+  assert.match(bourse, /plinths\.count = 8/);
+  assert.match(bourse, /'Bourse peristyle base torus mouldings'/);
+  assert.match(bourse, /rings\.count = 8/);
+  assert.match(bourse, /'Bourse lateral door outer archivolt'/);
+  assert.match(bourse, /'Bourse lateral door inner archivolt'/);
+  assert.match(bourse, /'Bourse tympanum seated Belgique relief \(la Belgique enthronee\)'/);
+  assert.match(bourse, /'Bourse tympanum Commerce genius relief'/);
+  assert.match(bourse, /'Bourse tympanum Industry genius relief'/);
+  assert.match(bourse, /'Bourse clock minute hand'/);
+  assert.match(bourse, /'Bourse peristyle entablature dentils \(denticules\)'/);
+  assert.match(bourse, /dentils\.count = n/);
+});
+
+testCase('rounds 286-290: etage keystones, door imposts, bollard chains, manhole rings, monument plaque', () => {
+  assert.match(bourse, /'Bourse cella etage window keystones \(clefs\)'/);
+  assert.match(bourse, /keys\.count = n/);
+  assert.match(bourse, /'Bourse lateral door impost block \(sommier\)'/);
+  assert.match(surroundings, /'Place de la Bourse bollard chains across street mouths \(chaines\)'/);
+  assert.match(surroundings, /links\.count = n/);
+  assert.match(surroundings, /'Boulevard Anspach manhole rings \(plaques d..egout\)'/);
+  assert.match(surroundings, /rings\.count = 6/);
+  assert.match(surroundings, /'Bourse classified-monument plaque \(plaque monument classe A001\/31241\)'/);
+});
+
 // __MORE_BOURSE_TESTS__

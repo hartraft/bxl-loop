@@ -6600,6 +6600,69 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       const socle = g.children.find((c) => c.name === 'Bourse blue-stone socle (soubassement en pierre bleue)');
       if (socle) socle.material = socleWash;
     }
+    // Round 281: Attic base mouldings under the eight peristyle columns - a plinth block and a
+    // torus ring at each column foot (bases attiques a plinthe et tore).
+    {
+      const plinths = new THREE.InstancedMesh(new THREE.BoxGeometry(2.4, 0.5, 2.4), materials.paleStone, 8);
+      const rings = new THREE.InstancedMesh(new THREE.TorusGeometry(0.95, 0.12, 6, 20), materials.paleStone, 8);
+      const dummy = new THREE.Object3D();
+      for (let i = 0; i < 8; i++) {
+        dummy.position.set(peristyleX[i], 5.45, 36);
+        dummy.rotation.set(0, 0, 0);
+        dummy.updateMatrix();
+        plinths.setMatrixAt(i, dummy.matrix);
+        dummy.position.y = 5.75;
+        dummy.updateMatrix();
+        rings.setMatrixAt(i, dummy.matrix);
+      }
+      plinths.count = 8; plinths.name = 'Bourse peristyle base plinths (plinthes des bases attiques)';
+      rings.count = 8; rings.name = 'Bourse peristyle base torus mouldings';
+      g.add(plinths); g.add(rings);
+    }
+    // Round 282: moulded archivolt rings around the two lateral doors (double archivolte sur
+    // chaque porte laterale, comme sur la porte centrale).
+    for (const sx of [-1, 1]) {
+      mesh(g, new THREE.TorusGeometry(2.4, 0.18, 6, 20, Math.PI), materials.warmStone, sx * 10, 8, 30.35, 'Bourse lateral door outer archivolt');
+      mesh(g, new THREE.TorusGeometry(2.0, 0.14, 6, 18, Math.PI), materials.warmStone, sx * 10, 8, 30.4, 'Bourse lateral door inner archivolt');
+    }
+    // Round 283: the pediment tympanum relief - la Belgique enthroned between the geniuses of
+    // Commerce and Industry (Joseph Jacquet, 1873), simplified as three relief panels.
+    box(g, 4.5, 2.6, 0.5, -3.2, 20.6, 30.8, materials.warmStone, 'Bourse tympanum Commerce genius relief');
+    box(g, 5.5, 3.4, 0.6, 0, 20.2, 30.8, materials.warmStone, 'Bourse tympanum seated Belgique relief (la Belgique enthronee)');
+    box(g, 4.5, 2.6, 0.5, 3.2, 20.6, 30.8, materials.warmStone, 'Bourse tympanum Industry genius relief');
+    // Round 284: the clock's minute hand alongside the hour and second hands (cadran de De Haen).
+    box(g, 0.08, 1.15, 0.04, 0.06, 15.9, 30.84, materials.dark, 'Bourse clock minute hand');
+    // Round 285: a dentil course under the peristyle entablature between the capitals
+    // (denticules sous l'entablement du peristyle).
+    {
+      const dentils = new THREE.InstancedMesh(new THREE.BoxGeometry(0.5, 0.5, 0.4), materials.paleStone, 40);
+      const dummy = new THREE.Object3D();
+      let n = 0;
+      for (let i = 0; i < 40; i++) {
+        dummy.position.set(-19 + i * 0.98, 19.6, 37.2);
+        dummy.updateMatrix();
+        dentils.setMatrixAt(n++, dummy.matrix);
+      }
+      dentils.count = n; dentils.name = 'Bourse peristyle entablature dentils (denticules)';
+      g.add(dentils);
+    }
+    // Round 286: keystones over the four cella etage windows (clefs des fenetres de l'etage).
+    {
+      const keys = new THREE.InstancedMesh(new THREE.BoxGeometry(0.6, 1.0, 0.3), materials.warmStone, 4);
+      const dummy = new THREE.Object3D();
+      let n = 0;
+      for (const sx of [-1, 1]) for (const wx of [6.5, 16]) {
+        dummy.position.set(sx * wx, 20.1, 30.55);
+        dummy.updateMatrix();
+        keys.setMatrixAt(n++, dummy.matrix);
+      }
+      keys.count = n; keys.name = 'Bourse cella etage window keystones (clefs)';
+      g.add(keys);
+    }
+    // Round 287: impost blocks where the lateral door arches spring (sommiers des arcs).
+    for (const sx of [-1, 1]) {
+      box(g, 0.9, 0.7, 0.5, sx * 12.2, 11, 30.4, materials.warmStone, 'Bourse lateral door impost block (sommier)');
+    }
     // __BOURSE_ROUNDS__
   });
   addLandmark('bourseSurroundings', (g) => {
@@ -8055,6 +8118,37 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     // Round 270: a contrasting paved axis band runs from the water mirror to the Bourse facade
     // along the rue Auguste Orts view axis.
     box(g, 4, 0.3, 82, 0, -0.1, 94, materials.pavingEdge, 'Rue Orts view axis band toward the Bourse (bande d\'axe)');
+    // Round 288: chains linking the bollards across the boulevard street mouths (chaines de
+    // poteaux anti-stationnement).
+    {
+      const links = new THREE.InstancedMesh(new THREE.TorusGeometry(0.09, 0.03, 5, 10), materials.dark, 48);
+      const dummy = new THREE.Object3D();
+      let n = 0;
+      for (const mz of [40, 132]) for (let i = 0; i < 24; i++) {
+        dummy.position.set(-11 + i * 0.95, 0.75 + Math.sin(i * 0.55) * 0.12, mz);
+        dummy.rotation.set(0, 0, i % 2 ? 0.5 : -0.5);
+        dummy.updateMatrix();
+        links.setMatrixAt(n++, dummy.matrix);
+      }
+      links.count = n; links.name = 'Place de la Bourse bollard chains across street mouths (chaines)';
+      g.add(links);
+    }
+    // Round 289: manhole rings in the boulevard carriageway (plaques d'egout sur l'Anspach).
+    {
+      const rings = new THREE.InstancedMesh(new THREE.TorusGeometry(0.55, 0.06, 6, 18), materials.dark, 6);
+      const dummy = new THREE.Object3D();
+      for (let i = 0; i < 6; i++) {
+        dummy.position.set(-6 + (i % 2) * 12, 0.03, 56 + i * 12);
+        dummy.rotation.set(-Math.PI / 2, 0, 0);
+        dummy.updateMatrix();
+        rings.setMatrixAt(i, dummy.matrix);
+      }
+      rings.count = 6; rings.name = 'Boulevard Anspach manhole rings (plaques d\'egout)';
+      g.add(rings);
+    }
+    // Round 290: the classified-monument plaque on the socle beside the great stair (inventaire
+    // A001/31241 du patrimoine immobilier de la Région de Bruxelles-Capitale).
+    box(g, 1.6, 1.1, 0.12, -16.5, 3.2, 41.1, materials.bronze, 'Bourse classified-monument plaque (plaque monument classe A001/31241)');
     // __SURROUNDINGS_ROUNDS__
   });
 
