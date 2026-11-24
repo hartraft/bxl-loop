@@ -497,6 +497,8 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     mesh(root, new THREE.SphereGeometry(0.07, 8, 6), materials.gold, -0.3, 1.65, 0.52, name + ' door knocker');
     // A gilded kick plate at the foot of every door leaf, as on the real doors.
     box(root, 0.8, 0.28, 0.06, 0, 0.34, 0.48, materials.gold, name + ' door kick plate');
+    // A lit door lamp glows above every house entrance at night, as on the real arcades.
+    box(root, 0.22, 0.3, 0.1, 0, 3.75, 0.5, glowGlass, name + ' door lamp');
     // Small attic windows in the gable base, flanking the oculus.
     const atticWindows = new THREE.InstancedMesh(new THREE.BoxGeometry(0.5, 0.7, 0.1), spec.windowMat || glowGlass, 2);
     for (let i = 0; i < 2; i++) {
@@ -575,6 +577,21 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       stripes.count = bays * 2;
       stripes.name = name + ' awning canvas stripes';
       root.add(stripes);
+      // Tie ropes run from each awning's front edge down to its poles, as on the real rigging.
+      const tieRopes = new THREE.InstancedMesh(new THREE.BoxGeometry(0.03, 0.8, 0.03), materials.dark, bays * 2);
+      for (let bay = 0; bay < bays; bay++) {
+        const wx = (bay - (bays - 1) / 2) * (width - 2.8) / Math.max(1, bays - 1);
+        for (const side of [-1, 1]) {
+          arcDummy.position.set(wx + side * ((width - 2.8) / bays / 2 - 0.15), 3.1, 1.35);
+          arcDummy.rotation.x = 0.35;
+          arcDummy.updateMatrix();
+          tieRopes.setMatrixAt(bay * 2 + (side > 0 ? 1 : 0), arcDummy.matrix);
+          arcDummy.rotation.x = 0;
+        }
+      }
+      tieRopes.count = bays * 2;
+      tieRopes.name = name + ' awning tie ropes';
+      root.add(tieRopes);
       // Canvas side flaps close the awning ends.
       const sideFlaps = new THREE.InstancedMesh(new THREE.BoxGeometry(0.05, 0.55, 1.05), materials.canvas, 2);
       for (let i = 0; i < 2; i++) {
@@ -798,6 +815,19 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       root.add(stepEdges);
     }
     box(root, width + 0.7, 0.35, depth + 0.5, 0, height + 0.2, -depth / 2, roof, name + ' roof cap');
+    if (style !== 'stepped' && style !== 'gable') {
+      // Bell (klokgevel), neck (halsgevel) and scroll (volute) gables end in paired scroll
+      // volutes, as on the real Le Cygne, Le Paon, La Louve and Le Cornet.
+      const gableScrolls = new THREE.InstancedMesh(new THREE.SphereGeometry(0.22, 8, 6), materials.gold, 2);
+      for (let i = 0; i < 2; i++) {
+        modDummy.position.set((i === 0 ? -1 : 1) * (width / 2 - 2.0), height + 1.9, 0.12);
+        modDummy.updateMatrix();
+        gableScrolls.setMatrixAt(i, modDummy.matrix);
+      }
+      gableScrolls.count = 2;
+      gableScrolls.name = name + ' gable top scroll volutes';
+      root.add(gableScrolls);
+    }
     // Tile rows run across the roof cap, as on the real slate-tiled house roofs.
     const tileRowCount = Math.ceil((width + 0.7) / 0.6);
     const tileRows = new THREE.InstancedMesh(new THREE.BoxGeometry(0.5, 0.05, depth + 0.4), materials.dark, tileRowCount);
@@ -1716,6 +1746,23 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     waterTables.count = wt;
     waterTables.name = 'Balcony and sill water tables';
     root.add(waterTables);
+    // Corbel brackets carry every upper-storey window sill, as on the real facade.
+    const sillBrackets = new THREE.InstancedMesh(new THREE.BoxGeometry(0.18, 0.2, 0.3), darkStone, bays * 2);
+    let sb = 0;
+    for (let floor = 0; floor < 2; floor++) {
+      const y = floor === 0 ? 12.5 : 20.0;
+      for (let i = 0; i < bays; i++) {
+        const x = -width / 2 + bayW * (i + 0.5);
+        for (const side of [-1, 1]) {
+          facadeDummy.position.set(x + side * 1.1, y - 2.6, 0.3);
+          facadeDummy.updateMatrix();
+          sillBrackets.setMatrixAt(sb++, facadeDummy.matrix);
+        }
+      }
+    }
+    sillBrackets.count = sb;
+    sillBrackets.name = 'Upper window sill brackets';
+    root.add(sillBrackets);
     // Horizontal transom bars divide each paired lancet into lights, as on the real
     // mullioned upper windows.
     const transoms = new THREE.InstancedMesh(new THREE.BoxGeometry(2.4, 0.1, 0.2), trim, bays * 2);
@@ -1807,6 +1854,21 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     nicheColonettes.count = nc;
     nicheColonettes.name = 'Niche side colonettes';
     root.add(nicheColonettes);
+    // Blind niche panels fill the even bay joints of both upper storeys, as on the real
+    // facade between the statue niches.
+    const blindNiches = new THREE.InstancedMesh(new THREE.BoxGeometry(0.72, 2.5, 0.18), materials.dark, 16);
+    let bn = 0;
+    for (let floor = 0; floor < 2; floor++) {
+      const y = floor === 0 ? 12.5 : 20.0;
+      for (let i = 0; i <= bays && bn < 16; i += 2) {
+        facadeDummy.position.set(-width / 2 + i * bayW, y, 0.14);
+        facadeDummy.updateMatrix();
+        blindNiches.setMatrixAt(bn++, facadeDummy.matrix);
+      }
+    }
+    blindNiches.count = bn;
+    blindNiches.name = 'Upper blind niche panels';
+    root.add(blindNiches);
     // Documented ground-floor figures beside the tower base: prophets, David and Solomon and
     // an Annunciation group flank the portal on the real elevation.
     const baseFigures = new THREE.InstancedMesh(new THREE.BoxGeometry(0.26, 1.2, 0.14), materials.gold, 4);
@@ -1934,6 +1996,18 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     ridgeEnds.count = 2;
     ridgeEnds.name = 'Roof ridge end finials';
     root.add(ridgeEnds);
+    // Gargoyle spouts project from the four wing roof corners, shedding rain off the roof.
+    const roofGargoyles = new THREE.InstancedMesh(new THREE.BoxGeometry(0.3, 0.5, 0.7), darkStone, 4);
+    for (const [wx, ww] of [[eastWingX, 15], [westWingX, 32]]) {
+      for (const side of [-1, 1]) {
+        merDummy.position.set(wx + side * (ww / 2 - 0.2), height + 0.4, 0.75);
+        merDummy.updateMatrix();
+        roofGargoyles.setMatrixAt(Math.round((wx + 20) / 40) * 2 + (side > 0 ? 1 : 0), merDummy.matrix);
+      }
+    }
+    roofGargoyles.count = 4;
+    roofGargoyles.name = 'Wing roof corner gargoyles';
+    root.add(roofGargoyles);
 
     // Dormers and small roof turrets make the skyline read as a Gothic civic palace.
     for (let i = 0; i < 11; i++) {
@@ -2585,6 +2659,10 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     khSideWindows.count = ksw;
     khSideWindows.name = 'King’s House side-elevation windows';
     root.add(khSideWindows);
+    // A side entrance door pierces the Broodhuis east flank toward Rue de la Colline, as on
+    // the real building.
+    box(root, 0.14, 2.6, 1.2, width / 2 + 0.05, 1.6, -depth / 2 + 4, materials.dark, 'King’s House side entrance door');
+    box(root, 0.2, 0.3, 1.5, width / 2 + 0.08, 3.1, -depth / 2 + 4, trim, 'King’s House side entrance hood');
     box(root, width + 0.9, 0.8, depth + 0.7, 0, height - 0.4, -depth / 2, trim, 'King’s House upper cornice');
     // A string-course band runs under the upper-storey windows of the real Broodhuis.
     box(root, width - 1.2, 0.22, 0.4, 0, 14.6, 0.22, darkStone, 'King’s House upper string course');
@@ -2714,6 +2792,8 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     khSpringers.count = ksp;
     khSpringers.name = 'King’s House first-gallery arch springers';
     root.add(khSpringers);
+    // A top rail crowns the first-gallery balustrade, as on the real Broodhuis.
+    box(root, width - 1.5, 0.14, 0.4, 0, 8.72, 0.5, trim, 'King’s House first-gallery top rail');
     for (let i = 0; i < bays; i++) {
       const x = -width / 2 + bayW * (i + 0.5);
       box(root, 1.5, 4.2, 0.2, x, 10.6, 0.22, glass, 'King’s House first-floor gallery arch');
@@ -3184,6 +3264,12 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     // Grand pointed portal in the central ground-floor bay: door leaves, archivolt,
     // sculpted tympanum and a flight of steps — the real Broodhuis main entrance.
     box(root, 2.3, 4.0, 0.2, 0, 2.5, 0.18, materials.dark, 'King’s House portal door leaves');
+    // The portal doors are double-leaf, with gilded strap hinges on each leaf.
+    box(root, 0.06, 3.8, 0.06, 0, 2.5, 0.24, materials.gold, 'King’s House portal door split');
+    for (const side of [-1, 1]) {
+      box(root, 0.1, 0.5, 0.06, side * 1.1, 1.6, 0.24, materials.gold, 'King’s House portal strap hinge');
+      box(root, 0.1, 0.5, 0.06, side * 1.1, 3.4, 0.24, materials.gold, 'King’s House portal strap hinge');
+    }
     box(root, 0.12, 3.6, 0.24, 0, 2.3, 0.18, trim, 'King’s House portal door mullion');
     const portL = box(root, 1.6, 0.24, 0.4, -0.55, 5.35, 0.2, trim, 'King’s House portal pointed arch');
     portL.rotation.z = -0.6;
@@ -3330,6 +3416,28 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     infills.name = 'Grand-Place infill slabs';
     infills.receiveShadow = true;
     plaza.add(infills);
+    // Worn desire-line strips cross the square where centuries of foot traffic polished the
+    // paving — darker worn bands along the main north-south and east-west paths.
+    const wearNS = new THREE.InstancedMesh(new THREE.BoxGeometry(3.0, 0.02, 68), materials.pavingEdge, 2);
+    dummy.position.set(0, 0.012, 0);
+    dummy.rotation.y = 0;
+    dummy.updateMatrix();
+    wearNS.setMatrixAt(0, dummy.matrix);
+    dummy.position.set(-17, 0.012, 0);
+    dummy.updateMatrix();
+    wearNS.setMatrixAt(1, dummy.matrix);
+    wearNS.count = 2;
+    wearNS.name = 'Grand-Place worn desire-line strips (N-S)';
+    const wearEW = new THREE.InstancedMesh(new THREE.BoxGeometry(108, 0.02, 3.0), materials.pavingEdge, 2);
+    dummy.position.set(0, 0.012, 0);
+    dummy.updateMatrix();
+    wearEW.setMatrixAt(0, dummy.matrix);
+    dummy.position.set(0, 0.012, -18);
+    dummy.updateMatrix();
+    wearEW.setMatrixAt(1, dummy.matrix);
+    wearEW.count = 2;
+    wearEW.name = 'Grand-Place worn desire-line strips (E-W)';
+    plaza.add(wearNS, wearEW);
     // Granite kerb stones along all four facade lines where the paving meets the buildings.
     for (const [w, d, x, z, n] of [[110, 0.5, 0, 35.6, 'south'], [110, 0.5, 0, -35.6, 'north'], [0.5, 71, -54.6, 0, 'west'], [0.5, 71, 54.6, 0, 'east']]) {
       box(plaza, w, 0.18, d, x, 0.02, z, materials.pavingEdge, `Grand-Place ${n} facade kerb`);

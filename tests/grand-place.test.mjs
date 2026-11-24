@@ -1090,3 +1090,23 @@ test('rounds 273-282: portal door grooves, jamb colonettes, saint/prophet canopy
   assert.ok(square.includes('infills.count = 60'));
   assert.ok(square.includes('Blind arcade arch under east corner turret'));
 });
+
+test('rounds 283-292: blind niches, sill brackets, gallery top rail, portal split+hinges, gable top scrolls, wear strips, tie ropes, roof gargoyles, Broodhuis side door, door lamps', () => {
+  assert.ok(square.includes('Upper blind niche panels'));
+  assert.ok(square.includes('blindNiches.count = bn'));
+  assert.ok(square.includes('Upper window sill brackets'));
+  assert.ok(square.includes('sillBrackets.count = sb'));
+  assert.ok(square.includes('King’s House first-gallery top rail'));
+  assert.ok(square.includes('King’s House portal door split'));
+  assert.ok(square.includes('King’s House portal strap hinge'));
+  assert.ok(square.includes('gable top scroll volutes'));
+  assert.ok(square.includes('gableScrolls.count = 2'));
+  assert.ok(square.includes('worn desire-line strips (N-S)'));
+  assert.ok(square.includes('worn desire-line strips (E-W)'));
+  assert.ok(square.includes('awning tie ropes'));
+  assert.ok(square.includes('tieRopes.count = bays * 2'));
+  assert.ok(square.includes('Wing roof corner gargoyles'));
+  assert.ok(square.includes('roofGargoyles.count = 4'));
+  assert.ok(square.includes('King’s House side entrance door'));
+  assert.ok(square.includes('door lamp'));
+});
