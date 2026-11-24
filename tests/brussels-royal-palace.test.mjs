@@ -2000,3 +2000,7 @@ testCase('hayloft windows pierce the Academy stables block under the eaves', () 
 testCase('dark soil fills the central balcony flower box', () => {
   assert.match(palace, /'Central flower box soil'/);
 });
+
+testCase('a projecting eave band rings the BELvue pavilion roof base', () => {
+  assert.match(palace, /'BELvue pavilion eave'/);
+});

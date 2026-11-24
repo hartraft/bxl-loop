@@ -5421,6 +5421,9 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     for (let i = 0; i < 5; i++) {
       box(g, 1.2, 1.2, 0.2, -168 - 15 + i * 7.5, 12, 71.9, materials.glass, 'Academy stables hayloft window');
     }
+
+    // A projecting eave band rings the BELvue pavilion roof base.
+    box(g, 40, 0.25, 32, 168, 24.2, 36, materials.roof, 'BELvue pavilion eave');
   });
     addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');
