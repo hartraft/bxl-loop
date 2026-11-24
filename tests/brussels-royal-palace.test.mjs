@@ -1871,3 +1871,7 @@ testCase('pilasters strengthen the BELvue square-facing corners', () => {
 testCase('a base rail joins the feet of the central balcony balusters', () => {
   assert.match(palace, /'Central balcony base rail'/);
 });
+
+testCase('stone surrounds frame the Academy ground-floor arched windows', () => {
+  assert.match(palace, /'Academy ground window surround'/);
+});

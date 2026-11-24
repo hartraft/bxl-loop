@@ -5270,6 +5270,11 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     for (const cx of [150.1, 185.9]) {
       box(g, 0.5, 22, 0.4, cx, 11, 22.05, materials.paleStone, 'BELvue corner pilaster');
     }
+
+    // Stone surrounds frame the Academy Palace ground-floor arched windows.
+    for (let i = 0; i < 7; i++) {
+      box(g, 2.6, 4.9, 0.16, -168 - 24 + i * 8, 5, 20.95, materials.warmStone, 'Academy ground window surround');
+    }
   });
     addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');
