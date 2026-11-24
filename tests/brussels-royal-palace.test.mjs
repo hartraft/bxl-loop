@@ -1367,3 +1367,7 @@ testCase('capitals finish the pilasters on both wing end faces', () => {
 testCase('stone surrounds frame the BELvue piano nobile windows', () => {
   assert.match(palace, /'BELvue piano nobile surround'/);
 });
+
+testCase('a glazed fanlight crowns the portico main door', () => {
+  assert.match(palace, /'Portico door fanlight'/);
+});

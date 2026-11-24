@@ -3789,6 +3789,9 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
         box(g, 0.6, 0.5, 0.6, side * 70.1, 20.2, -3.5 - i * 5, ashlar, 'Wing end pilaster capital');
       }
     }
+
+    // A glazed fanlight crowns the portico main door.
+    mesh(g, new THREE.CircleGeometry(1.6, 16, 0, Math.PI), glass, 0, 7.9, centralFace + 0.24, 'Portico door fanlight');
   });
   addLandmark('palaceSurroundings', (g) => {
     // Real-world sources: en/fr Wikipedia (Royal Palace of Brussels, Brussels Park, Place des Palais,
