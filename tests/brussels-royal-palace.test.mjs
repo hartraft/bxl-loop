@@ -35,6 +35,15 @@ testCase('Royal Palace centre has a sculpted pediment, domed drum and Belgian fl
   assert.match(palace, /Belgian flag stripe/);
 });
 
+testCase('Royal Palace frontage spans the real ~160 m along the Place des Palais', () => {
+  assert.match(palace, /The real frontage runs about 160 m along the Place des Palais/);
+  assert.match(palace, /const wingW = 52, wingH = 20\.5, wingD = 19;/);
+  assert.match(palace, /const wingXs = \[-44, 44\];/);
+  assert.match(palace, /const bx = x - 22 \+ i \* 5\.5;/);
+  assert.match(palace, /for \(const x of \[-76, 76\]\)/);
+  assert.match(palace, /for \(let x = -74; x <= 74; x \+= 2\.4\)/);
+});
+
 testCase("Royal Palace snapshot camera faces the north façade (world -Z after the palace rotation)", () => {
   const snapshot = readFileSync(new URL('../snapshot-royal-palace.html', import.meta.url), 'utf8');
   assert.match(snapshot, /camera\.position\.set\(centre\.x\+[^,]+,.*centre\.z-Math\.max/);
