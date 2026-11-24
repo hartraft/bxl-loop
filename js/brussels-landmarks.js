@@ -4,6 +4,7 @@ import { GEO } from './brx-geodata.js';
 import { BRUSSELS_LANDMARK_ANCHORS, MONT_DES_ARTS_ROTATION, PALAIS_DE_JUSTICE_ROTATION, brusselsToWorld } from './brussels-frame.js';
 import { foundationSkirtBottom } from './brussels-terrain.js';
 import { createBrusselsLandmarkColliders, splitMontDesArtsWall } from './brussels-colliders.js';
+import { grandPlaceShadowFlags } from './grand-place-quality.mjs';
 
 export function buildBrusselsLandmarks(scene, opts = {}) {
   const group = new THREE.Group();
@@ -131,6 +132,25 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     if (id === 'montDesArts') root.rotation.y = MONT_DES_ARTS_ROTATION; // local +Z points southeast; the garden descends northwest
     if (id === 'cinquantenaire') root.rotation.y = Math.PI / 2; // triumphal axis east-west; pavilions north/south
     build(root);
+    if (id === 'grandPlace') {
+      // The square's detailed guild-house facades contain hundreds of repeated ornaments.
+      // Keep shadowing on the large architectural masses, but don't submit every tiny
+      // baluster, window trim, cobble and sign fitting to both sun-shadow cascades.
+      const detailSize = new THREE.Vector3();
+      root.traverse((object) => {
+        if (!object.isMesh || !object.geometry) return;
+        if (!object.geometry.boundingBox) object.geometry.computeBoundingBox();
+        object.geometry.boundingBox.getSize(detailSize);
+        const maxExtent = Math.max(
+          detailSize.x * Math.abs(object.scale.x),
+          detailSize.y * Math.abs(object.scale.y),
+          detailSize.z * Math.abs(object.scale.z)
+        );
+        const shadowFlags = grandPlaceShadowFlags(object.isInstancedMesh, maxExtent);
+        object.castShadow = shadowFlags.castShadow;
+        object.receiveShadow = shadowFlags.receiveShadow;
+      });
+    }
     colliders.push(...createBrusselsLandmarkColliders(id, p, root.rotation.y, root.position.y));
     group.add(root);
     landmarks[id] = { group: root, anchor };
