@@ -13,20 +13,29 @@ export function splitMontDesArtsWall(width, opening = 18) {
 
 const palaisDeJustice = [
   // The four occupied courthouse ranges and the central hall; the courtyards remain open.
-  { name: 'rear range', x: 0, z: -72, hx: 75, hz: 8.5, maxY: 33 },
+  // Plan 160 x 150 m on a 186 x 177 m podium (local +Z = north toward Place Poelaert,
+  // local +X = west toward rue des Minimes).
+  { name: 'rear range', x: 0, z: -66.5, hx: 80, hz: 8.5, maxY: 33 },
   // Split the entrance-facing range around the broad principal stair and portico.
-  { name: 'entrance range west wing', x: -57, z: 70, hx: 18, hz: 8.5, maxY: 33 },
-  { name: 'entrance range east wing', x: 57, z: 70, hx: 18, hz: 8.5, maxY: 33 },
-  { name: 'west range', x: -66.5, z: -1, hx: 8.5, hz: 63, maxY: 33 },
-  { name: 'east range', x: 66.5, z: -1, hx: 8.5, hz: 63, maxY: 33 },
-  { name: 'central hall', x: 0, z: -1, hx: 26, hz: 24, maxY: 48 },
-  { name: 'dome drum', x: 0, z: -1, hx: 20, hz: 20, maxY: 122 },
-  // Podium retaining edges. The north edge is split around the 62 m principal stair.
-  { name: 'west podium edge', x: -86.5, z: -1, hx: 0.9, hz: 91, maxY: 1.2 },
-  { name: 'east podium edge', x: 86.5, z: -1, hx: 0.9, hz: 91, maxY: 1.2 },
-  { name: 'south podium edge', x: 0, z: -92, hx: 87, hz: 0.9, maxY: 1.2 },
-  { name: 'north podium west wing', x: -63.5, z: 90, hx: 23.5, hz: 0.9, maxY: 1.2 },
-  { name: 'north podium east wing', x: 63.5, z: 90, hx: 23.5, hz: 0.9, maxY: 1.2 }
+  { name: 'entrance range west wing', x: -57, z: 66.5, hx: 23, hz: 8.5, maxY: 33 },
+  { name: 'entrance range east wing', x: 57, z: 66.5, hx: 23, hz: 8.5, maxY: 33 },
+  { name: 'west range', x: 71.5, z: 0, hx: 8.5, hz: 58, maxY: 33 },
+  { name: 'east range', x: -71.5, z: 0, hx: 8.5, hz: 58, maxY: 33 },
+  { name: 'central hall', x: 0, z: 0, hx: 28, hz: 11, maxY: 48 },
+  { name: 'dome drum', x: 0, z: 0, hx: 20, hz: 20, maxY: 122 },
+  // The four corner pavilions with their hipped roofs (top ~47.3 m).
+  { name: 'corner pavilion', x: -66, z: 64, hx: 14, hz: 15, maxY: 48 },
+  { name: 'corner pavilion', x: 66, z: 64, hx: 14, hz: 15, maxY: 48 },
+  { name: 'corner pavilion', x: -66, z: -61.5, hx: 14, hz: 13.5, maxY: 48 },
+  { name: 'corner pavilion', x: 66, z: -61.5, hx: 14, hz: 13.5, maxY: 48 },
+  // Podium retaining edges. The north edge is split around the principal stair corridor.
+  { name: 'west podium edge', x: 93, z: 0, hx: 0.9, hz: 88.5, maxY: 1.2 },
+  { name: 'east podium edge', x: -93, z: 0, hx: 0.9, hz: 88.5, maxY: 1.2 },
+  { name: 'south podium edge', x: 0, z: -88.5, hx: 93, hz: 0.9, maxY: 1.2 },
+  // North retaining wall wings: aligned with the rendered wall (x 38..93 / -93..-38, z 88.5..91.5),
+  // leaving the 76 m-wide central stair corridor open.
+  { name: 'north wall west wing', x: -65.5, z: 90, hx: 27.5, hz: 1.5, maxY: 2.5 },
+  { name: 'north wall east wing', x: 65.5, z: 90, hx: 27.5, hz: 1.5, maxY: 2.5 }
 ];
 
 const montDesArts = [

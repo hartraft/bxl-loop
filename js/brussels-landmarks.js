@@ -2153,126 +2153,367 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     for (let i = 0; i < 5; i++) box(g, 2.2, 5, 0.8, -8 + i * 4, 6, -22.5, materials.glass);
   });
   addLandmark('palaisDeJustice', (g) => {
-    // Palais de Justice (Joseph Poelaert, 1866–1883): monumental 150–160 m
-    // footprint, raised podium, eight courts, axial porticoes and the skyline dome.
-    // Local +Z is the principal north entrance toward Place Poelaert.
+    // Palais de Justice (Joseph Poelaert, 1866–1883): plan 160 x 150 m with eight inner
+    // courts, hors tout 186 x 177 x 116 m, copper dome gilded to 105 m (116 m hors tout),
+    // double Doric peristyle on a full-width emmarchement facing Place Poelaert.
+    // Local +Z is the principal north entrance toward Place Poelaert (local +X is west,
+    // toward rue des Minimes; local -X is east, toward rue aux Laines; local -Z is south,
+    // toward rue de Wynants).
+    // Sources: UNESCO tentative list 5357; Brussels heritage inventory building 30442;
+    // Regie des Batiments history/dimensions; fr.wikipedia Palais de justice de Bruxelles
+    // and Place Poelaert.
     const stone = new THREE.MeshStandardMaterial({ color: 0xc9bda8, roughness: 0.9 });
     const light = new THREE.MeshStandardMaterial({ color: 0xd8cbb6, roughness: 0.88 });
+    // Pale sandstone ranges with ochre/sable avant-corps and pavilions, as on the real facades.
+    const ochre = new THREE.MeshStandardMaterial({ color: 0xd3b98a, roughness: 0.88 });
     const weathered = new THREE.MeshStandardMaterial({ color: 0xa99b86, roughness: 0.94 });
-    const roof = new THREE.MeshStandardMaterial({ color: 0x454947, roughness: 0.9 });
+    const slate = new THREE.MeshStandardMaterial({ color: 0x2f3a3e, roughness: 0.95 });
+    const zinc = new THREE.MeshStandardMaterial({ color: 0x6d7276, roughness: 0.6, metalness: 0.35 });
     const recess = new THREE.MeshStandardMaterial({ color: 0x414342, roughness: 0.9 });
     const bronze = new THREE.MeshStandardMaterial({ color: 0x75664b, metalness: 0.42, roughness: 0.65 });
+    // The real soubassement is pierre bleue (Belgian bluestone), a dark base under the pale stone.
+    const bluestone = new THREE.MeshStandardMaterial({ color: 0x3d444c, roughness: 0.92 });
+    // The real palace is floodlit after dark: register the facade stones for the warm night
+    // wash and the window recesses for the lit-window glow (daytime rendering is untouched).
+    for (const m of [stone, light, weathered, ochre]) {
+      m.emissive = new THREE.Color(0x000000);
+      facadeWashMats.push(m);
+    }
+    recess.emissive = new THREE.Color(0x000000);
+    nightGlowMats.push(recess);
 
     // Broad podium and perimeter terrace: the courthouse sits above the Marolles escarpment.
-    box(g, 174, 4.2, 182, 0, -1.0, -1, weathered, 'Palais de Justice monumental podium');
-    terrainFoundationSkirt(g, g, brusselsToWorld(BRUSSELS_LANDMARK_ANCHORS.palaisDeJustice.lat, BRUSSELS_LANDMARK_ANCHORS.palaisDeJustice.lon), 174, 182, -3.1, weathered, 'Palais de Justice terrain retaining skirt');
-    box(g, 166, 2.2, 174, 0, 2.2, -1, light, 'Courthouse podium coping');
+    // Hors tout 186 x 177 m (UNESCO tentative list 5357); the building plan itself is 160 x 150 m.
+    box(g, 186, 4.2, 177, 0, -1.0, 0, weathered, 'Palais de Justice monumental podium');
+    terrainFoundationSkirt(g, g, brusselsToWorld(BRUSSELS_LANDMARK_ANCHORS.palaisDeJustice.lat, BRUSSELS_LANDMARK_ANCHORS.palaisDeJustice.lon), 186, 177, -3.1, weathered, 'Palais de Justice terrain retaining skirt');
+    box(g, 178, 2.2, 169, 0, 2.2, 0, light, 'Courthouse podium coping');
+    // Dark bluestone soubassement band wrapping the terrace edge and the range plinths.
+    box(g, 186.6, 2.4, 177.6, 0, 2.0, 0, bluestone, 'Palais de Justice bluestone soubassement band');
+    box(g, 160, 4.5, 17.8, 0, 5.2, -66.5, bluestone, 'Range bluestone plinth');
+    // The north plinth is split around the porch opening so the doorway and inner colonnade
+    // are not buried.
+    for (const side of [-1, 1]) box(g, 46, 4.5, 17.8, side * 57, 5.2, 66.5, bluestone, 'North range bluestone plinth wing');
+    for (const x of [71.5, -71.5]) box(g, 17.8, 4.5, 116, x, 5.2, 0, bluestone, 'Range bluestone plinth');
     // Eight internal courts are left open. Four long ranges and cross-ranges create
     // a legible courtyard plan instead of a single opaque rectangular mass.
     const wingY = 17.5, wingH = 31, wingD = 17;
-    box(g, 150, wingH, wingD, 0, wingY, -72, stone, 'North range facing Place Poelaert');
-    box(g, 150, wingH, wingD, 0, wingY, 70, stone, 'South range above Rue de Wynants');
-    box(g, wingD, wingH, 126, -66.5, wingY, -1, stone, 'West range Rue des Minimes');
-    box(g, wingD, wingH, 126, 66.5, wingY, -1, stone, 'East range Rue aux Laines');
-    for (const z of [-34, 0, 34]) {
-      box(g, 116, 26, 10, 0, 15, z, light, 'Courthouse transverse gallery');
+    // North range facing Place Poelaert, split around the monumental porch opening (|x| < 34),
+    // matching the entrance-range collider wings.
+    box(g, 46, wingH, wingD, -57, wingY, 66.5, stone, 'North range west wing facing Place Poelaert');
+    box(g, 46, wingH, wingD, 57, wingY, 66.5, stone, 'North range east wing facing Place Poelaert');
+    box(g, 160, wingH, wingD, 0, wingY, -66.5, stone, 'South range above Rue de Wynants');
+    box(g, wingD, wingH, 116, 71.5, wingY, 0, stone, 'West range Rue des Minimes');
+    box(g, wingD, wingH, 116, -71.5, wingY, 0, stone, 'East range Rue aux Laines');
+    // Gallery runs sit outside the court outer arcades (courts reach z=±35).
+    for (const z of [-39, 39]) {
+      box(g, 126, 26, 6, 0, 15, z, light, 'Courthouse transverse gallery');
+      box(g, 127, 1.0, 6.8, 0, 26.5, z, zinc, 'Transverse gallery zinc roof');
     }
-    // Raised corner pavilions and central avant-corps articulate the four elevations.
-    for (const x of [-61, 61]) for (const z of [-61, 61]) {
-      box(g, 28, 39, 27, x, 20, z, light, 'Projecting courthouse corner pavilion');
-      box(g, 30, 1.6, 29, x, 40, z, weathered, 'Corner pavilion cornice');
-      box(g, 26, 3.2, 25, x, 42.2, z, roof, 'Corner pavilion roof');
+    // The z=0 gallery is split around the central hall (x within ±28).
+    for (const side of [-1, 1]) {
+      box(g, 35, 26, 10, side * 45.5, 15, 0, light, 'Courthouse transverse gallery wing');
+      box(g, 36, 1.0, 10.8, side * 45.5, 26.5, 0, zinc, 'Transverse gallery zinc roof');
+    }
+    // Flat zinc roofs over the four perimeter ranges; the corner pavilions wear slate hips.
+    for (const z of [66.5, -66.5]) box(g, 161, 1.2, 17.8, 0, 33.6, z, zinc, 'Range zinc roof');
+    for (const x of [71.5, -71.5]) box(g, 17.8, 1.2, 117, x, 33.6, 0, zinc, 'Range zinc roof');
+    // Raised corner pavilions with hipped pavilion roofs (toit en pavillon); the two north
+    // pavilions flank the monumental porch in strong projection (forte saillie).
+    for (const x of [-66, 66]) for (const z of [-61.5, 64]) {
+      const north = z > 0;
+      box(g, 28, 39, north ? 30 : 27, x, 20, z, ochre, 'Projecting courthouse corner pavilion');
+      box(g, 30, 1.6, north ? 32 : 29, x, 40, z, weathered, 'Corner pavilion cornice');
+      mesh(g, new THREE.ConeGeometry(21, 6.5, 4), slate, x, 43.85, z, 'Corner pavilion hipped roof (toit en pavillon)');
       for (let bay = -1; bay <= 1; bay++) {
-        box(g, 2.1, 8, 0.35, x + bay * 7, 18, z + (z > 0 ? 13.7 : -13.7), recess, 'Corner pavilion tall window');
+        box(g, 2.1, 8, 0.35, x + bay * 7, 18, z + (north ? 15.2 : -13.7), recess, 'Corner pavilion tall window');
       }
     }
-    // North principal façade: broad stair, double Doric peristyle and projecting portico.
-    box(g, 58, 1.2, 18, 0, 4.1, 91, weathered, 'Place Poelaert forecourt landing');
-    for (let step = 0; step < 9; step++) {
-      box(g, 62 + step * 1.8, 0.55, 2.2, 0, 4.3 + step * 0.42, 82 - step * 2.15, light, 'Monumental entrance stair');
+    // North principal façade: the peristyle is preceded by an emmarchement across its
+    // full width, rising from the Place Poelaert esplanade up to the entrance terrace.
+    // Forecourt landing north of the stair flight (treads occupy z up to ~95.4).
+    box(g, 60, 1.2, 8.5, 0, 0.9, 99.75, weathered, 'Place Poelaert forecourt landing');
+    // The flight stops at the terrace's north edge (z=88): the top tread meets the terrace
+    // face instead of disappearing inside the opaque terrace volume.
+    for (let step = 0; step < 12; step++) {
+      box(g, 56 + step * 0.7, 0.46, 0.7, 0, 0.5 + step * 0.5, 95 - step * 0.6, light, 'Monumental entrance stair (full-width emmarchement)');
     }
-    box(g, 52, 3.0, 18, 0, 5.0, 80, stone, 'Main entrance terrace');
-    box(g, 48, 2.0, 14, 0, 22.0, 76, light, 'Principal portico entablature');
+    box(g, 58, 3.0, 20, 0, 5.0, 78, stone, 'Main entrance terrace');
+    // Four monumental marble statues of the great orators and legislators of Antiquity stand
+    // at the foot of the grand stairs: Demosthenes and Lycurgus (A. Cattier) on the west side,
+    // Cicero and Ulpian (A.F. Boure) on the east side.
+    const marble = new THREE.MeshStandardMaterial({ color: 0xe6deca, roughness: 0.7 });
+    for (const [figure, x] of [['Demosthenes', -38], ['Lycurgus', -31], ['Cicero', 31], ['Ulpian', 38]]) {
+      box(g, 2.8, 1.2, 2.8, x, 1.9, 93, weathered, 'Jurist statue plinth');
+      cylinder(g, 0.55, 0.78, 4.6, x, 5.5, 93, marble, 10);
+      mesh(g, new THREE.SphereGeometry(0.5, 12, 10), marble, x, 8.0, 93, figure + ' statue head');
+      box(g, 0.5, 2.2, 0.3, x + 0.8, 6.2, 93, marble, figure + ' statue arm');
+    }
+    // Double colonnade of Doric columns on the entrance terrace: base, shaft, echinus, abacus,
+    // then architrave and entablature carrying the pediment.
+    box(g, 50, 1.8, 15, 0, 23.5, 76, weathered, 'Principal portico entablature');
+    box(g, 50, 1.0, 15, 0, 22.1, 76, light, 'Portico architrave');
     for (const z of [70, 78]) {
       for (let i = 0; i < 12; i++) {
         const x = -27.5 + i * 5;
-        cylinder(g, 1.05, 1.2, 15.5, x, 12.5, z, light, 20);
-        cylinder(g, 1.45, 1.45, 0.65, x, 4.8, z, weathered, 20);
-        cylinder(g, 1.45, 1.45, 0.65, x, 20.2, z, weathered, 20);
+        cylinder(g, 1.4, 1.4, 0.6, x, 6.8, z, weathered, 20);   // Doric base
+        cylinder(g, 1.0, 1.15, 13.5, x, 13.85, z, light, 20);     // shaft
+        cylinder(g, 1.25, 1.0, 0.5, x, 20.85, z, light, 20);       // echinus
+        box(g, 2.3, 0.5, 2.3, x, 21.35, z, light, 'Doric abacus'); // square abacus
       }
     }
-    // Main front pediment and attic balustrade.
+    // Principal pediment over the porch with a sculptural crest, attic behind it, and the
+    // full-width entablature and balustrade along the real north facade line.
     const pediment = new THREE.Shape();
-    pediment.moveTo(-25, 0); pediment.lineTo(0, 11); pediment.lineTo(25, 0); pediment.closePath();
-    mesh(g, new THREE.ExtrudeGeometry(pediment, { depth: 3, bevelEnabled: false }), light, 0, 23.2, 77, 'Triangular principal pediment');
-    box(g, 154, 1.3, 3.0, 0, 34, 58, light, 'North façade entablature');
-    for (let x = -73; x <= 73; x += 3.2) {
-      box(g, 0.55, 1.5, 0.55, x, 35.2, 58, weathered, 'North façade balustrade');
+    pediment.moveTo(-26, 0); pediment.lineTo(0, 12); pediment.lineTo(26, 0); pediment.closePath();
+    mesh(g, new THREE.ExtrudeGeometry(pediment, { depth: 4, bevelEnabled: false }), light, 0, 24.4, 75.5, 'Triangular principal pediment');
+    box(g, 3.2, 1.2, 3.2, 0, 37.0, 77.5, stone, 'Pediment crest plinth');
+    cylinder(g, 0.55, 0.7, 3.6, 0, 39.2, 77.5, stone, 12);
+    mesh(g, new THREE.SphereGeometry(0.55, 12, 10), stone, 0, 41.3, 77.5, 'Pediment crest figure head');
+    for (const x of [-24.5, 24.5]) box(g, 1.2, 1.6, 1.2, x, 25.2, 77.5, stone, 'Pediment corner acroterion');
+    box(g, 58, 4.2, 12, 0, 26.1, 72, light, 'Portico attic');
+    box(g, 160, 1.3, 3.0, 0, 34, 75.2, light, 'North façade entablature');
+    for (let x = -78; x <= 78; x += 3.2) {
+      box(g, 0.55, 1.5, 0.55, x, 35.4, 75.2, weathered, 'North façade balustrade');
     }
-    // Repeated pilasters, deep window reveals and three storey bands on the outer ranges.
+    // Inside the porch: Corinthian columns crowned with Boure's winged lions, the monumental
+    // bronze door (Houtstont after Van Mansfeld, 1896), and the bust of the architect
+    // Joseph Poelaert (Cuypers, 1887) to the left of the entrance.
+    box(g, 10, 14, 0.8, 0, 13.5, 74.6, bronze, 'Bronze entrance door (Houtstont after Van Mansfeld)');
+    box(g, 11, 1.2, 1.6, 0, 7.1, 74.4, weathered, 'Bronze door threshold');
+    for (const side of [-1, 1]) {
+      cylinder(g, 0.5, 0.6, 13.5, side * 6, 13.25, 72, light, 16);
+      cylinder(g, 0.85, 0.85, 0.5, side * 6, 20.2, 72, light, 16);
+      box(g, 1.7, 0.4, 1.7, side * 6, 20.65, 72, light, 'Corinthian capital');
+      const lion = new THREE.Group();
+      lion.position.set(side * 6, 21.0, 72);
+      mesh(lion, new THREE.SphereGeometry(0.85, 12, 10), bronze, 0, 0.9, 0, 'Winged lion body (A.F. Boure)');
+      mesh(lion, new THREE.SphereGeometry(0.45, 10, 8), bronze, 0, 1.9, 0.35, 'Winged lion head (A.F. Boure)');
+      for (const w of [-1, 1]) {
+        const wing = mesh(lion, new THREE.BoxGeometry(0.12, 1.6, 2.2), bronze, w * 0.9, 1.2, -0.2, 'Winged lion wing');
+        wing.rotation.z = w * 0.5;
+      }
+      g.add(lion);
+    }
+    box(g, 1.8, 2.2, 1.2, -8, 7.6, 73.5, weathered, 'Poelaert bust pedestal (Cuypers 1887)');
+    mesh(g, new THREE.SphereGeometry(0.55, 12, 10), marble, -8, 9.3, 73.5, 'Bust of architect Joseph Poelaert');
+    // Two escaliers d'honneur flank the monumental porch, climbing from the forecourt up to
+    // the corner pavilions that house the Courts of Cassation and Appeal.
+    for (const side of [-1, 1]) {
+      for (let step = 0; step < 10; step++) {
+        box(g, 14, 0.5, 1.6, side * 40, 6.8 + step * 1.35, 92 - step * 1.7, light, "Escalier d'honneur flight");
+      }
+      box(g, 16, 3.2, 14, side * 46, 19.5, 79, stone, 'Honour stair landing at corner pavilion');
+    }
+    // Colossal-order articulation on the north and south ranges: paired pilasters, deep window
+    // reveals with lintels and alternating pediments; the monumental porch zone stays clear.
     for (const side of [-1, 1]) {
       for (let i = 0; i < 21; i++) {
-        const x = -69 + i * 6.9;
-        box(g, 2.8, 10.5, 0.32, x, 11.5, side < 0 ? -63 : 63, recess, 'Courthouse lower window');
-        box(g, 2.8, 9.5, 0.32, x, 25, side < 0 ? -63 : 63, recess, 'Courthouse upper window');
-        box(g, 0.35, 29, 0.5, x - 2.0, 18, side < 0 ? -63.2 : 63.2, light, 'Courthouse façade pilaster');
+        const x = -72 + i * 7.2;
+        if (side > 0 && Math.abs(x) < 30) continue;
+        const z = side < 0 ? -75 : 75;
+        box(g, 2.8, 10.5, 0.32, x, 11.5, z, recess, 'Courthouse lower window');
+        box(g, 2.8, 9.5, 0.32, x, 25, z, recess, 'Courthouse upper window');
+        box(g, 3.4, 0.4, 0.5, x, 30.2, z, light, 'Upper window lintel');
+        if (i % 2 === 0) {
+          const p = new THREE.Shape();
+          p.moveTo(-1.8, 0); p.lineTo(0, 1.1); p.lineTo(1.8, 0); p.closePath();
+          mesh(g, new THREE.ExtrudeGeometry(p, { depth: 0.25, bevelEnabled: false }), light, x, 30.6, z, 'Alternating window pediment');
+        }
+        box(g, 0.5, 29, 0.5, x - 1.7, 18, side < 0 ? -75.2 : 75.2, light, 'Courthouse paired pilaster west');
+        box(g, 0.5, 29, 0.5, x + 1.7, 18, side < 0 ? -75.2 : 75.2, light, 'Courthouse paired pilaster east');
       }
     }
-    // Eight courts: low garden floors and arcaded inner galleries make the plan readable from above.
+    // The west and east ranges carry the same window rhythm along their street faces.
+    for (const x of [80.2, -80.2]) {
+      for (let i = 0; i < 15; i++) {
+        const z = -66 + i * 9.4;
+        box(g, 0.32, 10.5, 2.8, x, 11.5, z, recess, 'Side range lower window');
+        box(g, 0.32, 9.5, 2.8, x, 25, z, recess, 'Side range upper window');
+        box(g, 0.5, 29, 0.5, x, 18, z - 1.7, light, 'Side range paired pilaster');
+      }
+    }
+    // South facade above rue de Wynants: a pedimented central avant-corps with its own portal.
+    box(g, 24, 6, 3, 0, 8, -76.5, ochre, 'South avant-corps rue de Wynants');
+    const sp = new THREE.Shape();
+    sp.moveTo(-13, 0); sp.lineTo(0, 6); sp.lineTo(13, 0); sp.closePath();
+    mesh(g, new THREE.ExtrudeGeometry(sp, { depth: 2, bevelEnabled: false }), light, 0, 11, -76.5, 'South portal pediment rue de Wynants');
+    box(g, 6, 9, 0.8, 0, 7.5, -75.8, bronze, 'South portal door rue de Wynants');
+    // Eight courts: low paved floors and arcaded inner galleries make the plan readable from above.
     for (let row = 0; row < 2; row++) for (let col = 0; col < 4; col++) {
-      const x = -48 + col * 32;
-      const z = -43 + row * 86;
-      box(g, 22, 0.28, 30, x, 3.45, z, materials.green, 'Interior courthouse court garden');
+      const x = -45 + col * 30;
+      const z = -24 + row * 48;
+      box(g, 24, 0.28, 22, x, 3.45, z, materials.pavingB, 'Interior courthouse court paving');
+      // Arcaded galleries on all four sides of every court, as in the real plan.
       for (const edge of [-1, 1]) {
-        box(g, 22, 5.5, 0.45, x, 8.0, z + edge * 15, light, 'Court inner arcade');
+        box(g, 24, 5.5, 0.45, x, 8.0, z + edge * 11, light, 'Court inner arcade');
+        box(g, 0.45, 5.5, 22, x + edge * 12, 8.0, z, light, 'Court inner arcade');
         for (let bay = -2; bay <= 2; bay++) {
-          box(g, 1.5, 4.0, 0.22, x + bay * 4, 8.0, z + edge * 15.25, recess, 'Court arcade opening');
+          box(g, 1.5, 4.0, 0.22, x + bay * 4.5, 8.0, z + edge * 11.25, recess, 'Court arcade opening');
+          box(g, 0.22, 4.0, 1.5, x + edge * 12.25, 8.0, z + bay * 4.5, recess, 'Court arcade opening');
         }
       }
     }
-    // Central hall and the monumental dome's stepped square stylobate.
-    box(g, 52, 42, 48, 0, 27, -1, light, 'Salle des Pas Perdus central mass');
-    box(g, 58, 3.0, 54, 0, 48, -1, weathered, 'Dome stylobate lower step');
-    box(g, 50, 3.0, 48, 0, 51, -1, light, 'Dome stylobate upper step');
-    // Square first drum with open colonnades on all four sides.
-    box(g, 39, 7, 39, 0, 56, -1, stone, 'Square dome drum');
+    // Central hall and the monumental dome's stepped stylobate. The Salle des Pas Perdus is a
+    // 48 x 22 m hall running east-west directly under the dome.
+    box(g, 56, 42, 22, 0, 27, 0, light, 'Salle des Pas Perdus central mass (48 x 22 m hall)');
+    box(g, 58, 3.0, 54, 0, 48, 0, weathered, 'Dome stylobate lower step');
+    box(g, 50, 3.0, 48, 0, 51, 0, light, 'Dome stylobate upper step');
+    // Dome stylobate on a Greek-cross plan, rhythmically pierced by paired pilasters
+    // (UNESCO tentative list 5357).
+    box(g, 30, 5.0, 66, 0, 54.5, 0, stone, 'Stylobate cross arm north-south');
+    box(g, 66, 5.0, 30, 0, 54.5, 0, stone, 'Stylobate cross arm east-west');
+    for (const [px, pz] of [[-24, 0], [24, 0], [0, -24], [0, 24]]) {
+      box(g, 1.2, 5.0, 1.2, px - 0.8, 54.5, pz, weathered, 'Stylobate paired pilaster');
+      box(g, 1.2, 5.0, 1.2, px + 0.8, 54.5, pz, weathered, 'Stylobate paired pilaster');
+    }
+    // Square first drum on a stepped base (base a gradins), open as a colonnade on each side,
+    // with solid corner piers and a top ring carrying the circular drum.
+    box(g, 45, 2.5, 45, 0, 50.25, 0, weathered, 'Square drum base a gradins lower tier');
+    box(g, 42, 2.0, 42, 0, 53.0, 0, weathered, 'Square drum base a gradins upper tier');
+    for (const sx of [-1, 1]) for (const sz of [-1, 1]) {
+      box(g, 5, 9, 5, sx * 17, 58.5, sz * 17, stone, 'Square dome drum corner pier');
+    }
     for (let side = 0; side < 4; side++) {
       const angle = side * Math.PI / 2;
       for (let i = 0; i < 7; i++) {
         const t = -15 + i * 5;
         const x = Math.cos(angle) * 20.0 + Math.cos(angle + Math.PI / 2) * t;
-        const z = -1 + Math.sin(angle) * 20.0 + Math.sin(angle + Math.PI / 2) * t;
-        cylinder(g, 0.65, 0.78, 9.5, x, 64, z, light, 16);
+        const z = Math.sin(angle) * 20.0 + Math.sin(angle + Math.PI / 2) * t;
+        cylinder(g, 0.65, 0.78, 9.5, x, 58.75, z, light, 16);
       }
     }
-    box(g, 34, 1.5, 34, 0, 69, -1, weathered, 'Upper dome cornice');
-    // Circular upper drum and copper dome; the high lantern is the city's defining silhouette.
-    cylinder(g, 17.5, 19.5, 15, 0, 77, -1, light, 32);
+    box(g, 41, 1.6, 41, 0, 63.4, 0, stone, 'Square dome drum top ring');
+    // Circular cornice ledge (r=21 m) carrying the griffins outside the drum wall.
+    cylinder(g, 21, 21.5, 1.5, 0, 69, 0, weathered, 32);
+    // Eight gilded-copper griffins (winged lions) stand under the dome around the circular gallery.
+    const gilded = new THREE.MeshStandardMaterial({ color: 0xc9973f, metalness: 0.62, roughness: 0.38 });
+    for (let i = 0; i < 8; i++) {
+      const a = i * Math.PI / 4;
+      const x = Math.cos(a) * 20.3, z = Math.sin(a) * 20.3;
+      const griffin = new THREE.Group();
+      griffin.position.set(x, 69.8, z);
+      griffin.rotation.y = Math.PI / 2 - a;
+      mesh(griffin, new THREE.SphereGeometry(0.7, 10, 8), gilded, 0, 0.9, 0, 'Griffin body under dome');
+      mesh(griffin, new THREE.SphereGeometry(0.38, 8, 6), gilded, 0, 1.6, 0.3, 'Griffin head under dome');
+      for (const w of [-1, 1]) {
+        const wing = mesh(griffin, new THREE.BoxGeometry(0.1, 1.2, 1.8), gilded, w * 0.75, 1.1, -0.1, 'Griffin wing under dome');
+        wing.rotation.z = w * 0.45;
+      }
+      g.add(griffin);
+    }
+    // Circular upper drum, marked at its four angles by 5.55 m bronze statues under
+    // triangular pediments: the Loi, Justice, Force and Clemence.
+    cylinder(g, 17.5, 19.5, 15, 0, 77, 0, light, 32);
+    const drumStatues = ['Loi', 'Justice', 'Force', 'Clemence'];
+    for (let k = 0; k < 4; k++) {
+      const a = Math.PI / 4 + k * Math.PI / 2;
+      const x = Math.cos(a) * 19.5, z = Math.sin(a) * 19.5;
+      box(g, 3.2, 1.5, 3.2, x, 86.5, z, weathered, 'Drum angle statue plinth');
+      cylinder(g, 0.6, 0.85, 5.55, x, 90.0, z, bronze, 10);
+      mesh(g, new THREE.SphereGeometry(0.55, 10, 8), bronze, x, 93.2, z, drumStatues[k] + ' drum statue head');
+      const dp = new THREE.Shape();
+      dp.moveTo(-2.4, 0); dp.lineTo(0, 1.8); dp.lineTo(2.4, 0); dp.closePath();
+      const dpMesh = mesh(g, new THREE.ExtrudeGeometry(dp, { depth: 2.6, bevelEnabled: false }), weathered, x, 94.0, z, drumStatues[k] + ' drum statue pediment');
+      dpMesh.rotation.y = Math.PI / 2 - a;
+    }
     for (let i = 0; i < 24; i++) {
       const a = i * Math.PI * 2 / 24;
-      const x = Math.cos(a) * 18.3, z = -1 + Math.sin(a) * 18.3;
+      const x = Math.cos(a) * 18.3, z = Math.sin(a) * 18.3;
       box(g, 1.1, 9.0, 1.1, x, 77, z, weathered, 'Circular drum pier');
     }
-    cylinder(g, 20.5, 20.5, 1.5, 0, 85, -1, bronze, 32);
-    mesh(g, new THREE.SphereGeometry(20, 32, 20, 0, Math.PI * 2, 0, Math.PI / 2), roof, 0, 85, -1, 'Copper courthouse dome');
-    cylinder(g, 5.8, 7.5, 9, 0, 104, -1, bronze, 24);
+    cylinder(g, 20.5, 20.5, 1.5, 0, 85, 0, gilded, 32);
+    // The dome is copper clad in 275 m2 of gold leaf, with the slightly bombé profile of the
+    // 1948 raising (dome raised 2.5 m); it rises to 105 m.
+    const domeGeom = new THREE.SphereGeometry(20, 32, 20, 0, Math.PI * 2, 0, Math.PI / 2);
+    domeGeom.scale(1, 1.06, 1);
+    mesh(g, domeGeom, gilded, 0, 85, 0, 'Gilded copper courthouse dome');
+    const meridian = new THREE.CatmullRomCurve3(Array.from({ length: 9 }, (_, i) => {
+      const t = i / 8 * Math.PI / 2;
+      return new THREE.Vector3(20 * Math.cos(t), 85 + 21.2 * Math.sin(t), 0);
+    }));
+    const ribGeom = new THREE.TubeGeometry(meridian, 16, 0.22, 6);
+    for (let i = 0; i < 16; i++) {
+      const rib = mesh(g, ribGeom, gilded, 0, 0, 0, 'Gilded dome rib');
+      rib.rotation.y = i * Math.PI * 2 / 16;
+    }
+    // Colonnaded lantern with a gilded cap: the whole palace tops out at 116 m hors tout.
+    // (The 17 m Eurovision antenna on the dome was removed in September 2002.)
+    cylinder(g, 5.8, 7.5, 6, 0, 103.5, 0, bronze, 24);
     for (let i = 0; i < 12; i++) {
       const a = i * Math.PI * 2 / 12;
-      cylinder(g, 0.34, 0.42, 7.2, Math.cos(a) * 6.1, 104, -1 + Math.sin(a) * 6.1, light, 10);
+      cylinder(g, 0.34, 0.42, 8, Math.cos(a) * 6.1, 106, Math.sin(a) * 6.1, light, 10);
     }
-    cylinder(g, 4.6, 5.8, 2.0, 0, 109, -1, bronze, 20);
-    mesh(g, new THREE.SphereGeometry(4.8, 20, 12, 0, Math.PI * 2, 0, Math.PI / 2), roof, 0, 110, -1, 'Courthouse lantern cap');
-    cylinder(g, 0.22, 0.35, 5.5, 0, 116, -1, bronze, 12);
-    // The two side façades and rear range receive their own axial entrances and stair landings.
-    for (const x of [-1, 1]) {
-      box(g, 20, 3, 18, x * 78, 5, -1, weathered, 'Side entrance landing');
-      for (let i = 0; i < 7; i++) box(g, 22, 0.45, 1.8, x * (78 - i * 1.3), 5 + i * 0.45, -1, light, 'Side monumental stair');
+    cylinder(g, 7.2, 7.2, 1.2, 0, 110.6, 0, gilded, 24);
+    const capGeom = new THREE.SphereGeometry(4.0, 20, 12, 0, Math.PI * 2, 0, Math.PI / 2);
+    capGeom.scale(1, 1.1, 1);
+    mesh(g, capGeom, gilded, 0, 111.2, 0, 'Courthouse lantern cap');
+    cylinder(g, 0.18, 0.3, 0.8, 0, 115.8, 0, gilded, 8);
+    // The side facades each carry an axial portal with a small peristyle and a stair down to
+    // street level: rue des Minimes on the west (local +X), rue aux Laines on the east; the
+    // lower ground floor is entered from rue aux Laines.
+    for (const x of [80, -80]) {
+      const side = x > 0 ? 1 : -1;
+      const street = x > 0 ? 'rue des Minimes' : 'rue aux Laines';
+      box(g, 4, 3, 22, x + side * 2, 5, 0, weathered, 'Side entrance landing ' + street);
+      for (let i = 0; i < 7; i++) box(g, 1.8, 0.45, 24, side * (84 + (6 - i) * 1.3), 5 + i * 0.45, 0, light, 'Side monumental stair ' + street);
+      box(g, 3, 12, 18, x + side * 1.5, 12, 0, stone, 'Side axial portal ' + street);
+      for (const z of [-6, 0, 6]) {
+        cylinder(g, 0.45, 0.55, 10, x + side * 0.8, 10.5, z, light, 12);
+      }
+      box(g, 4.5, 1.6, 19, x + side * 1.5, 16.3, 0, light, 'Side portal entablature ' + street);
     }
     // Terrace balustrade and retaining edge, kept distinct from the surrounding streets.
-    for (let x = -82; x <= 82; x += 4) {
-      box(g, 0.5, 1.2, 0.5, x, 5.1, 91, weathered, 'Forecourt terrace baluster');
+    for (let x = -88; x <= 88; x += 4) {
+      box(g, 0.5, 1.2, 0.5, x, 3.9, 88.5, weathered, 'Forecourt terrace baluster');
     }
-    box(g, 178, 1.8, 3, 0, 1.6, 90, weathered, 'Place Poelaert retaining wall');
+    // Retaining wall along the esplanade edge, split around the central stair corridor so the
+    // monumental emmarchement passes through it unobstructed. The opening (|x| < 38) matches
+    // the collision corridor exactly.
+    for (const side of [-1, 1]) {
+      box(g, 55, 1.8, 3, side * 65.5, 1.6, 90, weathered, 'Place Poelaert retaining wall ' + (side < 0 ? 'west' : 'east'));
+    }
+    // Place Poelaert itself: the vast paved parvis stretching north from the palace toward
+    // rue de la Regence, edged with blue-stone setts.
+    box(g, 150, 0.3, 70, 0, 0.15, 126, materials.pavingA, 'Place Poelaert esplanade paving');
+    box(g, 152, 0.34, 3, 0, 0.16, 89.8, materials.pavingEdge, 'Place Poelaert south sett border');
+    box(g, 152, 0.34, 3, 0, 0.16, 161.2, materials.pavingEdge, 'Place Poelaert north sett border');
+    for (const x of [-75, 75]) box(g, 3, 0.34, 72, x, 0.16, 126, materials.pavingEdge, 'Place Poelaert side sett border');
+    // Monument national a l'Infanterie Belge (A. De Mol / E. Vereycken, 1935) on the esplanade:
+    // a great bluestone obelisk on a raised platform, crowned by a gilded royal crown ringed by
+    // four soldiers, with a bronze winged Victory at its foot.
+    box(g, 14, 2.5, 14, -35, 1.55, 135, bluestone, 'Infantry monument raised platform');
+    const obelisk = mesh(g, new THREE.CylinderGeometry(3.2, 5.4, 26, 4), bluestone, -35, 15.8, 135, 'Infantry monument bluestone obelisk');
+    obelisk.rotation.y = Math.PI / 4;
+    mesh(g, new THREE.TorusGeometry(2.6, 0.5, 10, 20), gilded, -35, 29.4, 135, 'Gilded royal crown on obelisk');
+    for (const [sx, sz] of [[-2.6, -2.6], [2.6, -2.6], [-2.6, 2.6], [2.6, 2.6]]) {
+      cylinder(g, 0.35, 0.45, 3.2, -35 + sx, 28.2, 135 + sz, bronze, 8);
+      mesh(g, new THREE.SphereGeometry(0.3, 8, 6), bronze, -35 + sx, 30.1, 135 + sz, 'Obelisk summit soldier');
+    }
+    const victory = new THREE.Group();
+    victory.position.set(-35, 3.4, 142.5);
+    mesh(victory, new THREE.SphereGeometry(0.8, 10, 8), bronze, 0, 1.2, 0, 'Winged Victory body (Infantry monument)');
+    for (const w of [-1, 1]) {
+      const wing = mesh(victory, new THREE.BoxGeometry(0.12, 1.8, 2.6), bronze, w * 1.0, 1.6, -0.3, 'Winged Victory wing');
+      wing.rotation.z = w * 0.55;
+    }
+    g.add(victory);
+    // Monument aux soldats britanniques (architect T.S. Tait): about 3 m, a British and a Belgian
+    // soldier standing side by side, on the esplanade edge in line with rue de la Regence.
+    box(g, 5, 0.5, 5, 34, 0.55, 148, bluestone, 'British monument plinth');
+    for (const dx of [-1, 1]) {
+      cylinder(g, 0.32, 0.4, 2.2, 34 + dx, 2.2, 148, bronze, 8);
+      mesh(g, new THREE.SphereGeometry(0.28, 8, 6), bronze, 34 + dx, 3.5, 148, 'British/Belgian soldier figure');
+    }
+    // Bronze orientation table after Alexandre Bouffiaux (placed 1928, ateliers Van Aerschodt),
+    // giving the view over the lower city toward Anderlecht and Molenbeek.
+    cylinder(g, 0.5, 0.7, 1.1, 48, 0.85, 118, bronze, 12);
+    mesh(g, new THREE.CylinderGeometry(2.6, 2.6, 0.18, 20), bronze, 48, 1.55, 118, 'Bronze orientation table (Bouffiaux 1928)');
+    // The real terrace rests on a massive retaining massif, plainly visible from
+    // rue de Wynants (south) and rue des Minimes (west) where the plateau drops to the Marolles.
+    box(g, 190, 3.5, 4, 0, -2.6, -90.5, weathered, 'South massif retaining tier (rue de Wynants)');
+    box(g, 194, 3.5, 4, 0, -5.9, -92.5, weathered, 'South massif lower tier (rue de Wynants)');
+    box(g, 4, 3.5, 181, 95, -2.6, 0, weathered, 'West massif retaining tier (rue des Minimes)');
+    box(g, 4, 3.5, 185, 97.5, -5.9, 0, weathered, 'West massif lower tier (rue des Minimes)');
   });
   addLandmark('cinquantenaire', (g) => {
     // Parc du Cinquantenaire: a full architectural ensemble on the great east-west axis.
