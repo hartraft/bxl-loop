@@ -21,6 +21,7 @@ on:
       - "tools/requirements-terrain.txt"
       - "tools/validate-brussels-geodata.mjs"
       - "tests/brussels-runtime-smoke.mjs"
+      - "tools/browser-runtime-smoke.py"
 
 permissions:
   contents: read
