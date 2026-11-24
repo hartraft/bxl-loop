@@ -6512,6 +6512,94 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       fan.receiveShadow = true;
       g.add(fan);
     }
+    // Round 271: a gilded cartouche sits above the aedicule pediment over the central door.
+    mesh(g, new THREE.SphereGeometry(0.65, 10, 8), materials.gold, 0, 16.4, 31.2, 'Bourse aedicule cartouche (cartouche dore)');
+    // Round 272: the wings' ground floor has office doors at x +/-24.
+    for (const sx of [-1, 1]) {
+      box(g, 3, 5.6, 0.5, sx * 24, 7.8, 30.3, materials.dark, 'Bourse wing ground-floor office door');
+      box(g, 3.8, 0.35, 0.7, sx * 24, 10.8, 30.35, materials.warmStone, 'Bourse wing door lintel');
+    }
+    // Round 273: shutter hinge straps on the front facade windows.
+    {
+      const hinges = new THREE.InstancedMesh(new THREE.BoxGeometry(0.12, 0.5, 0.08), materials.dark, 16);
+      const dummy = new THREE.Object3D();
+      let n = 0;
+      for (const sx of [-1, 1]) for (const wx of [24, 31]) for (const wy of [10, 17.5]) {
+        dummy.position.set(sx * wx - 1.55, wy + 1, 30.4);
+        dummy.updateMatrix();
+        hinges.setMatrixAt(n++, dummy.matrix);
+        dummy.position.set(sx * wx + 1.55, wy + 1, 30.4);
+        dummy.updateMatrix();
+        hinges.setMatrixAt(n++, dummy.matrix);
+      }
+      hinges.count = n;
+      hinges.name = 'Bourse window shutter hinge straps (pentures)';
+      g.add(hinges);
+    }
+    // Round 274: the apex acroterion gets two acanthus side leaves.
+    for (const sx of [-1, 1]) {
+      const leaf = mesh(g, new THREE.ConeGeometry(0.3, 0.9, 4), materials.warmStone, sx * 0.5, 33.4, 32.5, 'Bourse apex acanthus side leaf');
+      leaf.rotation.z = sx * -0.5;
+    }
+    // Round 275: gutter brackets under the front eave gutter.
+    {
+      const brackets = new THREE.InstancedMesh(new THREE.BoxGeometry(0.12, 0.5, 0.12), materials.dark, 12);
+      const dummy = new THREE.Object3D();
+      for (let i = 0; i < 12; i++) {
+        dummy.position.set(-44 + i * 8, 23.7, 37.5);
+        dummy.updateMatrix();
+        brackets.setMatrixAt(i, dummy.matrix);
+      }
+      brackets.count = 12;
+      brackets.name = 'Bourse eave gutter brackets (crochets de gouttiere)';
+      g.add(brackets);
+    }
+    // Round 276: drainage outlets at the four socle corners.
+    {
+      const outlets = new THREE.InstancedMesh(new THREE.CylinderGeometry(0.12, 0.16, 0.3, 8), materials.dark, 4);
+      const dummy = new THREE.Object3D();
+      for (let i = 0; i < 4; i++) {
+        const sx = i % 2 ? 1 : -1, sz = i < 2 ? 1 : -1;
+        dummy.position.set(sx * 52.8, 0.15, sz * 40.8);
+        dummy.updateMatrix();
+        outlets.setMatrixAt(i, dummy.matrix);
+      }
+      outlets.count = 4;
+      outlets.name = 'Bourse socle corner drainage outlets ( gargouilles du socle)';
+      g.add(outlets);
+    }
+    // Round 277: lead downpipes at the rear facade corners.
+    {
+      const pipes = new THREE.InstancedMesh(new THREE.CylinderGeometry(0.07, 0.07, 26, 6), materials.dark, 2);
+      const dummy = new THREE.Object3D();
+      for (let i = 0; i < 2; i++) {
+        dummy.position.set((i === 0 ? -1 : 1) * 16.7, 13, -41.2);
+        dummy.updateMatrix();
+        pipes.setMatrixAt(i, dummy.matrix);
+      }
+      pipes.count = 2;
+      pipes.name = 'Bourse rear downpipes (descentes arriere)';
+      g.add(pipes);
+    }
+    // Round 278: the widened 2023 lateral entrances on both side facades, with gilded brass
+    // frames set into the stone.
+    for (const sx of [-1, 1]) {
+      box(g, 0.6, 7, 4.6, sx * 53.4, 8.5, 0, materials.dark, 'Bourse 2023 lateral entrance (facade ' + (sx < 0 ? 'Henri Maus' : 'de la Bourse') + ')');
+      box(g, 0.9, 7.6, 0.4, sx * 53.5, 8.5, -2.6, materials.gold, 'Bourse lateral entrance brass frame left');
+      box(g, 0.9, 7.6, 0.4, sx * 53.5, 8.5, 2.6, materials.gold, 'Bourse lateral entrance brass frame right');
+      box(g, 0.9, 0.5, 5.6, sx * 53.5, 12.2, 0, materials.gold, 'Bourse lateral entrance brass lintel');
+    }
+    // Round 279: a gilded ball crowns the dome apex under the lantern.
+    mesh(g, new THREE.SphereGeometry(0.7, 12, 10), materials.gold, 0, 39.8, 0, 'Bourse dome apex gilded ball (boule sommitale de la coupole)');
+    // Round 280: the blue-stone socle also takes the night floodlight wash — register a wash
+    // clone of blueStone in facadeWashMats and swap the socle material.
+    {
+      const socleWash = materials.blueStone.clone();
+      socleWash.emissive = new THREE.Color(0x000000);
+      facadeWashMats.push(socleWash);
+      const socle = g.children.find((c) => c.name === 'Bourse blue-stone socle (soubassement en pierre bleue)');
+      if (socle) socle.material = socleWash;
+    }
     // __BOURSE_ROUNDS__
   });
   addLandmark('bourseSurroundings', (g) => {

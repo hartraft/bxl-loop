@@ -835,4 +835,26 @@ testCase('rounds 263-270: 1949 entrance, mirror rim, kiosk roof mouldings, Fonta
   assert.match(surroundings, /'Rue Orts view axis band toward the Bourse \(bande d..axe\)'/);
 });
 
+testCase('rounds 271-275: aedicule cartouche, wing office doors, shutter hinges, apex leaves, gutter brackets', () => {
+  assert.match(bourse, /'Bourse aedicule cartouche \(cartouche dore\)'/);
+  assert.match(bourse, /'Bourse wing ground-floor office door'/);
+  assert.match(bourse, /'Bourse wing door lintel'/);
+  assert.match(bourse, /'Bourse window shutter hinge straps \(pentures\)'/);
+  assert.match(bourse, /hinges\.count = n/);
+  assert.match(bourse, /'Bourse apex acanthus side leaf'/);
+  assert.match(bourse, /'Bourse eave gutter brackets \(crochets de gouttiere\)'/);
+  assert.match(bourse, /brackets\.count = 12/);
+});
+
+testCase('rounds 276-280: socle drainage outlets, rear downpipes, 2023 lateral entrances with brass, dome apex ball, socle night wash', () => {
+  assert.match(bourse, /'Bourse socle corner drainage outlets/);
+  assert.match(bourse, /outlets\.count = 4/);
+  assert.match(bourse, /'Bourse rear downpipes \(descentes arriere\)'/);
+  assert.match(bourse, /'Bourse 2023 lateral entrance \(facade '/);
+  assert.match(bourse, /'Bourse lateral entrance brass lintel'/);
+  assert.match(bourse, /'Bourse dome apex gilded ball \(boule sommitale de la coupole\)'/);
+  assert.match(bourse, /facadeWashMats\.push\(socleWash\)/);
+  assert.match(bourse, /socle\.material = socleWash/);
+});
+
 // __MORE_BOURSE_TESTS__
