@@ -460,3 +460,10 @@ testCase('the Academy Palace garden holds its six named statues', () => {
   assert.match(palace, /'Discobole statue'/);
   assert.match(palace, /'La Surprise statue'/);
 });
+
+testCase('the Hôtel Belle-Vue (BELvue museum) closes the west end of the Place des Palais', () => {
+  assert.match(palace, /built 1776-77 by Philippe de Proft/);
+  assert.match(palace, /'BELvue Hôtel Belle-Vue block'/);
+  assert.match(palace, /'BELvue pavilion roof'/);
+  assert.match(palace, /'BELvue piano nobile window'/);
+});

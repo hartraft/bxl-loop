@@ -2353,6 +2353,17 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       box(g, 1.6, 1.4, 1.6, gx, 0.7, 64, materials.paleStone, 'Academy garden pedestal');
       mesh(g, new THREE.SphereGeometry(0.6, 10, 8), materials.paleStone, gx, 2.2, 64, agStat[i]);
     }
+    // The former Hôtel Belle-Vue (now the BELvue museum) closes the WEST end of the square —
+    // a corner pavilion built 1776-77 by Philippe de Proft as a luxury hotel, five levels tall.
+    box(g, 36, 22, 28, 168, 11, 36, materials.paleStone, 'BELvue Hôtel Belle-Vue block');
+    box(g, 38, 1.0, 30, 168, 22.5, 36, materials.warmStone, 'BELvue cornice');
+    mesh(g, new THREE.ConeGeometry(20, 6, 4), materials.roof, 168, 27, 36, 'BELvue pavilion roof');
+    for (let i = 0; i < 5; i++) {
+      const wx = 168 - 13 + i * 6.5;
+      box(g, 2.0, 4.2, 0.2, wx, 15, 22.1, materials.glass, 'BELvue piano nobile window');
+      box(g, 2.0, 3.2, 0.2, wx, 7.5, 22.1, materials.glass, 'BELvue ground window');
+      box(g, 2.0, 3.6, 0.2, wx, 20, 22.1, materials.glass, 'BELvue attic window');
+    }
   });
     addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');
