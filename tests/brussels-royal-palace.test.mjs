@@ -725,3 +725,8 @@ testCase('the rear range and south avant-corps are roofed in slate', () => {
   assert.match(palace, /'Rear range slate roof'/);
   assert.match(palace, /'South avant-corps slate roof'/);
 });
+
+testCase('the Cour d’honneur is a gravelled court between the rear wings', () => {
+  assert.match(palace, /gravelled court/);
+  assert.match(palace, /'Cour d’honneur gravel court'/);
+});

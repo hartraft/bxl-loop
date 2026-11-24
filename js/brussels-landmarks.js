@@ -2348,6 +2348,10 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     // The rear range and the south avant-corps are roofed with slate, like the rest of the palace.
     box(g, 103, 1.4, 13, 0, 19.2, -54, roof, 'Rear range slate roof');
     box(g, 27.5, 1.2, 8, 0, 21.2, -60, roof, 'South avant-corps slate roof');
+
+    // The Cour d'honneur between the rear wings is a gravelled court, open to the
+    // carriage gates north and south.
+    box(g, 78, 0.12, 36, 0, 0.02, -37, ashlar, 'Cour d’honneur gravel court');
   });
   addLandmark('palaceSurroundings', (g) => {
     // Brussels Park (Parc de Bruxelles): the rectangular 13.1 ha neoclassical park north of the
