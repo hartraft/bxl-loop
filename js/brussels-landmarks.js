@@ -3821,6 +3821,11 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     for (const jz of [11.4, 12.4, 13.4]) {
       box(g, 3, 0.05, 0.2, 0, 0.1, jz, ashlar, 'Central garden walk joint');
     }
+
+    // Small caps crown the posts of the gilded garden railing.
+    for (let px = -33; px <= 33; px += 3) {
+      box(g, 0.16, 0.12, 0.16, px, 1.5, 14, gilded, 'Garden railing post cap');
+    }
   });
   addLandmark('palaceSurroundings', (g) => {
     // Real-world sources: en/fr Wikipedia (Royal Palace of Brussels, Brussels Park, Place des Palais,

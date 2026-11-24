@@ -1435,3 +1435,7 @@ testCase('transverse joint bands mark the central garden walk paving', () => {
 testCase('stone sills sit under each BELvue attic window', () => {
   assert.match(palace, /'BELvue attic window sill'/);
 });
+
+testCase('small caps crown the posts of the gilded garden railing', () => {
+  assert.match(palace, /'Garden railing post cap'/);
+});
