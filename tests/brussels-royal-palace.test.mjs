@@ -575,3 +575,9 @@ testCase('the central avant-corps carries windows on its side faces too', () => 
   assert.match(palace, /'Central corps side window \(piano nobile\)'/);
   assert.match(palace, /'Central corps side window \(ground\)'/);
 });
+
+testCase('the dome lantern is crowned by a gilded finial ball and spike', () => {
+  assert.match(palace, /gilded finial ball and spike/);
+  assert.match(palace, /'Dome lantern gilded finial'/);
+  assert.match(palace, /'Dome lantern finial spike'/);
+});
