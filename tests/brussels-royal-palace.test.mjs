@@ -1257,3 +1257,7 @@ testCase('stone planters with plantings flank the foot of the perron', () => {
   assert.match(palace, /'Perron planter'/);
   assert.match(palace, /'Perron planter planting'/);
 });
+
+testCase('a low wall encloses the Royal Stables courtyard', () => {
+  assert.match(palace, /'Royal Stables courtyard wall'/);
+});

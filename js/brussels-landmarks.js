@@ -4459,6 +4459,9 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     // Broad stone steps lead up to the Palace of the Nation peristyle.
     box(g, 50, 0.3, 1.2, 0, 0.15, 400.6, materials.pavingEdge, 'Palace of the Nation peristyle step');
     box(g, 46, 0.3, 1.0, 0, 0.45, 400.0, materials.pavingEdge, 'Palace of the Nation peristyle step');
+
+    // A low wall encloses the Royal Stables courtyard on its south side.
+    box(g, 48, 1.0, 0.4, -70, 0.5, -98, materials.ochre, 'Royal Stables courtyard wall');
   });
     addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');
