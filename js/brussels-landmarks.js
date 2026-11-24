@@ -1789,6 +1789,21 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       }
     }
 
+    // Vinçotte's full tympanum programme (heritage inventory): Belgium seated, holding
+    // the national flag and a medallion of Leopold II, between Agriculture and
+    // Industry — with the Scheldt and the Meuse in the pediment corners.
+    const pz = centralFace + 0.78;
+    cylinder(g, 0.045, 0.045, 2.3, 0.95, 27.9, pz, bronze, 8);
+    mesh(g, new THREE.SphereGeometry(0.06, 8, 6), bronze, 0.95, 29.05, pz, 'Pediment national flag staff finial');
+    for (let i = 0; i < 3; i++) {
+      const flagMat2 = new THREE.MeshStandardMaterial({ color: [0x171717, 0xf2d02e, 0xe12b2b][i], roughness: 0.9 });
+      box(g, 0.26, 0.85, 0.04, 1.25 + (i - 1) * 0.26, 28.6, pz, flagMat2, 'Pediment Belgian flag stripe');
+    }
+    mesh(g, new THREE.TorusGeometry(0.5, 0.08, 8, 20), moulding, -0.95, 26.9, pz, 'Leopold II pediment medallion');
+    mesh(g, new THREE.CircleGeometry(0.42, 20), ashlar, -0.95, 26.9, pz + 0.04, 'Leopold II pediment medallion disc');
+    mesh(g, new THREE.TorusGeometry(0.55, 0.08, 6, 16, Math.PI * 1.4), moulding, -9.6, 24.35, pz, 'Escaut river relief');
+    mesh(g, new THREE.TorusGeometry(0.55, 0.08, 6, 16, Math.PI * 1.4), moulding, 9.6, 24.35, pz, 'Meuse river relief');
+
     // The real central roof is a high, square drum and a broad flattened dome,
     // with two rows of oculi on each face and a rooftop balustrade.
     box(g, 17.5, 4.6, 17.5, 0, 27.2, -1, stone, 'Central dome drum');

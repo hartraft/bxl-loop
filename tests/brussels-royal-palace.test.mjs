@@ -68,6 +68,15 @@ testCase('the front garden holds the real three sunken parterres (central on the
   assert.match(palace, /\{ x: 38, w: 34, z: 12\.4, d: 2\.6 \}/);
 });
 
+testCase("Vinçotte's full tympanum programme: flag + Leopold II medallion centre, Scheldt and Meuse in the corners", () => {
+  assert.match(palace, /tympanum programme/);
+  assert.match(palace, /'Pediment national flag staff finial'/);
+  assert.match(palace, /'Pediment Belgian flag stripe'/);
+  assert.match(palace, /'Leopold II pediment medallion'/);
+  assert.match(palace, /'Escaut river relief'/);
+  assert.match(palace, /'Meuse river relief'/);
+});
+
 testCase('the central wing projects to the south too — rear avant-corps with pediment (Throne Room side)', () => {
   assert.match(palace, /au Nord et au Sud/);
   assert.match(palace, /'Palace south rear avant-corps \(Throne Room\)'/);
