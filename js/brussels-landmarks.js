@@ -2437,6 +2437,11 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
       box(g, 14.6, 0.18, 14.6, px, 0.52, -72, materials.pavingEdge, 'Place du Trône parterre edging');
     }
     box(g, 60, 0.3, 40, -120, -0.1, -60, materials.pavingEdge, 'Place du Trône paving');
+    // The park is framed by its four thoroughfares: the Place des Palais to the south, the
+    // Rue Royale to the west, the Rue de la Loi to the north and the Rue Ducale to the east.
+    box(g, 344, 0.06, 14, 0, 0.03, 411, materials.pavingA, 'Rue de la Loi street strip');
+    box(g, 14, 0.06, 340, -181, 0.03, 232, materials.pavingA, 'Rue Royale street strip');
+    box(g, 14, 0.06, 340, 181, 0.03, 232, materials.pavingA, 'Rue Ducale street strip');
   });
     addLandmark('cathedral', (g) => {
     box(g, 28, 13, 44, 0, 6.5, 0, materials.paleStone, 'Cathedral nave');

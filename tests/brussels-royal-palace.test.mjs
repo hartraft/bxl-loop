@@ -509,3 +509,10 @@ testCase('the Place du Trône carries three parterres from Balat 1868-69 design'
   assert.match(palace, /'Place du Trône parterre bed'/);
   assert.match(palace, /'Place du Trône paving'/);
 });
+
+testCase('the four thoroughfares frame Brussels Park (Rue de la Loi, Royale, Ducale)', () => {
+  assert.match(palace, /four thoroughfares/);
+  assert.match(palace, /'Rue de la Loi street strip'/);
+  assert.match(palace, /'Rue Royale street strip'/);
+  assert.match(palace, /'Rue Ducale street strip'/);
+});
