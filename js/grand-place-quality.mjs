@@ -1,15 +1,6 @@
-// Local Grand-Place quality policy: skip expensive effects that add little value on its stone square.
-export function isWithinGrandPlacePerformanceZone(x, z, centerX, centerZ, radius = 82) {
-  const dx = x - centerX;
-  const dz = z - centerZ;
-  return dx * dx + dz * dz <= radius * radius;
-}
-
-// The guild-house silhouettes still cast shadows, while the hundreds of tiny ornaments do not
-// each become extra shadow-map casters. Small details also do not need to sample shadow maps.
-export function grandPlaceShadowFlags(isInstanced, maxExtent) {
-  return {
-    castShadow: !isInstanced && maxExtent >= 8,
-    receiveShadow: maxExtent >= 2.5
-  };
-}
+// Local Grand-Place quality policy. The generalized landmark policy lives in
+// js/landmark-quality.mjs; this module keeps the Grand-Place names as re-exports.
+export {
+  isWithinGrandPlacePerformanceZone,
+  grandPlaceShadowFlags
+} from './landmark-quality.mjs';
