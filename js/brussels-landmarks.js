@@ -4,7 +4,8 @@ import { GEO } from './brx-geodata.js';
 import { BRUSSELS_LANDMARK_ANCHORS, MONT_DES_ARTS_ROTATION, PALAIS_DE_JUSTICE_ROTATION, BOURSE_ROTATION, brusselsToWorld } from './brussels-frame.js';
 import { foundationSkirtBottom } from './brussels-terrain.js';
 import { createBrusselsLandmarkColliders, splitMontDesArtsWall } from './brussels-colliders.js';
-import { grandPlaceShadowFlags } from './grand-place-quality.mjs';
+import { LANDMARK_PERF_MERGE_IDS, landmarkShadowFlags } from './landmark-quality.mjs';
+import { mergeStaticGeometry } from './landmark-merge.mjs';
 
 export function buildBrusselsLandmarks(scene, opts = {}) {
   const group = new THREE.Group();
@@ -133,10 +134,12 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
     if (id === 'cinquantenaire') root.rotation.y = Math.PI / 2; // triumphal axis east-west; pavilions north/south
     if (id === 'bourse' || id === 'bourseSurroundings') root.rotation.y = BOURSE_ROTATION; // main facade faces Place de la Bourse (bearing ~306 deg)
     build(root);
-    if (id === 'grandPlace') {
-      // The square's detailed guild-house facades contain hundreds of repeated ornaments.
-      // Keep shadowing on the large architectural masses, but don't submit every tiny
-      // baluster, window trim, cobble and sign fitting to both sun-shadow cascades.
+    if (LANDMARK_PERF_MERGE_IDS.includes(id)) {
+      // The monumental hotspots (Grand-Place, Royal Palace, Palais de Justice) are built from
+      // hundreds of small meshes. Keep shadowing on the large architectural masses, but don't
+      // submit every tiny baluster, window trim, cobble and sign fitting to both sun-shadow
+      // cascades — then merge the static geometry per material so a frame standing in one of
+      // these locations costs a few dozen draw calls instead of hundreds.
       const detailSize = new THREE.Vector3();
       root.traverse((object) => {
         if (!object.isMesh || !object.geometry) return;
@@ -147,10 +150,11 @@ export function buildBrusselsLandmarks(scene, opts = {}) {
           detailSize.y * Math.abs(object.scale.y),
           detailSize.z * Math.abs(object.scale.z)
         );
-        const shadowFlags = grandPlaceShadowFlags(object.isInstancedMesh, maxExtent);
+        const shadowFlags = landmarkShadowFlags(object.isInstancedMesh, maxExtent);
         object.castShadow = shadowFlags.castShadow;
         object.receiveShadow = shadowFlags.receiveShadow;
       });
+      mergeStaticGeometry(root, { shadowFlags: (maxExtent) => landmarkShadowFlags(false, maxExtent) });
     }
     colliders.push(...createBrusselsLandmarkColliders(id, p, root.rotation.y, root.position.y));
     group.add(root);

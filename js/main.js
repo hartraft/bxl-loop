@@ -24,7 +24,7 @@ import { applyBrusselsHud } from './brussels-ui.js';
 import { createBackend } from './backend.js';
 import { RideBXL } from './ridebxl.js';
 import { setupSceneCulling, updateSceneCulling } from './scene-culling.js';
-import { isWithinGrandPlacePerformanceZone } from './grand-place-quality.mjs';
+import { isWithinLandmarkPerformanceZone } from './landmark-quality.mjs';
 import { createBrusselsLife } from './life/brussels-life.js';
 import { createBrusselsAudio } from './audio/brussels-audio.js';
 import { VEHICLE_UNIFORMS } from './brussels-vehicles.js';
@@ -172,8 +172,8 @@ async function initApp() {
   // the browser supports them). The multisampled depth stays stored: SSR reads it.
   scenePass.renderTarget.storeMultisampledColorBuffer = false;
   const ssrFade = smoothstep(360.0, 180.0, positionView.z.negate());
-  // Grand-Place is a stone pedestrian square, not a wet asphalt road; avoid spending
-  // a second scene render on planar reflections and SSR on its dense gilded facades.
+  // The landmark hotspots (Grand-Place, Royal Palace, Palais de Justice) are stone plazas, not wet
+  // asphalt; avoid spending a second scene render on planar reflections and SSR on their dense facades.
   const ssrZoneMetalness = uniform(1.0);
   const sceneMRT = mrt({
     output: output,
@@ -696,13 +696,13 @@ async function initApp() {
     lightingSystem.update(cameraSystem.currentPos);
     mapSystem.update();
     if (warmedUp) updateSceneCulling(cameraSystem.camera.position); // the warm-up frame draws every chunk
-    const grandPlace = landmarks.landmarks.grandPlace?.group.position;
+    // The monumental hotspots (Grand-Place, Royal Palace, Palais de Justice) are stone plazas, not wet
+    // asphalt: skip the planar-reflection pass and zero SSR metalness there (one squared-distance
+    // test per landmark per frame), so their dense facades don't pay for a second scene render + SSR.
     const cameraPosition = cameraSystem.camera.position;
-    const inGrandPlace = grandPlace && isWithinGrandPlacePerformanceZone(
-      cameraPosition.x, cameraPosition.z, grandPlace.x, grandPlace.z
-    );
-    ssrZoneMetalness.value = inGrandPlace ? 0 : 1;
-    roadReflections.update(renderer, cameraSystem.camera, inGrandPlace ? 0 : cityUniforms.uRoadWetness.value);
+    const inLandmarkZone = isWithinLandmarkPerformanceZone(cameraPosition.x, cameraPosition.z);
+    ssrZoneMetalness.value = inLandmarkZone ? 0 : 1;
+    roadReflections.update(renderer, cameraSystem.camera, inLandmarkZone ? 0 : cityUniforms.uRoadWetness.value);
 
     // Render frame via TSL RenderPipeline (SSR + Bloom)
     if (!warmedUp) {
